@@ -31,6 +31,7 @@ add_library(EpiLib
     EpiLib/Containers/Array.h
     EpiLib/Containers/HashMap.h
 
+    EpiLib/ObjectModel/Serialization.h
     EpiLib/ObjectModel/Object.h
     EpiLib/ObjectModel/Object.cpp
     EpiLib/ObjectModel/MetaObject.h

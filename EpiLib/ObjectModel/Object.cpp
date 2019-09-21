@@ -15,4 +15,16 @@ epiBool Object::Is(MetaTypeID rhs) const
     return rhs == MetaTypeID::Object;
 }
 
+void Object::Serialize(json_t& json)
+{
+    OnPreSerialization();
+    Serialization(json);
+}
+
+void Object::Deserialize(const json_t& json)
+{
+    Deserialization(json);
+    OnPostDeserialization();
+}
+
 }

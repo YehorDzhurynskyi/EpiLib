@@ -23,10 +23,14 @@ epiBool Is(MetaTypeID rhs) const override                                       
     return rhs == MetaTypeID::##_ClassName || super::Is(rhs);                           \
 }                                                                                       \
                                                                                         \
-void Deserialize(const rapidjson::Value& json) override;                                \
+void Serialization(json_t& json) const override;                                        \
+void Deserialization(const json_t& json) override;                                      \
+                                                                                        \
 
 namespace epi
 {
+
+using json_t = rapidjson::Value;
 
 class Object
 {
@@ -45,7 +49,16 @@ public:
     virtual const MetaClass& GetMetaClass() const;
     virtual epiBool Is(MetaTypeID rhs) const;
 
-    virtual void Deserialize(const rapidjson::Value& json) {}
+public:
+    void Serialize(json_t& json);
+    void Deserialize(const json_t& json);
+
+protected:
+    virtual void Serialization(json_t& json) const = 0;
+    virtual void Deserialization(const json_t& json) = 0;
+
+    virtual void OnPreSerialization() {}
+    virtual void OnPostDeserialization() {}
 };
 
 template<typename T, typename U>

@@ -34,15 +34,9 @@ enum class MetaTypeID : epiU32
     Handle,
 
     Object,
-    Gene,
-    GeneGrowth,
-    GeneBranching,
-    Branch,
-    GeneMutation,
-    Sprout,
-    SimulationWard,
-    Simulation,
-    AttractionBox
+
+// CUSTOM TYPES
+    Vessel,
 };
 
 class Object;
