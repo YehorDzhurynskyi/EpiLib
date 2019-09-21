@@ -2,18 +2,13 @@ cmake_minimum_required(VERSION 3.1)
 
 project(EpiLib VERSION 1.0.0)
 
-fbl_status_message("Configuring EpiSys")
-
-fbl_include_script(PrecompiledHeader.cmake)
-
 add_subdirectory(Extern/rapidjson)
 find_package(RapidJSON REQUIRED)
 
 add_subdirectory(Extern/glm)
 add_subdirectory(Extern/exprtk)
 
-set(EpiLib_SRCS
-
+add_library(EpiLib
     EpiLib/pch.h
     EpiLib/pch.cpp
 
@@ -33,22 +28,22 @@ set(EpiLib_SRCS
     EpiLib/Pool.h
     EpiLib/RotatingBuffer.h
 
-	EpiLib/Containers/Array.h
-	EpiLib/Containers/HashMap.h
+    EpiLib/Containers/Array.h
+    EpiLib/Containers/HashMap.h
 
     EpiLib/ObjectModel/Object.h
     EpiLib/ObjectModel/Object.cpp
-	EpiLib/ObjectModel/MetaObject.h
-	EpiLib/ObjectModel/MetaObject.cpp
+    EpiLib/ObjectModel/MetaObject.h
+    EpiLib/ObjectModel/MetaObject.cpp
     EpiLib/ObjectModel/ClassRegistry.h
-	EpiLib/ObjectModel/ClassRegistry.cpp
+    EpiLib/ObjectModel/ClassRegistry.cpp
     EpiLib/ObjectModel/PropertyPath.h
-	EpiLib/ObjectModel/PropertyPath.cpp
-	EpiLib/ObjectModel/Handle.h
+    EpiLib/ObjectModel/PropertyPath.cpp
+    EpiLib/ObjectModel/Handle.h
 )
-
-add_library(EpiLib ${EpiLib_SRCS})
+get_target_property(EpiLib_SRCs EpiLib SOURCES)
 add_precompiled_header(EpiLib EpiLib/pch.h SOURCE_CXX EpiLib/pch.cpp)
+pack_sources(${EpiLib_SRCs})
 
 if(MSVC)
 	# needed for exprtk.hpp (probably?)
@@ -63,12 +58,10 @@ target_include_directories(EpiLib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
-fbl_pack_sources(${EpiLib_SRCS})
-
 target_link_libraries(EpiLib
     PUBLIC
         glm
-		exprtk
+        exprtk
 )
 
 target_compile_definitions(EpiLib
@@ -76,4 +69,9 @@ target_compile_definitions(EpiLib
         _USE_MATH_DEFINES
 )
 
-fbl_set_default_target_properties(EpiLib)
+set_target_properties(EpiLib
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
