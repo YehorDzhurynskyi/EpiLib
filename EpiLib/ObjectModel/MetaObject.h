@@ -37,6 +37,19 @@ enum class MetaTypeID : epiU32
 
 // CUSTOM TYPES
     Vessel,
+    Bloodstream,
+    Model,
+
+    StaticVentricle,
+    StaticRegulator,
+    Sensor,
+    StaticRegulatedVessel,
+    StaticRegulatedBloodstream,
+    StaticModel,
+
+    DynamicVentricle,
+    DynamicBloodstream,
+    DynamicModel
 };
 
 class Object;

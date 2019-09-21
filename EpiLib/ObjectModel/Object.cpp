@@ -19,10 +19,12 @@ void Object::Serialize(json_t& json)
 {
     OnPreSerialization();
     Serialization(json);
+    OnPostSerialization();
 }
 
 void Object::Deserialize(const json_t& json)
 {
+    OnPreDeserialization();
     Deserialization(json);
     OnPostDeserialization();
 }

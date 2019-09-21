@@ -58,6 +58,8 @@ protected:
     virtual void Deserialization(const json_t& json) = 0;
 
     virtual void OnPreSerialization() {}
+    virtual void OnPreDeserialization() {}
+    virtual void OnPostSerialization() {}
     virtual void OnPostDeserialization() {}
 };
 
