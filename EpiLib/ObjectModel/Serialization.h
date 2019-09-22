@@ -1,58 +1,38 @@
 #pragma once
 
 // ============================= PROPERTY =============================
-#if 0
-#define epiWritePropertyEx(_Key, _Json, _Value) \
-    do                                          \
-    {                                           \
-        assert(_Json.IsObject());               \
-        assert(!_Json.HasMember(#_Key));        \
-        _Json[#_Key] = _Value;                  \
-    } while (false)                             \
-
-#else
-#define epiWritePropertyEx(_Key, _Json, _Value) assert(!"Not implemented!")
-#endif
-
 #define epiWriteProperty(_Key, _Json)           \
-    epiWritePropertyEx(_Key, _Json, m_##_Key)   \
+{                                               \
+    assert(_Json.is_object());                  \
+    assert(_Json.find(#_Key) == _Json.end());   \
+    _Json[#_Key] = m_##_Key;                    \
+}                                               \
 
-#define epiReadPropertyEx(_Key, _Type, _Json, _Value)   \
-    do                                                  \
-    {                                                   \
-        assert(_Json.IsObject());                       \
-        assert(_Json.HasMember(#_Key));                 \
-        const auto it = _Json.FindMember(#_Key);        \
-        if (it != _Json.MemberEnd())                    \
-        {                                               \
-            assert(it->value.Is##_Type());              \
-            _Value = it->value.Get##_Type();            \
-        }                                               \
-    } while (false)                                     \
+#define epiReadProperty(_Key, _Type, _Json)     \
+{                                               \
+    assert(_Json.is_object());                  \
+    assert(_Json[#_Key].is_##_Type());          \
+    assert(_Json.find(#_Key) != _Json.end());   \
+    _Json[#_Key].get_to(m_##_Key);              \
+}                                               \
 
-#define epiReadProperty(_Key, _Type, _Json)          \
-    epiReadPropertyEx(_Key, _Type, _Json, m_##_Key)  \
-
-#define epiReadPropertyDefaultEx(_Key, _Type, _Json, _Default, _Value)  \
-    do                                                                  \
-    {                                                                   \
-        assert(_Json.IsObject());                                       \
-        const auto it = _Json.FindMember(#_Key);                        \
-        if (it != _Json.MemberEnd())                                    \
-        {                                                               \
-            assert(it->value.Is##_Type());                              \
-            _Value = it->value.Get##_Type();                            \
-        }                                                               \
-        else                                                            \
-        {                                                               \
-            _Value = _Default;                                          \
-        }                                                               \
-    } while (false)                                                     \
-
-#define epiReadPropertyDefault(_Key, _Type, _Json, _Default)          \
-    epiReadPropertyDefaultEx(_Key, _Type, _Json, _Default, m_##_Key)  \
+#define epiReadPropertyDefault(_Key, _Type, _Json, _Default)    \
+{                                                               \
+    assert(_Json.is_object());                                  \
+    assert(_Json[#_Key].is_##_Type());                          \
+    if (_Json.find(#_Key) != _Json.end())                       \
+    {                                                           \
+        _Json[#_Key].get_to(m_##_Key);                          \
+    }                                                           \
+    else                                                        \
+    {                                                           \
+        m_##_Key = _Default;                                    \
+    }                                                           \
+}                                                               \
 
 // ============================= VECTOR =============================
+#if 0 // TODO: implement
+
 #define epiReadVectorEx(_Key, _ElType, _Json, _Value, _N)   \
     do                                                      \
     {                                                       \
@@ -90,7 +70,11 @@
 #define epiReadVector4(_Key, _ElType, _Json)             \
     epiReadVector4Ex(_Key, _ElType, _Json, m_##_Key)     \
 
+#endif
+
 // ============================= OBJECT =============================
+#if 0 // TODO: implement
+
 #define epiReadObject(_Value, _Json) \
     do                              \
     {                               \
@@ -112,88 +96,60 @@
 #define epiReadObjectByKey(_Key)         \
     epiReadObjectByKeyEx(_Key, m_##_Key) \
 
-// ============================= ARRAY =============================
-#define epiReadArrayBegin(_Key, _Json)                                  \
-do                                                                      \
-{                                                                       \
-    assert(_Json.HasMember(#_Key));                                     \
-    assert(_Json.IsArray());                                            \
-    const auto it = _Json.FindMember(#_Key);                            \
-    for (json_t::ConstMemberIterator iter = it->value.MemberBegin();    \
-        iter != it->value.MemberEnd();                                  \
-        ++iter)                                                         \
-    {                                                                   \
-        const auto& v = iter->value;                                    \
-
-#define epiReadArrayEnd()   \
-    }                       \
-} while (false)             \
-
-#define epiReadArray(_Key, _Json)           \
-    epiReadArrayBegin(_Key, _Json)          \
-    auto& item = m_##_Key.emplace_back();   \
-    item.Deserialization(v);                \
-    epiReadArrayEnd()                       \
-
-#if 0
-#define epiWriteArray(_Key, _Json)          \
-do                                          \
-{                                           \
-    assert(!_Json.HasMember(#_Key));        \
-    json_t& arr = _Json[#_Key];             \
-    epiS32 index = 0;                       \
-    for (auto& v : m_##_Key)                \
-    {                                       \
-        rapidjson::Value j(rapidjson::kObjectType); \
-        v.Serialization(j);        \
-        arr[index++] = j;    \
-    }                                       \
-}                                           \
-while (false)                               \
-
-#else
-#define epiWriteArray(_Key, _Json) assert(!"Not implemented!")
 #endif
+
+// ============================= ARRAY =============================
+#define epiReadArray(_Key, _Json)               \
+{                                               \
+    assert(m_##_Key.empty());                   \
+    assert(_Json.is_object());                  \
+    assert(_Json.find(#_Key) != _Json.end());   \
+    assert(_Json[#_Key].is_array());            \
+    for (auto& j : _Json[#_Key])                \
+    {                                           \
+        auto& item = m_##_Key.emplace_back();   \
+        item.Deserialization(j);                \
+    }                                           \
+}                                               \
+
+#define epiWriteArray(_Key, _Json)              \
+{                                               \
+    assert(_Json.is_object());                  \
+    assert(_Json.find(#_Key) == _Json.end());   \
+    auto arr = json_t::array();                 \
+    for (auto& v : m_##_Key)                    \
+    {                                           \
+        auto j = json_t::object();              \
+        v.Serialization(j);                     \
+        arr.push_back(j);                       \
+    }                                           \
+    _Json[#_Key] = arr;                         \
+}                                               \
 
 // ============================= MAP =============================
-#define epiReadMapBegin(_Key, _Json)                                    \
-do                                                                      \
-{                                                                       \
-    assert(m_##_Key.empty());                                           \
-    assert(_Json.IsObject());                                           \
-    assert(_Json.HasMember(#_Key));                                     \
-    const auto it = _Json.FindMember(#_Key);                            \
-    for (json_t::ConstMemberIterator iter = it->value.MemberBegin();    \
-        iter != it->value.MemberEnd();                                  \
-        ++iter)                                                         \
-    {                                                                   \
-        const std::string& k = iter->name.GetString();                  \
-        const json_t& v = iter->value;                                  \
+#define epiReadMap(_Key, _Json)                 \
+{                                               \
+    assert(m_##_Key.empty());                   \
+    assert(_Json.is_object());                  \
+    assert(_Json.find(#_Key) != _Json.end());   \
+    assert(_Json[#_Key].is_object());           \
+    for (auto& [k, v] : _Json[#_Key].items())   \
+    {                                           \
+        auto& item = m_##_Key[k];               \
+        item.Deserialization(v);                \
+    }                                           \
+}                                               \
 
-#define epiReadMapEnd() \
-    }                   \
-} while (false)         \
-
-#define epiReadMap(_Key, _Json)     \
-    epiReadMapBegin(_Key, _Json)    \
-    auto& item = m_##_Key[k];       \
-    item.Deserialization(v);        \
-    epiReadMapEnd()                 \
-
-#if 0
-#define epiWriteMap(_Key, _Json)                    \
-do                                                  \
-{                                                   \
-    assert(!_Json.HasMember(#_Key));                \
-    auto& map = _Json[#_Key];                       \
-    for (auto& [k, v] : m_##_Key)                   \
-    {                                               \
-        jsot_t j(kJsonType); \
-        v.Serialization(j);                         \
-        map[k] = j;    \
-    }                                               \
-} while (false)                                     \
-
-#else
-#define epiWriteMap(_Key, _Json) assert(!"Not implemented!")
-#endif
+#define epiWriteMap(_Key, _Json)                \
+{                                               \
+    assert(_Json.is_object());                  \
+    assert(_Json.find(#_Key) == _Json.end());   \
+    auto map = json_t::object();                \
+    for (auto& [k, v] : m_##_Key)               \
+    {                                           \
+        auto j = json_t::object();              \
+        v.Serialization(j);                     \
+        map[k] = j;                             \
+    }                                           \
+    _Json[#_Key] = map;                         \
+}                                               \

@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 
 project(EpiLib VERSION 1.0.0)
 
-add_subdirectory(Extern/rapidjson)
-find_package(RapidJSON REQUIRED)
-
+add_subdirectory(Extern/nlohmann)
 add_subdirectory(Extern/glm)
 add_subdirectory(Extern/exprtk)
 
@@ -63,6 +61,7 @@ target_link_libraries(EpiLib
     PUBLIC
         glm
         exprtk
+        nlohmann
 )
 
 target_compile_definitions(EpiLib

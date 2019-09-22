@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MetaObject.h"
-#include <rapidjson/document.h>
+#include <json.hpp>
 
 #define epiEmitObject(_ClassName, _Super)                                               \
                                                                                         \
@@ -30,7 +30,7 @@ void Deserialization(const json_t& json) override;                              
 namespace epi
 {
 
-using json_t = rapidjson::Value;
+using json_t = nlohmann::json;
 
 class Object
 {
