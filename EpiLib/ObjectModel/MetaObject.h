@@ -39,14 +39,12 @@ enum class MetaTypeID : epiU32
     Vessel,
     Bloodstream,
     Model,
-
     StaticVentricle,
     StaticRegulator,
     Sensor,
     StaticRegulatedVessel,
     StaticRegulatedBloodstream,
     StaticModel,
-
     DynamicVentricle,
     DynamicBloodstream,
     DynamicModel
@@ -56,9 +54,10 @@ class Object;
 class MetaProperty final
 {
 public:
-    //MetaProperty() = default;
+    MetaProperty() = default;
     MetaProperty(MetaTypeID propertyTypeID,
                  epiSize_t offset,
+                 const epiChar* name,
                  MetaProperty* nestedMetaProperty);
     MetaProperty(const MetaProperty&) = delete;
     MetaProperty& operator=(const MetaProperty&) = delete;
@@ -80,6 +79,23 @@ protected:
     MetaTypeID m_PropertyTypeID;
     epiSize_t m_Offset;
     MetaProperty* m_NestedMetaProperty;
+
+#ifdef epiUSE_METAPROPERTY_NAME
+public:
+    const epiChar* GetName() const { return m_Name.c_str(); }
+
+protected:
+    void SetName(const epiChar* name) { m_Name = name; }
+
+protected:
+    std::string m_Name;
+#else
+public:
+    const epiChar* GetName() const { return ""; }
+
+protected:
+    void SetName(const epiChar* name) {}
+#endif
 };
 
 class MetaType

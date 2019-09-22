@@ -11,12 +11,14 @@ namespace epi
 
 MetaProperty::MetaProperty(MetaTypeID propertyTypeID,
                            epiSize_t offset,
+                           const epiChar* name,
                            MetaProperty* nestedMetaProperty)
     : m_PropertyTypeID(propertyTypeID)
     , m_Offset(offset)
     , m_NestedMetaProperty(nestedMetaProperty)
 {
     assert(IsValid());
+    SetName(name);
 }
 
 MetaProperty::MetaProperty(MetaProperty&& rhs)

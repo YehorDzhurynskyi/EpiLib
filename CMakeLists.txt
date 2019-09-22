@@ -68,6 +68,7 @@ target_link_libraries(EpiLib
 target_compile_definitions(EpiLib
     PUBLIC
         _USE_MATH_DEFINES
+        epiUSE_METAPROPERTY_NAME
 )
 
 set_target_properties(EpiLib
