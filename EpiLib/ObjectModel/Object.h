@@ -13,7 +13,7 @@ friend _ClassName##_MetaClassData CreateMetaClassData_##_ClassName();           
 const MetaClass& GetMetaClass() const override                                          \
 {                                                                                       \
     assert(g_ClassRegistry.find(MetaTypeID::##_ClassName) != g_ClassRegistry.end());    \
-    return *ClassRegistry_Lookup(MetaTypeID::##_ClassName);                             \
+    return *ClassRegistry_Type_Lookup(MetaTypeID::##_ClassName);                        \
 }                                                                                       \
                                                                                         \
 static inline MetaTypeID TypeID = MetaTypeID::##_ClassName;                             \
@@ -23,7 +23,7 @@ epiBool Is(MetaTypeID rhs) const override                                       
     return rhs == MetaTypeID::##_ClassName || super::Is(rhs);                           \
 }                                                                                       \
                                                                                         \
-void Serialization(json_t& json) const override;                                        \
+void Serialization(json_t& json) override;                                              \
 void Deserialization(const json_t& json) override;                                      \
                                                                                         \
 
@@ -37,6 +37,8 @@ class Object
 public:
     using Object_MetaClassData = MetaClassData;
     friend Object_MetaClassData CreateMetaClassData_Object();
+
+    static inline MetaTypeID TypeID = MetaTypeID::Object;
 
 public:
     Object() = default;
@@ -54,8 +56,8 @@ public:
     void Deserialize(const json_t& json);
 
 protected:
-    virtual void Serialization(json_t& json) const = 0;
-    virtual void Deserialization(const json_t& json) = 0;
+    virtual void Serialization(json_t& json) {}
+    virtual void Deserialization(const json_t& json) {}
 
     virtual void OnPreSerialization() {}
     virtual void OnPreDeserialization() {}

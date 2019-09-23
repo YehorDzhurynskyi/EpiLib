@@ -6,7 +6,7 @@
 namespace epi
 {
 
-const MetaClass* ClassRegistry_Lookup(MetaTypeID typeID)
+const MetaClass* ClassRegistry_Type_Lookup(MetaTypeID typeID)
 {
     const auto it = g_ClassRegistry.find(typeID);
     if (it == g_ClassRegistry.end())
@@ -18,25 +18,14 @@ const MetaClass* ClassRegistry_Lookup(MetaTypeID typeID)
     return &it->second;
 }
 
-const epiChar* ClassNameRegistry_Lookup(MetaTypeID typeID)
+const MetaClass* ClassRegistry_Name_Lookup(const epiChar* typeName, epiSize_t len)
 {
-    const auto it = g_ClassNameRegistry.find(typeID);
-    if (it == g_ClassNameRegistry.end())
+    for (const auto& [k, v] : g_ClassRegistry)
     {
-        assert(!"No such class has been registred");
-        return nullptr;
-    }
-
-    return it->second;
-}
-
-const MetaClass* ClassNameRegistry_Lookup(const epiChar* typeName, epiSize_t len)
-{
-    for (const auto& [k, v] : g_ClassNameRegistry)
-    {
-        if (strlen(v) == len && strncmp(v, typeName, len) == 0)
+        const epiChar* name = v.GetName();
+        if (strlen(name) == len && strncmp(name, typeName, len) == 0)
         {
-            return ClassRegistry_Lookup(k);
+            return &v;
         }
     }
 

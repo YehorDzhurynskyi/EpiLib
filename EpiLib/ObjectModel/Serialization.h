@@ -19,9 +19,9 @@
 #define epiReadPropertyDefault(_Key, _Type, _Json, _Default)    \
 {                                                               \
     assert(_Json.is_object());                                  \
-    assert(_Json[#_Key].is_##_Type());                          \
     if (_Json.find(#_Key) != _Json.end())                       \
     {                                                           \
+        assert(_Json[#_Key].is_##_Type());                      \
         _Json[#_Key].get_to(m_##_Key);                          \
     }                                                           \
     else                                                        \
@@ -101,14 +101,14 @@
 // ============================= ARRAY =============================
 #define epiReadArray(_Key, _Json)               \
 {                                               \
-    assert(m_##_Key.empty());                   \
+    assert(m_##_Key.IsEmpty());                 \
     assert(_Json.is_object());                  \
     assert(_Json.find(#_Key) != _Json.end());   \
     assert(_Json[#_Key].is_array());            \
     for (auto& j : _Json[#_Key])                \
     {                                           \
-        auto& item = m_##_Key.emplace_back();   \
-        item.Deserialization(j);                \
+        auto& item = m_##_Key.Push();           \
+        item.Deserialize(j);                    \
     }                                           \
 }                                               \
 
@@ -120,7 +120,7 @@
     for (auto& v : m_##_Key)                    \
     {                                           \
         auto j = json_t::object();              \
-        v.Serialization(j);                     \
+        v.Serialize(j);                         \
         arr.push_back(j);                       \
     }                                           \
     _Json[#_Key] = arr;                         \
@@ -136,7 +136,7 @@
     for (auto& [k, v] : _Json[#_Key].items())   \
     {                                           \
         auto& item = m_##_Key[k];               \
-        item.Deserialization(v);                \
+        item.Deserialize(v);                    \
     }                                           \
 }                                               \
 
@@ -148,7 +148,7 @@
     for (auto& [k, v] : m_##_Key)               \
     {                                           \
         auto j = json_t::object();              \
-        v.Serialization(j);                     \
+        v.Serialize(j);                         \
         map[k] = j;                             \
     }                                           \
     _Json[#_Key] = map;                         \

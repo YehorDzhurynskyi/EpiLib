@@ -63,6 +63,11 @@ public:
         return m_Vector.back();
     }
 
+    epiSize_t Size() const
+    {
+        return m_Vector.size();
+    }
+
 public:
     auto begin() -> typename std::vector<T>::iterator
     {

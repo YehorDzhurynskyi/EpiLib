@@ -19,7 +19,7 @@ epiBool PropertyPath::Parse(const std::string& path)
     const epiSize_t classNamePos = path.find(':');
     if (classNamePos == std::string::npos) goto invalid_input;
 
-    const MetaClass* meta = ClassNameRegistry_Lookup(&path[0], classNamePos);
+    const MetaClass* meta = ClassRegistry_Name_Lookup(&path[0], classNamePos);
     if (meta == nullptr) goto invalid_input;
 
     PathNode node;
@@ -58,7 +58,7 @@ epiBool PropertyPath::Parse(const std::string& path)
 
                 if (MetaType::IsCompound(elemTypeID))
                 {
-                    meta = ClassRegistry_Lookup(elemTypeID);
+                    meta = ClassRegistry_Type_Lookup(elemTypeID);
                 }
             }
 

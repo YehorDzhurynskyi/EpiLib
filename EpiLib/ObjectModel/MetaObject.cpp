@@ -115,7 +115,7 @@ epiByte* MetaType::GetElementByIndex(const epiByte* container, const MetaPropert
 {
     if (!IsMultiDimensional(meta.GetTypeID()) || !meta.HasNested()) goto invalid_input;
 
-    const MetaClass* elemMeta = ClassRegistry_Lookup(meta.GetNestedMetaProperty()->GetTypeID());
+    const MetaClass* elemMeta = ClassRegistry_Type_Lookup(meta.GetNestedMetaProperty()->GetTypeID());
     if (elemMeta == nullptr) goto invalid_input;
 
     const epiByte* element = nullptr;
@@ -154,7 +154,7 @@ epiByte* MetaType::GetElementByHash(const epiByte* container, const MetaProperty
 {
     if (meta.GetTypeID() != MetaTypeID::HashMap || !meta.HasNested()) goto invalid_input;
 
-    const MetaClass* elemMeta = ClassRegistry_Lookup(meta.GetNestedMetaProperty()->GetTypeID());
+    const MetaClass* elemMeta = ClassRegistry_Type_Lookup(meta.GetNestedMetaProperty()->GetTypeID());
     if (elemMeta == nullptr) goto invalid_input;
 
     return ((BaseHashMap*)container)->Get(hash);
@@ -170,11 +170,12 @@ void MetaClassData::AddProperty(MetaPropertyID propertyID, MetaProperty&& metaPr
     Properties.try_emplace(propertyID, std::move(metaProperty));
 }
 
-MetaClass::MetaClass(MetaClassData* classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf)
+MetaClass::MetaClass(MetaClassData* classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name)
     : m_ClassData(classData)
     , m_TypeID(typeID)
     , m_SuperTypeID(superTypeID)
     , m_SizeOf(sizeOf)
+    , m_Name(name)
 {}
 
 epiBool MetaClass::IsValid() const
@@ -190,7 +191,7 @@ const MetaProperty* MetaClass::GetProperty_FromBase(MetaPropertyID pid) const
     const MetaClass* superMetaClass = this;
     do
     {
-        superMetaClass = ClassRegistry_Lookup(superMetaClass->m_SuperTypeID);
+        superMetaClass = ClassRegistry_Type_Lookup(superMetaClass->m_SuperTypeID);
         assert(superMetaClass != nullptr);
 
         if (superMetaClass->m_TypeID == MetaTypeID::None)
@@ -223,7 +224,7 @@ const MetaProperty* MetaClass::GetProperty_FromDerived(MetaPropertyID pid) const
                 }
                 break;
             }
-            childMeta = ClassRegistry_Lookup(childMeta->m_SuperTypeID);
+            childMeta = ClassRegistry_Type_Lookup(childMeta->m_SuperTypeID);
             assert(childMeta);
         }
     }
@@ -266,11 +267,11 @@ MetaTypeID MetaClass::GetTypeID() const
     return m_TypeID;
 }
 
-const char* MetaClass::GetClassName() const
+const char* MetaClass::GetName() const
 {
     assert(IsValid());
 
-    return ClassNameRegistry_Lookup(m_TypeID);
+    return m_Name.c_str();
 }
 
 epiSize_t MetaClass::GetSizeOf() const

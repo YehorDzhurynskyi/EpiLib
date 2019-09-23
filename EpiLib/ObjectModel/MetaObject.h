@@ -16,6 +16,7 @@ enum class MetaTypeID : epiU32
     Float,
     Double,
     Size_t,
+    String,
     U8,
     U16,
     U32,
@@ -47,7 +48,8 @@ enum class MetaTypeID : epiU32
     StaticModel,
     DynamicVentricle,
     DynamicBloodstream,
-    DynamicModel
+    DynamicModel,
+    BloodSystemItem
 };
 
 class Object;
@@ -88,7 +90,7 @@ protected:
     void SetName(const epiChar* name) { m_Name = name; }
 
 protected:
-    std::string m_Name;
+    epiString m_Name;
 #else
 public:
     const epiChar* GetName() const { return ""; }
@@ -124,7 +126,7 @@ struct MetaClassData
 class MetaClass final
 {
 public:
-    MetaClass(MetaClassData* classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf);
+    MetaClass(MetaClassData* classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name);
 
     epiBool IsValid() const;
 
@@ -134,7 +136,7 @@ public:
     const MetaProperty* GetProperty(MetaPropertyID pid) const;
 
     MetaTypeID GetTypeID() const;
-    const char* GetClassName() const;
+    const epiChar* GetName() const;
     epiSize_t GetSizeOf() const;
 
 protected:
@@ -142,6 +144,7 @@ protected:
     MetaTypeID m_TypeID;
     MetaTypeID m_SuperTypeID;
     epiSize_t m_SizeOf;
+    epiString m_Name;
 };
 
 template<typename T>

@@ -25,6 +25,8 @@ using epiS16 = int16_t;
 using epiS32 = int32_t;
 using epiS64 = int64_t;
 
+using epiString = std::string;
+
 using epiV2F = glm::vec2;
 using epiV2S = glm::ivec2;
 using epiV3F = glm::vec3;
