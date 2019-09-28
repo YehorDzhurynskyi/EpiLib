@@ -29,4 +29,9 @@ void Object::Deserialize(const json_t& json)
     OnPostDeserialization();
 }
 
+epiString Object::ToString() const
+{
+    return GetMetaClass().GetName();
+}
+
 }

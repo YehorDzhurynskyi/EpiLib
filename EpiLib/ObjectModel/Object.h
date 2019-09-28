@@ -55,6 +55,8 @@ public:
     void Serialize(json_t& json);
     void Deserialize(const json_t& json);
 
+    virtual epiString ToString() const;
+
 protected:
     virtual void Serialization(json_t& json) {}
     virtual void Deserialization(const json_t& json) {}
