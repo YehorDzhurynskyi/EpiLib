@@ -12,6 +12,7 @@ public:
 
     virtual epiByte* GetData() = 0;
     virtual epiSize_t GetSize() const = 0;
+    virtual epiSize_t GetSizeOfItem() const = 0;
 };
 
 template<typename T>
@@ -40,6 +41,11 @@ public:
     epiSize_t GetSize() const override
     {
         return m_Vector.size();
+    }
+
+    epiSize_t GetSizeOfItem() const override
+    {
+        return sizeof(T);
     }
 
     epiBool IsEmpty() const

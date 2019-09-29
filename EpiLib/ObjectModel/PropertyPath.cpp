@@ -169,4 +169,28 @@ epiByte* PropertyPath::GetValue(const Object& object) const
     return value;
 }
 
+void PropertyPath::AddPathNode(MetaPropertyID pid)
+{
+    PathNode node;
+    node.PropertyID = pid;
+    node.Type = PathNodeType::Plain;
+
+    m_Nodes.push_back(std::move(node));
+}
+
+void PropertyPath::AddPathNodeIndexed(MetaPropertyID pid, epiS32 index)
+{
+    PathNode node;
+    node.PropertyID = pid;
+    node.Type = PathNodeType::Index;
+    node.Index = index;
+
+    m_Nodes.push_back(std::move(node));
+}
+
+void PropertyPath::Reverse()
+{
+    std::reverse(m_Nodes.begin(), m_Nodes.end());
+}
+
 }

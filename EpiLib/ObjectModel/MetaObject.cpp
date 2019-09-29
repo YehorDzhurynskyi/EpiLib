@@ -26,6 +26,9 @@ MetaProperty::MetaProperty(MetaProperty&& rhs)
     m_PropertyTypeID = std::move(rhs.m_PropertyTypeID);
     m_Offset = std::move(rhs.m_Offset);
     m_NestedMetaProperty = std::move(rhs.m_NestedMetaProperty);
+#ifdef epiUSE_METAPROPERTY_NAME
+    m_Name = std::move(rhs.m_Name);
+#endif
     rhs.m_NestedMetaProperty = nullptr;
 }
 
@@ -34,6 +37,9 @@ MetaProperty& MetaProperty::operator=(MetaProperty&& rhs)
     m_PropertyTypeID = std::move(rhs.m_PropertyTypeID);
     m_Offset = std::move(rhs.m_Offset);
     m_NestedMetaProperty = std::move(rhs.m_NestedMetaProperty);
+#ifdef epiUSE_METAPROPERTY_NAME
+    m_Name = std::move(rhs.m_Name);
+#endif
     rhs.m_NestedMetaProperty = nullptr;
     return *this;
 }
@@ -166,8 +172,37 @@ invalid_input:
 
 void MetaClassData::AddProperty(MetaPropertyID propertyID, MetaProperty&& metaProperty)
 {
-    assert(Properties.find(propertyID) == Properties.end());
-    Properties.try_emplace(propertyID, std::move(metaProperty));
+    const epiS32 index = m_Properties.size();
+    m_Properties.push_back(std::move(metaProperty));
+
+    assert(m_ToIndexTable.find(propertyID) == m_ToIndexTable.end());
+    m_ToIndexTable[propertyID] = index;
+}
+
+const epiSize_t MetaClassData::GetPropertiesCount() const
+{
+    return m_Properties.size();
+}
+
+const MetaProperty* MetaClassData::GetPropertyAt(epiS32 index) const
+{
+    if (index < 0 || index >= m_Properties.size())
+    {
+        return nullptr;
+    }
+
+    return &m_Properties[index];
+}
+
+const MetaProperty* MetaClassData::GetPropertyBy(MetaPropertyID pid) const
+{
+    const auto it = m_ToIndexTable.find(pid);
+    if (it == m_ToIndexTable.end())
+    {
+        return nullptr;
+    }
+
+    return GetPropertyAt(it->second);
 }
 
 MetaClass::MetaClass(MetaClassData* classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name)
@@ -236,8 +271,7 @@ const MetaProperty* MetaClass::GetProperty_FromCurrent(MetaPropertyID pid) const
 {
     assert(IsValid());
 
-    auto it = m_ClassData->Properties.find(pid);
-    return it == m_ClassData->Properties.end() ? nullptr : &it->second;
+    return m_ClassData->GetPropertyBy(pid);
 }
 
 const MetaProperty* MetaClass::GetProperty(MetaPropertyID pid) const
@@ -260,11 +294,25 @@ const MetaProperty* MetaClass::GetProperty(MetaPropertyID pid) const
     return nullptr;
 }
 
+const MetaClassData* MetaClass::GetClassData() const
+{
+    assert(IsValid());
+
+    return m_ClassData;
+}
+
 MetaTypeID MetaClass::GetTypeID() const
 {
     assert(IsValid());
 
     return m_TypeID;
+}
+
+MetaTypeID MetaClass::GetSuperTypeID() const
+{
+    assert(IsValid());
+
+    return m_SuperTypeID;
 }
 
 const char* MetaClass::GetName() const

@@ -2,9 +2,20 @@ cmake_minimum_required(VERSION 3.1)
 
 project(EpiLib VERSION 1.0.0)
 
-add_subdirectory(Extern/nlohmann)
-add_subdirectory(Extern/glm)
-add_subdirectory(Extern/exprtk)
+set(Epi_USE_QT ON CACHE BOOL "")
+set(Epi_USE_METAPROPERTY_NAME ON CACHE BOOL "")
+
+set(CMAKE_AUTOMOC ON CACHE BOOL "" FORCE)
+set(CMAKE_AUTORCC ON CACHE BOOL "" FORCE)
+set(CMAKE_AUTOUIC ON CACHE BOOL "" FORCE)
+
+mark_as_advanced(CMAKE_AUTOMOC)
+mark_as_advanced(CMAKE_AUTORCC)
+mark_as_advanced(CMAKE_AUTOUIC)
+
+if (CMAKE_VERSION VERSION_LESS "3.7.0")
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+endif()
 
 add_library(EpiLib
     EpiLib/pch.h
@@ -39,6 +50,11 @@ add_library(EpiLib
     EpiLib/ObjectModel/PropertyPath.h
     EpiLib/ObjectModel/PropertyPath.cpp
     EpiLib/ObjectModel/Handle.h
+
+    EpiLib/ObjectModel/QtAdaptors/QtObjectModel.h
+    EpiLib/ObjectModel/QtAdaptors/QtObjectModel.cpp
+    EpiLib/ObjectModel/QtAdaptors/QtObjectDelegate.h
+    EpiLib/ObjectModel/QtAdaptors/QtObjectDelegate.cpp
 )
 get_target_property(EpiLib_SRCs EpiLib SOURCES)
 add_precompiled_header(EpiLib EpiLib/pch.h SOURCE_CXX EpiLib/pch.cpp)
@@ -57,18 +73,40 @@ target_include_directories(EpiLib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
+target_compile_definitions(EpiLib
+    PUBLIC
+        _USE_MATH_DEFINES
+)
+
+if (Epi_USE_QT)
+    find_package(Qt5 COMPONENTS Core REQUIRED)
+    find_package(Qt5 COMPONENTS Widgets REQUIRED)
+
+    target_compile_definitions(EpiLib
+        PUBLIC
+            epiUSE_QT
+    )
+endif()
+
+add_subdirectory(Extern/nlohmann)
+add_subdirectory(Extern/glm)
+add_subdirectory(Extern/exprtk)
+
 target_link_libraries(EpiLib
     PUBLIC
         glm
         exprtk
         nlohmann
+        Qt5::Core
+        Qt5::Widgets
 )
 
-target_compile_definitions(EpiLib
-    PUBLIC
-        _USE_MATH_DEFINES
-        epiUSE_METAPROPERTY_NAME
-)
+if (Epi_USE_METAPROPERTY_NAME)
+    target_compile_definitions(EpiLib
+        PUBLIC
+            epiUSE_METAPROPERTY_NAME
+    )
+endif()
 
 set_target_properties(EpiLib
     PROPERTIES

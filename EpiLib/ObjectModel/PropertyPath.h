@@ -30,6 +30,11 @@ protected:
 
 public:
     epiBool Parse(const std::string& path);
+
+    void AddPathNode(MetaPropertyID pid);
+    void AddPathNodeIndexed(MetaPropertyID pid, epiS32 index);
+
+    void Reverse();
     void Clear();
 
     epiByte* GetValue(const Object& object) const;

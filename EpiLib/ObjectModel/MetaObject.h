@@ -91,13 +91,13 @@ protected:
 
 protected:
     epiString m_Name;
-#else
+#else // epiUSE_METAPROPERTY_NAME
 public:
     const epiChar* GetName() const { return ""; }
 
 protected:
     void SetName(const epiChar* name) {}
-#endif
+#endif // epiUSE_METAPROPERTY_NAME
 };
 
 class MetaType
@@ -116,11 +116,28 @@ public:
     static MetaTypeID TypeOf();
 };
 
-struct MetaClassData
+class MetaClassData
 {
+public:
     void AddProperty(MetaPropertyID propertyID, MetaProperty&& metaProperty);
 
-    std::map<MetaPropertyID, MetaProperty> Properties;
+    const epiSize_t GetPropertiesCount() const;
+    const MetaProperty* GetPropertyAt(epiS32 index) const;
+    const MetaProperty* GetPropertyBy(MetaPropertyID pid) const;
+
+public:
+    auto begin() -> typename std::vector<MetaProperty>::iterator { return m_Properties.begin(); }
+    auto end() -> typename std::vector<MetaProperty>::iterator { return m_Properties.end(); }
+    auto begin() const -> typename std::vector<MetaProperty>::const_iterator { return m_Properties.cbegin(); }
+    auto end() const -> typename std::vector<MetaProperty>::const_iterator { return m_Properties.cend();}
+    auto rbegin() -> typename std::vector<MetaProperty>::reverse_iterator { return m_Properties.rbegin(); }
+    auto rend() -> typename std::vector<MetaProperty>::reverse_iterator { return m_Properties.rend(); }
+    auto crbegin() const -> typename std::vector<MetaProperty>::const_reverse_iterator { return m_Properties.crbegin(); }
+    auto crend() const -> typename std::vector<MetaProperty>::const_reverse_iterator { return m_Properties.crend(); }
+
+protected:
+    std::vector<MetaProperty> m_Properties;
+    std::map<MetaPropertyID, epiS32> m_ToIndexTable;
 };
 
 class MetaClass final
@@ -135,7 +152,9 @@ public:
     const MetaProperty* GetProperty_FromCurrent(MetaPropertyID pid) const;
     const MetaProperty* GetProperty(MetaPropertyID pid) const;
 
+    const MetaClassData* GetClassData() const;
     MetaTypeID GetTypeID() const;
+    MetaTypeID GetSuperTypeID() const;
     const epiChar* GetName() const;
     epiSize_t GetSizeOf() const;
 
