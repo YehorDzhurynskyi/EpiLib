@@ -55,6 +55,8 @@ add_library(EpiLib
     EpiLib/ObjectModel/QtAdaptors/QtObjectModel.cpp
     EpiLib/ObjectModel/QtAdaptors/QtObjectDelegate.h
     EpiLib/ObjectModel/QtAdaptors/QtObjectDelegate.cpp
+    EpiLib/ObjectModel/QtAdaptors/QtObjectModelItem.h
+    EpiLib/ObjectModel/QtAdaptors/QtObjectModelItem.cpp
 )
 get_target_property(EpiLib_SRCs EpiLib SOURCES)
 add_precompiled_header(EpiLib EpiLib/pch.h SOURCE_CXX EpiLib/pch.cpp)

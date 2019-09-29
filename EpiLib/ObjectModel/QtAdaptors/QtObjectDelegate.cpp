@@ -5,7 +5,6 @@
 
 #include "QtObjectModel.h"
 #include "EpiLib/ObjectModel/Object.h"
-#include "EpiLib/Containers/Array.h"
 #include <QSpinBox>
 #include <QLineEdit>
 
@@ -19,7 +18,7 @@ QtObjectDelegate::QtObjectDelegate(QObject* parent /* = nullptr*/)
 QWidget* QtObjectDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QtObjectModelItem* item = static_cast<QtObjectModelItem*>(index.internalPointer());
-    const MetaTypeID typeID = item->m_Meta->GetTypeID();
+    const MetaTypeID typeID = item->GetTypeID();
     assert(MetaType::IsFundamental(typeID));
 
     QWidget* widget = nullptr;
@@ -27,6 +26,8 @@ QWidget* QtObjectDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
     {
         QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
         editor->setFrame(false);
+        editor->setRange(0.0, FLT_MAX);
+        editor->setDecimals(FLT_DIG);
         widget = editor;
     }
     else if (typeID == MetaTypeID::String)
@@ -45,21 +46,20 @@ QWidget* QtObjectDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
 
 void QtObjectDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-    // TODO: replace with model->data(index, Qt::EditRole);
-
     QtObjectModelItem* item = static_cast<QtObjectModelItem*>(index.internalPointer());
-    const MetaTypeID typeID = item->m_Meta->GetTypeID();
-    assert(MetaType::IsFundamental(typeID));
+    const MetaTypeID typeID = item->GetTypeID();
+    assert(item->IsEditable());
 
+    const QVariant value = index.model()->data(index, Qt::EditRole);
     if (typeID == MetaTypeID::Float)
     {
         QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
-        spinBox->setValue(*((epiFloat*)item->m_ValueAddr));
+        spinBox->setValue(value.toFloat());
     }
     else if (typeID == MetaTypeID::String)
     {
         QLineEdit *lineEdit = static_cast<QLineEdit*>(editor);
-        lineEdit->setText(QString((*((epiString*)item->m_ValueAddr)).c_str()));
+        lineEdit->setText(value.toString());
     }
     else
     {
@@ -69,29 +69,28 @@ void QtObjectDelegate::setEditorData(QWidget* editor, const QModelIndex& index) 
 
 void QtObjectDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-    // TODO: replace with model->setData(index, value, Qt::EditRole);
-
     QtObjectModelItem* item = static_cast<QtObjectModelItem*>(index.internalPointer());
-    const MetaTypeID typeID = item->m_Meta->GetTypeID();
-    assert(MetaType::IsFundamental(typeID));
+    const MetaTypeID typeID = item->GetTypeID();
+    assert(item->IsEditable());
 
+    QVariant value;
     if (typeID == MetaTypeID::Float)
     {
         QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
         spinBox->interpretText();
-        epiFloat* value = (epiFloat*)item->m_ValueAddr;
-        *value = spinBox->value();
+        value = spinBox->value();
     }
     else if (typeID == MetaTypeID::String)
     {
         QLineEdit* lineEdit = static_cast<QLineEdit*>(editor);
-        epiString* value = (epiString*)item->m_ValueAddr;
-        *value = lineEdit->text().toStdString();
+        value = lineEdit->text();
     }
     else
     {
         assert(!"Unrecognized type");
     }
+
+    model->setData(index, value, Qt::EditRole);
 }
 
 void QtObjectDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
