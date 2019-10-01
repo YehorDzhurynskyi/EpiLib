@@ -56,6 +56,8 @@ epiBool QtObjectModel::setData(const QModelIndex& index, const QVariant& value, 
     QtObjectModelItem* item = static_cast<QtObjectModelItem*>(index.internalPointer());
     item->SetData(value);
 
+    emit dataChanged(index, index);
+
     return true;
 }
 

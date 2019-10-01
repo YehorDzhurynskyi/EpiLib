@@ -11,7 +11,7 @@
 namespace epi
 {
 
-static QColor NotEditableBGColor = QColor::fromRgb(230, 230, 230);
+static QColor NotEditableBGColor = QColor::fromRgb(220, 220, 220);
 static QColor EditableBGColor1 = QColor::fromRgb(255, 255, 255);
 static QColor EditableBGColor2 = QColor::fromRgb(240, 240, 240);
 
@@ -52,6 +52,14 @@ QVariant QtObjectModelItem::GetData(epiS32 role) const
         {
             const Object* object = reinterpret_cast<const Object*>(m_ValueAddr);
             return QString(object->ToString().c_str());
+        }
+        else if (MetaType::IsMultiDimensional(m_Meta->GetTypeID()))
+        {
+            if (role == Qt::DisplayRole)
+            {
+                const BaseArray* array = reinterpret_cast<const BaseArray*>(m_ValueAddr);
+                return  QStringLiteral("Array (Size=%1)").arg(array->GetSize());
+            }
         }
     }
 
