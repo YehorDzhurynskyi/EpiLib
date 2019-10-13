@@ -26,7 +26,7 @@ QWidget* QtObjectDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
     {
         QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
         editor->setFrame(false);
-        editor->setRange(0.0, FLT_MAX);
+        editor->setRange(-FLT_MAX, FLT_MAX);
         editor->setDecimals(FLT_DIG);
         widget = editor;
     }

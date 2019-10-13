@@ -262,6 +262,21 @@ void QtObjectModelItem::SetTracked(epiBool tracked)
     m_IsTracked = tracked;
 }
 
+epiString QtObjectModelItem::GetName() const
+{
+    if (MetaType::IsCompound(m_Meta->GetTypeID()))
+    {
+        Object* object = reinterpret_cast<Object*>(m_ValueAddr);
+        return object->ToString();
+    }
+    else
+    {
+        assert(m_Parent);
+        Object* object = reinterpret_cast<Object*>(m_Parent->GetValueAddr());
+        return epiString(m_Meta->GetName()) + " (" + object->ToString() + ")";
+    }
+}
+
 }
 
 #endif // epiUSE_QT

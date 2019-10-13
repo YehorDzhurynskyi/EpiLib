@@ -246,6 +246,10 @@ const MetaProperty* MetaClass::GetProperty_FromBase(MetaPropertyID pid) const
 
 const MetaProperty* MetaClass::GetProperty_FromDerived(MetaPropertyID pid) const
 {
+    // TODO: FIXME
+    // if both derived classes have same property name (and its ID)
+    // than it could give wrong offset of variable
+#if 0
     for (const auto& [type, meta] : g_ClassRegistry)
     {
         const MetaClass* childMeta = &meta;
@@ -263,6 +267,7 @@ const MetaProperty* MetaClass::GetProperty_FromDerived(MetaPropertyID pid) const
             assert(childMeta);
         }
     }
+#endif
 
     return nullptr;
 }

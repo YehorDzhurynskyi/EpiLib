@@ -79,7 +79,7 @@
     assert(_Json.is_object());                  \
     assert(_Json[#_Key].is_object());           \
     assert(_Json.find(#_Key) != _Json.end());   \
-    m_##_Key.Deserialization(_Json);            \
+    m_##_Key.Deserialization(_Json[#_Key]);     \
 }                                               \
 
 #define epiWriteObject(_Key, _Json)             \

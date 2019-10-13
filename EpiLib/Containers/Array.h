@@ -85,12 +85,12 @@ public:
         return m_Vector.end();
     }
 
-    auto cbegin() const -> typename std::vector<T>::const_iterator
+    auto begin() const -> typename std::vector<T>::const_iterator
     {
         return m_Vector.cbegin();
     }
 
-    auto cend() const -> typename std::vector<T>::const_iterator
+    auto end() const -> typename std::vector<T>::const_iterator
     {
         return m_Vector.cend();
     }

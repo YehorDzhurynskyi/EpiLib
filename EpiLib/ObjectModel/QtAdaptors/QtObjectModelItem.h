@@ -34,6 +34,7 @@ public:
     QtObjectModelItem* GetParent();
     QtObjectModelItem* GetChildAt(epiS32 i);
     epiS32 GetChildCount() const;
+    epiString GetName() const;
 
     epiBool IsTracked() const;
     void SetTracked(epiBool tracked);
