@@ -49,6 +49,7 @@ enum class MetaTypeID : epiU32
     DynamicVentricle,
     DynamicBloodstream,
     DynamicModel,
+    StaticRegulatedModel,
     BloodSystemItem
 };
 

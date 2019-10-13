@@ -14,12 +14,14 @@ namespace epi
 static QColor NotEditableBGColor = QColor::fromRgb(220, 220, 220);
 static QColor EditableBGColor1 = QColor::fromRgb(255, 255, 255);
 static QColor EditableBGColor2 = QColor::fromRgb(240, 240, 240);
+static QColor TrackedColor = QColor::fromRgb(255, 213, 25);
 
 QtObjectModelItem::QtObjectModelItem(epiS32 row, QtObjectModelItem* parent /* = nullptr*/)
     : m_ValueAddr(nullptr)
     , m_Meta(nullptr)
     , m_Parent(parent)
     , m_Row(row)
+    , m_IsTracked(false)
 {}
 
 QVariant QtObjectModelItem::GetData(epiS32 role) const
@@ -68,6 +70,10 @@ QVariant QtObjectModelItem::GetData(epiS32 role) const
         if (!IsEditable())
         {
             return QBrush(NotEditableBGColor);
+        }
+        else if (m_IsTracked)
+        {
+            return QBrush(TrackedColor);
         }
         else
         {
@@ -129,6 +135,10 @@ QVariant QtObjectModelItem::GetCaption(epiS32 role) const
         if (!IsEditable())
         {
             return QBrush(NotEditableBGColor);
+        }
+        else if (m_IsTracked)
+        {
+            return QBrush(TrackedColor);
         }
         else
         {
@@ -221,6 +231,11 @@ epiS32 QtObjectModelItem::GetRow() const
     return m_Row;
 }
 
+void* QtObjectModelItem::GetValueAddr()
+{
+    return m_ValueAddr;
+}
+
 QtObjectModelItem* QtObjectModelItem::GetParent()
 {
     return m_Parent;
@@ -235,6 +250,16 @@ QtObjectModelItem* QtObjectModelItem::GetChildAt(epiS32 i)
 epiS32 QtObjectModelItem::GetChildCount() const
 {
     return m_Children.size();
+}
+
+epiBool QtObjectModelItem::IsTracked() const
+{
+    return m_IsTracked;
+}
+
+void QtObjectModelItem::SetTracked(epiBool tracked)
+{
+    m_IsTracked = tracked;
 }
 
 }

@@ -30,15 +30,20 @@ public:
     MetaTypeID GetTypeID() const;
 
     epiS32 GetRow() const;
+    void* GetValueAddr();
     QtObjectModelItem* GetParent();
     QtObjectModelItem* GetChildAt(epiS32 i);
     epiS32 GetChildCount() const;
+
+    epiBool IsTracked() const;
+    void SetTracked(epiBool tracked);
 
 protected:
     void* m_ValueAddr;
     const MetaProperty* m_Meta;
     QtObjectModelItem* m_Parent;
     epiS32 m_Row;
+    epiBool m_IsTracked;
     std::vector<std::unique_ptr<QtObjectModelItem>> m_Children;
 };
 

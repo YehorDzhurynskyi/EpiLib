@@ -73,30 +73,23 @@
 #endif
 
 // ============================= OBJECT =============================
-#if 0 // TODO: implement
 
-#define epiReadObject(_Value, _Json) \
-    do                              \
-    {                               \
-        assert(_Json.IsObject());   \
-        _Value.Deserialize(_Json);  \
-    } while (false)                 \
+#define epiReadObject(_Key, _Json)              \
+{                                               \
+    assert(_Json.is_object());                  \
+    assert(_Json[#_Key].is_object());           \
+    assert(_Json.find(#_Key) != _Json.end());   \
+    m_##_Key.Deserialization(_Json);            \
+}                                               \
 
-#define epiReadObjectByKeyEx(_Key, _Value)      \
-    do                                          \
-    {                                           \
-        assert(json.HasMember(#_Key));          \
-        const auto it = json.FindMember(#_Key); \
-        if (it != json.MemberEnd())             \
-        {                                       \
-            epiReadObject(_Value, it->value);   \
-        }                                       \
-    } while (false)                             \
-
-#define epiReadObjectByKey(_Key)         \
-    epiReadObjectByKeyEx(_Key, m_##_Key) \
-
-#endif
+#define epiWriteObject(_Key, _Json)             \
+{                                               \
+    assert(_Json.is_object());                  \
+    assert(_Json.find(#_Key) == _Json.end());   \
+    json_t jsonObject = json_t::object();       \
+    m_##_Key.Serialization(jsonObject);         \
+    _Json[#_Key] = jsonObject;                  \
+}                                               \
 
 // ============================= ARRAY =============================
 #define epiReadArray(_Key, _Json)               \

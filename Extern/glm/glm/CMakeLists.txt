@@ -44,7 +44,7 @@ source_group("SIMD Files" FILES ${SIMD_HEADER})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-add_library(glm ${ROOT_TEXT} ${ROOT_MD} ${ROOT_NAT}
+add_library(glm STATIC ${ROOT_TEXT} ${ROOT_MD} ${ROOT_NAT}
 	${ROOT_SOURCE}    ${ROOT_INLINE}    ${ROOT_HEADER}
 	${CORE_SOURCE}    ${CORE_INLINE}    ${CORE_HEADER}
 	${EXT_SOURCE}     ${EXT_INLINE}     ${EXT_HEADER}

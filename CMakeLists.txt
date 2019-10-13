@@ -17,7 +17,7 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-add_library(EpiLib
+add_library(EpiLib STATIC
     EpiLib/pch.h
     EpiLib/pch.cpp
 
@@ -57,6 +57,10 @@ add_library(EpiLib
     EpiLib/ObjectModel/QtAdaptors/QtObjectDelegate.cpp
     EpiLib/ObjectModel/QtAdaptors/QtObjectModelItem.h
     EpiLib/ObjectModel/QtAdaptors/QtObjectModelItem.cpp
+    EpiLib/ObjectModel/QtAdaptors/QtEpiPropertyBrowser.h
+    EpiLib/ObjectModel/QtAdaptors/QtEpiPropertyBrowser.cpp
+    EpiLib/ObjectModel/QtAdaptors/QtEpiPropertyManager.h
+    EpiLib/ObjectModel/QtAdaptors/QtEpiPropertyManager.cpp
 )
 get_target_property(EpiLib_SRCs EpiLib SOURCES)
 add_precompiled_header(EpiLib EpiLib/pch.h SOURCE_CXX EpiLib/pch.cpp)
@@ -93,14 +97,24 @@ endif()
 add_subdirectory(Extern/nlohmann)
 add_subdirectory(Extern/glm)
 add_subdirectory(Extern/exprtk)
+add_subdirectory(Extern/QtPropertyBrowser)
 
 target_link_libraries(EpiLib
     PUBLIC
         glm
         exprtk
         nlohmann
+        QtPropertyBrowser
         Qt5::Core
         Qt5::Widgets
+)
+
+set_target_properties(
+    glm
+    QtPropertyBrowser
+
+    PROPERTIES
+        FOLDER Extern
 )
 
 if (Epi_USE_METAPROPERTY_NAME)
