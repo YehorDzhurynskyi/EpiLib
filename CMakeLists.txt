@@ -22,6 +22,7 @@ add_library(EpiLib STATIC
     EpiLib/pch.cpp
 
     EpiLib/types.h
+    EpiLib/env.h
     EpiLib/common.h
 
     EpiLib/Clock.h
@@ -36,6 +37,8 @@ add_library(EpiLib STATIC
     EpiLib/Singleton.h
     EpiLib/Pool.h
     EpiLib/RotatingBuffer.h
+
+    EpiLib/Debug/FiniteFloating.h
 
     EpiLib/Containers/Array.h
     EpiLib/Containers/HashMap.h

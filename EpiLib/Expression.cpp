@@ -10,7 +10,7 @@ epiBool Expression::Parse(const std::string& raw)
 
     m_Expression.register_symbol_table(m_SymbolTable);
 
-    exprtk::parser<epiFloat> parser;
+    exprtk::parser<float> parser;
     const epiBool status = parser.compile(raw, m_Expression);
     if (!status)
     {
@@ -20,13 +20,13 @@ epiBool Expression::Parse(const std::string& raw)
     return true;
 }
 
-void Expression::AddVariable(const std::string& name, epiFloat& variable)
+void Expression::AddVariable(const std::string& name, float& variable)
 {
     const epiBool status = m_SymbolTable.add_variable(name, variable);
     assert(status);
 }
 
-epiFloat Expression::Value() const
+float Expression::Value() const
 {
     return m_Expression.value();
 }

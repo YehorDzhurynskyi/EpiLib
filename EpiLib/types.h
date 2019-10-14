@@ -11,9 +11,6 @@ using epiChar = char;
 using epiBool = bool;
 using epiByte = uint8_t;
 
-using epiFloat = float;
-using epiDouble = double;
-
 using epiSize_t = size_t;
 
 using epiU8 = uint8_t;
@@ -43,6 +40,15 @@ using epiV4 = glm::vec<4, T>;
 using epiMat2x2F = glm::mat2x2;
 using epiMat3x3F = glm::mat3x3;
 using epiMat4x4F = glm::mat4x4;
+
+#ifdef epiDEBUG
+#include "EpiLib/Debug/FiniteFloating.h"
+using epiFloat = FiniteFloating<float>;
+using epiDouble = FiniteFloating<double>;
+#else
+using epiFloat = float;
+using epiDouble = double;
+#endif
 
 namespace epi
 {
