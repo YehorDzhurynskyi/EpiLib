@@ -50,7 +50,7 @@ enum class MetaTypeID : epiU32
     DynamicBloodstream,
     DynamicModel,
     StaticRegulatedModel,
-    BloodSystemItem
+    ModelItem
 };
 
 class Object;

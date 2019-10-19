@@ -17,6 +17,7 @@ QtObjectModel::QtObjectModel(Object& object, QObject* parent /* = nullptr*/)
     assert(metaClassData);
 
     m_Root = std::make_unique<QtObjectModelItem>(0);
+    m_Root->SetValueAddr(&object);
     m_Root->FillCompound(object);
 }
 

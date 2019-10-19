@@ -30,7 +30,6 @@ public:
     MetaTypeID GetTypeID() const;
 
     epiS32 GetRow() const;
-    void* GetValueAddr();
     QtObjectModelItem* GetParent();
     QtObjectModelItem* GetChildAt(epiS32 i);
     epiS32 GetChildCount() const;
@@ -38,6 +37,9 @@ public:
 
     epiBool IsTracked() const;
     void SetTracked(epiBool tracked);
+
+    void SetValueAddr(void* valueAddr);
+    void* GetValueAddr();
 
 protected:
     void* m_ValueAddr;

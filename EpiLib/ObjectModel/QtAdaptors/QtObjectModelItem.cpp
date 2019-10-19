@@ -236,6 +236,11 @@ void* QtObjectModelItem::GetValueAddr()
     return m_ValueAddr;
 }
 
+void QtObjectModelItem::SetValueAddr(void* valueAddr)
+{
+    m_ValueAddr = valueAddr;
+}
+
 QtObjectModelItem* QtObjectModelItem::GetParent()
 {
     return m_Parent;
