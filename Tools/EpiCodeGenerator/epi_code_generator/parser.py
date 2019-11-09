@@ -5,7 +5,9 @@ from .tokenizer import Token
 from .tokenizer import TokenType
 
 from .morpheme import Attribute
+from .morpheme import PropertySignature
 from .morpheme import Property
+from .morpheme import Method
 from .morpheme import Class
 from .morpheme import Struct
 from .morpheme import Enum
@@ -188,11 +190,13 @@ class Parser:
         while True:
 
             t = self._curr()
-            t
-
-        t = self._next()
-        if t.type != TokenType.CloseBracket:
-            return None
+            if t.type == TokenType.CloseBracket:
+                self._next()
+                break
+            else:
+                method = self._parse_method()
+                if method:
+                    interface.methods.append(method)
 
         return interface
 
@@ -319,25 +323,55 @@ class Parser:
 
         return attr
 
-    def _parse_property(self):
+    def _parse_method(self):
+
+        rt_t = self._parse_property_signature()
+        method = Method('')
+
+        return method
+
+    def _parse_property_signature(self):
+
+        modifiers = []
+
+        while True:
+
+            t = self._curr()
+            if t.type in Tokenizer.BUILDIN_MODIFIERS:
+                modifiers.append(t.text)
+            else:
+                break
 
         t = self._next()
         if t.type not in Tokenizer.BUILDIN_TYPES and t.type != TokenType.Identifier:
-
-            self._push_error_unexpected_token(t, 'Expected a \'type\'')
             return None
 
-        is_pointer = False
+        prty_signature = PropertySignature(t)
+
         while True:
 
             t = self._curr()
             if t.type == TokenType.Asterisk:
 
                 self._next()
-                is_pointer = True
+                prty_signature.view_type = PropertySignature.ViewType.Pointer
 
             else:
                 break
+
+        t = self._curr()
+        if t.type == TokenType.Ampersand:
+
+                self._next()
+                prty_signature.view_type = PropertySignature.ViewType.Reference
+
+        return prty_signature
+
+    def _parse_property(self):
+
+        prty_signature = self._parse_property_signature()
+        if not prty_signature:
+            return None
 
         t = self._next()
         if t.type != TokenType.Identifier:
@@ -345,7 +379,7 @@ class Parser:
             self._push_error_unexpected_token(t, 'Expected an \'identifier\'')
             return None
 
-        prty = Property(t.type, t.text, is_pointer)
+        prty = Property(t.text, prty_signature)
 
         # NOTE: if property is virtual an assignment is invalid
         t = self._curr()

@@ -1,4 +1,5 @@
 import abc
+from enum import Enum, auto
 
 from .tokenizer import Tokenizer
 from .tokenizer import Token
@@ -67,20 +68,43 @@ class Morpheme(abc.ABC):
         pass
 
 
+class Method(Morpheme):
+
+    def __init__(self, name):
+        super(Method, self).__init__(name)
+
+    def _is_valid_attrs(self, attrs):
+        return False
+
+
+class PropertySignature:
+
+    class ViewType(Enum):
+
+        Plain = auto()
+        Reference = auto()
+        Pointer = auto()
+
+    def __init__(self, type):
+
+        self.type = type
+        self.view_type = PropertySignature.ViewType.Plain
+        self.modifiers = []
+
+
 class Property(Morpheme):
 
-    def __init__(self, type, name, is_pointer):
+    def __init__(self, name, signature):
 
         super(Property, self).__init__(name)
 
-        self.type = type
-        self.is_pointer = is_pointer
+        self.signature = signature
         self.value = self._default_value()
 
     def _default_value(self):
 
         value = None
-        if self.is_pointer:
+        if self.view_type == PropertySignature.ViewType.Pointer:
             value = 'nullptr'
         elif type == TokenType.BoolType:
             value = 'false'

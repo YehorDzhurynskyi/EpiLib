@@ -16,6 +16,7 @@ class TokenType(Enum):
     Assing = auto()
     Comma = auto()
     Asterisk = auto()
+    Ampersand = auto()
     Colon = auto()
     Semicolon = auto()
     Plus = auto()
@@ -96,6 +97,7 @@ class Tokenizer:
         ']': TokenType.CloseSqBracket,
         '=': TokenType.Assing,
         '*': TokenType.Asterisk,
+        '&': TokenType.Ampersand,
         ',': TokenType.Comma,
         ':': TokenType.Colon,
         ';': TokenType.Semicolon,

@@ -3,6 +3,7 @@
 
 from sys import argv
 
+
 class Config:
 
     def __init__(self):
