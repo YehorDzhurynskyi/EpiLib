@@ -1,0 +1,41 @@
+class Test
+{
+    # comment  
+  
+    [ ] #]
+    {
+    }
+
+
+    [[]]
+
+    [Transient, NoDuplicate]
+    {
+        epiFloat float_- = -;
+        epiFloat float_a = 0.5;;;;;;
+        epiFloat float_b = 5;
+        epiFloat float_c = 0;
+        epiFloat float_d = -2;
+        epiFloat float_e = -5.2;
+        epiFloat float_f = true;
+        epiFloat float_g = false;
+        epiFloat float_h = "STRING";
+        epiFloat float_j = "wildcard";
+
+        ;
+        ;
+        ;
+        
+        [Owner, ReadCallback]
+        UserType1* usertype1 = null;
+
+        
+        
+        
+        UserType2 usertype2;
+        UserType22 usertype22;
+        UserType222 usertype222;
+    }
+
+    UserType3 usertype3;
+}
