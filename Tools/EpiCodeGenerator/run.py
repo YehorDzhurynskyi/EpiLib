@@ -3,7 +3,7 @@ import logging
 
 from epi_code_generator.tokenizer import Tokenizer
 from epi_code_generator.parser import Parser
-from epi_code_generator.morpheme import Registry
+from epi_code_generator.morpheme import EpiRegistry
 from epi_code_generator.code_generator import CodeGenerator
 from epi_code_generator.config import Config
 
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     config = Config()
     config.parse_cmd()
 
-    registry = Registry()
+    registry = EpiRegistry()
 
     for root, _, files in os.walk(config.source_dir):
 

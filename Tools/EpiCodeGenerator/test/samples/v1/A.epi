@@ -19,9 +19,8 @@ struct DataClass
     }
 };
 
-[AdditionalInterface(IThis)]
-[AdditionalInterface(IHashable), SerializationCallbackAttr]
-[DllEntry]
+[SerializationCallback]
+[AdditionalInterface(IHashable, IThis), DllEntry]
 class AClass
 {
     [NoDuplicate, Transient]

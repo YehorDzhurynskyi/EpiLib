@@ -1,4 +1,5 @@
 import abc
+import sys
 from enum import Enum, auto
 
 from .tokenizer import Tokenizer
@@ -6,33 +7,33 @@ from .tokenizer import Token
 from .tokenizer import TokenType
 
 
-class Attribute:
+class EpiAttribute:
 
-    PARAM_LISTS = {
+    PARAM_RANGES = {
         # NOTE: Common attributes
-        TokenType.DllEntryAttr: '',
+        TokenType.DllEntryAttr: range(0, 1),
 
         # NOTE: Property attributes
-        TokenType.OwnerAttr: '',
-        TokenType.ReadOnlyAttr: '',
-        TokenType.WriteOnlyAttr: '',
-        TokenType.WriteCallbackAttr: '',
-        TokenType.ReadCallbackAttr: '',
-        TokenType.VirtualAttr: '',
-        TokenType.AssertMinAttr: '@TokenType.IntegerLiteral|@TokenType.FloatingLiteral',
-        TokenType.AssertMaxAttr: '@TokenType.IntegerLiteral|@TokenType.FloatingLiteral',
-        TokenType.AssertMinMaxAttr: '(@TokenType.IntegerLiteral|@TokenType.FloatingLiteral){2}',
-        TokenType.ForceMinAttr: '@TokenType.IntegerLiteral|@TokenType.FloatingLiteral',
-        TokenType.ForceMaxAttr: '@TokenType.IntegerLiteral|@TokenType.FloatingLiteral',
-        TokenType.ForceMinMaxAttr: '(@TokenType.IntegerLiteral|@TokenType.FloatingLiteral){2}',
-        TokenType.NoDuplicateAttr: '',
-        TokenType.TransientAttr: '',
+        TokenType.OwnerAttr: range(0, 1),
+        TokenType.ReadOnlyAttr: range(0, 1),
+        TokenType.WriteOnlyAttr: range(0, 1),
+        TokenType.WriteCallbackAttr: range(0, 1),
+        TokenType.ReadCallbackAttr: range(0, 1),
+        TokenType.VirtualAttr: range(0, 1),
+        TokenType.AssertMinAttr: range(1, 2),
+        TokenType.AssertMaxAttr: range(1, 2),
+        TokenType.AssertMinMaxAttr: range(2, 3),
+        TokenType.ForceMinAttr: range(1, 2),
+        TokenType.ForceMaxAttr: range(1, 2),
+        TokenType.ForceMinMaxAttr: range(2, 3),
+        TokenType.NoDuplicateAttr: range(0, 1),
+        TokenType.TransientAttr: range(0, 1),
 
         # NOTE: Class attributes
-        TokenType.AdditionalInterfaceAttr: '(@TokenType.OpenQuote@TokenType.TextLiteral@TokenType.CloseQuote)+',
-        TokenType.SerializationCallbackAttr: ''
+        TokenType.AdditionalInterfaceAttr: range(1, sys.maxsize),
+        TokenType.SerializationCallbackAttr: range(0, 1)
     }
-    assert len(PARAM_LISTS.keys()) == len(Tokenizer.BUILDIN_PRTY_ATTRS.keys() | Tokenizer.BUILDIN_CLSS_ATTRS.keys())
+    assert len(PARAM_RANGES.keys()) == len(Tokenizer.BUILDIN_PRTY_ATTRS.keys() | Tokenizer.BUILDIN_CLSS_ATTRS.keys())
 
     def __init__(self, type):
 
@@ -40,11 +41,11 @@ class Attribute:
         self.params = []
 
 
-class InvalidAttributeListError(Exception):
+class EpiInvalidAttributeListError(Exception):
     pass
 
 
-class Morpheme(abc.ABC):
+class EpiMorpheme(abc.ABC):
 
     def __init__(self, name):
 
@@ -61,23 +62,31 @@ class Morpheme(abc.ABC):
         if self._is_valid_attrs(attrs):
             self.__attrs = attrs
         else:
-            raise InvalidAttributeListError
+            raise EpiInvalidAttributeListError
 
     @abc.abstractmethod
     def _is_valid_attrs(self, attrs):
         pass
 
 
-class Method(Morpheme):
+class EpiMethod(EpiMorpheme):
 
     def __init__(self, name):
-        super(Method, self).__init__(name)
+
+        super(EpiMethod, self).__init__(name)
+        self.params = []
 
     def _is_valid_attrs(self, attrs):
-        return False
+        return len(attrs) == 0
 
 
-class PropertySignature:
+class EpiExpression:
+
+    def __init__(self):
+        self.tokens = []
+
+
+class EpiVariable:
 
     class ViewType(Enum):
 
@@ -85,26 +94,27 @@ class PropertySignature:
         Reference = auto()
         Pointer = auto()
 
-    def __init__(self, type):
+    def __init__(self, name, type):
 
+        self.name = name
         self.type = type
-        self.view_type = PropertySignature.ViewType.Plain
+        self.view_type = EpiVariable.ViewType.Plain
         self.modifiers = []
 
 
-class Property(Morpheme):
+class EpiProperty(EpiMorpheme):
 
-    def __init__(self, name, signature):
+    def __init__(self, var):
 
-        super(Property, self).__init__(name)
+        super(EpiProperty, self).__init__(var.name)
 
-        self.signature = signature
+        self.var = var
         self.value = self._default_value()
 
     def _default_value(self):
 
         value = None
-        if self.view_type == PropertySignature.ViewType.Pointer:
+        if self.var.view_type == EpiVariable.ViewType.Pointer:
             value = 'nullptr'
         elif type == TokenType.BoolType:
             value = 'false'
@@ -120,7 +130,7 @@ class Property(Morpheme):
         elif type == TokenType.CharType:
             value = "'\\0'"
         elif type == TokenType.StringType:
-            value = 'epiDebug_ONLY("Empty")'
+            value = 'epiDEBUG_ONLY("Empty")'
 
         return value
 
@@ -128,11 +138,11 @@ class Property(Morpheme):
         return True
 
 
-class Class(Morpheme):
+class EpiClass(EpiMorpheme):
 
     def __init__(self, name):
 
-        super(Class, self).__init__(name)
+        super(EpiClass, self).__init__(name)
 
         self.parent = None
         self.properties = []
@@ -141,17 +151,11 @@ class Class(Morpheme):
         return True
 
 
-class Struct(Class):
-
-    def __init__(self, name):
-        super(Struct, self).__init__(name)
-
-
-class Interface(Morpheme):
+class EpiInterface(EpiMorpheme):
 
     def __init__(self, name):
 
-        super(Interface, self).__init__(name)
+        super(EpiInterface, self).__init__(name)
 
         self.parent = None
         self.methods = []
@@ -160,20 +164,20 @@ class Interface(Morpheme):
         return True
 
 
-class EnumEntry(Morpheme):
+class EpiEnumEntry(EpiMorpheme):
 
     def __init__(self, name):
-        super(EnumEntry, self).__init__(name)
+        super(EpiEnumEntry, self).__init__(name)
 
     def _is_valid_attrs(self, attrs):
         return True
 
 
-class Enum(Morpheme):
+class EpiEnum(EpiMorpheme):
 
     def __init__(self, name):
 
-        super(Enum, self).__init__(name)
+        super(EpiEnum, self).__init__(name)
 
         self.entries = []
 
@@ -181,11 +185,10 @@ class Enum(Morpheme):
         return True
 
 
-class Registry:
+class EpiRegistry:
 
     def __init__(self):
 
         self.classes = []
         self.interfaces = []
         self.enums = []
-        self.structs = []

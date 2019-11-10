@@ -4,14 +4,15 @@ from .tokenizer import Tokenizer
 from .tokenizer import Token
 from .tokenizer import TokenType
 
-from .morpheme import Attribute
-from .morpheme import PropertySignature
-from .morpheme import Property
-from .morpheme import Method
-from .morpheme import Class
-from .morpheme import Struct
-from .morpheme import Enum
-from .morpheme import Interface
+from .morpheme import EpiAttribute
+from .morpheme import EpiExpression
+from .morpheme import EpiVariable
+from .morpheme import EpiProperty
+from .morpheme import EpiMethod
+from .morpheme import EpiClass
+from .morpheme import EpiEnumEntry
+from .morpheme import EpiEnum
+from .morpheme import EpiInterface
 
 
 class SyntaxErrorCode(Enum):
@@ -53,45 +54,6 @@ class SyntaxError:
         return f'[ERROR]{str(self.token)} message: "{self.err_message}"' + f' ({self.tip})' if len(self.tip) != 0 else ''
 
 
-class ParamListParser:
-
-    def __init__(self, ctx, param_list):
-
-        self.ctx = ctx
-        self.param_list = param_list
-        self.__at = 0
-
-    def parse(self):
-
-        while True:
-
-            ch = self._next()
-            if ch == '@':
-
-                begin = self.__at
-                while self._curr().isalpha():
-                    self._next()
-
-                text = self.param_list[begin, self.__at]
-                # TODO: finish
-
-            elif ch == '(':
-                pass
-            elif ch == '{':
-                pass
-
-    def _curr(self):
-        return self.param_list[self.__at]
-
-    def _next(self):
-
-        self.__at += next - 1
-        curr = self._curr()
-        self.__at += 1
-
-        return curr
-
-
 class Parser:
 
     def __init__(self, tokens):
@@ -128,24 +90,22 @@ class Parser:
 
                 attrs = self._parse_attr_list() if t.type == TokenType.OpenSqBracket else []
 
+                t = self._curr()
+
+                if t.text not in Tokenizer.BUILDIN_USERTYPES:
+                    assert False
+
                 user_type = None
                 registry_collection = None
-
-                t = self._curr()
                 if t.type == TokenType.EnumType:
                     user_type = self._parse_enum()
                     registry_collection = registry.enums
-                elif t.type == TokenType.StructType:
-                    user_type = self._parse_struct()
-                    registry_collection = registry.structs
                 elif t.type == TokenType.ClassType:
                     user_type = self._parse_class()
                     registry_collection = registry.classes
                 elif t.type == TokenType.InterfaceType:
                     user_type = self._parse_interface()
                     registry_collection = registry.interfaces
-                else:
-                    assert False
 
                 if user_type:
                     user_type.attrs = attrs
@@ -157,10 +117,45 @@ class Parser:
         return self.syntax_errors
 
     def _parse_enum(self):
-        return Enum('')
 
-    def _parse_struct(self):
-        return Struct('')
+        t = self._next()
+        if t.type != TokenType.EnumType:
+            return None
+
+        t = self._next()
+        if t.type != TokenType.Identifier:
+            return None
+
+        enum = EpiEnum(t.text)
+
+        t = self._next()
+        if t.type != TokenType.OpenBrace:
+            return None
+
+        while True:
+
+            t = self._curr()
+            if t.type == TokenType.CloseBrace:
+                break
+            else:
+                enum_entry = self._parse_enum_entry()
+                if not enum_entry:
+                    return None
+
+                enum.entries.append(enum_entry)
+
+        if t.type != TokenType.Semicolon:
+            return None
+
+        return enum
+
+    def _parse_enum_entry(self):
+
+        t = self._next()
+        if t.type != TokenType.Identifier:
+            return None
+
+        return EpiEnumEntry(t.text)
 
     def _parse_interface(self):
 
@@ -172,7 +167,7 @@ class Parser:
         if t.type != TokenType.Identifier:
             return None
 
-        interface = Interface(t.text)
+        interface = EpiInterface(t.text)
 
         t = self._curr()
         if t.type == TokenType.Colon:
@@ -184,19 +179,25 @@ class Parser:
             interface.parent = t.text
 
         t = self._next()
-        if t.type != TokenType.OpenBracket:
+        if t.type != TokenType.OpenBrace:
             return None
 
         while True:
 
             t = self._curr()
-            if t.type == TokenType.CloseBracket:
+            if t.type == TokenType.CloseBrace:
                 self._next()
                 break
             else:
                 method = self._parse_method()
-                if method:
-                    interface.methods.append(method)
+                if not method:
+                    return None
+
+                interface.methods.append(method)
+
+        t = self._next()
+        if t.type != TokenType.Semicolon:
+            return None
 
         return interface
 
@@ -214,7 +215,7 @@ class Parser:
             self._push_error_unexpected_token(t, 'Expected an \'identifier\'')
             return None
 
-        clss = Class(t.text)
+        clss = EpiClass(t.text)
 
         t = self._curr()
         if t.type == TokenType.Colon:
@@ -250,7 +251,9 @@ class Parser:
             t = self._curr()
             attrs = self._parse_attr_list() if t.type == TokenType.OpenSqBracket else []
 
-            if t.type == TokenType.Identifier or t.type in Tokenizer.BUILDIN_TYPES:
+            if self._is_next_variable():
+
+                # NOTE: could be method
 
                 prty = self._parse_property()
                 if prty:
@@ -276,77 +279,127 @@ class Parser:
         while True:
 
             t = self._curr()
-            if t.type == TokenType.OpenSqBracket:
-
-                while t.type != TokenType.CloseSqBracket:
-
-                    t = self._curr()
-                    if t.type not in Tokenizer.BUILDIN_PRTY_ATTRS.keys() | Tokenizer.BUILDIN_CLSS_ATTRS.keys():
-
-                        self._push_error_unexpected_token(t, 'Expected an \'attribute\'')
-                        return None
-
-                    attr = self._parse_attr()
-                    if attr:
-                        attrs.append(attr)
-
-            else:
+            if t.type != TokenType.OpenSqBracket:
                 break
 
-        return attrs
+            self._next()
+            while self._curr().text in Tokenizer.BUILDIN_PRTY_ATTRS.keys() | Tokenizer.BUILDIN_CLSS_ATTRS.keys():
 
+                attr = self._parse_attr()
+                if not attr:
+                    return None
+
+                attrs.append(attr)
+
+                t = self._curr()
+                if t.type != TokenType.Comma:
+                    break
+
+                self._next()
+
+            t = self._next()
+            if t.type != TokenType.CloseSqBracket:
+                return None
+
+        return attrs
 
     def _parse_attr(self):
 
         a_t = self._next()
 
-        param_list = Attribute.PARAM_LISTS[a_t.type]
-        assert param_list, "Property is unhandled in Attribute.PARAM_LISTS"
+        attr = EpiAttribute(a_t.type)
 
-        attr = Attribute(a_t.type)
-
-        if len(param_list) == 0:
+        param_list_range = EpiAttribute.PARAM_RANGES[a_t.type]
+        if param_list_range.start == 0 and self._curr() != TokenType.OpenBracket:
             return attr
 
         ob_t = self._next()
         if ob_t.type != TokenType.OpenBracket:
             return None
 
-        param_list_parser = ParamListParser(self, param_list)
-        attr.params = param_list_parser.parse()
-        if not attr.params:
-            return None
+        while self._curr().type != TokenType.CloseBracket:
+
+            expr = EpiExpression()
+
+            t = self._curr()
+            while t.type != TokenType.Comma and t != TokenType.CloseBracket:
+
+                expr.tokens.append(t)
+                t = self._next()
+
+            attr.params.append(expr)
+            t = self._curr()
+            if t.type != TokenType.Comma:
+                break
+
+            self._next()
 
         cb_t = self._next()
         if cb_t.type != TokenType.CloseBracket:
+            return None
+
+        if len(attr.params) not in param_list_range:
             return None
 
         return attr
 
     def _parse_method(self):
 
-        rt_t = self._parse_property_signature()
-        method = Method('')
+        rt_t = self._parse_variable(has_name=False)
+        if not rt_t:
+            return None
+
+        fn_t = self._next()
+        if fn_t.type != TokenType.Identifier:
+            return None
+
+        method = EpiMethod(fn_t.text)
+
+        t = self._next()
+        if t.type != TokenType.OpenBracket:
+            return None
+
+        while self._is_next_variable():
+
+            param = self._parse_variable(has_name=True)
+            if not param:
+                return None
+
+            method.params.append(param)
+
+            t = self._curr()
+            if t.type != TokenType.Comma:
+                break
+
+            self._next()
+
+        t = self._next()
+        if t.type != TokenType.CloseBracket:
+            return None
+
+        t = self._next()
+        if t.type != TokenType.Semicolon:
+            return None
 
         return method
 
-    def _parse_property_signature(self):
+    def _parse_variable(self, has_name=True):
 
         modifiers = []
 
         while True:
 
             t = self._curr()
-            if t.type in Tokenizer.BUILDIN_MODIFIERS:
+            if t.text in Tokenizer.BUILDIN_MODIFIERS:
                 modifiers.append(t.text)
             else:
                 break
 
         t = self._next()
-        if t.type not in Tokenizer.BUILDIN_TYPES and t.type != TokenType.Identifier:
+        if t.text not in Tokenizer.BUILDIN_PRIMITIVES and t.type != TokenType.Identifier:
             return None
 
-        prty_signature = PropertySignature(t)
+        var = EpiVariable(None, t)
 
         while True:
 
@@ -354,7 +407,7 @@ class Parser:
             if t.type == TokenType.Asterisk:
 
                 self._next()
-                prty_signature.view_type = PropertySignature.ViewType.Pointer
+                var.view_type = EpiVariable.ViewType.Pointer
 
             else:
                 break
@@ -363,23 +416,26 @@ class Parser:
         if t.type == TokenType.Ampersand:
 
                 self._next()
-                prty_signature.view_type = PropertySignature.ViewType.Reference
+                var.view_type = EpiVariable.ViewType.Reference
 
-        return prty_signature
-
-    def _parse_property(self):
-
-        prty_signature = self._parse_property_signature()
-        if not prty_signature:
-            return None
+        if not has_name:
+            return var
 
         t = self._next()
         if t.type != TokenType.Identifier:
-
-            self._push_error_unexpected_token(t, 'Expected an \'identifier\'')
             return None
 
-        prty = Property(t.text, prty_signature)
+        var.name = t.text
+
+        return var
+
+    def _parse_property(self):
+
+        var = self._parse_variable(has_name=True)
+        if not var:
+            return None
+
+        prty = EpiProperty(var)
 
         # NOTE: if property is virtual an assignment is invalid
         t = self._curr()
@@ -388,24 +444,24 @@ class Parser:
             self._next()
             t = self._curr()
 
-            if prty.type == TokenType.BoolType:
+            if var.type == TokenType.BoolType:
                 prty.value = self._parse_literal_boolean()
-            elif prty.type in [TokenType.IntType, TokenType.ByteType, TokenType.FloatingType]:
+            elif var.type in [TokenType.IntType, TokenType.ByteType, TokenType.FloatingType]:
                 prty.value = self._parse_literal_signed()
-            elif prty.type == TokenType.FloatingType:
+            elif var.type == TokenType.FloatingType:
                 prty.value = self._parse_literal_floating()
-            elif prty.type in [TokenType.SizeTType, TokenType.HashTType, TokenType.UIntType]:
+            elif var.type in [TokenType.SizeTType, TokenType.HashTType, TokenType.UIntType]:
                 prty.value = self._parse_literal_unsigned()
-            elif prty.type == TokenType.CharType:
+            elif var.type == TokenType.CharType:
                 prty.value = self._parse_literal_char()
-            elif prty.type == TokenType.StringType:
+            elif var.type == TokenType.StringType:
                 prty.value = self._parse_literal_string()
-            elif prty.is_pointer:
+            elif var.view_type == EpiVariable.ViewType.Pointer:
 
                 self.syntax_errors.append(SyntaxError(t, SyntaxErrorCode.IncorrectValueLiteral, 'Pointers are unassingable and are set with \'null\' by default'))
                 return None
 
-            elif prty.type == TokenType.Identifier:
+            elif var.type == TokenType.Identifier:
 
                 self.syntax_errors.append(SyntaxError(t, SyntaxErrorCode.IncorrectValueLiteral, 'Custom types are unassingable'))
                 return None
@@ -435,43 +491,16 @@ class Parser:
 
     def _parse_literal_string(self):
 
-        oq_t = self._next()
-        if oq_t.type != TokenType.OpenQuote:
-            return None
-
         lit_t = self._next()
-        if lit_t.type != TokenType.TextLiteral:
-            return None
-
-        cq_t = self._next()
-        if cq_t.type != TokenType.CloseQuote:
-            return None
-
-        if cq_t.line != oq_t.line:
-
-            self.syntax_errors.append(SyntaxError(oq_t, SyntaxErrorCode.MatchingTokenOnSameLine, 'Closing token \'"\' should be on same line'))
+        if lit_t.type != TokenType.StringLiteral:
             return None
 
         return lit_t.text
 
     def _parse_literal_char(self):
 
-        # TODO: add unicode support (like: '\u8080')
-        oq_t = self._next()
-        if oq_t.type != TokenType.OpenSingleQuote:
-            return None
-
         lit_t = self._next()
-        if lit_t.type != TokenType.TextLiteral or len(lit_t.text) != 1:
-            return None
-
-        cq_t = self._next()
-        if cq_t.type != TokenType.CloseSingleQuote:
-            return None
-
-        if cq_t.line != oq_t.line:
-
-            self.syntax_errors.append(SyntaxError(oq_t, SyntaxErrorCode.MatchingTokenOnSameLine, 'Closing token \'\'\' should be on same line'))
+        if lit_t.type != TokenType.CharLiteral:
             return None
 
         return lit_t.text
@@ -518,6 +547,13 @@ class Parser:
 
         t = self._next()
         return t.text if t.type in [TokenType.TrueLiteral, TokenType.FalseLiteral] else None
+
+    def _is_next_variable(self):
+
+        t = self._curr()
+        return  t.type == TokenType.Identifier or\
+                t.text in Tokenizer.BUILDIN_PRIMITIVES or\
+                t.text in Tokenizer.BUILDIN_MODIFIERS
 
     def _push_error_unexpected_token(self, t, tip = ''):
 

@@ -22,12 +22,8 @@ class TokenType(Enum):
     Plus = auto()
     Minus = auto()
 
-    OpenQuote = auto()
-    CloseQuote = auto()
-    OpenSingleQuote = auto()
-    CloseSingleQuote = auto()
-
-    TextLiteral = auto()
+    CharLiteral = auto()
+    StringLiteral = auto()
     IntegerLiteral = auto()
     FloatingLiteral = auto()
     TrueLiteral = auto()
@@ -92,8 +88,6 @@ class Tokenizer:
         '(': TokenType.OpenBracket,
         ')': TokenType.CloseBracket,
         '[': TokenType.OpenSqBracket,
-        '"': TokenType.OpenQuote,
-        '\'': TokenType.OpenSingleQuote,
         ']': TokenType.CloseSqBracket,
         '=': TokenType.Assing,
         '*': TokenType.Asterisk,
@@ -114,7 +108,7 @@ class Tokenizer:
         'const': TokenType.ConstModifier
     }
 
-    BUILDIN_TYPES = {
+    BUILDIN_PRIMITIVES = {
         'epiChar': TokenType.CharType,
         'epiBool': TokenType.BoolType,
         'epiByte': TokenType.ByteType,
@@ -131,8 +125,10 @@ class Tokenizer:
         'epiString': TokenType.StringType,
         'epiFloat': TokenType.FloatingType,
         'epiDouble': TokenType.FloatingType,
-        'epiVoid': TokenType.VoidType,
+        'epiVoid': TokenType.VoidType
+    }
 
+    BUILDIN_USERTYPES = {
         'class': TokenType.ClassType,
         'struct': TokenType.StructType,
         'enum': TokenType.EnumType,
@@ -198,7 +194,8 @@ class Tokenizer:
     @staticmethod
     def is_keyword(type):
         return type in\
-            Tokenizer.BUILDIN_TYPES.keys() |\
+            Tokenizer.BUILDIN_PRIMITIVES.keys() |\
+            Tokenizer.BUILDIN_USERTYPES.keys() |\
             Tokenizer.BUILDIN_PRTY_ATTRS.keys() |\
             Tokenizer.BUILDIN_CLSS_ATTRS.keys() |\
             Tokenizer.BUILDIN_MODIFIERS.keys() |\
@@ -221,6 +218,14 @@ class Tokenizer:
                     while self._ch() != '\n':
                         self.at += 1
 
+                elif ch == '\'':
+
+                    self._tokenize_char_literal()
+
+                elif ch == '"':
+
+                    self._tokenize_string_literal()
+
                 elif ch in Tokenizer.ELEMENTARY_TOKEN_TYPES:
 
                     token = Token(Tokenizer.ELEMENTARY_TOKEN_TYPES[ch], self.line, self.column, ch)
@@ -228,12 +233,6 @@ class Tokenizer:
 
                     if token.type != TokenType.Semicolon or self.tokens[-1].type != TokenType.Semicolon:
                         self.tokens.append(token)
-
-                    if token.type == TokenType.OpenQuote:
-                        self._tokenize_string_literal()
-
-                    if token.type == TokenType.OpenSingleQuote:
-                        self._tokenize_char_literal()
 
                 elif ch.isnumeric():
 
@@ -255,8 +254,10 @@ class Tokenizer:
 
         for token in self.tokens:
 
-            if token.text in Tokenizer.BUILDIN_TYPES:
-                token.type = Tokenizer.BUILDIN_TYPES[token.text]
+            if token.text in Tokenizer.BUILDIN_PRIMITIVES:
+                token.type = Tokenizer.BUILDIN_PRIMITIVES[token.text]
+            elif token.text in Tokenizer.BUILDIN_USERTYPES:
+                token.type = Tokenizer.BUILDIN_USERTYPES[token.text]
             elif token.text in Tokenizer.BUILDIN_PRTY_ATTRS:
                 token.type = Tokenizer.BUILDIN_PRTY_ATTRS[token.text]
             elif token.text in Tokenizer.BUILDIN_CLSS_ATTRS:
@@ -270,35 +271,36 @@ class Tokenizer:
 
     def _tokenize_string_literal(self):
 
-        token = Token(TokenType.TextLiteral, self.line, self.column)
+        token = Token(TokenType.StringLiteral, self.line, self.column)
         self.tokens.append(token)
         begin = self.at
+        self.at += 1
+
         while self._ch() != '"':
 
-            if self._ch() == '\\' and self.at + 1 < self.content_len:
+            if self._ch() == '\\':
                 self.at += 1
 
             self.at += 1
 
-        token.text = self.content[begin:self.at]
-        self.tokens.append(Token(TokenType.CloseQuote, self.line, self.column, self._ch()))
         self.at += 1
+        token.text = self.content[begin:self.at]
 
     def _tokenize_char_literal(self):
 
-        token = Token(TokenType.TextLiteral, self.line, self.column)
+        # TODO: add unicode support (like: '\u8080')
+
+        token = Token(TokenType.CharLiteral, self.line, self.column)
         self.tokens.append(token)
         begin = self.at
-        while self._ch() != '\'':
+        self.at += 1
 
-            if self._ch() == '\\' and self.at + 1 < self.content_len:
-                self.at += 1
-
+        if self._ch() == '\\':
             self.at += 1
 
-        token.text = self.content[begin:self.at]
-        self.tokens.append(Token(TokenType.CloseSingleQuote, self.line, self.column, self._ch()))
         self.at += 1
+
+        token.text = self.content[begin:self.at]
 
     def _tokenize_term(self):
 
