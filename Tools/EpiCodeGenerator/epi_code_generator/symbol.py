@@ -45,7 +45,7 @@ class EpiInvalidAttributeListError(Exception):
     pass
 
 
-class EpiMorpheme(abc.ABC):
+class EpiSymbol(abc.ABC):
 
     def __init__(self, name):
 
@@ -69,7 +69,7 @@ class EpiMorpheme(abc.ABC):
         pass
 
 
-class EpiMethod(EpiMorpheme):
+class EpiMethod(EpiSymbol):
 
     def __init__(self, name):
 
@@ -78,12 +78,6 @@ class EpiMethod(EpiMorpheme):
 
     def _is_valid_attrs(self, attrs):
         return len(attrs) == 0
-
-
-class EpiExpression:
-
-    def __init__(self):
-        self.tokens = []
 
 
 class EpiVariable:
@@ -102,7 +96,7 @@ class EpiVariable:
         self.modifiers = []
 
 
-class EpiProperty(EpiMorpheme):
+class EpiProperty(EpiSymbol):
 
     def __init__(self, var):
 
@@ -138,7 +132,7 @@ class EpiProperty(EpiMorpheme):
         return True
 
 
-class EpiClass(EpiMorpheme):
+class EpiClass(EpiSymbol):
 
     def __init__(self, name):
 
@@ -151,7 +145,7 @@ class EpiClass(EpiMorpheme):
         return True
 
 
-class EpiInterface(EpiMorpheme):
+class EpiInterface(EpiSymbol):
 
     def __init__(self, name):
 
@@ -164,7 +158,7 @@ class EpiInterface(EpiMorpheme):
         return True
 
 
-class EpiEnumEntry(EpiMorpheme):
+class EpiEnumEntry(EpiSymbol):
 
     def __init__(self, name):
         super(EpiEnumEntry, self).__init__(name)
@@ -173,7 +167,7 @@ class EpiEnumEntry(EpiMorpheme):
         return True
 
 
-class EpiEnum(EpiMorpheme):
+class EpiEnum(EpiSymbol):
 
     def __init__(self, name):
 
@@ -185,7 +179,7 @@ class EpiEnum(EpiMorpheme):
         return True
 
 
-class EpiRegistry:
+class EpiSymbolRegistry:
 
     def __init__(self):
 

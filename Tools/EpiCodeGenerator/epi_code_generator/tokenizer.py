@@ -18,9 +18,8 @@ class TokenType(Enum):
     Asterisk = auto()
     Ampersand = auto()
     Colon = auto()
+    DoubleColon = auto()
     Semicolon = auto()
-    Plus = auto()
-    Minus = auto()
 
     CharLiteral = auto()
     StringLiteral = auto()
@@ -77,12 +76,12 @@ class Token:
         self.column = column
 
     def __str__(self):
-        return '[line: {:3d}, column: {:3d}]: '.format(self.line, self.column) + f'"{self.text}" [{self.type}]'
+        return '(line: {:3d}, column: {:3d}): '.format(self.line, self.column) + f'"{self.text}" ({self.type})'
 
 
 class Tokenizer:
 
-    ELEMENTARY_TOKEN_TYPES = {
+    SPECIAL_SYMBOL_TOKEN_TYPES = {
         '{': TokenType.OpenBrace,
         '}': TokenType.CloseBrace,
         '(': TokenType.OpenBracket,
@@ -93,10 +92,9 @@ class Tokenizer:
         '*': TokenType.Asterisk,
         '&': TokenType.Ampersand,
         ',': TokenType.Comma,
+        '::': TokenType.DoubleColon,
         ':': TokenType.Colon,
-        ';': TokenType.Semicolon,
-        '+': TokenType.Plus,
-        '-': TokenType.Minus
+        ';': TokenType.Semicolon
     }
 
     BUILDIN_VALUES = {
@@ -219,31 +217,16 @@ class Tokenizer:
                         self.at += 1
 
                 elif ch == '\'':
-
                     self._tokenize_char_literal()
-
                 elif ch == '"':
-
                     self._tokenize_string_literal()
-
-                elif ch in Tokenizer.ELEMENTARY_TOKEN_TYPES:
-
-                    token = Token(Tokenizer.ELEMENTARY_TOKEN_TYPES[ch], self.line, self.column, ch)
-                    self.at += 1
-
-                    if token.type != TokenType.Semicolon or self.tokens[-1].type != TokenType.Semicolon:
-                        self.tokens.append(token)
-
-                elif ch.isnumeric():
-
+                elif self._try_tokenize_special_symbol():
+                    pass
+                elif ch.isnumeric() or ch == '-':
                     self._tokenize_numeric_literal()
-
                 elif ch.isalpha():
-
                     self._tokenize_term()
-
                 else:
-
                     self.tokens.append(Token(TokenType.Unknown, self.line, self.column, ch))
                     self.at += 1
 
@@ -268,6 +251,28 @@ class Tokenizer:
                 token.type = Tokenizer.BUILDIN_VALUES[token.text]
 
         return self.tokens
+
+    def _try_tokenize_special_symbol(self):
+
+        token = None
+        for text, type in Tokenizer.SPECIAL_SYMBOL_TOKEN_TYPES.items():
+
+            if self.content.startswith(text, self.at):
+
+                token = Token(type, self.line, self.column, text)
+                break
+
+        if not token:
+            return False
+
+        self.at += len(token.text)
+
+        if token.type == TokenType.Semicolon and self.tokens[-1].type == TokenType.Semicolon:
+            return False
+
+        self.tokens.append(token)
+
+        return True
 
     def _tokenize_string_literal(self):
 
@@ -298,7 +303,7 @@ class Tokenizer:
         if self._ch() == '\\':
             self.at += 1
 
-        self.at += 1
+        self.at += 2
 
         token.text = self.content[begin:self.at]
 
@@ -317,6 +322,10 @@ class Tokenizer:
         token = Token(TokenType.IntegerLiteral, self.line, self.column)
         self.tokens.append(token)
         begin = self.at
+
+        if self._ch() == '-':
+            self.at += 1
+
         while self._ch().isnumeric():
 
             self.at += 1
