@@ -66,8 +66,8 @@ add_library(EpiLib STATIC
     EpiLib/ObjectModel/QtAdaptors/QtEpiPropertyManager.cpp
 )
 get_target_property(EpiLib_SRCs EpiLib SOURCES)
-add_precompiled_header(EpiLib EpiLib/pch.h SOURCE_CXX EpiLib/pch.cpp)
-pack_sources(${EpiLib_SRCs})
+epi_add_precompiled_header(EpiLib EpiLib/pch.h SOURCE_CXX EpiLib/pch.cpp)
+epi_pack_sources(${EpiLib_SRCs})
 
 if(MSVC)
 	# needed for exprtk.hpp (probably?)
