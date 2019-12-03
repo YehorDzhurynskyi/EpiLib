@@ -77,7 +77,6 @@ endif()
 
 target_include_directories(EpiLib
     PUBLIC
-        ${RapidJSON_INCLUDE_DIRS}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
@@ -88,8 +87,7 @@ target_compile_definitions(EpiLib
 )
 
 if (Epi_USE_QT)
-    find_package(Qt5 COMPONENTS Core REQUIRED)
-    find_package(Qt5 COMPONENTS Widgets REQUIRED)
+    find_package(Qt5 COMPONENTS Core Widgets Gui PrintSupport REQUIRED)
 
     target_compile_definitions(EpiLib
         PUBLIC

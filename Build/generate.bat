@@ -12,9 +12,13 @@
   call :get-ini %1 cmake initial_cache initial_cache
   set initial_cache=%cd%\%initial_cache%
 
+  call :get-ini %1 cmake generator generator
+
+  call :get-ini %1 cmake arch arch
+
   call :get-ini %1 thirdparty qtdir qtdir
 
-  cmake -G "Visual Studio 15 2017 Win64" -S %workdir% -B "%workdir%\_projects\Visual_Studio_15_2017_Win64" -DEPI_BUILD_DIR=%epibuilddir% -DQt5_DIR=%qtdir% -C %initial_cache%
+  cmake -G "%generator%" -A "%arch%" -S "%workdir%" -B "%workdir%\_projects\%generator% %arch%" -DEPI_BUILD_DIR="%epibuilddir%" -DQt5_DIR="%qtdir%" -C "%initial_cache%"
 
   goto :eof
 
