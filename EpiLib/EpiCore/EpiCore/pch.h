@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <functional>
 
-#include "EpiLib/env.h"
-#include "EpiLib/types.h"
-#include "EpiLib/common.h"
-#include "EpiLib/Hash.h"
+#include "EpiCore/env.h"
+#include "EpiCore/types.h"
+#include "EpiCore/common.h"
+#include "EpiCore/Hash.h"

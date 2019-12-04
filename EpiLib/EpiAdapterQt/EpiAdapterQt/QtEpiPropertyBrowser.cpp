@@ -1,10 +1,10 @@
-#include "EpiLib/pch.h"
+#include "EpiAdapterQt/pch.h"
 #include "QtEpiPropertyBrowser.h"
 
-#ifdef eepiUSE_QT
+#if 0
 
-#include "EpiLib/ObjectModel/Object.h"
-#include "EpiLib/Containers/Array.h"
+#include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/Containers/Array.h"
 
 namespace epi
 {
@@ -75,10 +75,9 @@ void QtEpiPropertyBrowser::FillChildren(QtProperty* parent, Object& object, cons
 {
     parent->subProperties().reserve(meta.GetPropertiesCount());
 
-    //epiS32 index = parent->subProperties().size();
     for (const MetaProperty& property : meta)
     {
-        //std::unique_ptr<QtObjectModelItem> item = std::make_unique<QtObjectModelItem>(index++, this);
+        m_PropertyManager.addProperty(PropertyTypeOf(property), property.GetName());
 
         item->m_ValueAddr = property.GetValue(object);
         item->m_Meta = &property;
@@ -96,6 +95,39 @@ void QtEpiPropertyBrowser::FillChildren(QtProperty* parent, Object& object, cons
     }
 }
 
+epiS32 QtEpiPropertyBrowser::PropertyTypeOf(const MetaProperty& meta)
+{
+    QVariant::Type type = MetaType::ToQtVariantType(meta.GetTypeID());
+    return type == QVariant::Type::Invalid ? QtVariantPropertyManager::groupTypeId() : type;
 }
 
-#endif // epiUSE_QT
+void QtEpiProperty::Init(Object& object, const MetaProperty& meta)
+{
+    m_ValueAddr = meta.GetValue(object);
+    m_Meta = &meta;
+
+    assert(IsValid());
+}
+
+epiBool QtEpiProperty::IsValid() const
+{
+    return m_ValueAddr && MetaType::ToQtVariantType(m_Meta->GetTypeID());
+}
+
+void QtEpiProperty::Apply()
+{
+    QVariant v = value();
+
+    assert(IsValid() && v.isValid());
+
+    v.
+}
+
+void QtEpiProperty::Reset()
+{
+    assert(IsValid());
+}
+
+}
+
+#endif

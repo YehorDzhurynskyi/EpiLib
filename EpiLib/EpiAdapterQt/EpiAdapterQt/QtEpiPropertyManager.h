@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef eepiUSE_QT
+#ifdef 0
 
 #include "EpiLib/types.h"
 #include "Extern/QtPropertyBrowser/src/qtvariantproperty.h"
@@ -59,4 +59,4 @@ protected:
 
 }
 
-#endif // epiUSE_QT
+#endif

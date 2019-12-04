@@ -1,8 +1,6 @@
 #pragma once
 
-#ifdef epiUSE_QT
-
-#include "EpiLib/types.h"
+#include "EpiCore/types.h"
 #include "QtObjectModelItem.h"
 #include <QAbstractItemModel>
 
@@ -33,5 +31,3 @@ protected:
 };
 
 }
-
-#endif // epiUSE_QT

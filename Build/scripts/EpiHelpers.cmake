@@ -33,3 +33,24 @@ epi_include_script(PrecompiledHeader.cmake)
 function(epi_add_precompiled_header)
     add_precompiled_header(${ARGV})
 endfunction()
+
+function(epi_set_common_target_properties _target)
+    set_target_properties(${_target}
+        PROPERTIES
+            CXX_STANDARD 17
+            CXX_STANDARD_REQUIRED YES
+            CXX_EXTENSIONS NO
+            FOLDER EpiLib
+    )
+endfunction()
+
+function(epi_register_extern_target _target)
+    get_target_property(TargetType ${_target} TYPE)
+    
+    if (NOT ${TargetType} STREQUAL "INTERFACE_LIBRARY")
+        set_target_properties(${_target}
+            PROPERTIES
+                FOLDER Extern
+        )
+    endif()
+endfunction()

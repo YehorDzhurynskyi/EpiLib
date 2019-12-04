@@ -1,8 +1,6 @@
 #pragma once
 
-#ifdef epiUSE_QT
-
-#include "EpiLib/types.h"
+#include "EpiCore/types.h"
 #include <QStyledItemDelegate>
 
 namespace epi
@@ -22,5 +20,3 @@ public:
 };
 
 }
-
-#endif // epiUSE_QT

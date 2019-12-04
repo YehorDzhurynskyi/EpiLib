@@ -1,10 +1,8 @@
-#include "EpiLib/pch.h"
+#include "EpiAdapterQt/pch.h"
 #include "QtObjectDelegate.h"
 
-#ifdef epiUSE_QT
-
 #include "QtObjectModel.h"
-#include "EpiLib/ObjectModel/Object.h"
+#include "EpiCore/ObjectModel/Object.h"
 #include <QSpinBox>
 #include <QLineEdit>
 
@@ -99,5 +97,3 @@ void QtObjectDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionV
 }
 
 }
-
-#endif // epiUSE_QT

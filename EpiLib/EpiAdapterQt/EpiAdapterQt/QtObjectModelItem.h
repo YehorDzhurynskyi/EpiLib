@@ -1,8 +1,6 @@
 #pragma once
 
-#ifdef epiUSE_QT
-
-#include "EpiLib/types.h"
+#include "EpiCore/types.h"
 #include <QVariant>
 
 namespace epi
@@ -51,5 +49,3 @@ protected:
 };
 
 }
-
-#endif // epiUSE_QT

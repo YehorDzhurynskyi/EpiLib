@@ -1,9 +1,7 @@
-#include "EpiLib/pch.h"
+#include "EpiAdapterQt/pch.h"
 #include "QtObjectModel.h"
 
-#ifdef epiUSE_QT
-
-#include "EpiLib/ObjectModel/Object.h"
+#include "EpiCore/ObjectModel/Object.h"
 
 namespace epi
 {
@@ -154,5 +152,3 @@ QtObjectModelItem* QtObjectModel::ItemOf(const QModelIndex& parent) const
 }
 
 }
-
-#endif // epiUSE_QT

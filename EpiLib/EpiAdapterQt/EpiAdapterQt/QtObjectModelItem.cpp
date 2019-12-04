@@ -1,10 +1,8 @@
-#include "EpiLib/pch.h"
+#include "EpiAdapterQt/pch.h"
 #include "QtObjectModelItem.h"
 
-#ifdef epiUSE_QT
-
-#include "EpiLib/ObjectModel/Object.h"
-#include "EpiLib/Containers/Array.h"
+#include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/Containers/Array.h"
 #include <QBrush>
 #include <QFont>
 
@@ -283,5 +281,3 @@ epiString QtObjectModelItem::GetName() const
 }
 
 }
-
-#endif // epiUSE_QT

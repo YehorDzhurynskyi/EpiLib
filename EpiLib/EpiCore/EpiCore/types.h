@@ -42,18 +42,10 @@ using epiMat3x3F = glm::mat3x3;
 using epiMat4x4F = glm::mat4x4;
 
 #ifdef epiDEBUG
-#include "EpiLib/Debug/FiniteFloating.h"
+#include "EpiCore/Debug/FiniteFloating.h"
 using epiFloat = FiniteFloating<float>;
 using epiDouble = FiniteFloating<double>;
 #else
 using epiFloat = float;
 using epiDouble = double;
 #endif
-
-namespace epi
-{
-
-template<typename T>
-using Pointer = T*;
-
-}

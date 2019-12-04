@@ -1,4 +1,4 @@
-#include "EpiLib/pch.h"
+#include "EpiCore/pch.h"
 #include "Hash.h"
 
 epiHash_t crc32(const char* str, const epiSize_t idx)

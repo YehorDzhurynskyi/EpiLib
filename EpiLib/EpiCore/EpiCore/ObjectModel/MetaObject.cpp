@@ -1,10 +1,10 @@
-#include "EpiLib/pch.h"
+#include "EpiCore/pch.h"
 #include "MetaObject.h"
 
 #include "Object.h"
 
-#include "EpiLib/Containers/Array.h"
-#include "EpiLib/Containers/HashMap.h"
+#include "EpiCore/Containers/Array.h"
+#include "EpiCore/Containers/HashMap.h"
 
 namespace epi
 {
