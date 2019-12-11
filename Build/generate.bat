@@ -3,6 +3,8 @@
 :main
   setlocal enabledelayedexpansion
 
+  echo %PATH%
+
   call :get-ini %1 env workdir workdir
   set workdir=%cd%\%workdir%
 

@@ -5,7 +5,7 @@ project(EpiLib)
 set(Epi_USE_QT ON CACHE BOOL "")
 
 add_subdirectory(EpiLib/EpiCore)
-#add_subdirectory(EpiLib/EpiMultiMedia)
+add_subdirectory(EpiLib/EpiMultiMedia)
 
 if (Epi_USE_QT)
     set(CMAKE_AUTOMOC ON CACHE BOOL "" FORCE)
