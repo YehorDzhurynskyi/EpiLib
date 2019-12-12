@@ -54,3 +54,30 @@ function(epi_register_extern_target _target)
         )
     endif()
 endfunction()
+
+function(epi_print_target_properties tgt)
+    if(NOT TARGET ${tgt})
+        message("There is no target named '${tgt}'")
+        return()
+    endif()
+
+    execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
+
+    STRING(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
+    STRING(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
+
+    foreach (prop ${CMAKE_PROPERTY_LIST})
+        string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
+
+        if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR prop MATCHES "_LOCATION$")
+            continue()
+        endif()
+
+        get_property(propval TARGET ${tgt} PROPERTY ${prop} SET)
+
+        if (propval)
+            get_target_property(propval ${tgt} ${prop})
+            message ("${tgt} ${prop} = ${propval}")
+        endif()
+    endforeach(prop)
+endfunction(epi_print_target_properties)
