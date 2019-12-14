@@ -16,9 +16,13 @@
 
   call :get-ini %1 cmake arch arch
 
+  call :get-ini %1 cmake toolchain toolchain
+
   call :get-ini %1 thirdparty qtdir qtdir
 
-  cmake -G "%generator%" -A "%arch%" -S "%workdir%" -B "%workdir%\_projects\%generator% %arch%" -DEPI_BUILD_DIR="%epibuilddir%" -DQt5_DIR="%qtdir%" -C "%initial_cache%"
+  call :get-ini %1 thirdparty ffmpeg ffmpeg
+
+  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%generator% %arch% %toolchain%" -DEPI_BUILD_DIR="%epibuilddir%" -DQt5_DIR="%qtdir%" -C "%initial_cache%"
 
   goto :eof
 
