@@ -26,7 +26,7 @@ epi_pack_sources(${EpiAdapterQt_SRCs})
 find_package(Qt5 COMPONENTS Core Widgets Gui PrintSupport REQUIRED)
 
 add_subdirectory(Extern/QtPropertyBrowser)
-epi_register_extern_target(QtPropertyBrowser)
+epi_extern_register(QtPropertyBrowser)
 
 target_include_directories(EpiAdapterQt
     PUBLIC
@@ -44,4 +44,4 @@ target_link_libraries(EpiAdapterQt
         EpiCore
 )
 
-epi_set_common_target_properties(EpiAdapterQt)
+epi_module_register(EpiAdapterQt)

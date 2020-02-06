@@ -47,9 +47,9 @@ add_subdirectory(Extern/nlohmann)
 add_subdirectory(Extern/glm)
 add_subdirectory(Extern/exprtk)
 
-epi_register_extern_target(nlohmann)
-epi_register_extern_target(glm)
-epi_register_extern_target(exprtk)
+epi_extern_register(nlohmann)
+epi_extern_register(glm)
+epi_extern_register(exprtk)
 
 if(MSVC)
     # needed for exprtk.hpp (probably?)
@@ -82,4 +82,4 @@ target_compile_definitions(EpiCore
         _USE_MATH_DEFINES 
 )
 
-epi_set_common_target_properties(EpiCore)
+epi_module_register(EpiCore)
