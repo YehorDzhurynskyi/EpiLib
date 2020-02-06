@@ -22,24 +22,24 @@ endfunction()
 
 function(epi_extern_add _extern)
 
-    configure_file("${EPI_BUILD_DIR}/Extern/${_extern}_Extern.txt.in" "${_extern}-download/CMakeLists.txt")
+    configure_file("${EPI_BUILD_DIR}/CMake/Extern/${_extern}_Extern.txt.in" "${_extern}-extern/CMakeLists.txt")
 
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-      RESULT_VARIABLE result WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_extern}-download")
+      RESULT_VARIABLE result WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern")
     if(result)
       message(FATAL_ERROR "CMake step for ${_extern} failed: ${result}")
     endif()
 
     execute_process(COMMAND ${CMAKE_COMMAND} --build .
       RESULT_VARIABLE result
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_extern}-download )
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern )
 
     if(result)
       message(FATAL_ERROR "Build step for ${_extern} failed: ${result}")
     endif()
 
-    add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/${_extern}-src
-                     ${CMAKE_CURRENT_BINARY_DIR}/${_extern}-build
+    add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern/src"
+                     "${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern/build"
                      EXCLUDE_FROM_ALL)
 
     epi_extern_register(${_extern})

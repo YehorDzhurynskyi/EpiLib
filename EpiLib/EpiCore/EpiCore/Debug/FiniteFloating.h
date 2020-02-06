@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include "json.hpp"
+// TODO: move `from_json` `to_json` to separate serializer.cpp
+
+#include <nlohmann/json.hpp>
 using json_t = nlohmann::json;
 
 template<typename T>

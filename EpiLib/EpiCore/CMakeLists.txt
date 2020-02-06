@@ -43,12 +43,10 @@ get_target_property(EpiCore_SRCs EpiCore SOURCES)
 epi_add_precompiled_header(EpiCore EpiCore/pch.h SOURCE_CXX EpiCore/pch.cpp)
 epi_pack_sources(${EpiCore_SRCs})
 
-add_subdirectory(Extern/nlohmann)
-add_subdirectory(Extern/glm)
 add_subdirectory(Extern/exprtk)
 
-epi_extern_register(nlohmann)
-epi_extern_register(glm)
+epi_extern_add(nlohmann_json)
+epi_extern_add(glm)
 epi_extern_register(exprtk)
 
 if(MSVC)
@@ -65,7 +63,7 @@ target_include_directories(EpiCore
 
 target_link_libraries(EpiCore
     PUBLIC
-        nlohmann
+        nlohmann_json
         glm
         exprtk
 )

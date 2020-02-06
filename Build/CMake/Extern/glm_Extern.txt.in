@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 2.8.2)
 
-project(SDL2-extern NONE)
+project(glm-extern NONE)
 
 include(ExternalProject)
-ExternalProject_Add(SDL2
-    GIT_REPOSITORY      https://github.com/spurious/SDL-mirror
+ExternalProject_Add(glm
+    GIT_REPOSITORY      https://github.com/g-truc/glm.git
     GIT_TAG             master
-    SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/SDL2-extern/src"
-    BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/SDL2-extern/build"
+    SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/glm-extern/src"
+    BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/glm-extern/build"
 
     GIT_SHALLOW         1
     GIT_PROGRESS        1

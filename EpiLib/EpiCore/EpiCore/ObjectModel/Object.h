@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MetaObject.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 #define epiEmitObject(_ClassName, _Super)                                               \
                                                                                         \

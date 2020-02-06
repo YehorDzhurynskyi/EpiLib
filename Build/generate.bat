@@ -20,9 +20,11 @@
 
   call :get-ini %1 thirdparty qtdir qtdir
 
-  call :get-ini %1 thirdparty ffmpeg ffmpeg
+  set solution=%generator% %arch% %toolchain%
+  set solution=%solution%
+  set solution=!solution: =_!
 
-  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%generator% %arch% %toolchain%" -DEPI_BUILD_DIR="%epibuilddir%" -DQt5_DIR="%qtdir%" -C "%initial_cache%"
+  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_BUILD_DIR="%epibuilddir%" -DQt5_DIR="%qtdir%" -C "%initial_cache%"
 
   goto :eof
 
