@@ -29,12 +29,21 @@ logger.addHandler(file_handler)
 if __name__ == "__main__":
 
     argparser = argparse.ArgumentParser()
+    grp_required = argparser.add_argument_group('required')
+    grp_optional = argparser.add_argument_group('optional')
 
-    argparser.add_argument(
+    grp_required.add_argument(
         '-i',
         '--input-dir',
         type=str,
         required=True,
+        help='TODO: fill'
+    )
+
+    grp_optional.add_argument(
+        '-o',
+        '--output-dir',
+        type=str,
         help='TODO: fill'
     )
 
@@ -79,4 +88,6 @@ if __name__ == "__main__":
     except InheritanceTreeError as e:
         logger.error(str(e))
 
-    code_generator = CodeGenerator()
+    output_dir = args.output_dir if args.output_dir is not None else args.input_dir
+    code_generator = CodeGenerator(registry_global)
+    code_generator.generate()
