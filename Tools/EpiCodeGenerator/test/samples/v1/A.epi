@@ -16,8 +16,8 @@ class AClass
     epiChar Prty_6 = '@';
     epiChar Prty_7 = '\'';
 
-    epiFloat Virtual_1;
-    epiS32 Virtual_2;
+    epiFloat Virtual_1 = 142;
+    epiS32 Virtual_2 = -991;
 };
 
 class BClass : AClass

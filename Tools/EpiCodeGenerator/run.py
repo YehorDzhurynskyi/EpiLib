@@ -1,9 +1,9 @@
 import os
 import logging
+import argparse
 
 from epi_code_generator.tokenizer import Tokenizer
-from epi_code_generator.parser import Parser
-from epi_code_generator.symbol import EpiSymbolRegistry
+from epi_code_generator.idlparser.idlparser import Parser
 from epi_code_generator.code_generator import CodeGenerator
 from epi_code_generator.config import Config
 
@@ -27,10 +27,20 @@ logger.addHandler(file_handler)
 
 if __name__ == "__main__":
 
-    config = Config()
-    config.parse_cmd()
+    argparser = argparse.ArgumentParser()
 
-    for root, _, files in os.walk(config.source_dir):
+    argparser.add_argument(
+        '-i',
+        '--input-dir',
+        type=str,
+        required=True,
+        help='TODO: fill'
+    )
+
+    args = argparser.parse_args()
+
+    registry_global = {}
+    for root, _, files in os.walk(args.input_dir):
 
         for file in filter(lambda f: f.endswith('epi'), files):
 
@@ -38,14 +48,26 @@ if __name__ == "__main__":
 
             logger.info(f'Parsing: {path}')
 
-            tokenizer = Tokenizer(open(path, "r").read())
-            tokens = tokenizer.tokenize()
+            with open(path, 'r') as f:
+
+                tokenizer = Tokenizer(f.read())
+                tokens = tokenizer.tokenize()
 
             for t in tokens:
                 logger.debug(str(t))
 
             parser = Parser(tokens)
-            registry, errors = parser.parse()
+            registry_local, errors_syntax = parser.parse()
 
-            for e in errors:
+            for e in errors_syntax:
                 logger.error(str(e))
+
+            if len(errors_syntax) != 0:
+                exit(-1)
+
+            # TODO: check duplicates
+            registry_global = { **registry_global, **registry_local }
+
+    # Build inheritance tree
+    # Check local and inherited duplications
+    registry_global
