@@ -48,9 +48,16 @@ class EpiInvalidAttributeListError(Exception):
 
 class EpiSymbol(abc.ABC):
 
-    def __init__(self, name):
+    def __init__(self, token):
+        self.token = token
 
-        self.name = name
+    @property
+    def name(self):
+        return self.token.text
+
+    def __str__(self):
+        return str(self.token)
+
 '''
         self.attrs = []
 
@@ -71,14 +78,14 @@ class EpiSymbol(abc.ABC):
         pass
 '''
 
+'''
 class EpiMethod(EpiSymbol):
 
-    def __init__(self, name):
+    def __init__(self, token):
 
-        super(EpiMethod, self).__init__(name)
+        super(EpiMethod, self).__init__(token)
         self.params = []
 
-'''
     def _is_valid_attrs(self, attrs):
         return len(attrs) == 0
 '''
@@ -91,9 +98,10 @@ class EpiVariable(EpiSymbol):
         Plain = auto()
         Pointer = auto()
 
-    def __init__(self, name, type, form):
+    def __init__(self, token: Token, type: TokenType, form: EpiVariable.Form):
 
-        self.name = name
+        super(EpiVariable, self).__init__(token)
+
         self.type = type
         self.form = form
         self.value = self._default_value()
@@ -129,9 +137,9 @@ class EpiVariable(EpiSymbol):
 
 class EpiClass(EpiSymbol):
 
-    def __init__(self, name):
+    def __init__(self, token):
 
-        super(EpiClass, self).__init__(name)
+        super(EpiClass, self).__init__(token)
 
         self.parent = None
         self.properties = []

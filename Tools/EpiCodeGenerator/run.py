@@ -3,9 +3,10 @@ import logging
 import argparse
 
 from epi_code_generator.tokenizer import Tokenizer
+from epi_code_generator.inheritance_tree import InheritanceTree
+from epi_code_generator.inheritance_tree import InheritanceTreeError
 from epi_code_generator.idlparser.idlparser import Parser
 from epi_code_generator.code_generator import CodeGenerator
-from epi_code_generator.config import Config
 
 
 logger = logging.getLogger()
@@ -48,10 +49,8 @@ if __name__ == "__main__":
 
             logger.info(f'Parsing: {path}')
 
-            with open(path, 'r') as f:
-
-                tokenizer = Tokenizer(f.read())
-                tokens = tokenizer.tokenize()
+            tokenizer = Tokenizer(path)
+            tokens = tokenizer.tokenize()
 
             for t in tokens:
                 logger.debug(str(t))
@@ -65,9 +64,19 @@ if __name__ == "__main__":
             if len(errors_syntax) != 0:
                 exit(-1)
 
-            # TODO: check duplicates
-            registry_global = { **registry_global, **registry_local }
+            registry_intersection = registry_global.keys() & registry_local.keys()
+            if len(registry_intersection) == 0:
+                registry_global = { **registry_global, **registry_local }
+            else:
 
-    # Build inheritance tree
-    # Check local and inherited duplications
-    registry_global
+                for v in registry_intersection:
+                    logging.error(f'{v} is already defined in {registry_global[v].token.filepath}')
+
+                exit(-1)
+
+    try:
+        inherited_tree = InheritanceTree(registry_global)
+    except InheritanceTreeError as e:
+        logger.error(str(e))
+
+    code_generator = CodeGenerator()

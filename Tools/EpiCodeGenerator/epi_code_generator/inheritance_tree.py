@@ -26,7 +26,7 @@ class InheritanceError(Exception):
 
     def __str__(self):
         return \
-            f'Inheritance error {str(self.clss.name)} message: '{self.err_message}'' + \
+            f'Inheritance error {str(self.clss)} message: '{self.err_message}'' + \
             f' ({self.tip})' if len(self.tip) != 0 else ''
 
 
@@ -96,8 +96,8 @@ class InheritanceTree:
                     memo[key] = validate_pedigree(node.parent, prts_inherited.union(prts_parent))
                 else:
 
-                    verb = if len(prts_intersection) == 1 'is' else 'are'
-                    tip = f'{','.join(prts_intersection)} {verb} already defined in {node.parent.clss.name}'
+                    verb = 'is' if len(prts_intersection) == 1 else 'are'
+                    tip = f'{','.join(prts_intersection)} {verb} already defined in {node.parent.clss.token.filepath}'
                     raise InheritanceError(v, InheritanceErrorCode.DuplicatingSymbol, tip)
 
                 return memo[key]

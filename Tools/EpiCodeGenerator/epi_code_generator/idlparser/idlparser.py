@@ -261,7 +261,7 @@ class Parser:
         if t.type != TokenType.Identifier:
             return None
 
-        var = EpiVariable(t.text, typetoken, form)
+        var = EpiVariable(t, typetoken.type, form)
 
         # NOTE: if property is virtual an assignment is invalid
         t = self._next()

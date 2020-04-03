@@ -68,15 +68,16 @@ class TokenType(Enum):
 
 class Token:
 
-    def __init__(self, type, line, column, text='???'):
+    def __init__(self, type, line, column, filepath, text='???'):
 
         self.type = type
         self.text = text
         self.line = line
         self.column = column
+        self.filepath = filepath
 
     def __str__(self):
-        return '(line: {:3d}, column: {:3d}): '.format(self.line, self.column) + f'"{self.text}" ({self.type})'
+        return '(line: {:3d}, column: {:3d}): '.format(self.line, self.column) + f'"{self.text}" ({self.type}) [f{self.filepath}]'
 
 
 class Tokenizer:
@@ -162,13 +163,16 @@ class Tokenizer:
         # TBD: 'Category': TokenType.CategoryAttr,
     }
 
-    def __init__(self, content):
+    def __init__(self, filepath: str):
 
-        self.content = content
-        self.content_len = len(content)
+        with open(filepath, 'r') as f:
+            self.content = f.read()
+
+        self.content_len = len(self.content)
         self.__at = 0
         self.line = 1
         self.column = 1
+        self.filepath = filepath
         self.tokens = []
 
     def _ch(self):
@@ -208,9 +212,7 @@ class Tokenizer:
                 ch = self._ch()
 
                 if ch.isspace():
-
                     self.at += 1
-
                 elif ch == '#':
 
                     while self._ch() != '\n':
@@ -227,13 +229,13 @@ class Tokenizer:
                 elif ch.isalpha():
                     self._tokenize_term()
                 else:
-                    self.tokens.append(Token(TokenType.Unknown, self.line, self.column, ch))
+                    self.tokens.append(Token(TokenType.Unknown, self.line, self.column, self.filepath, ch))
                     self.at += 1
 
         except IndexError:
             pass
         else:
-            self.tokens.append(Token(TokenType.EOF, self.line, self.column, 'EOF'))
+            self.tokens.append(Token(TokenType.EOF, self.line, self.column, self.filepath, 'EOF'))
 
         for token in self.tokens:
 
@@ -259,7 +261,7 @@ class Tokenizer:
 
             if self.content.startswith(text, self.at):
 
-                token = Token(type, self.line, self.column, text)
+                token = Token(type, self.line, self.column, self.filepath, text)
                 break
 
         if not token:
@@ -276,7 +278,7 @@ class Tokenizer:
 
     def _tokenize_string_literal(self):
 
-        token = Token(TokenType.StringLiteral, self.line, self.column)
+        token = Token(TokenType.StringLiteral, self.line, self.column, self.filepath)
         self.tokens.append(token)
         begin = self.at
         self.at += 1
@@ -295,7 +297,7 @@ class Tokenizer:
 
         # TODO: add unicode support (like: '\u8080')
 
-        token = Token(TokenType.CharLiteral, self.line, self.column)
+        token = Token(TokenType.CharLiteral, self.line, self.column, self.filepath)
         self.tokens.append(token)
         begin = self.at
         self.at += 1
@@ -309,7 +311,7 @@ class Tokenizer:
 
     def _tokenize_term(self):
 
-        token = Token(TokenType.Identifier, self.line, self.column)
+        token = Token(TokenType.Identifier, self.line, self.column, self.filepath)
         self.tokens.append(token)
         begin = self.at
         while self._ch().isalnum() or self._ch() == '_':
@@ -319,7 +321,7 @@ class Tokenizer:
 
     def _tokenize_numeric_literal(self):
 
-        token = Token(TokenType.IntegerLiteral, self.line, self.column)
+        token = Token(TokenType.IntegerLiteral, self.line, self.column, self.filepath)
         self.tokens.append(token)
         begin = self.at
 
