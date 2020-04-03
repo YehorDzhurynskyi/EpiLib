@@ -30,8 +30,6 @@ if __name__ == "__main__":
     config = Config()
     config.parse_cmd()
 
-    registry = EpiSymbolRegistry()
-
     for root, _, files in os.walk(config.source_dir):
 
         for file in filter(lambda f: f.endswith('epi'), files):
@@ -46,8 +44,8 @@ if __name__ == "__main__":
             for t in tokens:
                 logger.debug(str(t))
 
-            parser = Parser(registry, tokens)
-            errors = parser.parse()
+            parser = Parser(tokens)
+            registry, errors = parser.parse()
 
             for e in errors:
                 logger.error(str(e))

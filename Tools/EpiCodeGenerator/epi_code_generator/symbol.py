@@ -7,6 +7,7 @@ from .tokenizer import Token
 from .tokenizer import TokenType
 
 
+'''
 class EpiAttribute:
 
     PARAM_RANGES = {
@@ -43,13 +44,14 @@ class EpiAttribute:
 
 class EpiInvalidAttributeListError(Exception):
     pass
-
+'''
 
 class EpiSymbol(abc.ABC):
 
     def __init__(self, name):
 
         self.name = name
+'''
         self.attrs = []
 
     @property
@@ -67,7 +69,7 @@ class EpiSymbol(abc.ABC):
     @abc.abstractmethod
     def _is_valid_attrs(self, attrs):
         pass
-
+'''
 
 class EpiMethod(EpiSymbol):
 
@@ -76,39 +78,30 @@ class EpiMethod(EpiSymbol):
         super(EpiMethod, self).__init__(name)
         self.params = []
 
+'''
     def _is_valid_attrs(self, attrs):
         return len(attrs) == 0
+'''
 
 
-class EpiVariable:
+class EpiVariable(EpiSymbol):
 
-    class ViewType(Enum):
+    class Form(Enum):
 
         Plain = auto()
-        Reference = auto()
         Pointer = auto()
 
-    def __init__(self, name, type):
+    def __init__(self, name, type, form):
 
         self.name = name
         self.type = type
-        self.view_type = EpiVariable.ViewType.Plain
-        self.modifiers = []
-
-
-class EpiProperty(EpiSymbol):
-
-    def __init__(self, var):
-
-        super(EpiProperty, self).__init__(var.name)
-
-        self.var = var
+        self.form = form
         self.value = self._default_value()
 
     def _default_value(self):
 
         value = None
-        if self.var.view_type == EpiVariable.ViewType.Pointer:
+        if self.form == EpiVariable.Form.Pointer:
             value = 'nullptr'
         elif type == TokenType.BoolType:
             value = 'false'
@@ -128,8 +121,10 @@ class EpiProperty(EpiSymbol):
 
         return value
 
+'''
     def _is_valid_attrs(self, attrs):
         return True
+'''
 
 
 class EpiClass(EpiSymbol):
@@ -141,10 +136,13 @@ class EpiClass(EpiSymbol):
         self.parent = None
         self.properties = []
 
+'''
     def _is_valid_attrs(self, attrs):
         return True
+'''
 
 
+'''
 class EpiInterface(EpiSymbol):
 
     def __init__(self, name):
@@ -177,12 +175,4 @@ class EpiEnum(EpiSymbol):
 
     def _is_valid_attrs(self, attrs):
         return True
-
-
-class EpiSymbolRegistry:
-
-    def __init__(self):
-
-        self.classes = []
-        self.interfaces = []
-        self.enums = []
+'''

@@ -1,20 +1,7 @@
-enum DEnum
-{
-    D_AAA
-    D_BBB
-    D_CCC
-    D_DDD
-};
-
 class DClass : BClass
 {
-    [ReadCallback, WriteCallback] epiU32 HIHI;
+    epiU32 HIHI;
 
-    [NoDuplicate, Transient]
-    {
-        epiBool IsA;
-        epiBool IsB;
-    }
-
-    DEnum SomeDEnum = DEnum::D_BBB;
+    epiBool IsA;
+    epiBool IsB;
 };

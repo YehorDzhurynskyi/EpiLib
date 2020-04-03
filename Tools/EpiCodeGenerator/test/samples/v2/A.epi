@@ -1,0 +1,59 @@
+interface IThis
+{
+    Object* GetThis();
+};
+
+interface IHashable
+{
+    epiHash_t GetHash();
+};
+
+class DataClass
+{
+    [ReadCallback, ForceMinMax(-5.0, 5.0)]
+    {
+        epiFloat x;
+        epiFloat y;
+        epiFloat z;
+        epiFloat w;
+    }
+};
+
+[SerializationCallback]
+[AdditionalInterface(IHashable, IThis), DllEntry]
+class AClass
+{
+    [NoDuplicate, Transient]
+    {
+        epiS32 Prty_1;
+        epiBool Prty_2 = true;
+        DataClass Prty_3;
+        DataClass**** Prty_4;
+        epiString Prty_5 = "some text";
+        epiChar Prty_6 = '@';
+        epiChar Prty_7 = '\'';
+    }
+
+    [Virtual]
+    {
+        [WriteOnly, ForceMin(0.0)]
+        epiFloat Virtual_1;
+
+        [AssertMinMax(0.0, 100.0), ReadOnly]
+        epiS32 Virtual_2;
+    }
+};
+
+class BClass : AClass
+{
+    enum BEnum
+    {
+        B_AAA
+        B_BBB
+        B_CCC
+        B_DDD
+    };
+
+    epiFloat Prty_B = -2424.0;
+    BEnum SomeBEnum;
+};

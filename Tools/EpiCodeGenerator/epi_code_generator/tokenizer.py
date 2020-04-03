@@ -9,16 +9,16 @@ class TokenType(Enum):
 
     OpenBrace = auto()
     CloseBrace = auto()
-    OpenBracket = auto()
-    CloseBracket = auto()
-    OpenSqBracket = auto()
-    CloseSqBracket = auto()
+    # OpenBracket = auto()
+    # CloseBracket = auto()
+    # OpenSqBracket = auto()
+    # CloseSqBracket = auto()
     Assing = auto()
-    Comma = auto()
+    # Comma = auto()
     Asterisk = auto()
     Ampersand = auto()
     Colon = auto()
-    DoubleColon = auto()
+    # DoubleColon = auto()
     Semicolon = auto()
 
     CharLiteral = auto()
@@ -39,29 +39,29 @@ class TokenType(Enum):
     FloatingType = auto()
     VoidType = auto()
     ClassType = auto()
-    StructType = auto()
-    EnumType = auto()
-    InterfaceType = auto()
+    # StructType = auto()
+    # EnumType = auto()
+    # InterfaceType = auto()
 
-    OwnerAttr = auto()
-    ReadOnlyAttr = auto()
-    WriteOnlyAttr = auto()
-    WriteCallbackAttr = auto()
-    ReadCallbackAttr = auto()
-    VirtualAttr = auto()
-    AssertMinAttr = auto()
-    AssertMaxAttr = auto()
-    AssertMinMaxAttr = auto()
-    ForceMinAttr = auto()
-    ForceMaxAttr = auto()
-    ForceMinMaxAttr = auto()
-    NoDuplicateAttr = auto()
-    TransientAttr = auto()
-    AdditionalInterfaceAttr = auto()
-    SerializationCallbackAttr = auto()
-    DllEntryAttr = auto()
+    # OwnerAttr = auto()
+    # ReadOnlyAttr = auto()
+    # WriteOnlyAttr = auto()
+    # WriteCallbackAttr = auto()
+    # ReadCallbackAttr = auto()
+    # VirtualAttr = auto()
+    # AssertMinAttr = auto()
+    # AssertMaxAttr = auto()
+    # AssertMinMaxAttr = auto()
+    # ForceMinAttr = auto()
+    # ForceMaxAttr = auto()
+    # ForceMinMaxAttr = auto()
+    # NoDuplicateAttr = auto()
+    # TransientAttr = auto()
+    # AdditionalInterfaceAttr = auto()
+    # SerializationCallbackAttr = auto()
+    # DllEntryAttr = auto()
 
-    ConstModifier = auto()
+    # ConstModifier = auto()
 
     Identifier = auto()
 
@@ -84,29 +84,29 @@ class Tokenizer:
     SPECIAL_SYMBOL_TOKEN_TYPES = {
         '{': TokenType.OpenBrace,
         '}': TokenType.CloseBrace,
-        '(': TokenType.OpenBracket,
-        ')': TokenType.CloseBracket,
-        '[': TokenType.OpenSqBracket,
-        ']': TokenType.CloseSqBracket,
+        # '(': TokenType.OpenBracket,
+        # ')': TokenType.CloseBracket,
+        # '[': TokenType.OpenSqBracket,
+        # ']': TokenType.CloseSqBracket,
         '=': TokenType.Assing,
         '*': TokenType.Asterisk,
         '&': TokenType.Ampersand,
-        ',': TokenType.Comma,
-        '::': TokenType.DoubleColon,
+        # ',': TokenType.Comma,
+        # '::': TokenType.DoubleColon,
         ':': TokenType.Colon,
         ';': TokenType.Semicolon
     }
 
-    BUILDIN_VALUES = {
+    BUILTIN_VALUES = {
         'true': TokenType.TrueLiteral,
         'false': TokenType.FalseLiteral
     }
 
-    BUILDIN_MODIFIERS = {
-        'const': TokenType.ConstModifier
+    BUILTIN_MODIFIERS = {
+        # 'const': TokenType.ConstModifier
     }
 
-    BUILDIN_PRIMITIVES = {
+    BUILTIN_PRIMITIVES = {
         'epiChar': TokenType.CharType,
         'epiBool': TokenType.BoolType,
         'epiByte': TokenType.ByteType,
@@ -126,35 +126,35 @@ class Tokenizer:
         'epiVoid': TokenType.VoidType
     }
 
-    BUILDIN_USERTYPES = {
+    BUILTIN_USERTYPES = {
         'class': TokenType.ClassType,
-        'struct': TokenType.StructType,
-        'enum': TokenType.EnumType,
-        'interface': TokenType.InterfaceType
+        # 'struct': TokenType.StructType,
+        # 'enum': TokenType.EnumType,
+        # 'interface': TokenType.InterfaceType
     }
 
-    BUILDIN_CLSS_ATTRS = {
-        'AdditionalInterface': TokenType.AdditionalInterfaceAttr,
-        'SerializationCallback': TokenType.SerializationCallbackAttr,
-        'DllEntry': TokenType.DllEntryAttr
+    BUILTIN_CLSS_ATTRS = {
+        # 'AdditionalInterface': TokenType.AdditionalInterfaceAttr,
+        # 'SerializationCallback': TokenType.SerializationCallbackAttr,
+        # 'DllEntry': TokenType.DllEntryAttr
     }
 
-    BUILDIN_PRTY_ATTRS = {
-        'Owner': TokenType.OwnerAttr,
-        'ReadOnly': TokenType.ReadOnlyAttr,
-        'WriteOnly': TokenType.WriteOnlyAttr,
-        'WriteCallback': TokenType.WriteCallbackAttr,
-        'ReadCallback': TokenType.ReadCallbackAttr,
-        'Virtual': TokenType.VirtualAttr,
-        'AssertMin': TokenType.AssertMinAttr,
-        'AssertMax': TokenType.AssertMaxAttr,
-        'AssertMinMax': TokenType.AssertMinMaxAttr,
-        'ForceMin': TokenType.ForceMinAttr,
-        'ForceMax': TokenType.ForceMaxAttr,
-        'ForceMinMax': TokenType.ForceMinMaxAttr,
-        'NoDuplicate': TokenType.NoDuplicateAttr,
-        'Transient': TokenType.TransientAttr,
-        'DllEntry': TokenType.DllEntryAttr
+    BUILTIN_PRTY_ATTRS = {
+        # 'Owner': TokenType.OwnerAttr,
+        # 'ReadOnly': TokenType.ReadOnlyAttr,
+        # 'WriteOnly': TokenType.WriteOnlyAttr,
+        # 'WriteCallback': TokenType.WriteCallbackAttr,
+        # 'ReadCallback': TokenType.ReadCallbackAttr,
+        # 'Virtual': TokenType.VirtualAttr,
+        # 'AssertMin': TokenType.AssertMinAttr,
+        # 'AssertMax': TokenType.AssertMaxAttr,
+        # 'AssertMinMax': TokenType.AssertMinMaxAttr,
+        # 'ForceMin': TokenType.ForceMinAttr,
+        # 'ForceMax': TokenType.ForceMaxAttr,
+        # 'ForceMinMax': TokenType.ForceMinMaxAttr,
+        # 'NoDuplicate': TokenType.NoDuplicateAttr,
+        # 'Transient': TokenType.TransientAttr,
+        # 'DllEntry': TokenType.DllEntryAttr
         # TBD: 'Hidden': TokenType.HiddenAttr,
         # TBD: 'DisplayName': TokenType.DisplayNameAttr,
         # TBD: 'Description': TokenType.DescriptionAttr,
@@ -192,12 +192,12 @@ class Tokenizer:
     @staticmethod
     def is_keyword(type):
         return type in\
-            Tokenizer.BUILDIN_PRIMITIVES.keys() |\
-            Tokenizer.BUILDIN_USERTYPES.keys() |\
-            Tokenizer.BUILDIN_PRTY_ATTRS.keys() |\
-            Tokenizer.BUILDIN_CLSS_ATTRS.keys() |\
-            Tokenizer.BUILDIN_MODIFIERS.keys() |\
-            Tokenizer.BUILDIN_VALUES.keys()
+            Tokenizer.BUILTIN_PRIMITIVES.keys() |\
+            Tokenizer.BUILTIN_USERTYPES.keys() |\
+            Tokenizer.BUILTIN_PRTY_ATTRS.keys() |\
+            Tokenizer.BUILTIN_CLSS_ATTRS.keys() |\
+            Tokenizer.BUILTIN_MODIFIERS.keys() |\
+            Tokenizer.BUILTIN_VALUES.keys()
 
     def tokenize(self):
 
@@ -237,18 +237,18 @@ class Tokenizer:
 
         for token in self.tokens:
 
-            if token.text in Tokenizer.BUILDIN_PRIMITIVES:
-                token.type = Tokenizer.BUILDIN_PRIMITIVES[token.text]
-            elif token.text in Tokenizer.BUILDIN_USERTYPES:
-                token.type = Tokenizer.BUILDIN_USERTYPES[token.text]
-            elif token.text in Tokenizer.BUILDIN_PRTY_ATTRS:
-                token.type = Tokenizer.BUILDIN_PRTY_ATTRS[token.text]
-            elif token.text in Tokenizer.BUILDIN_CLSS_ATTRS:
-                token.type = Tokenizer.BUILDIN_CLSS_ATTRS[token.text]
-            elif token.text in Tokenizer.BUILDIN_MODIFIERS:
-                token.type = Tokenizer.BUILDIN_MODIFIERS[token.text]
-            elif token.text in Tokenizer.BUILDIN_VALUES:
-                token.type = Tokenizer.BUILDIN_VALUES[token.text]
+            if token.text in Tokenizer.BUILTIN_PRIMITIVES:
+                token.type = Tokenizer.BUILTIN_PRIMITIVES[token.text]
+            elif token.text in Tokenizer.BUILTIN_USERTYPES:
+                token.type = Tokenizer.BUILTIN_USERTYPES[token.text]
+            elif token.text in Tokenizer.BUILTIN_PRTY_ATTRS:
+                token.type = Tokenizer.BUILTIN_PRTY_ATTRS[token.text]
+            elif token.text in Tokenizer.BUILTIN_CLSS_ATTRS:
+                token.type = Tokenizer.BUILTIN_CLSS_ATTRS[token.text]
+            elif token.text in Tokenizer.BUILTIN_MODIFIERS:
+                token.type = Tokenizer.BUILTIN_MODIFIERS[token.text]
+            elif token.text in Tokenizer.BUILTIN_VALUES:
+                token.type = Tokenizer.BUILTIN_VALUES[token.text]
 
         return self.tokens
 
