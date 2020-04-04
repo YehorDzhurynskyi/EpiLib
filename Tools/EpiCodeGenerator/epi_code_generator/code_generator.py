@@ -37,216 +37,217 @@ class CodeGenerationError(Exception):
 
         return s
 
-def static_vars(**kwargs):
 
-    def decorate(func):
+class CodeGenerator:
 
-        for k in kwargs:
-            setattr(func, k, kwargs[k])
+    def __init__(self, output_dir: str):
 
-        return func
+        self.output_dir = output_dir
+        self.filecache = {}
 
-    return decorate
+    def flush(self):
 
-@static_vars(filecache={})
-def code_generate_inject(inj: str, output_dir: str, basename: str, ext: str):
+        for path, content in self.filecache.items():
 
-    path = f'{os.path.join(output_dir, basename)}.{ext}'
-    if path not in code_generate_inject.filecache:
+            with open(path, 'w') as f:
+                f.write(content)
 
-        with open(path, 'r') as f:
-            content = f.read()
+    def _code_generate_inject(self, inj: str, basename: str, ext: str):
 
-    else:
-        content = code_generate_inject.filecache[path]
+        path = f'{os.path.join(self.output_dir, basename)}.{ext}'
+        if path not in self.filecache:
 
-    end = content.find('EPI_NAMESPACE_END()')
-    if end == -1:
+            with open(path, 'r') as f:
+                content = f.read()
 
-        tip = f'Can\'t find `EPI_NAMESPACE_END()` mark'
-        raise CodeGenerationError(basename, CodeGenerationErrorCode.CorruptedFile, tip)
+        else:
+            content = self.filecache[path]
 
-    code_generate_inject.filecache[path] = content[:end] + inj + content[end:]
-    print(code_generate_inject.filecache[path])
+        end = content.find('EPI_NAMESPACE_END()')
+        if end == -1:
 
+            tip = f'Can\'t find `EPI_NAMESPACE_END()` mark'
+            raise CodeGenerationError(basename, CodeGenerationErrorCode.CorruptedFile, tip)
 
-def code_generate(symbol: EpiSymbol, output_dir: str, basename: str):
+        self.filecache[path] = content[:end] + inj + content[end:]
 
-    class Builder:
+    def code_generate(self, symbol: EpiSymbol, basename: str):
 
-        def __init__(self):
+        class Builder:
 
-            self.indent = 0
-            self.lines = []
-            self.genregion_mark = False
-            self.namespace_mark = False
+            def __init__(self):
 
-        def line(self, line):
-            self.lines.append(f'{"    " * self.indent}{line}')
+                self.indent = 0
+                self.lines = []
+                self.genregion_mark = False
+                self.namespace_mark = False
 
-        def line_empty(self, n: int = 1):
-            for _ in range(n): self.lines.append('')
+            def line(self, line):
+                self.lines.append(f'{"    " * self.indent}{line}')
 
-        def tab(self, t: int = 1):
-            self.indent = max(0, self.indent + t)
+            def line_empty(self, n: int = 1):
+                for _ in range(n): self.lines.append('')
 
-        def mark_namespace_begin(self):
+            def tab(self, t: int = 1):
+                self.indent = max(0, self.indent + t)
 
-            assert not self.namespace_mark
-            self.lines.append('EPI_NAMESPACE_BEGIN()')
-            self.namespace_mark = True
+            def mark_namespace_begin(self):
 
-        def mark_namespace_end(self):
+                assert not self.namespace_mark
+                self.lines.append('EPI_NAMESPACE_BEGIN()')
+                self.namespace_mark = True
 
-            assert self.namespace_mark
-            self.lines.append('EPI_NAMESPACE_END()')
-            self.namespace_mark = False
+            def mark_namespace_end(self):
 
-        def mark_gen_region(self):
+                assert self.namespace_mark
+                self.lines.append('EPI_NAMESPACE_END()')
+                self.namespace_mark = False
 
-            assert not self.genregion_mark
-            self.lines.append('EPI_GENREGION_BEGIN()')
-            self.genregion_mark = True
+            def mark_gen_region(self):
 
-        def mark_gen_endregion(self):
+                assert not self.genregion_mark
+                self.lines.append('EPI_GENREGION_BEGIN()')
+                self.genregion_mark = True
 
-            assert self.genregion_mark
-            self.lines.append('EPI_GENREGION_END()')
-            self.genregion_mark = False
+            def mark_gen_endregion(self):
 
-        def build(self):
+                assert self.genregion_mark
+                self.lines.append('EPI_GENREGION_END()')
+                self.genregion_mark = False
 
-            assert not self.genregion_mark
-            assert not self.namespace_mark
+            def build(self):
 
-            return '\n'.join(self.lines)
+                assert not self.genregion_mark
+                assert not self.namespace_mark
 
-    def emit_sekeleton_file(basename: str, ext: str) -> str:
+                return '\n'.join(self.lines)
 
-        builder = Builder()
+        def emit_sekeleton_file(basename: str, ext: str) -> str:
 
-        if ext in ['cxx', 'cpp', 'h']:
+            builder = Builder()
 
-            builder.mark_gen_region()
+            if ext in ['cxx', 'cpp', 'h']:
 
-            if ext == 'cxx':
-                builder.line(f'#include "{basename}.h"')
-            elif ext == 'cpp':
-                builder.line(f'#include "{basename}.h"')
-                builder.line(f'#include "{basename}.cxx"')
-            elif ext == 'h':
-                builder.line(f'#include "{basename}.hxx"')
+                builder.mark_gen_region()
 
-            builder.mark_gen_endregion()
+                if ext == 'cxx':
+                    builder.line(f'#include "{basename}.h"')
+                elif ext == 'cpp':
+                    builder.line(f'#include "{basename}.h"')
+                    builder.line(f'#include "{basename}.cxx"')
+                elif ext == 'h':
+                    builder.line(f'#include "{basename}.hxx"')
+
+                builder.mark_gen_endregion()
+                builder.line_empty()
+
+            builder.mark_namespace_begin()
+            builder.line_empty()
+            builder.mark_namespace_end()
             builder.line_empty()
 
-        builder.mark_namespace_begin()
-        builder.line_empty()
-        builder.mark_namespace_end()
-        builder.line_empty()
+            return builder.build()
 
-        return builder.build()
+        def emit_class_serialization(clss: EpiClass, builder: Builder = Builder()) -> Builder:
 
-    def emit_class_serialization(clss: EpiClass, builder: Builder = Builder()) -> Builder:
+            builder.line(f'void {clss.name}::Serialization(json_t& json) const')
+            builder.line('{')
+            builder.tab()
+            builder.line('super::Serialization(json);')
+            builder.line_empty()
 
-        builder.line(f'void {clss.name}::Serialization(json_t& json) const')
-        builder.line('{')
-        builder.tab()
+            for p in clss.properties:
+                builder.line(f'epiSerialize({p.name}, json);')
 
-        for p in clss.properties:
-            builder.line(f'epiWrite({p.name}, json);')
+            builder.tab(-1)
+            builder.line('}')
+            builder.line_empty()
 
-        builder.tab(-1)
-        builder.line('}')
-        builder.line_empty()
+            builder.line(f'void {clss.name}::Deserialization(const json_t& json)')
+            builder.line('{')
+            builder.tab()
+            builder.line('super::Deserialization(json);')
+            builder.line_empty()
 
-        builder.line(f'void {clss.name}::Deserialization(const json_t& json)')
-        builder.line('{')
-        builder.tab()
+            for p in clss.properties:
+                builder.line(f'epiDeserialize({p.name}, json);')
 
-        for p in clss.properties:
-            builder.line(f'epiRead({p.name}, json);')
+            builder.tab(-1)
+            builder.line('}')
+            builder.line_empty()
 
-        builder.tab(-1)
-        builder.line('}')
-        builder.line_empty()
+            return builder
 
-        return builder
+        def emit_class_declaration(clss: EpiClass, builder: Builder = Builder()) -> Builder:
 
-    def emit_class_declaration(clss: EpiClass, builder: Builder = Builder()) -> Builder:
+            clss_parent = clss.parent if clss.parent is not None else 'Object'
+            builder.line(f'class {clss.name} : public {clss_parent}')
+            builder.line('{')
+            builder.mark_gen_region()
+            builder.line('public:')
+            builder.tab()
+            builder.line(f'using super = {clss_parent};')
+            builder.line_empty()
 
-        clss_parent = clss.parent if clss.parent is not None else 'Object'
-        builder.line(f'class {clss.name} : public {clss_parent}')
-        builder.line('{')
-        builder.mark_gen_region()
-        builder.line('public:')
-        builder.tab()
-        builder.line(f'using super = {clss_parent};')
-        builder.line_empty()
+            # pids
+            builder.line(f'enum {clss.name}_PIDs')
+            builder.line('{')
+            builder.tab()
 
-        # pids
-        builder.line(f'enum {clss.name}_PIDs')
-        builder.line('{')
-        builder.tab()
+            for p in clss.properties:
 
-        for p in clss.properties:
+                crc = hex(zlib.crc32(f'm_{p.name}'.encode()) & 0xffffffff)
+                builder.line(f'PID_{p.name} = {crc},')
 
-            crc = hex(zlib.crc32(f'm_{p.name}'.encode()) & 0xffffffff)
-            builder.line(f'PID_{p.name} = {crc},')
+            builder.line(f'COUNT = {len(clss.properties)}')
 
-        builder.line(f'COUNT = {len(clss.properties)}')
+            builder.tab(-1)
+            builder.line('};')
+            builder.line_empty()
+            builder.tab(-1)
+            builder.line('protected:')
+            builder.tab()
 
-        builder.tab(-1)
-        builder.line('};')
-        builder.line_empty()
-        builder.tab(-1)
-        builder.line('protected:')
-        builder.tab()
+            # getters/setters
+            for p in clss.properties:
 
-        # getters/setters
-        for p in clss.properties:
+                ptype = p.tokentype.text
+                if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES:
+                    ptype = f'const {ptype}&'
 
-            ptype = p.tokentype.text
-            if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES:
-                ptype = f'const {ptype}&'
+                builder.line(f'{ptype} Get{p.name}() const ' '{' f'return m_{p.name};' '}')
+                builder.line(f'void Set{p.name}({ptype} value) ' '{' f'm_{p.name} = value;' '}')
 
-            builder.line(f'{ptype} Get{p.name}() const ' '{' f'return m_{p.name};' '}')
-            builder.line(f'void Set{p.name}({ptype} value) ' '{' f'm_{p.name} = value;' '}')
+            builder.line_empty()
 
-        builder.line_empty()
+            # prts
+            for p in clss.properties:
+                builder.line(f'{p.tokentype.text} m_{p.name}' '{' f'{p.value}' '};')
 
-        # prts
-        for p in clss.properties:
-            builder.line(f'{p.tokentype.text} m_{p.name}' '{' f'{p.value}' '};')
+            builder.mark_gen_endregion()
+            builder.tab(-1)
+            builder.line('};')
+            builder.line_empty()
 
-        builder.mark_gen_endregion()
-        builder.tab(-1)
-        builder.line('};')
-        builder.line_empty()
+            return builder
 
-        return builder
+        if not os.path.exists(f'{os.path.join(self.output_dir, basename)}.cpp'):
 
-    if not os.path.exists(f'{os.path.join(output_dir, basename)}.cpp'):
+            with open(f'{os.path.join(self.output_dir, basename)}.cpp', 'w') as f:
+                f.write(emit_sekeleton_file(basename, 'cpp'))
 
-        with open(f'{os.path.join(output_dir, basename)}.cpp', 'w') as f:
-            f.write(emit_sekeleton_file(basename, 'cpp'))
+        if not os.path.exists(f'{os.path.join(self.output_dir, basename)}.h'):
 
-    if not os.path.exists(f'{os.path.join(output_dir, basename)}.h'):
+            with open(f'{os.path.join(self.output_dir, basename)}.h', 'w') as f:
+                f.write(emit_sekeleton_file(basename, 'h'))
 
-        with open(f'{os.path.join(output_dir, basename)}.h', 'w') as f:
-            f.write(emit_sekeleton_file(basename, 'h'))
-
-    if not os.path.exists(f'{os.path.join(output_dir, basename)}.hxx'):
-
-        with open(f'{os.path.join(output_dir, basename)}.hxx', 'w') as f:
+        with open(f'{os.path.join(self.output_dir, basename)}.hxx', 'w') as f:
             f.write(emit_sekeleton_file(basename, 'hxx'))
 
-    if not os.path.exists(f'{os.path.join(output_dir, basename)}.cxx'):
-
-        with open(f'{os.path.join(output_dir, basename)}.cxx', 'w') as f:
+        with open(f'{os.path.join(self.output_dir, basename)}.cxx', 'w') as f:
             f.write(emit_sekeleton_file(basename, 'cxx'))
 
-    assert isinstance(symbol, EpiClass)
+        assert isinstance(symbol, EpiClass)
 
-    injection = f'{emit_class_serialization(symbol).build()}\n'
-    code_generate_inject(injection, output_dir, basename, 'cxx')
+        injection = f'{emit_class_serialization(symbol).build()}\n'
+        self._code_generate_inject(injection, basename, 'cxx')

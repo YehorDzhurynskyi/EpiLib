@@ -7,7 +7,7 @@ from epi_code_generator.tokenizer import Tokenizer
 from epi_code_generator.inheritance_tree import InheritanceTree
 from epi_code_generator.inheritance_tree import InheritanceError
 from epi_code_generator.idlparser.idlparser import IDLParser
-from epi_code_generator.code_generator import code_generate
+from epi_code_generator.code_generator import CodeGenerator
 from epi_code_generator.code_generator import CodeGenerationError
 
 
@@ -64,6 +64,7 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     output_dir = args.output_dir if args.output_dir is not None else args.input_dir
+    os.makedirs(output_dir, exist_ok=True)
 
     if args.debug:
 
@@ -124,14 +125,16 @@ if __name__ == "__main__":
         logger.error(str(e))
         exit(-1)
 
-    os.makedirs(output_dir, exist_ok=True)
+    code_generator = CodeGenerator(output_dir)
     for sym in registry_global.values():
 
         basename = os.path.splitext(sym.token.filepath)[0]
 
         try:
-            code_generate(sym, output_dir, basename)
+            code_generator.code_generate(sym, basename)
         except CodeGenerationError as e:
 
             logging.error(str(e))
             exit(-1)
+
+    code_generator.flush()
