@@ -25,16 +25,19 @@ class InheritanceError(Exception):
         self.tip = tip
 
     def __str__(self):
-        return \
-            f'Inheritance error {str(self.clss)} message: '{self.err_message}'' + \
-            f' ({self.tip})' if len(self.tip) != 0 else ''
+
+        s = f'Inheritance error {str(self.clss)}: {self.err_message}'
+        if len(self.tip) != 0:
+            s = f'{s} ({self.tip})'
+
+        return s
 
 
 class InheritanceTree:
 
     class Node:
 
-        def __init__(self, clss: EpiClass, parent: InheritanceTree.Node):
+        def __init__(self, clss: EpiClass, parent):
 
             assert isinstance(clss, EpiClass)
 
@@ -45,7 +48,6 @@ class InheritanceTree:
     def __init__(self, registry: dict):
 
         self.nodes = {}
-        self.leafs = []
         self._build(registry)
 
     def _build(self, registry: dict):
@@ -73,7 +75,7 @@ class InheritanceTree:
 
             _insert(k, v)
 
-        _validate()
+        self._validate()
 
     def _validate(self):
 
@@ -97,8 +99,8 @@ class InheritanceTree:
                 else:
 
                     verb = 'is' if len(prts_intersection) == 1 else 'are'
-                    tip = f'{','.join(prts_intersection)} {verb} already defined in {node.parent.clss.token.filepath}'
-                    raise InheritanceError(v, InheritanceErrorCode.DuplicatingSymbol, tip)
+                    tip = f'{",".join(prts_intersection)} {verb} already defined in {node.parent.clss.token.filepath}'
+                    raise InheritanceError(node.clss, InheritanceErrorCode.DuplicatingSymbol, tip)
 
                 return memo[key]
 
@@ -108,7 +110,13 @@ class InheritanceTree:
             prts = set(p.name for p in node.clss.properties)
             return validate_pedigree(node, prts)
 
-        leafs = { k: v for k, v in self.nodes if v.is_leaf }
-        valid = all(leafs.items(), is_valid)
+        leafs = { k: v for k, v in self.nodes.items() if v.is_leaf }
+
+        valid = True
+        for k, v in leafs.items():
+
+            if not is_valid(k, v):
+                valid = False
+                break
 
         assert valid

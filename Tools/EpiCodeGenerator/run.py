@@ -4,9 +4,9 @@ import argparse
 
 from epi_code_generator.tokenizer import Tokenizer
 from epi_code_generator.inheritance_tree import InheritanceTree
-from epi_code_generator.inheritance_tree import InheritanceTreeError
-from epi_code_generator.idlparser.idlparser import Parser
-from epi_code_generator.code_generator import CodeGenerator
+from epi_code_generator.inheritance_tree import InheritanceError
+from epi_code_generator.idlparser.idlparser import IDLParser
+from epi_code_generator.code_generator import code_generate
 
 
 logger = logging.getLogger()
@@ -49,6 +49,11 @@ if __name__ == "__main__":
 
     args = argparser.parse_args()
 
+    output_dir = args.output_dir if args.output_dir is not None else args.input_dir
+
+    logger.info(f'Input Dir: {args.input_dir}')
+    logger.info(f'Output Dir: {output_dir}')
+
     registry_global = {}
     for root, _, files in os.walk(args.input_dir):
 
@@ -56,15 +61,15 @@ if __name__ == "__main__":
 
             path = os.path.join(root, file)
 
-            logger.info(f'Parsing: {path}')
+            logger.info(f'Parsing: {file}')
 
-            tokenizer = Tokenizer(path)
+            tokenizer = Tokenizer(root, file)
             tokens = tokenizer.tokenize()
 
             for t in tokens:
                 logger.debug(str(t))
 
-            parser = Parser(tokens)
+            parser = IDLParser(tokens)
             registry_local, errors_syntax = parser.parse()
 
             for e in errors_syntax:
@@ -85,9 +90,15 @@ if __name__ == "__main__":
 
     try:
         inherited_tree = InheritanceTree(registry_global)
-    except InheritanceTreeError as e:
-        logger.error(str(e))
+    except InheritanceError as e:
 
-    output_dir = args.output_dir if args.output_dir is not None else args.input_dir
-    code_generator = CodeGenerator(registry_global)
-    code_generator.generate()
+        logger.error(str(e))
+        exit(-1)
+
+    os.makedirs(output_dir, exist_ok=True)
+    for sym in registry_global.values():
+
+        # printsym.token.filepath
+        name = os.path.splitext(sym.token.filepath)[0]
+        prefixpath = os.path.join(output_dir, name)
+        code_generate(sym, prefixpath)

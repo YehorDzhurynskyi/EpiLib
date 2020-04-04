@@ -2,9 +2,9 @@ import abc
 import sys
 from enum import Enum, auto
 
-from .tokenizer import Tokenizer
-from .tokenizer import Token
-from .tokenizer import TokenType
+from epi_code_generator.tokenizer import Tokenizer
+from epi_code_generator.tokenizer import Token
+from epi_code_generator.tokenizer import TokenType
 
 
 '''
@@ -98,11 +98,11 @@ class EpiVariable(EpiSymbol):
         Plain = auto()
         Pointer = auto()
 
-    def __init__(self, token: Token, type: TokenType, form: EpiVariable.Form):
+    def __init__(self, token: Token, tokentype: Token, form):
 
         super(EpiVariable, self).__init__(token)
 
-        self.type = type
+        self.tokentype = tokentype
         self.form = form
         self.value = self._default_value()
 
@@ -111,20 +111,21 @@ class EpiVariable(EpiSymbol):
         value = None
         if self.form == EpiVariable.Form.Pointer:
             value = 'nullptr'
-        elif type == TokenType.BoolType:
+        elif self.tokentype.type == TokenType.BoolType:
             value = 'false'
-        elif type in [
+        elif self.tokentype.type in [
             TokenType.IntType,
             TokenType.UIntType,
             TokenType.ByteType,
             TokenType.SizeTType,
-            TokenType.HashTType,
-            TokenType.FloatingType
+            TokenType.HashTType
         ]:
             value = '0'
-        elif type == TokenType.CharType:
+        elif self.tokentype.type == TokenType.FloatingType:
+            value = '0.0f'
+        elif self.tokentype.type == TokenType.CharType:
             value = "'\\0'"
-        elif type == TokenType.StringType:
+        elif self.tokentype.type == TokenType.StringType:
             value = 'epiDEBUG_ONLY("Empty")'
 
         return value

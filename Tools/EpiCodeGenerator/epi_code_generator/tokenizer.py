@@ -1,3 +1,4 @@
+import os
 from enum import Enum, auto
 
 
@@ -37,7 +38,6 @@ class TokenType(Enum):
     IntType = auto()
     StringType = auto()
     FloatingType = auto()
-    VoidType = auto()
     ClassType = auto()
     # StructType = auto()
     # EnumType = auto()
@@ -77,7 +77,7 @@ class Token:
         self.filepath = filepath
 
     def __str__(self):
-        return '(line: {:3d}, column: {:3d}): '.format(self.line, self.column) + f'"{self.text}" ({self.type}) [f{self.filepath}]'
+        return f'[{self.filepath}' '(l:{:4d}, c:{:4d})]: '.format(self.line, self.column) + f'"{self.text}" ({self.type})'
 
 
 class Tokenizer:
@@ -107,7 +107,7 @@ class Tokenizer:
         # 'const': TokenType.ConstModifier
     }
 
-    BUILTIN_PRIMITIVES = {
+    BUILTIN_PRIMITIVE_TYPES = {
         'epiChar': TokenType.CharType,
         'epiBool': TokenType.BoolType,
         'epiByte': TokenType.ByteType,
@@ -121,13 +121,15 @@ class Tokenizer:
         'epiS16': TokenType.IntType,
         'epiS32': TokenType.IntType,
         'epiS64': TokenType.IntType,
-        'epiString': TokenType.StringType,
         'epiFloat': TokenType.FloatingType,
-        'epiDouble': TokenType.FloatingType,
-        'epiVoid': TokenType.VoidType
+        'epiDouble': TokenType.FloatingType
     }
 
-    BUILTIN_USERTYPES = {
+    BUILTIN_COMPOUND_TYPES = {
+        'epiString': TokenType.StringType
+    }
+
+    BUILTIN_USER_TYPES = {
         'class': TokenType.ClassType,
         # 'struct': TokenType.StructType,
         # 'enum': TokenType.EnumType,
@@ -163,16 +165,16 @@ class Tokenizer:
         # TBD: 'Category': TokenType.CategoryAttr,
     }
 
-    def __init__(self, filepath: str):
+    def __init__(self, root: str, file: str):
 
-        with open(filepath, 'r') as f:
+        with open(os.path.join(root, file), 'r') as f:
             self.content = f.read()
 
         self.content_len = len(self.content)
         self.__at = 0
         self.line = 1
         self.column = 1
-        self.filepath = filepath
+        self.filepath = file
         self.tokens = []
 
     def _ch(self):
@@ -196,8 +198,9 @@ class Tokenizer:
     @staticmethod
     def is_keyword(type):
         return type in\
-            Tokenizer.BUILTIN_PRIMITIVES.keys() |\
-            Tokenizer.BUILTIN_USERTYPES.keys() |\
+            Tokenizer.BUILTIN_PRIMITIVE_TYPES.keys() |\
+            Tokenizer.BUILTIN_COMPOUND_TYPES.keys() |\
+            Tokenizer.BUILTIN_USER_TYPES.keys() |\
             Tokenizer.BUILTIN_PRTY_ATTRS.keys() |\
             Tokenizer.BUILTIN_CLSS_ATTRS.keys() |\
             Tokenizer.BUILTIN_MODIFIERS.keys() |\
@@ -239,10 +242,12 @@ class Tokenizer:
 
         for token in self.tokens:
 
-            if token.text in Tokenizer.BUILTIN_PRIMITIVES:
-                token.type = Tokenizer.BUILTIN_PRIMITIVES[token.text]
-            elif token.text in Tokenizer.BUILTIN_USERTYPES:
-                token.type = Tokenizer.BUILTIN_USERTYPES[token.text]
+            if token.text in Tokenizer.BUILTIN_PRIMITIVE_TYPES:
+                token.type = Tokenizer.BUILTIN_PRIMITIVE_TYPES[token.text]
+            elif token.text in Tokenizer.BUILTIN_COMPOUND_TYPES:
+                token.type = Tokenizer.BUILTIN_COMPOUND_TYPES[token.text]
+            elif token.text in Tokenizer.BUILTIN_USER_TYPES:
+                token.type = Tokenizer.BUILTIN_USER_TYPES[token.text]
             elif token.text in Tokenizer.BUILTIN_PRTY_ATTRS:
                 token.type = Tokenizer.BUILTIN_PRTY_ATTRS[token.text]
             elif token.text in Tokenizer.BUILTIN_CLSS_ATTRS:

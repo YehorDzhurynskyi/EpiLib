@@ -16,7 +16,7 @@ class AClass
     epiChar Prty_6 = '@';
     epiChar Prty_7 = '\'';
 
-    epiFloat Virtual_1 = 142;
+    epiFloat Virtual_1 = 142.0;
     epiS32 Virtual_2 = -991;
 };
 

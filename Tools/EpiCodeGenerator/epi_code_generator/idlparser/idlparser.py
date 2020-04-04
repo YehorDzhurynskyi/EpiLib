@@ -1,14 +1,14 @@
 from enum import Enum, auto
 
-from .tokenizer import Tokenizer
-from .tokenizer import Token
-from .tokenizer import TokenType
+from epi_code_generator.tokenizer import Tokenizer
+from epi_code_generator.tokenizer import Token
+from epi_code_generator.tokenizer import TokenType
 
-from .symbol import EpiVariable
-from .symbol import EpiClass
+from epi_code_generator.symbol import EpiVariable
+from epi_code_generator.symbol import EpiClass
 
 
-class SyntaxErrorCode(Enum):
+class IDLSyntaxErrorCode(Enum):
 
     NoMatchingClosingBrace = auto()
     NoMatchingOpeningBrace = auto()
@@ -23,20 +23,20 @@ class SyntaxErrorCode(Enum):
 
 
 SYNTAX_ERROR_MSGS = {
-    SyntaxErrorCode.NoMatchingClosingBrace: 'No matching closing brace for',
-    SyntaxErrorCode.NoMatchingOpeningBrace: 'No matching opening brace for',
-    SyntaxErrorCode.NoMatchingClosingBracket: 'No matching closing bracket for',
-    SyntaxErrorCode.NestedBracket: 'Nested brackets \'[]\', \'()\' are forbidden',
-    SyntaxErrorCode.UnexpectedToken: 'Unexpected token',
-    SyntaxErrorCode.UnexpectedKeywordUsage: 'Unexpected keyword usage',
-    SyntaxErrorCode.UnexpectedEOF: 'Unexpected end of file',
-    SyntaxErrorCode.IncorrectValueLiteral: 'Incorrect value literal',
-    SyntaxErrorCode.UnsupportedProperty: 'Specified property declaration is unsupported',
-    SyntaxErrorCode.MatchingTokenOnSameLine: 'Matching token should be located on same line'
+    IDLSyntaxErrorCode.NoMatchingClosingBrace: 'No matching closing brace for',
+    IDLSyntaxErrorCode.NoMatchingOpeningBrace: 'No matching opening brace for',
+    IDLSyntaxErrorCode.NoMatchingClosingBracket: 'No matching closing bracket for',
+    IDLSyntaxErrorCode.NestedBracket: 'Nested brackets \'[]\', \'()\' are forbidden',
+    IDLSyntaxErrorCode.UnexpectedToken: 'Unexpected token',
+    IDLSyntaxErrorCode.UnexpectedKeywordUsage: 'Unexpected keyword usage',
+    IDLSyntaxErrorCode.UnexpectedEOF: 'Unexpected end of file',
+    IDLSyntaxErrorCode.IncorrectValueLiteral: 'Incorrect value literal',
+    IDLSyntaxErrorCode.UnsupportedProperty: 'Specified property declaration is unsupported',
+    IDLSyntaxErrorCode.MatchingTokenOnSameLine: 'Matching token should be located on same line'
 }
 
 
-class SyntaxError:
+class IDLSyntaxError:
 
     def __init__(self, token, err_code, tip = ''):
 
@@ -46,12 +46,14 @@ class SyntaxError:
         self.tip = tip
 
     def __str__(self):
-        return \
-            f'Syntax error {str(self.token)} message: '{self.err_message}'' + \
-            f' ({self.tip})' if len(self.tip) != 0 else ''
 
+        s = f'Syntax error {str(self.token)}: {self.err_message}'
+        if len(self.tip) != 0:
+            s = f'{s} ({self.tip})'
 
-class Parser:
+        return s
+
+class IDLParser:
 
     def __init__(self, tokens):
 
@@ -74,7 +76,7 @@ class Parser:
 
         if self.tokens[-1].type != TokenType.EOF:
 
-            self.syntax_errors.append(SyntaxError(self.tokens[-1], SyntaxErrorCode.UnexpectedEOF))
+            self.syntax_errors.append(IDLSyntaxError(self.tokens[-1], IDLSyntaxErrorCode.UnexpectedEOF))
             return self.syntax_errors
 
         registry = {}
@@ -90,9 +92,9 @@ class Parser:
 
                 t = self._curr()
 
-                if t.text not in Tokenizer.BUILTIN_USERTYPES:
+                if t.text not in Tokenizer.BUILTIN_USER_TYPES:
 
-                    self._error_push_unexpected_token(t, f'Expected an usertype: {','.join(Tokenizer.BUILTIN_USERTYPES.keys())}')
+                    self._error_push_unexpected_token(t, f'Expected an usertype: {",".join(Tokenizer.BUILTIN_USER_TYPES.keys())}')
                     break
 
                 if not t.type == TokenType.ClassType:
@@ -120,7 +122,7 @@ class Parser:
             self._error_push_unexpected_token(t, 'Expected an \'<identifier>\'')
             return None
 
-        clss = EpiClass(t.text)
+        clss = EpiClass(t)
 
         t = self._curr()
         if t.type == TokenType.Colon:
@@ -133,8 +135,17 @@ class Parser:
 
             clss.parent = t.text
 
+        def unpack_scope(s):
+
+            for e in s:
+
+                if isinstance(e, EpiVariable):
+                    clss.properties.append(e)
+                elif isinstance(e, list):
+                    unpack_scope(e)
+
         scope = self._parse_scope()
-        # TODO: process scope
+        unpack_scope(scope)
 
         t = self._next()
         if t.type != TokenType.Semicolon:
@@ -160,20 +171,22 @@ class Parser:
 
             # TODO: check if property isn't reference
 
-            if self._curr().type == TokenType.OpenBrace:
+            if self._curr().type == TokenType.CloseBrace:
+                break
+            elif self._curr().type == TokenType.OpenBrace:
                 scope.append(self._parse_scope())
-            else
-                scope.append(self._parse_property())
+            else:
+                scope.append(self._parse_variable())
 
         t = self._next()
         if t.type != TokenType.CloseBrace:
 
-            self.syntax_errors.append(SyntaxError(t, SyntaxErrorCode.NoMatchingClosingBrace, 'Expected \'}\''))
+            self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.NoMatchingClosingBrace, 'Expected \'}\''))
             return None
 
         return scope
 
-'''
+    """
     def _parse_attr_list(self):
 
         attrs = []
@@ -231,12 +244,16 @@ class Parser:
             return None
 
         return attr
-'''
+    """
 
     def _parse_variable(self):
 
         typetoken = self._next()
-        if typetoken.text not in Tokenizer.BUILTIN_PRIMITIVES and typetoken.type != TokenType.Identifier:
+        if typetoken.text not in (
+            Tokenizer.BUILTIN_PRIMITIVE_TYPES.keys() |
+            Tokenizer.BUILTIN_COMPOUND_TYPES.keys()
+        ) \
+        and typetoken.type != TokenType.Identifier:
             return None
 
         form = EpiVariable.Form.Plain
@@ -261,16 +278,16 @@ class Parser:
         if t.type != TokenType.Identifier:
             return None
 
-        var = EpiVariable(t, typetoken.type, form)
+        var = EpiVariable(t, typetoken, form)
 
         # NOTE: if property is virtual an assignment is invalid
         t = self._next()
         if t.type == TokenType.Assing:
 
-            if var.type == TokenType.BoolType:
+            t = self._curr()
+            if var.tokentype.type == TokenType.BoolType:
                 var.value = self._parse_literal_boolean()
-            elif var.type in
-            [
+            elif var.tokentype.type in [
                 TokenType.ByteType,
                 TokenType.IntType,
                 TokenType.UIntType,
@@ -278,20 +295,20 @@ class Parser:
                 TokenType.HashTType
             ]:
                 var.value = self._parse_literal_integer()
-            elif var.type == TokenType.FloatingType:
+            elif var.tokentype.type == TokenType.FloatingType:
                 var.value = self._parse_literal_floating()
-            elif var.type == TokenType.CharType:
+            elif var.tokentype.type == TokenType.CharType:
                 var.value = self._parse_literal_char()
-            elif var.type == TokenType.StringType:
+            elif var.tokentype.type == TokenType.StringType:
                 var.value = self._parse_literal_string()
-            elif var.view_type == EpiVariable.Form.Pointer:
+            elif var.form == EpiVariable.Form.Pointer:
 
-                self.syntax_errors.append(SyntaxError(t, SyntaxErrorCode.IncorrectValueLiteral, 'Pointers are unassingable and are set with \'null\' by default'))
+                self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.IncorrectValueLiteral, 'Pointers are unassingable and are set with \'null\' by default'))
                 return None
 
-            elif var.type == TokenType.Identifier:
+            elif var.tokentype.type == TokenType.Identifier:
 
-                self.syntax_errors.append(SyntaxError(t, SyntaxErrorCode.IncorrectValueLiteral, 'Custom types are unassingable'))
+                self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.IncorrectValueLiteral, 'Custom types are unassingable'))
                 return None
 
             else:
@@ -299,7 +316,7 @@ class Parser:
 
             if var.value is None:
 
-                self.syntax_errors.append(SyntaxError(t, SyntaxErrorCode.IncorrectValueLiteral))
+                self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.IncorrectValueLiteral))
                 return None
 
             t = self._next()
@@ -359,6 +376,6 @@ class Parser:
     def _error_push_unexpected_token(self, t, tip = ''):
 
         if Tokenizer.is_keyword(t.type):
-            self.syntax_errors.append(SyntaxError(t, SyntaxErrorCode.UnexpectedKeywordUsage, tip))
+            self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.UnexpectedKeywordUsage, tip))
         else:
-            self.syntax_errors.append(SyntaxError(t, SyntaxErrorCode.UnexpectedToken, tip))
+            self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.UnexpectedToken, tip))
