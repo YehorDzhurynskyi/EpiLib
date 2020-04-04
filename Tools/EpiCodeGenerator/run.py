@@ -1,16 +1,18 @@
 import os
 import logging
 import argparse
+import shutil
 
 from epi_code_generator.tokenizer import Tokenizer
 from epi_code_generator.inheritance_tree import InheritanceTree
 from epi_code_generator.inheritance_tree import InheritanceError
 from epi_code_generator.idlparser.idlparser import IDLParser
 from epi_code_generator.code_generator import code_generate
+from epi_code_generator.code_generator import CodeGenerationError
 
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('[%(levelname)5s] %(message)s')
 
@@ -19,7 +21,7 @@ stderr_handler.setLevel(logging.INFO)
 stderr_handler.setFormatter(formatter)
 
 file_handler = logging.FileHandler('epi_code_generator.log', mode='w')
-file_handler.setLevel(logging.DEBUG)
+file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(stderr_handler)
@@ -47,9 +49,36 @@ if __name__ == "__main__":
         help='TODO: fill'
     )
 
+    grp_optional.add_argument(
+        '--debug',
+        action='store_true',
+        help='TODO: fill'
+    )
+
+    grp_optional.add_argument(
+        '--nobackup',
+        action='store_true',
+        help='TODO: fill'
+    )
+
     args = argparser.parse_args()
 
     output_dir = args.output_dir if args.output_dir is not None else args.input_dir
+
+    if args.debug:
+
+        file_handler.setLevel(logging.DEBUG)
+        logger.info(f'Debug mode enabled')
+
+    if not args.nobackup:
+
+        from tempfile import TemporaryDirectory
+        from tempfile import gettempdir
+        from uuid import uuid1
+
+        backupdir = f'{gettempdir()}/EpiCodeGenerator-{uuid1()}-backup'
+        logger.info(f'Backup <input dir> into {backupdir}')
+        shutil.copytree(args.input_dir, backupdir)
 
     logger.info(f'Input Dir: {args.input_dir}')
     logger.info(f'Output Dir: {output_dir}')
@@ -98,7 +127,11 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
     for sym in registry_global.values():
 
-        # printsym.token.filepath
-        name = os.path.splitext(sym.token.filepath)[0]
-        prefixpath = os.path.join(output_dir, name)
-        code_generate(sym, prefixpath)
+        basename = os.path.splitext(sym.token.filepath)[0]
+
+        try:
+            code_generate(sym, output_dir, basename)
+        except CodeGenerationError as e:
+
+            logging.error(str(e))
+            exit(-1)

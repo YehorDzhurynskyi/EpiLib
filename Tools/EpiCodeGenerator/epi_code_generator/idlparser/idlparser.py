@@ -370,7 +370,8 @@ class IDLParser:
         # NOTE: could be a method
         t = self._curr()
         return  t.type == TokenType.Identifier or\
-                t.text in Tokenizer.BUILTIN_PRIMITIVES or\
+                t.text in Tokenizer.BUILTIN_PRIMITIVE_TYPES or\
+                t.text in Tokenizer.BUILTIN_COMPOUND_TYPES or\
                 t.text in Tokenizer.BUILTIN_MODIFIERS
 
     def _error_push_unexpected_token(self, t, tip = ''):

@@ -7,7 +7,6 @@ add_library(EpiCore
     EpiCore/pch.cpp
 
     EpiCore/types.h
-    EpiCore/env.h
     EpiCore/common.h
 
     EpiCore/Clock.h
@@ -48,6 +47,8 @@ add_subdirectory(Extern/exprtk)
 epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
 epi_extern_register(exprtk)
+
+configure_file(EpiCore/epi_config.h.in EpiCore/epi_config.h)
 
 if(MSVC)
     # needed for exprtk.hpp (probably?)

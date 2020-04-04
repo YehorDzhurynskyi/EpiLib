@@ -11,7 +11,3 @@
 #else
 #define epiDEBUG_ONLY(x)
 #endif
-
-#ifdef _WIN32
-#define epiWINDOWS
-#endif
