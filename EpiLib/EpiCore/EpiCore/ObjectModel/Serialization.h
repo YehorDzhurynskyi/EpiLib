@@ -1,58 +1,14 @@
 #pragma once
 
-// ============================= PROPERTY =============================
-
-#define epiReadProperty(_Key, _Type, _Json)     \
-{                                               \
-    assert(_Json.is_object());                  \
-    assert(_Json[#_Key].is_##_Type());          \
-    assert(_Json.find(#_Key) != _Json.end());   \
-    _Json[#_Key].get_to(m_##_Key);              \
-}                                               \
-
-#define epiReadPropertyDefault(_Key, _Type, _Json, _Default)    \
-{                                                               \
-    assert(_Json.is_object());                                  \
-    if (_Json.find(#_Key) != _Json.end())                       \
-    {                                                           \
-        assert(_Json[#_Key].is_##_Type());                      \
-        _Json[#_Key].get_to(m_##_Key);                          \
-    }                                                           \
-    else                                                        \
-    {                                                           \
-        m_##_Key = _Default;                                    \
-    }                                                           \
-}                                                               \
-
-// ============================= OBJECT =============================
-
-#define epiReadObject(_Key, _Json)              \
-{                                               \
-    assert(_Json.is_object());                  \
-    assert(_Json[#_Key].is_object());           \
-    assert(_Json.find(#_Key) != _Json.end());   \
-    m_##_Key.Deserialization(_Json[#_Key]);     \
-}                                               \
-
-// ============================= ARRAY =============================
-#define epiReadArray(_Key, _Json)               \
-{                                               \
-    assert(m_##_Key.IsEmpty());                 \
-    assert(_Json.is_object());                  \
-    assert(_Json.find(#_Key) != _Json.end());   \
-    assert(_Json[#_Key].is_array());            \
-    for (auto& j : _Json[#_Key])                \
-    {                                           \
-        auto& item = m_##_Key.Push();           \
-        item.Deserialize(j);                    \
-    }                                           \
-}                                               \
-
 #define epiSerialize(_Key, _Json) epiSerialize_Impl(#_Key, m_##_Key, _Json)
+#define epiDeserialize(_Key, _Json) epiDeserialize_Impl(#_Key, m_##_Key, _Json)
+
+namespace epi
+{
 
 // TODO: replace FiniteFloating class with getters/setters checks
-template< class T >
-struct epi_is_fundamental
+template<typename T>
+struct is_fundamental
     : std::integral_constant<
         bool,
         std::is_fundamental_v<T> ||
@@ -62,13 +18,52 @@ struct epi_is_fundamental
     >
 {};
 
-template< class T >
-constexpr bool epi_is_fundamental_v = epi_is_fundamental<T>::value;
+template<typename T>
+struct is_arithmetic
+    : std::integral_constant<
+        bool,
+        std::is_arithmetic_v<T> ||
+        std::is_same_v<FiniteFloating<float>, T> ||
+        std::is_same_v<FiniteFloating<double>, T>
+    >
+{};
+
+template<typename T>
+struct is_floating_point
+    : std::integral_constant<
+        bool,
+        std::is_floating_point_v<T> ||
+        std::is_same_v<FiniteFloating<float>, T> ||
+        std::is_same_v<FiniteFloating<double>, T>
+    >
+{};
+
+template<typename T>
+struct is_integral
+    : std::integral_constant<
+        bool,
+        std::is_integral_v<T>
+    >
+{};
+
+template<typename T>
+constexpr bool is_fundamental_v = is_fundamental<T>::value;
+
+template<typename T>
+constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
+
+template<typename T>
+constexpr bool is_floating_point_v = is_floating_point<T>::value;
+
+template<typename T>
+constexpr bool is_integral_v = is_integral<T>::value;
+
+}
 
 template<typename T>
 inline auto epiSerialize_Impl_Fetch(T& v)
 {
-    if constexpr (epi_is_fundamental_v<T>)
+    if constexpr (epi::is_fundamental_v<T>)
     {
         return v;
     }
@@ -95,6 +90,58 @@ inline auto epiSerialize_Impl_Fetch(T& v)
 }
 
 template<typename T>
+inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
+{
+    if constexpr (epi::is_fundamental_v<T>)
+    {
+        if constexpr (std::is_same_v<epiBool, T>)
+        {
+            assert(json.is_boolean());
+        }
+        else if constexpr (epi::is_floating_point_v<T>)
+        {
+            assert(json.is_number_float());
+        }
+        else if constexpr (epi::is_integral_v<T>)
+        {
+            if constexpr (std::is_signed_v<T>)
+            {
+                assert(json.is_number_integer());
+            }
+            else
+            {
+                assert(json.is_number_unsigned());
+            }
+        }
+        else if constexpr (std::is_same_v<epiString, T>)
+        {
+            assert(json.is_string());
+        }
+        json.get_to(v);
+    }
+    else if constexpr (std::is_base_of_v<epi::Object, T>)
+    {
+        assert(json.is_object());
+        v.Deserialize(json);
+    }
+    else if constexpr (std::is_base_of_v<epi::BaseArray, T>)
+    {
+        assert(v.IsEmpty());
+        assert(json.is_array());
+
+        for (auto& j : json)
+        {
+            auto& item = v.Push();
+            epiDeserialize_Impl_Fetch(item, j);
+        }
+    }
+    else
+    {
+        static_assert(false, "Unhandled type for seriazliation (epiSerialize_Impl_Fetch)");
+    }
+}
+
+template<typename T>
 inline void epiSerialize_Impl(const char* key, T& v, json_t& json)
 {
     assert(json.is_object());
@@ -107,7 +154,7 @@ template<typename T>
 inline void epiDeserialize_Impl(const char* key, T& v, const json_t& json)
 {
     assert(json.is_object());
-    assert(json.find(key) == json.end());
+    assert(json.find(key) != json.end());
 
-    json[key] = epiSerialize_Impl_Fetch(v);
+    epiDeserialize_Impl_Fetch(v, json[key]);
 }
