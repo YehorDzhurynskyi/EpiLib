@@ -12,7 +12,7 @@ class AClass
     epiBool Prty_2 = true;
     DataClass Prty_3;
     DataClass**** Prty_4;
-    epiString Prty_5 = "some text";
+    epiString Prty_5 = "some another text";
     epiChar Prty_6 = '@';
     epiChar Prty_7 = '\'';
 

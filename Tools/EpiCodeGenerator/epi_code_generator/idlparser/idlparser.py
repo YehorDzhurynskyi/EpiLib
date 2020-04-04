@@ -263,6 +263,7 @@ class IDLParser:
             if t.type == TokenType.Asterisk:
 
                 form = EpiVariable.Form.Pointer
+                typetoken.text += '*'
                 self._next()
 
             else:
