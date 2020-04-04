@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ClassRegistry.h"
+#include "EmitMeta.h"
 
 namespace epi
 {
@@ -51,54 +52,6 @@ enum class MetaTypeID : epiU32
     DynamicModel,
     StaticRegulatedModel,
     ModelItem
-};
-
-class Object;
-class MetaProperty final
-{
-public:
-    MetaProperty() = default;
-    MetaProperty(MetaTypeID propertyTypeID,
-                 epiSize_t offset,
-                 const epiChar* name,
-                 MetaProperty* nestedMetaProperty);
-    MetaProperty(const MetaProperty&) = delete;
-    MetaProperty& operator=(const MetaProperty&) = delete;
-    MetaProperty(MetaProperty&&);
-    MetaProperty& operator=(MetaProperty&&);
-    ~MetaProperty();
-
-    epiBool IsValid() const;
-    epiBool HasNested() const;
-
-    MetaTypeID GetTypeID() const;
-
-    epiByte* GetValue(const Object& object) const;
-
-    MetaProperty* GetNestedMetaProperty();
-    const MetaProperty* GetNestedMetaProperty() const;
-
-protected:
-    MetaTypeID m_PropertyTypeID;
-    epiSize_t m_Offset;
-    MetaProperty* m_NestedMetaProperty;
-
-#ifdef epiUSE_METAPROPERTY_NAME
-public:
-    const epiChar* GetName() const { return m_Name.c_str(); }
-
-protected:
-    void SetName(const epiChar* name) { m_Name = name; }
-
-protected:
-    epiString m_Name;
-#else // epiUSE_METAPROPERTY_NAME
-public:
-    const epiChar* GetName() const { return ""; }
-
-protected:
-    void SetName(const epiChar* name) {}
-#endif // epiUSE_METAPROPERTY_NAME
 };
 
 class MetaType

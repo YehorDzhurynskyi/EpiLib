@@ -178,6 +178,26 @@ class CodeGenerator:
 
             return builder
 
+        def emit_class_meta(clss: EpiClass, builder: Builder = Builder()) -> Builder:
+
+            # TODO: make it constexpr
+            builder.line(f'MetaClassData {clss.name}::EmitMetaClassData()')
+            builder.line('{')
+            builder.tab()
+            builder.line('MetaClassData data;')
+            builder.line_empty()
+
+            for p in clss.properties:
+                builder.line(f'epiMetaProperty({p.name}, {clss.name}, {p.tokentype.text});')
+
+            builder.line_empty()
+            builder.line('return data;')
+
+            builder.tab(-1)
+            builder.line('}')
+            builder.line_empty()
+            return builder
+
         def emit_class_declaration(clss: EpiClass, builder: Builder = Builder()) -> Builder:
 
             clss_parent = clss.parent if clss.parent is not None else 'Object'
@@ -189,6 +209,13 @@ class CodeGenerator:
             builder.line(f'using super = {clss_parent};')
             builder.line_empty()
 
+            crc = hex(zlib.crc32(clss.name.encode()) & 0xffffffff)
+            builder.line(f'constexpr epiHash_t TypeID = {crc};')
+            builder.line_empty()
+
+            builder.line(f'static MetaClassData EmitMetaClassData();')
+            builder.line_empty()
+
             # pids
             builder.line(f'enum {clss.name}_PIDs')
             builder.line('{')
@@ -196,13 +223,16 @@ class CodeGenerator:
 
             for p in clss.properties:
 
-                crc = hex(zlib.crc32(f'm_{p.name}'.encode()) & 0xffffffff)
+                crc = hex(zlib.crc32(p.name.encode()) & 0xffffffff)
                 builder.line(f'PID_{p.name} = {crc},')
 
             builder.line(f'COUNT = {len(clss.properties)}')
 
             builder.tab(-1)
             builder.line('};')
+            builder.line_empty()
+            builder.line('void Serialization(json_t& json) override;')
+            builder.line('void Deserialization(const json_t& json) override;')
             builder.line_empty()
             builder.tab(-1)
             builder.line('protected:')
@@ -250,4 +280,7 @@ class CodeGenerator:
         assert isinstance(symbol, EpiClass)
 
         injection = f'{emit_class_serialization(symbol).build()}\n'
+        self._code_generate_inject(injection, basename, 'cxx')
+
+        injection = f'{emit_class_meta(symbol).build()}\n'
         self._code_generate_inject(injection, basename, 'cxx')
