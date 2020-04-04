@@ -137,4 +137,5 @@ if __name__ == "__main__":
             logging.error(str(e))
             exit(-1)
 
+    # TODO: check crc32 collisions
     code_generator.flush()

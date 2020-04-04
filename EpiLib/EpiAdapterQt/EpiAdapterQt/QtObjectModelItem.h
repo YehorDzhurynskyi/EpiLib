@@ -16,7 +16,7 @@ class QtObjectModelItem
 public:
     QtObjectModelItem(epiS32 row, QtObjectModelItem* parent = nullptr);
 
-    void FillMultiDimensional(BaseArray& array, const MetaProperty& itemMeta);
+    void FillMultiDimensional(BaseArray& array, MetaTypeID nestedTypeID);
     void FillCompound(Object& object);
     void FillChildren(Object& object, const MetaClassData& meta);
 

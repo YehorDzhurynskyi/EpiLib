@@ -7,8 +7,8 @@
                                                                                         \
 using super = _Super;                                                                   \
                                                                                         \
-using _ClassName##_MetaClassData = MetaClassData;                                       \
-friend _ClassName##_MetaClassData CreateMetaClassData_##_ClassName();                   \
+static MetaClassData EmitMetaClassData();                                               \
+static MetaClassData _ClassName##_MetaClassData;                                        \
                                                                                         \
 const MetaClass& GetMetaClass() const override                                          \
 {                                                                                       \
@@ -35,9 +35,8 @@ using json_t = nlohmann::json;
 class Object
 {
 public:
-    using Object_MetaClassData = MetaClassData;
-    friend Object_MetaClassData CreateMetaClassData_Object();
-
+    static MetaClassData EmitMetaClassData();
+    static MetaClassData Object_MetaClassData;
     static inline MetaTypeID TypeID = MetaTypeID::Object;
 
 public:

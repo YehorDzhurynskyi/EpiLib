@@ -152,7 +152,7 @@ epiBool QtObjectModelItem::IsEditable() const
     return MetaType::IsFundamental(m_Meta->GetTypeID());
 }
 
-void QtObjectModelItem::FillMultiDimensional(BaseArray& array, const MetaProperty& itemMeta)
+void QtObjectModelItem::FillMultiDimensional(BaseArray& array, MetaTypeID nestedTypeID)
 {
     epiByte* data = array.GetData();
     const epiSize_t arraySz = array.GetSize();
@@ -164,9 +164,9 @@ void QtObjectModelItem::FillMultiDimensional(BaseArray& array, const MetaPropert
     {
         std::unique_ptr<QtObjectModelItem> nestedItem = std::make_unique<QtObjectModelItem>(i, this);
         nestedItem->m_ValueAddr = data + i * itemSz;
-        nestedItem->m_Meta = &itemMeta;
+        nestedItem->m_Meta = nullptr;
 
-        if (MetaType::IsCompound(itemMeta.GetTypeID()))
+        if (MetaType::IsCompound(nestedTypeID))
         {
             nestedItem->FillCompound(*reinterpret_cast<Object*>(nestedItem->m_ValueAddr));
         }
@@ -212,7 +212,7 @@ void QtObjectModelItem::FillChildren(Object& object, const MetaClassData& meta)
         }
         else if (MetaType::IsMultiDimensional(property.GetTypeID()))
         {
-            item->FillMultiDimensional(*reinterpret_cast<BaseArray*>(item->m_ValueAddr), *property.GetNestedMetaProperty());
+            item->FillMultiDimensional(*reinterpret_cast<BaseArray*>(item->m_ValueAddr), property.GetNestedTypeID());
         }
 
         m_Children.push_back(std::move(item));

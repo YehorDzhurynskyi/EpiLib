@@ -9,78 +9,53 @@
 namespace epi
 {
 
-MetaProperty::MetaProperty(MetaTypeID propertyTypeID,
-                           epiSize_t offset,
-                           const epiChar* name,
-                           MetaProperty* nestedMetaProperty)
-    : m_PropertyTypeID(propertyTypeID)
-    , m_Offset(offset)
-    , m_NestedMetaProperty(nestedMetaProperty)
-{
-    assert(IsValid());
-    SetName(name);
-}
-
 MetaProperty::MetaProperty(MetaProperty&& rhs)
 {
-    m_PropertyTypeID = std::move(rhs.m_PropertyTypeID);
+    m_TypeID = std::move(rhs.m_TypeID);
     m_Offset = std::move(rhs.m_Offset);
-    m_NestedMetaProperty = std::move(rhs.m_NestedMetaProperty);
+    m_NestedTypeID = std::move(rhs.m_NestedTypeID);
 #ifdef epiUSE_METAPROPERTY_NAME
     m_Name = std::move(rhs.m_Name);
 #endif
-    rhs.m_NestedMetaProperty = nullptr;
 }
 
 MetaProperty& MetaProperty::operator=(MetaProperty&& rhs)
 {
-    m_PropertyTypeID = std::move(rhs.m_PropertyTypeID);
+    m_TypeID = std::move(rhs.m_TypeID);
     m_Offset = std::move(rhs.m_Offset);
-    m_NestedMetaProperty = std::move(rhs.m_NestedMetaProperty);
+    m_NestedTypeID = std::move(rhs.m_NestedTypeID);
 #ifdef epiUSE_METAPROPERTY_NAME
     m_Name = std::move(rhs.m_Name);
 #endif
-    rhs.m_NestedMetaProperty = nullptr;
     return *this;
-}
-
-MetaProperty::~MetaProperty()
-{
-    delete m_NestedMetaProperty;
 }
 
 epiBool MetaProperty::IsValid() const
 {
-    return m_PropertyTypeID != MetaTypeID::None;
+    return m_TypeID != MetaTypeID::None;
 }
 
 epiBool MetaProperty::HasNested() const
 {
-    return m_NestedMetaProperty != nullptr;
+    return m_NestedTypeID != MetaTypeID::None;
 }
 
 MetaTypeID MetaProperty::GetTypeID() const
 {
     assert(IsValid());
-    return m_PropertyTypeID;
+    return m_TypeID;
+}
+
+MetaTypeID MetaProperty::GetNestedTypeID() const
+{
+    assert(IsValid());
+    return m_NestedTypeID;
 }
 
 epiByte* MetaProperty::GetValue(const Object& object) const
 {
     assert(IsValid());
     return (epiByte*)&object + m_Offset;
-}
-
-MetaProperty* MetaProperty::GetNestedMetaProperty()
-{
-    assert(HasNested());
-    return m_NestedMetaProperty;
-}
-
-const MetaProperty* MetaProperty::GetNestedMetaProperty() const
-{
-    assert(HasNested());
-    return m_NestedMetaProperty;
 }
 
 epiBool MetaType::IsFundamental(MetaTypeID typeID)
@@ -121,7 +96,7 @@ epiByte* MetaType::GetElementByIndex(const epiByte* container, const MetaPropert
 {
     if (!IsMultiDimensional(meta.GetTypeID()) || !meta.HasNested()) goto invalid_input;
 
-    const MetaClass* elemMeta = ClassRegistry_Type_Lookup(meta.GetNestedMetaProperty()->GetTypeID());
+    const MetaClass* elemMeta = ClassRegistry_Type_Lookup(meta.GetNestedTypeID());
     if (elemMeta == nullptr) goto invalid_input;
 
     const epiByte* element = nullptr;
@@ -160,7 +135,7 @@ epiByte* MetaType::GetElementByHash(const epiByte* container, const MetaProperty
 {
     if (meta.GetTypeID() != MetaTypeID::HashMap || !meta.HasNested()) goto invalid_input;
 
-    const MetaClass* elemMeta = ClassRegistry_Type_Lookup(meta.GetNestedMetaProperty()->GetTypeID());
+    const MetaClass* elemMeta = ClassRegistry_Type_Lookup(meta.GetNestedTypeID());
     if (elemMeta == nullptr) goto invalid_input;
 
     return ((BaseHashMap*)container)->Get(hash);

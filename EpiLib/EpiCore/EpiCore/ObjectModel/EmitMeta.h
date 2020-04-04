@@ -1,12 +1,14 @@
 #pragma once
 
+#include "EpiCore/pch.h"
+
 namespace epi
 {
 
 class Object;
 class MetaProperty final
 {
-    friend MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, epiHash_t typeID, epiHash_t nestedTypeID);
+    friend MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID);
 
 private:
     MetaProperty() = default;
@@ -16,21 +18,19 @@ public:
     MetaProperty& operator=(const MetaProperty&) = delete;
     MetaProperty(MetaProperty&&);
     MetaProperty& operator=(MetaProperty&&);
-    ~MetaProperty();
+    ~MetaProperty() = default;
 
     epiBool IsValid() const;
     epiBool HasNested() const;
 
-    epiHash_t GetTypeID() const;
+    MetaTypeID GetTypeID() const;
+    MetaTypeID GetNestedTypeID() const;
 
     epiByte* GetValue(const Object& object) const;
 
-    MetaProperty* GetNestedMetaProperty();
-    const MetaProperty* GetNestedMetaProperty() const;
-
 protected:
-    epiHash_t m_TypeID;
-    epiHash_t m_NestedTypeID;
+    MetaTypeID m_TypeID;
+    MetaTypeID m_NestedTypeID;
     epiSize_t m_Offset;
 
 #ifdef epiUSE_METAPROPERTY_NAME
@@ -53,21 +53,23 @@ protected:
 
 #define epiMetaProperty(_Name, _Owner, _Type, _NestedType) \
     { \
-        auto & m = epiMetaProperty_Impl(#_Name, \
-                                        offsetof(_Owner, m_##_Name), \
-                                        epiHashCompileTime(#_Type), \
-                                        epiHashCompileTime(#_NestedType)); \
+        auto m = epiMetaProperty_Impl(#_Name, \
+                                      offsetof(_Owner, m_##_Name), \
+                                      MetaTypeID::_Type, \
+                                      MetaTypeID::_NestedType); \
         data.AddProperty(epiHashCompileTime(#_Name), std::move(m)); \
     } \
 
-inline MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, epiHash_t typeID, epiHash_t nestedTypeID)
+inline MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID)
 {
     MetaProperty prty;
 
-    prty.m_Name = name;
+    prty.SetName(name);
     prty.m_Offset = offset;
     prty.m_TypeID = typeID;
     prty.m_NestedTypeID = nestedTypeID;
+
+    assert(prty.IsValid());
 
     return prty;
 }

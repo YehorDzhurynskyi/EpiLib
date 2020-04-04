@@ -47,14 +47,7 @@ epiBool PropertyPath::Parse(const std::string& path)
             if (MetaType::IsMultiDimensional(metaProperty->GetTypeID()))
             {
                 assert(metaProperty->HasNested());
-                const MetaProperty* elemMetaProperty = metaProperty->GetNestedMetaProperty();
-                MetaTypeID elemTypeID = elemMetaProperty->GetTypeID();
-
-                if (MetaType::IsHandle(elemTypeID))
-                {
-                    assert(elemMetaProperty->HasNested());
-                    elemTypeID = elemMetaProperty->GetNestedMetaProperty()->GetTypeID();
-                }
+                MetaTypeID elemTypeID = metaProperty->GetNestedTypeID();
 
                 if (MetaType::IsCompound(elemTypeID))
                 {
@@ -149,7 +142,7 @@ epiByte* PropertyPath::GetValue(const Object& object) const
                 return nullptr;
             }
 
-            if (MetaType::IsHandle(property->GetNestedMetaProperty()->GetTypeID()))
+            if (MetaType::IsHandle(property->GetTypeID()))
             {
                 value = ((BaseHandle*)value)->GetValue();
             }
