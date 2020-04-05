@@ -97,6 +97,7 @@ class EpiVariable(EpiSymbol):
 
         Plain = auto()
         Pointer = auto()
+        Array = auto()
 
     def __init__(self, token: Token, tokentype: Token, form):
 

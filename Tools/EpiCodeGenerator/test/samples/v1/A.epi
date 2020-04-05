@@ -9,7 +9,7 @@ class DataClass
 class AClass
 {
     epiS32 Prty_1;
-    epiBool Prty_2 = true;
+    epiBool Prty_2 = false;
     DataClass Prty_3;
     DataClass**** Prty_4;
     epiString Prty_5 = "some another text";
@@ -18,6 +18,8 @@ class AClass
 
     epiFloat Virtual_1 = 142.0;
     epiS32 Virtual_2 = -991;
+
+    epiArray<epiFloat> MyArray;
 };
 
 class BClass : AClass

@@ -12,21 +12,23 @@ from epi_code_generator.code_generator import CodeGenerationError
 
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
-formatter = logging.Formatter('[%(levelname)5s] %(message)s')
+def init_logger(log_level: int):
 
-stderr_handler = logging.StreamHandler()
-stderr_handler.setLevel(logging.INFO)
-stderr_handler.setFormatter(formatter)
+    logger.setLevel(log_level)
 
-file_handler = logging.FileHandler('epi_code_generator.log', mode='w')
-file_handler.setLevel(logging.INFO)
-file_handler.setFormatter(formatter)
+    formatter = logging.Formatter('[%(levelname)5s] %(message)s')
 
-logger.addHandler(stderr_handler)
-logger.addHandler(file_handler)
+    stderr_handler = logging.StreamHandler()
+    stderr_handler.setLevel(logging.INFO)
+    stderr_handler.setFormatter(formatter)
 
+    file_handler = logging.FileHandler('epi_code_generator.log', mode='w')
+    file_handler.setLevel(log_level)
+    file_handler.setFormatter(formatter)
+
+    logger.addHandler(stderr_handler)
+    logger.addHandler(file_handler)
 
 if __name__ == "__main__":
 
@@ -68,8 +70,11 @@ if __name__ == "__main__":
 
     if args.debug:
 
-        file_handler.setLevel(logging.DEBUG)
+        init_logger(logging.DEBUG)
         logger.info(f'Debug mode enabled')
+
+    else:
+        init_logger(logging.INFO)
 
     if not args.nobackup:
 

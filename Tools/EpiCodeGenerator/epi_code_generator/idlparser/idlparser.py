@@ -248,22 +248,38 @@ class IDLParser:
 
     def _parse_variable(self):
 
-        typetoken = self._next()
-        if typetoken.text not in (
-            Tokenizer.BUILTIN_PRIMITIVE_TYPES.keys() |
-            Tokenizer.BUILTIN_COMPOUND_TYPES.keys()
-        ) \
-        and typetoken.type != TokenType.Identifier:
+        if not self._is_next_type():
+
+            self._error_push_unexpected_token(self._curr())
             return None
 
+        tokentype = self._next()
         form = EpiVariable.Form.Plain
+
+        if self._curr().type == TokenType.OpenAngleBracket:
+
+            self._next()
+            form = EpiVariable.Form.Array
+            if not self._is_next_type():
+
+                self._error_push_unexpected_token(self._curr(), 'Expected a <typename>')
+                return None
+
+            nestedtokentype = self._next()
+
+            t = self._next()
+            if t.type != TokenType.CloseAngleBracket:
+
+                self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.NoMatchingClosingBracket, 'Expected \'>\''))
+                return None
+
         while True:
 
             t = self._curr()
             if t.type == TokenType.Asterisk:
 
                 form = EpiVariable.Form.Pointer
-                typetoken.text += '*'
+                tokentype.text += '*'
                 self._next()
 
             else:
@@ -272,14 +288,20 @@ class IDLParser:
         t = self._curr()
         if t.type == TokenType.Ampersand:
 
-                form = EpiVariable.Form.Reference
-                self._next()
+                assert False
+                # form = EpiVariable.Form.Reference
+                # self._next()
 
         t = self._next()
         if t.type != TokenType.Identifier:
+
+            self._error_push_unexpected_token(t, 'Expected an <identifier>')
             return None
 
-        var = EpiVariable(t, typetoken, form)
+        var = EpiVariable(t, tokentype, form)
+
+        if var.form == EpiVariable.Form.Array:
+            var.nestedtokentype = nestedtokentype
 
         # NOTE: if property is virtual an assignment is invalid
         t = self._next()
@@ -365,6 +387,14 @@ class IDLParser:
 
         t = self._next()
         return t.text if t.type in [TokenType.TrueLiteral, TokenType.FalseLiteral] else None
+
+    def _is_next_type(self):
+
+        t = self._curr()
+        return t.text in (
+            Tokenizer.BUILTIN_PRIMITIVE_TYPES.keys() |
+            Tokenizer.BUILTIN_COMPOUND_TYPES.keys()
+        ) or t.type == TokenType.Identifier
 
     def _is_next_variable(self):
 

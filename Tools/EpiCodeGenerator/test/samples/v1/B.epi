@@ -4,4 +4,6 @@ class DClass : BClass
 
     epiBool IsA;
     epiBool IsB;
+
+    epiArray<AClass> yArray;
 };

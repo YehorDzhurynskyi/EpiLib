@@ -245,8 +245,12 @@ class CodeGenerator:
             builder.line_empty()
 
             for p in clss.properties:
-                # TODO: emit nested type
-                builder.line(f'epiMetaProperty({p.name}, {clss.name}, {p.tokentype.text}, 0);')
+
+                nestedtype = '0'
+                if p.form == EpiVariable.Form.Array:
+                    nestedtype = p.nestedtokentype.text
+
+                builder.line(f'epiMetaProperty({p.name}, {clss.name}, {p.tokentype.text}, {nestedtype});')
 
             builder.line_empty()
             builder.line('return data;')
@@ -259,7 +263,7 @@ class CodeGenerator:
         def emit_class_declaration_hidden(clss: EpiClass, builder: Builder = Builder()) -> Builder:
 
             clss_parent = clss.parent if clss.parent is not None else 'Object'
-            builder.line(f'#define EPI_GEN_{clss.name}EmitHiddenDeclaration() \\')
+            builder.line(f'#define EPI_GENHIDDEN_{clss.name}() \\')
             builder.line(' \\')
 
             content = \
@@ -292,10 +296,12 @@ void Deserialization(const json_t& json) override;
 
                 ptype = p.tokentype.text
                 if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES:
+
+                    builder.line(f'inline {ptype}& Get{p.name}() {{ return m_{p.name}; }} \\')
                     ptype = f'const {ptype}&'
 
-                builder.line(f'inline {ptype} Get{p.name}() const ' '{ ' f'return m_{p.name};' ' } \\')
-                builder.line(f'inline void Set{p.name}({ptype} value) ' '{ ' f'm_{p.name} = value;' ' } \\')
+                builder.line(f'inline {ptype} Get{p.name}() const {{ return m_{p.name}; }} \\')
+                builder.line(f'inline void Set{p.name}({ptype} value) {{ m_{p.name} = value; }} \\')
 
             builder.line('\\')
 
@@ -336,7 +342,7 @@ void Deserialization(const json_t& json) override;
 
             builder.line('public:')
             builder.tab()
-            builder.line(f'EPI_GEN_{clss.name}EmitHiddenDeclaration()')
+            builder.line(f'EPI_GENHIDDEN_{clss.name}()')
             builder.line_empty()
 
             crc = hex(zlib.crc32(clss.name.encode()) & 0xffffffff)
@@ -364,7 +370,13 @@ void Deserialization(const json_t& json) override;
 
             # prts
             for p in clss.properties:
-                builder.line(f'{p.tokentype.text} m_{p.name}' '{' f'{p.value}' '};')
+
+                typename = f'{p.tokentype.text}'
+                if p.form == EpiVariable.Form.Array:
+                    typename = f'{typename}<{p.nestedtokentype.text}>'
+                value = f'{{{p.value}}}' if p.value is not None else ''
+
+                builder.line(f'{typename} m_{p.name}{value};')
 
             builder.line_empty()
 

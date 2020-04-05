@@ -26,7 +26,7 @@ class InheritanceError(Exception):
 
     def __str__(self):
 
-        s = f'Inheritance error {str(self.clss)}: {self.err_message}'
+        s = f'Linking error {str(self.clss)}: {self.err_message}'
         if len(self.tip) != 0:
             s = f'{s} ({self.tip})'
 

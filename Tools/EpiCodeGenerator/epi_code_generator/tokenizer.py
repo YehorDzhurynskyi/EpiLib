@@ -10,6 +10,8 @@ class TokenType(Enum):
 
     OpenBrace = auto()
     CloseBrace = auto()
+    OpenAngleBracket = auto()
+    CloseAngleBracket = auto()
     # OpenBracket = auto()
     # CloseBracket = auto()
     # OpenSqBracket = auto()
@@ -37,6 +39,7 @@ class TokenType(Enum):
     UIntType = auto()
     IntType = auto()
     StringType = auto()
+    ArrayType = auto()
     FloatingType = auto()
     ClassType = auto()
     # StructType = auto()
@@ -85,6 +88,8 @@ class Tokenizer:
     SPECIAL_SYMBOL_TOKEN_TYPES = {
         '{': TokenType.OpenBrace,
         '}': TokenType.CloseBrace,
+        '<': TokenType.OpenAngleBracket,
+        '>': TokenType.CloseAngleBracket,
         # '(': TokenType.OpenBracket,
         # ')': TokenType.CloseBracket,
         # '[': TokenType.OpenSqBracket,
@@ -126,7 +131,8 @@ class Tokenizer:
     }
 
     BUILTIN_COMPOUND_TYPES = {
-        'epiString': TokenType.StringType
+        'epiString': TokenType.StringType,
+        'epiArray': TokenType.ArrayType
     }
 
     BUILTIN_USER_TYPES = {
