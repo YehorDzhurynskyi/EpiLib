@@ -30,21 +30,21 @@ QVariant QtObjectModelItem::GetData(epiS32 role) const
         {
             switch (m_Meta->GetTypeID())
             {
-            case MetaTypeID::Char: return *((epiChar*)m_ValueAddr);
-            case MetaTypeID::Bool: return *((epiBool*)m_ValueAddr);
-            case MetaTypeID::Byte: return *((epiByte*)m_ValueAddr);
-            case MetaTypeID::Float: return *((epiFloat*)m_ValueAddr);
-            case MetaTypeID::Double: return *((epiDouble*)m_ValueAddr);
-            case MetaTypeID::Size_t: return *((epiSize_t*)m_ValueAddr);
-            case MetaTypeID::String: return QString(((epiString*)m_ValueAddr)->c_str());
-            case MetaTypeID::U8: return *((epiU8*)m_ValueAddr);
-            case MetaTypeID::U16: return *((epiU16*)m_ValueAddr);
-            case MetaTypeID::U32: return *((epiU32*)m_ValueAddr);
-            case MetaTypeID::U64: return *((epiU64*)m_ValueAddr);
-            case MetaTypeID::S8: return *((epiS8*)m_ValueAddr);
-            case MetaTypeID::S16: return *((epiS16*)m_ValueAddr);
-            case MetaTypeID::S32: return *((epiS32*)m_ValueAddr);
-            case MetaTypeID::S64: return *((epiS64*)m_ValueAddr);
+            case MetaTypeID::epiChar: return *((epiChar*)m_ValueAddr);
+            case MetaTypeID::epiBool: return *((epiBool*)m_ValueAddr);
+            case MetaTypeID::epiByte: return *((epiByte*)m_ValueAddr);
+            case MetaTypeID::epiFloat: return *((epiFloat*)m_ValueAddr);
+            case MetaTypeID::epiDouble: return *((epiDouble*)m_ValueAddr);
+            case MetaTypeID::epiSize_t: return *((epiSize_t*)m_ValueAddr);
+            case MetaTypeID::epiString: return QString(((epiString*)m_ValueAddr)->c_str());
+            case MetaTypeID::epiU8: return *((epiU8*)m_ValueAddr);
+            case MetaTypeID::epiU16: return *((epiU16*)m_ValueAddr);
+            case MetaTypeID::epiU32: return *((epiU32*)m_ValueAddr);
+            case MetaTypeID::epiU64: return *((epiU64*)m_ValueAddr);
+            case MetaTypeID::epiS8: return *((epiS8*)m_ValueAddr);
+            case MetaTypeID::epiS16: return *((epiS16*)m_ValueAddr);
+            case MetaTypeID::epiS32: return *((epiS32*)m_ValueAddr);
+            case MetaTypeID::epiS64: return *((epiS64*)m_ValueAddr);
             default: assert(!"Unrecognized type");
             }
         }
@@ -57,7 +57,7 @@ QVariant QtObjectModelItem::GetData(epiS32 role) const
         {
             if (role == Qt::DisplayRole)
             {
-                const BaseArray* array = reinterpret_cast<const BaseArray*>(m_ValueAddr);
+                const epiBaseArray* array = reinterpret_cast<const epiBaseArray*>(m_ValueAddr);
                 return  QStringLiteral("Array (Size=%1)").arg(array->GetSize());
             }
         }
@@ -100,8 +100,8 @@ void QtObjectModelItem::SetData(const QVariant& value)
     const MetaTypeID typeID = m_Meta->GetTypeID();
     switch (typeID)
     {
-    case MetaTypeID::Float: *((epiFloat*)m_ValueAddr) = value.toFloat(); break;
-    case MetaTypeID::String: *((epiString*)m_ValueAddr) = value.toString().toStdString(); break;
+    case MetaTypeID::epiFloat: *((epiFloat*)m_ValueAddr) = value.toFloat(); break;
+    case MetaTypeID::epiString: *((epiString*)m_ValueAddr) = value.toString().toStdString(); break;
     default: assert(!"Unrecognized type");
     }
 }
@@ -152,7 +152,7 @@ epiBool QtObjectModelItem::IsEditable() const
     return MetaType::IsFundamental(m_Meta->GetTypeID());
 }
 
-void QtObjectModelItem::FillMultiDimensional(BaseArray& array, MetaTypeID nestedTypeID)
+void QtObjectModelItem::FillMultiDimensional(epiBaseArray& array, MetaTypeID nestedTypeID)
 {
     epiByte* data = array.GetData();
     const epiSize_t arraySz = array.GetSize();
@@ -183,10 +183,9 @@ void QtObjectModelItem::FillCompound(Object& object)
     const MetaClass* meta = &metaClass;
     do
     {
-        const MetaClassData* metaClassData = meta->GetClassData();
-        assert(metaClassData);
+        const MetaClassData& metaClassData = meta->GetClassData();
 
-        FillChildren(object, *metaClassData);
+        FillChildren(object, metaClassData);
 
         assert(MetaType::IsCompound(meta->GetSuperTypeID()) || meta->GetSuperTypeID() == MetaTypeID::None);
         meta = ClassRegistry_Type_Lookup(meta->GetSuperTypeID());
@@ -212,7 +211,7 @@ void QtObjectModelItem::FillChildren(Object& object, const MetaClassData& meta)
         }
         else if (MetaType::IsMultiDimensional(property.GetTypeID()))
         {
-            item->FillMultiDimensional(*reinterpret_cast<BaseArray*>(item->m_ValueAddr), property.GetNestedTypeID());
+            item->FillMultiDimensional(*reinterpret_cast<epiBaseArray*>(item->m_ValueAddr), property.GetNestedTypeID());
         }
 
         m_Children.push_back(std::move(item));

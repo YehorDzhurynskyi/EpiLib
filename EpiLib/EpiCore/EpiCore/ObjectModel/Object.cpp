@@ -4,10 +4,16 @@
 namespace epi
 {
 
+MetaClass Object::EmitMetaClass()
+{
+    MetaClassData data;
+
+    return MetaClass(std::move(data), MetaTypeID::Object, MetaTypeID::None, sizeof(Object), "Object");
+}
+
 const MetaClass& Object::GetMetaClass() const
 {
-    assert(g_ClassRegistry.find(MetaTypeID::Object) != g_ClassRegistry.end());
-    return *ClassRegistry_Type_Lookup(MetaTypeID::Object);
+    return ClassRegistry_GetMetaClass<Object>();
 }
 
 epiBool Object::Is(MetaTypeID rhs) const

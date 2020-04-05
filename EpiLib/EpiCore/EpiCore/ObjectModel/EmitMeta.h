@@ -6,6 +6,7 @@ namespace epi
 {
 
 class Object;
+enum class MetaTypeID : epiU32;
 class MetaProperty final
 {
     friend MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID);
@@ -14,10 +15,10 @@ private:
     MetaProperty() = default;
 
 public:
-    MetaProperty(const MetaProperty&) = delete;
-    MetaProperty& operator=(const MetaProperty&) = delete;
-    MetaProperty(MetaProperty&&);
-    MetaProperty& operator=(MetaProperty&&);
+    MetaProperty(const MetaProperty&) = default;
+    MetaProperty& operator=(const MetaProperty&) = default;
+    MetaProperty(MetaProperty&&) = default;
+    MetaProperty& operator=(MetaProperty&&) = default;
     ~MetaProperty() = default;
 
     epiBool IsValid() const;

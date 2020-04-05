@@ -11,23 +11,24 @@ enum class MetaTypeID : epiU32
 {
     None = 0,
 
-    Char,
-    Bool,
-    Byte,
-    Float,
-    Double,
-    Size_t,
-    String,
-    U8,
-    U16,
-    U32,
-    U64,
-    S8,
-    S16,
-    S32,
-    S64,
+    epiChar,
+    epiBool,
+    epiByte,
+    epiFloat,
+    epiDouble,
+    epiSize_t,
+    epiString,
+    epiU8,
+    epiU16,
+    epiU32,
+    epiU64,
+    epiS8,
+    epiS16,
+    epiS32,
+    epiS64,
 
-    Array,
+    epiArray,
+    epiPtrArray,
     HashMap,
     Vec2,
     Vec3,
@@ -38,6 +39,7 @@ enum class MetaTypeID : epiU32
     Object,
 
 // CUSTOM TYPES
+    Test,
     Vessel,
     Bloodstream,
     Model,
@@ -47,6 +49,8 @@ enum class MetaTypeID : epiU32
     StaticRegulatedVessel,
     StaticRegulatedBloodstream,
     StaticModel,
+    Simulation,
+    SimulationWard,
     DynamicVentricle,
     DynamicBloodstream,
     DynamicModel,
@@ -97,7 +101,7 @@ protected:
 class MetaClass final
 {
 public:
-    MetaClass(MetaClassData* classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name);
+    MetaClass(MetaClassData&& classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name);
 
     epiBool IsValid() const;
 
@@ -106,14 +110,14 @@ public:
     const MetaProperty* GetProperty_FromCurrent(MetaPropertyID pid) const;
     const MetaProperty* GetProperty(MetaPropertyID pid) const;
 
-    const MetaClassData* GetClassData() const;
+    const MetaClassData& GetClassData() const;
     MetaTypeID GetTypeID() const;
     MetaTypeID GetSuperTypeID() const;
     const epiChar* GetName() const;
     epiSize_t GetSizeOf() const;
 
 protected:
-    MetaClassData* m_ClassData;
+    MetaClassData m_ClassData;
     MetaTypeID m_TypeID;
     MetaTypeID m_SuperTypeID;
     epiSize_t m_SizeOf;

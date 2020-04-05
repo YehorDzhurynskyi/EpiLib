@@ -9,27 +9,6 @@
 namespace epi
 {
 
-MetaProperty::MetaProperty(MetaProperty&& rhs)
-{
-    m_TypeID = std::move(rhs.m_TypeID);
-    m_Offset = std::move(rhs.m_Offset);
-    m_NestedTypeID = std::move(rhs.m_NestedTypeID);
-#ifdef epiUSE_METAPROPERTY_NAME
-    m_Name = std::move(rhs.m_Name);
-#endif
-}
-
-MetaProperty& MetaProperty::operator=(MetaProperty&& rhs)
-{
-    m_TypeID = std::move(rhs.m_TypeID);
-    m_Offset = std::move(rhs.m_Offset);
-    m_NestedTypeID = std::move(rhs.m_NestedTypeID);
-#ifdef epiUSE_METAPROPERTY_NAME
-    m_Name = std::move(rhs.m_Name);
-#endif
-    return *this;
-}
-
 epiBool MetaProperty::IsValid() const
 {
     return m_TypeID != MetaTypeID::None;
@@ -60,7 +39,7 @@ epiByte* MetaProperty::GetValue(const Object& object) const
 
 epiBool MetaType::IsFundamental(MetaTypeID typeID)
 {
-    return typeID >= MetaTypeID::Char && typeID <= MetaTypeID::S64;
+    return typeID >= MetaTypeID::epiChar && typeID <= MetaTypeID::epiS64;
 }
 
 epiBool MetaType::IsHandle(MetaTypeID typeID)
@@ -70,7 +49,7 @@ epiBool MetaType::IsHandle(MetaTypeID typeID)
 
 epiBool MetaType::IsMultiDimensional(MetaTypeID typeID)
 {
-    return typeID == MetaTypeID::Array ||
+    return typeID == MetaTypeID::epiArray ||
         typeID == MetaTypeID::HashMap ||
         IsMultiDimensionalInplace(typeID);
 }
@@ -111,9 +90,9 @@ epiByte* MetaType::GetElementByIndex(const epiByte* container, const MetaPropert
         }
         element = container + index * elemMeta->GetSizeOf();
     }
-    else if (meta.GetTypeID() == MetaTypeID::Array)
+    else if (meta.GetTypeID() == MetaTypeID::epiArray)
     {
-        BaseArray* array = (BaseArray*)container;
+        epiBaseArray* array = (epiBaseArray*)container;
         if (index < 0 || index >= array->GetSize()) goto invalid_input;
 
         element = array->GetData() + index * elemMeta->GetSizeOf();
@@ -180,8 +159,8 @@ const MetaProperty* MetaClassData::GetPropertyBy(MetaPropertyID pid) const
     return GetPropertyAt(it->second);
 }
 
-MetaClass::MetaClass(MetaClassData* classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name)
-    : m_ClassData(classData)
+MetaClass::MetaClass(MetaClassData&& classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name)
+    : m_ClassData(std::move(classData))
     , m_TypeID(typeID)
     , m_SuperTypeID(superTypeID)
     , m_SizeOf(sizeOf)
@@ -190,7 +169,7 @@ MetaClass::MetaClass(MetaClassData* classData, MetaTypeID typeID, MetaTypeID sup
 
 epiBool MetaClass::IsValid() const
 {
-    return !MetaType::IsCompound(m_TypeID) || m_ClassData != nullptr;
+    return !MetaType::IsCompound(m_TypeID);
 }
 
 const MetaProperty* MetaClass::GetProperty_FromBase(MetaPropertyID pid) const
@@ -251,7 +230,7 @@ const MetaProperty* MetaClass::GetProperty_FromCurrent(MetaPropertyID pid) const
 {
     assert(IsValid());
 
-    return m_ClassData->GetPropertyBy(pid);
+    return m_ClassData.GetPropertyBy(pid);
 }
 
 const MetaProperty* MetaClass::GetProperty(MetaPropertyID pid) const
@@ -274,7 +253,7 @@ const MetaProperty* MetaClass::GetProperty(MetaPropertyID pid) const
     return nullptr;
 }
 
-const MetaClassData* MetaClass::GetClassData() const
+const MetaClassData& MetaClass::GetClassData() const
 {
     assert(IsValid());
 

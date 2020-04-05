@@ -1,5 +1,10 @@
 #pragma once
 
+#include <nlohmann/json.hpp>
+#include "EpiCore/Containers/Array.h"
+
+using json_t = nlohmann::json;
+
 #define epiSerialize(_Key, _Json) epiSerialize_Impl(#_Key, m_##_Key, _Json)
 #define epiDeserialize(_Key, _Json) epiDeserialize_Impl(#_Key, m_##_Key, _Json)
 
@@ -12,9 +17,9 @@ struct is_fundamental
     : std::integral_constant<
         bool,
         std::is_fundamental_v<T> ||
-        std::is_same_v<epiString, T> ||
-        std::is_same_v<FiniteFloating<float>, T> ||
-        std::is_same_v<FiniteFloating<double>, T>
+        std::is_same_v<epiString, T>// ||
+//        std::is_same_v<FiniteFloating<float>, T> ||
+//        std::is_same_v<FiniteFloating<double>, T>
     >
 {};
 
@@ -22,9 +27,9 @@ template<typename T>
 struct is_arithmetic
     : std::integral_constant<
         bool,
-        std::is_arithmetic_v<T> ||
-        std::is_same_v<FiniteFloating<float>, T> ||
-        std::is_same_v<FiniteFloating<double>, T>
+        std::is_arithmetic_v<T>// ||
+//        std::is_same_v<FiniteFloating<float>, T> ||
+//        std::is_same_v<FiniteFloating<double>, T>
     >
 {};
 
@@ -32,9 +37,9 @@ template<typename T>
 struct is_floating_point
     : std::integral_constant<
         bool,
-        std::is_floating_point_v<T> ||
-        std::is_same_v<FiniteFloating<float>, T> ||
-        std::is_same_v<FiniteFloating<double>, T>
+        std::is_floating_point_v<T>// ||
+//        std::is_same_v<FiniteFloating<float>, T> ||
+//        std::is_same_v<FiniteFloating<double>, T>
     >
 {};
 
@@ -73,7 +78,7 @@ inline auto epiSerialize_Impl_Fetch(T& v)
         v.Serialize(jsonObject);
         return jsonObject;
     }
-    else if constexpr (std::is_base_of_v<epi::BaseArray, T>)
+    else if constexpr (std::is_base_of_v<epi::epiBaseArray, T>)
     {
         auto arr = json_t::array();
         for (auto& e : v)
@@ -82,6 +87,11 @@ inline auto epiSerialize_Impl_Fetch(T& v)
             arr.push_back(j);
         }
         return arr;
+    }
+    else if constexpr (std::is_pointer_v<T>)
+    {
+        // TODO: implement
+        return nullptr;
     }
     else
     {
@@ -124,7 +134,7 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
         assert(json.is_object());
         v.Deserialize(json);
     }
-    else if constexpr (std::is_base_of_v<epi::BaseArray, T>)
+    else if constexpr (std::is_base_of_v<epi::epiBaseArray, T>)
     {
         assert(v.IsEmpty());
         assert(json.is_array());
@@ -134,6 +144,10 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
             auto& item = v.Push();
             epiDeserialize_Impl_Fetch(item, j);
         }
+    }
+    else if constexpr (std::is_pointer_v<T>)
+    {
+        // TODO: implement
     }
     else
     {

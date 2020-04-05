@@ -1,7 +1,5 @@
 #pragma once
 
-using epiHash_t = epiU32;
-
 // CRC32 Table (zlib polynomial)
 constexpr epiHash_t crc_table[256] = {
   0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,

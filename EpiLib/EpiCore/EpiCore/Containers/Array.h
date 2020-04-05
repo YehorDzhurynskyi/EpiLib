@@ -5,10 +5,10 @@
 namespace epi
 {
 
-class BaseArray
+class epiBaseArray
 {
 public:
-    virtual ~BaseArray() = default;
+    virtual ~epiBaseArray() = default;
 
     virtual epiByte* GetData() = 0;
     virtual epiSize_t GetSize() const = 0;
@@ -16,7 +16,7 @@ public:
 };
 
 template<typename T>
-class Array : public BaseArray
+class epiArray : public epiBaseArray
 {
 public:
     using value_type = typename std::vector<T>::value_type;
@@ -118,5 +118,8 @@ public:
 protected:
     std::vector<T> m_Vector;
 };
+
+template<typename T>
+using epiPtrArray = epiArray<T*>;
 
 }

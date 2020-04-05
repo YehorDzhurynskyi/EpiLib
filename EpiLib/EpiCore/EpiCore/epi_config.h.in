@@ -11,3 +11,9 @@
 #else
 #define epiDEBUG_ONLY(x)
 #endif
+
+#define EPI_GENREGION_BEGIN(x)
+#define EPI_GENREGION_END(x)
+
+#define EPI_NAMESPACE_BEGIN() namespace epi {
+#define EPI_NAMESPACE_END() }

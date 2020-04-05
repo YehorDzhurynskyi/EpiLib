@@ -40,6 +40,7 @@ class TokenType(Enum):
     IntType = auto()
     StringType = auto()
     ArrayType = auto()
+    PtrArrayType = auto()
     FloatingType = auto()
     ClassType = auto()
     # StructType = auto()
@@ -132,7 +133,8 @@ class Tokenizer:
 
     BUILTIN_COMPOUND_TYPES = {
         'epiString': TokenType.StringType,
-        'epiArray': TokenType.ArrayType
+        'epiArray': TokenType.ArrayType,
+        'epiPtrArray': TokenType.PtrArrayType
     }
 
     BUILTIN_USER_TYPES = {

@@ -6,6 +6,8 @@
 namespace epi
 {
 
+std::map<MetaTypeID, MetaClass> g_ClassRegistry;
+
 const MetaClass* ClassRegistry_Type_Lookup(MetaTypeID typeID)
 {
     const auto it = g_ClassRegistry.find(typeID);

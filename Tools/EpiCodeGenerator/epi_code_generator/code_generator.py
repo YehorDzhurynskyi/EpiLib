@@ -188,13 +188,14 @@ class CodeGenerator:
 
                 builder.anchor_gen_region('include')
 
+                filename = os.path.basename(basename)
                 if ext == 'cxx':
-                    builder.line(f'#include "{basename}.h"')
+                    builder.line(f'#include "{filename}.h"')
                 elif ext == 'cpp':
-                    builder.line(f'#include "{basename}.h"')
-                    builder.line(f'#include "{basename}.cxx"')
+                    builder.line(f'#include "{filename}.h"')
+                    builder.line(f'#include "{filename}.cxx"')
                 elif ext == 'h':
-                    builder.line(f'#include "{basename}.hxx"')
+                    builder.line(f'#include "{filename}.hxx"')
 
                 builder.anchor_gen_endregion('include')
                 builder.line_empty()
@@ -207,7 +208,7 @@ class CodeGenerator:
 
         def emit_class_serialization(clss: EpiClass, builder: Builder = Builder()) -> Builder:
 
-            builder.line(f'void {clss.name}::Serialization(json_t& json) const')
+            builder.line(f'void {clss.name}::Serialization(json_t& json)')
             builder.line('{')
             builder.tab()
             builder.line('super::Serialization(json);')
@@ -238,7 +239,7 @@ class CodeGenerator:
         def emit_class_meta(clss: EpiClass, builder: Builder = Builder()) -> Builder:
 
             # TODO: make it constexpr
-            builder.line(f'MetaClassData {clss.name}::EmitMetaClassData()')
+            builder.line(f'MetaClass {clss.name}::EmitMetaClass()')
             builder.line('{')
             builder.tab()
             builder.line('MetaClassData data;')
@@ -246,18 +247,22 @@ class CodeGenerator:
 
             for p in clss.properties:
 
-                nestedtype = '0'
+                nestedtype = 'None'
                 if p.form == EpiVariable.Form.Array:
                     nestedtype = p.nestedtokentype.text
 
-                builder.line(f'epiMetaProperty({p.name}, {clss.name}, {p.tokentype.text}, {nestedtype});')
+                # TODO: remove rstrip
+                builder.line(f'epiMetaProperty({p.name}, {clss.name}, {p.tokentype.text.rstrip("*")}, {nestedtype});')
 
             builder.line_empty()
-            builder.line('return data;')
+
+            clss_parent = clss.parent if clss.parent is not None else 'Object'
+            builder.line(f'return MetaClass(std::move(data), MetaTypeID::{clss.name}, MetaTypeID::{clss_parent}, sizeof({clss.name}), "{clss.name}");')
 
             builder.tab(-1)
             builder.line('}')
             builder.line_empty()
+
             return builder
 
         def emit_class_declaration_hidden(clss: EpiClass, builder: Builder = Builder()) -> Builder:
@@ -271,31 +276,34 @@ f'''
 
 using super = {clss_parent};
 
-static MetaClassData EmitMetaClassData();
-static MetaClassData {clss.name}_MetaClassData;
+static MetaClass EmitMetaClass();
 
 const MetaClass& GetMetaClass() const override
 {{
-    assert(g_ClassRegistry.find({clss.name}::TypeID) != g_ClassRegistry.end());
-    return *ClassRegistry_Type_Lookup({clss.name}::TypeID);
+    return ClassRegistry_GetMetaClass<{clss.name}>();
 }}
 
-epiBool Is(epiHash_t rhs) const override
+epiBool Is(MetaTypeID rhs) const override
 {{
-    return rhs == {clss.name}::TypeID || super::Is(rhs);
+    return rhs == MetaTypeID::{clss.name} || super::Is(rhs);
 }}
 
 void Serialization(json_t& json) override;
 void Deserialization(const json_t& json) override;
-'''
-            builder.line(' \\\n'.join(content.strip().split('\n')))
-            builder.line('\\')
-            # getters/setters
 
+'''
+            builder.line(' \\\n'.join(content.strip().split('\n')) + ' \\')
+            builder.line('\\')
+
+            # getters/setters
             for p in clss.properties:
 
                 ptype = p.tokentype.text
-                if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES:
+
+                if p.form == EpiVariable.Form.Array:
+                    ptype = f'{ptype}<{p.nestedtokentype.text}>'
+
+                if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
 
                     builder.line(f'inline {ptype}& Get{p.name}() {{ return m_{p.name}; }} \\')
                     ptype = f'const {ptype}&'
@@ -313,10 +321,10 @@ void Deserialization(const json_t& json) override;
             for i, p in enumerate(clss.properties):
                 builder.line(f'PIDX_{p.name} = {i}, \\')
 
-            builder.line(f'COUNT = {len(clss.properties)} \\')
+            builder.line(f'PIDX_COUNT = {len(clss.properties)} \\')
 
             builder.tab(-1)
-            builder.line('}; \\')
+            builder.line('};')
 
             builder.line_empty()
 
@@ -346,7 +354,7 @@ void Deserialization(const json_t& json) override;
             builder.line_empty()
 
             crc = hex(zlib.crc32(clss.name.encode()) & 0xffffffff)
-            builder.line(f'constexpr static epiHash_t TypeID{{{crc}}};')
+            builder.line(f'constexpr static MetaTypeID TypeID{{MetaTypeID::{clss.name}}};')
             builder.line_empty()
 
             # pids
@@ -359,7 +367,7 @@ void Deserialization(const json_t& json) override;
                 crc = hex(zlib.crc32(p.name.encode()) & 0xffffffff)
                 builder.line(f'PID_{p.name} = {crc},')
 
-            builder.line(f'COUNT = {len(clss.properties)}')
+            builder.line(f'PID_COUNT = {len(clss.properties)}')
 
             builder.tab(-1)
             builder.line('};')
@@ -406,8 +414,8 @@ void Deserialization(const json_t& json) override;
         injection = f'{emit_class_meta(symbol).build()}\n'
         self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
 
-        injection = f'MetaClassData {symbol.name}::{symbol.name}_MetaClassData = {symbol.name}::EmitMetaClassData();\n\n'
-        self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
+        #injection = f'MetaClass {symbol.name}::{symbol.name}_MetaClass;// = {symbol.name}::EmitMetaClass();\n\n'
+        #self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
 
         injection = f'\n{emit_class_declaration_hidden(symbol).build()}'
         self._code_generate_inject(injection, basename, 'hxx')

@@ -7,7 +7,7 @@ namespace epi
 {
 
 enum class MetaTypeID : epiU32;
-class BaseArray;
+class epiBaseArray;
 class Object;
 class MetaClassData;
 class MetaProperty;
@@ -16,7 +16,7 @@ class QtObjectModelItem
 public:
     QtObjectModelItem(epiS32 row, QtObjectModelItem* parent = nullptr);
 
-    void FillMultiDimensional(BaseArray& array, MetaTypeID nestedTypeID);
+    void FillMultiDimensional(epiBaseArray& array, MetaTypeID nestedTypeID);
     void FillCompound(Object& object);
     void FillChildren(Object& object, const MetaClassData& meta);
 

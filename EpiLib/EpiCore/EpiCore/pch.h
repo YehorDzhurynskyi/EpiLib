@@ -10,8 +10,14 @@
 #include <cassert>
 #include <cstdint>
 #include <functional>
+#include <type_traits>
 
 #include "EpiCore/epi_config.h"
 #include "EpiCore/types.h"
 #include "EpiCore/common.h"
 #include "EpiCore/Hash.h"
+#include "EpiCore/ObjectModel/Serialization.h"
+#include "EpiCore/ObjectModel/EmitMeta.h"
+#include "EpiCore/ObjectModel/ClassRegistry.h"
+#include "EpiCore/ObjectModel/MetaObject.h"
+#include "EpiCore/Containers/Array.h"

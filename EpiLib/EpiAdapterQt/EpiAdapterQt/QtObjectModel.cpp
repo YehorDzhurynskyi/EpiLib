@@ -11,8 +11,7 @@ QtObjectModel::QtObjectModel(Object& object, QObject* parent /* = nullptr*/)
 {
     const MetaClass& metaClass = object.GetMetaClass();
     assert(MetaType::IsCompound(metaClass.GetTypeID()));
-    const MetaClassData* metaClassData = metaClass.GetClassData();
-    assert(metaClassData);
+    const MetaClassData& metaClassData = metaClass.GetClassData();
 
     m_Root = std::make_unique<QtObjectModelItem>(0);
     m_Root->SetValueAddr(&object);

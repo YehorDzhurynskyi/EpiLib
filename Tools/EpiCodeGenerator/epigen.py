@@ -219,6 +219,8 @@ if __name__ == "__main__":
         os.makedirs(dirname, exist_ok=True)
         basename = os.path.splitext(sym.token.filepath)[0]
 
+        logger.info(f'Generating code for: {basename}')
+
         try:
             code_generator.code_generate(sym, basename)
         except CodeGenerationError as e:

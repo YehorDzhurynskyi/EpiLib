@@ -3,30 +3,6 @@
 #include "MetaObject.h"
 #include <nlohmann/json.hpp>
 
-#define epiEmitObject(_ClassName, _Super)                                               \
-                                                                                        \
-using super = _Super;                                                                   \
-                                                                                        \
-static MetaClassData EmitMetaClassData();                                               \
-static MetaClassData _ClassName##_MetaClassData;                                        \
-                                                                                        \
-const MetaClass& GetMetaClass() const override                                          \
-{                                                                                       \
-    assert(g_ClassRegistry.find(MetaTypeID::##_ClassName) != g_ClassRegistry.end());    \
-    return *ClassRegistry_Type_Lookup(MetaTypeID::##_ClassName);                        \
-}                                                                                       \
-                                                                                        \
-static inline MetaTypeID TypeID = MetaTypeID::##_ClassName;                             \
-                                                                                        \
-epiBool Is(MetaTypeID rhs) const override                                               \
-{                                                                                       \
-    return rhs == MetaTypeID::##_ClassName || super::Is(rhs);                           \
-}                                                                                       \
-                                                                                        \
-void Serialization(json_t& json) override;                                              \
-void Deserialization(const json_t& json) override;                                      \
-                                                                                        \
-
 namespace epi
 {
 
@@ -35,9 +11,8 @@ using json_t = nlohmann::json;
 class Object
 {
 public:
-    static MetaClassData EmitMetaClassData();
-    static MetaClassData Object_MetaClassData;
-    static inline MetaTypeID TypeID = MetaTypeID::Object;
+    static MetaClass EmitMetaClass();
+    constexpr static MetaTypeID TypeID{ MetaTypeID::Object };
 
 public:
     Object() = default;

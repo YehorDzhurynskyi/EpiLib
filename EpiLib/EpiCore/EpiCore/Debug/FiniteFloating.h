@@ -5,6 +5,9 @@
 #include <nlohmann/json.hpp>
 using json_t = nlohmann::json;
 
+namespace epi
+{
+
 template<typename T>
 class FiniteFloating final
 {
@@ -35,3 +38,5 @@ protected:
 protected:
     T m_Value;
 };
+
+}

@@ -3,6 +3,8 @@ project(EpiCore)
 set(Epi_USE_METAPROPERTY_NAME ON CACHE BOOL "")
 
 add_library(EpiCore
+    EpiCore/epi_config.h.in
+
     EpiCore/pch.h
     EpiCore/pch.cpp
 

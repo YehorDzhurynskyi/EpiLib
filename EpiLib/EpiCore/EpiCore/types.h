@@ -12,6 +12,7 @@ using epiBool = bool;
 using epiByte = uint8_t;
 
 using epiSize_t = size_t;
+using epiHash_t = uint32_t;
 
 using epiU8 = uint8_t;
 using epiU16 = uint16_t;
@@ -43,8 +44,8 @@ using epiMat4x4F = glm::mat4x4;
 
 #ifdef epiDEBUG
 #include "EpiCore/Debug/FiniteFloating.h"
-using epiFloat = FiniteFloating<float>;
-using epiDouble = FiniteFloating<double>;
+using epiFloat = epi::FiniteFloating<float>;
+using epiDouble = epi::FiniteFloating<double>;
 #else
 using epiFloat = float;
 using epiDouble = double;
