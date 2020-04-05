@@ -16,7 +16,7 @@ endfunction()
 
 function(epi_include_script)
     foreach(_script IN ITEMS ${ARGN})
-        include("${EPI_BUILD_DIR}/CMake/${_script}")
+        include("${EPI_DIR}/Build/CMake/${_script}")
     endforeach()
 endfunction()
 
@@ -29,6 +29,7 @@ function(epi_fatal_message _message)
 endfunction()
 
 epi_include_script(EpiExtern.cmake)
+epi_include_script(EpiGen.cmake)
 epi_include_script(PrecompiledHeader.cmake)
 
 function(epi_add_precompiled_header)

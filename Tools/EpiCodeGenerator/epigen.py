@@ -2,6 +2,7 @@ import os
 import logging
 import argparse
 import shutil
+import fnmatch
 
 from epi_code_generator.tokenizer import Tokenizer
 from epi_code_generator.inheritance_tree import InheritanceTree
@@ -12,6 +13,49 @@ from epi_code_generator.code_generator import CodeGenerationError
 
 
 logger = logging.getLogger()
+
+def print_dependencies(args):
+
+    depds = []
+    for root, _, files in os.walk(args.input_dir):
+
+        for file in filter(lambda f: f.endswith('epi'), files):
+
+            relpath = os.path.join(os.path.relpath(root, args.input_dir), file)
+            if any(fnmatch.fnmatch(relpath, p) for p in args.ignore):
+                continue
+
+            depds.append(os.path.join(root, relpath))
+
+    print(';'.join(depds).replace('\\', '/'))
+
+def print_outputs(args, output_dir):
+
+    outputs = []
+    for root, _, files in os.walk(args.input_dir):
+
+        for file in filter(lambda f: f.endswith('epi'), files):
+
+            relpath = os.path.join(os.path.relpath(root, args.input_dir), file)
+            if any(fnmatch.fnmatch(relpath, p) for p in args.ignore):
+                continue
+
+            path = os.path.join(output_dir, relpath)
+            basename = os.path.splitext(path)[0]
+            outputs += [f'{basename}.{ext}' for ext in ['cpp', 'cxx', 'h', 'hxx']]
+
+    print(';'.join(outputs).replace('\\', '/'))
+
+def ignore_on_copy(dirname, files):
+
+    filtered = []
+    for f in files:
+
+        p = os.path.join(dirname, f)
+        if any(fnmatch.fnmatch(p, i) for i in args.ignore):
+            filtered.append(f)
+
+    return filtered
 
 def init_logger(log_level: int):
 
@@ -63,9 +107,41 @@ if __name__ == "__main__":
         help='TODO: fill'
     )
 
+    grp_optional.add_argument(
+        '--ignore',
+        action="extend",
+        nargs="+",
+        type=str,
+        help='TODO: fill',
+        default=[]
+    )
+
+    grp_optional.add_argument(
+        '--print-dependencies',
+        action='store_true',
+        help='TODO: fill'
+    )
+
+    grp_optional.add_argument(
+        '--print-outputs',
+        action='store_true',
+        help='TODO: fill'
+    )
+
     args = argparser.parse_args()
 
     output_dir = args.output_dir if args.output_dir is not None else args.input_dir
+
+    if args.print_dependencies:
+
+        print_dependencies(args)
+        exit(0)
+
+    if args.print_outputs:
+
+        print_outputs(args, output_dir)
+        exit(0)
+
     os.makedirs(output_dir, exist_ok=True)
 
     if args.debug:
@@ -76,6 +152,10 @@ if __name__ == "__main__":
     else:
         init_logger(logging.INFO)
 
+    logger.info(f'Input Dir: {args.input_dir}')
+    logger.info(f'Output Dir: {output_dir}')
+    logger.info(f'Ignore-list: {";".join(args.ignore)}')
+
     if not args.nobackup:
 
         from tempfile import TemporaryDirectory
@@ -84,21 +164,23 @@ if __name__ == "__main__":
 
         backupdir = f'{gettempdir()}/EpiCodeGenerator-{uuid1()}-backup'
         logger.info(f'Backup <input dir> into {backupdir}')
-        shutil.copytree(args.input_dir, backupdir)
-
-    logger.info(f'Input Dir: {args.input_dir}')
-    logger.info(f'Output Dir: {output_dir}')
+        shutil.copytree(args.input_dir, backupdir, ignore=ignore_on_copy)
 
     registry_global = {}
     for root, _, files in os.walk(args.input_dir):
 
         for file in filter(lambda f: f.endswith('epi'), files):
 
-            path = os.path.join(root, file)
+            relpath = os.path.join(os.path.relpath(root, args.input_dir), file)
+            abspath = os.path.join(root, file)
 
-            logger.info(f'Parsing: {file}')
+            if any(fnmatch.fnmatch(relpath, p) for p in args.ignore):
+                logger.info(f'Ignoring: {relpath}')
+                continue
 
-            tokenizer = Tokenizer(root, file)
+            logger.info(f'Parsing: {relpath}')
+
+            tokenizer = Tokenizer(abspath, relpath)
             tokens = tokenizer.tokenize()
 
             for t in tokens:
@@ -133,6 +215,8 @@ if __name__ == "__main__":
     code_generator = CodeGenerator(output_dir)
     for sym in registry_global.values():
 
+        dirname = os.path.dirname(os.path.join(output_dir, sym.token.filepath))
+        os.makedirs(dirname, exist_ok=True)
         basename = os.path.splitext(sym.token.filepath)[0]
 
         try:

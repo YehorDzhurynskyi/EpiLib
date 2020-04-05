@@ -171,16 +171,16 @@ class Tokenizer:
         # TBD: 'Category': TokenType.CategoryAttr,
     }
 
-    def __init__(self, root: str, file: str):
+    def __init__(self, abspath: str, relpath: str):
 
-        with open(os.path.join(root, file), 'r') as f:
+        with open(abspath, 'r') as f:
             self.content = f.read()
 
         self.content_len = len(self.content)
         self.__at = 0
         self.line = 1
         self.column = 1
-        self.filepath = file
+        self.filepath = relpath
         self.tokens = []
 
     def _ch(self):

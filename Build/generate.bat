@@ -6,8 +6,8 @@
   call :get-ini %1 env workdir workdir
   set workdir=%cd%\%workdir%
 
-  call :get-ini %1 env epibuilddir epibuilddir
-  set epibuilddir=%cd%\%epibuilddir%
+  call :get-ini %1 env epidir epidir
+  set epidir=%cd%\%epidir%
 
   call :get-ini %1 cmake initial_cache initial_cache
   set initial_cache=%cd%\%initial_cache%
@@ -24,7 +24,7 @@
   set solution=%solution%
   set solution=!solution: =_!
 
-  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_BUILD_DIR="%epibuilddir%" -DQt5_DIR="%qtdir%" -C "%initial_cache%"
+  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_DIR="%epidir%" -DQt5_DIR="%qtdir%" -C "%initial_cache%"
 
   goto :eof
 

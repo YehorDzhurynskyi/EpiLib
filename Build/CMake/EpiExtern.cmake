@@ -22,7 +22,7 @@ endfunction()
 
 function(epi_extern_add _extern)
 
-    configure_file("${EPI_BUILD_DIR}/CMake/Extern/${_extern}_Extern.txt.in" "${_extern}-extern/CMakeLists.txt")
+    configure_file("${EPI_DIR}/Build/CMake/Extern/${_extern}_Extern.txt.in" "${_extern}-extern/CMakeLists.txt")
 
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
       RESULT_VARIABLE result WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern")
