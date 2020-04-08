@@ -96,6 +96,12 @@ if __name__ == "__main__":
     )
 
     grp_optional.add_argument(
+        '--output-dir-cxx-hxx',
+        type=str,
+        help='TODO: fill'
+    )
+
+    grp_optional.add_argument(
         '--debug',
         action='store_true',
         help='TODO: fill'
@@ -131,6 +137,7 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     output_dir = args.output_dir if args.output_dir is not None else args.input_dir
+    output_dir_cxx_hxx = args.output_dir_cxx_hxx if args.output_dir_cxx_hxx is not None else output_dir
 
     if args.print_dependencies:
 
@@ -154,6 +161,7 @@ if __name__ == "__main__":
 
     logger.info(f'Input Dir: {args.input_dir}')
     logger.info(f'Output Dir: {output_dir}')
+    logger.info(f'Output CXX HXX Dir: {output_dir_cxx_hxx}')
     logger.info(f'Ignore-list: {";".join(args.ignore)}')
 
     if not args.nobackup:
@@ -212,17 +220,13 @@ if __name__ == "__main__":
         logger.error(str(e))
         exit(-1)
 
-    code_generator = CodeGenerator(output_dir)
+    code_generator = CodeGenerator(output_dir, output_dir_cxx_hxx)
     for sym in registry_global.values():
 
-        dirname = os.path.dirname(os.path.join(output_dir, sym.token.filepath))
-        os.makedirs(dirname, exist_ok=True)
-        basename = os.path.splitext(sym.token.filepath)[0]
-
-        logger.info(f'Generating code for: {basename}')
+        logger.info(f'Generating code for: {sym.token.filepath}')
 
         try:
-            code_generator.code_generate(sym, basename)
+            code_generator.code_generate(sym, sym.token.filepath)
         except CodeGenerationError as e:
 
             logging.error(str(e))

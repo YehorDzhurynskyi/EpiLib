@@ -42,9 +42,10 @@ class CodeGenerationError(Exception):
 
 class CodeGenerator:
 
-    def __init__(self, output_dir: str):
+    def __init__(self, output_dir: str, output_dir_cxx_hxx: str):
 
         self.output_dir = output_dir
+        self.output_dir_cxx_hxx = output_dir_cxx_hxx
         self.filecache = {}
 
     def flush(self):
@@ -55,6 +56,8 @@ class CodeGenerator:
                 f.write(content)
 
     def _lookup(self, needle: str, basename: str, ext: str) -> int:
+
+        assert ext == 'h' or ext == 'cpp'
 
         path = f'{os.path.join(self.output_dir, basename)}.{ext}'
         if path not in self.filecache:
@@ -75,7 +78,9 @@ class CodeGenerator:
                               before: str = None,
                               after: str = None):
 
-        path = f'{os.path.join(self.output_dir, basename)}.{ext}'
+        outdir = self.output_dir if ext == 'h' or ext == 'cpp' else self.output_dir_cxx_hxx
+
+        path = f'{os.path.join(outdir, basename)}.{ext}'
         if path not in self.filecache:
 
             with open(path, 'r') as f:
@@ -393,6 +398,10 @@ void Deserialization(const json_t& json) override;
 
             return builder
 
+        os.makedirs(os.path.dirname(os.path.join(self.output_dir, basename)), exist_ok=True)
+        os.makedirs(os.path.dirname(os.path.join(self.output_dir_cxx_hxx, basename)), exist_ok=True)
+        basename = os.path.splitext(basename)[0]
+
         if not os.path.exists(f'{os.path.join(self.output_dir, basename)}.cpp'):
 
             with open(f'{os.path.join(self.output_dir, basename)}.cpp', 'w') as f:
@@ -403,10 +412,10 @@ void Deserialization(const json_t& json) override;
             with open(f'{os.path.join(self.output_dir, basename)}.h', 'w') as f:
                 f.write(emit_sekeleton_file(basename, 'h'))
 
-        with open(f'{os.path.join(self.output_dir, basename)}.hxx', 'w') as f:
+        with open(f'{os.path.join(self.output_dir_cxx_hxx, basename)}.hxx', 'w') as f:
             f.write(emit_sekeleton_file(basename, 'hxx'))
 
-        with open(f'{os.path.join(self.output_dir, basename)}.cxx', 'w') as f:
+        with open(f'{os.path.join(self.output_dir_cxx_hxx, basename)}.cxx', 'w') as f:
             f.write(emit_sekeleton_file(basename, 'cxx'))
 
         assert isinstance(symbol, EpiClass)
