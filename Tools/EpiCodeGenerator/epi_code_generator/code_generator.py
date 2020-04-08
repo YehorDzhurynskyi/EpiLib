@@ -193,14 +193,13 @@ class CodeGenerator:
 
                 builder.anchor_gen_region('include')
 
-                filename = os.path.basename(basename)
                 if ext == 'cxx':
-                    builder.line(f'#include "{filename}.h"')
+                    builder.line(f'#include "{basename}.h"')
                 elif ext == 'cpp':
-                    builder.line(f'#include "{filename}.h"')
-                    builder.line(f'#include "{filename}.cxx"')
+                    builder.line(f'#include "{basename}.h"')
+                    builder.line(f'#include "{basename}.cxx"')
                 elif ext == 'h':
-                    builder.line(f'#include "{filename}.hxx"')
+                    builder.line(f'#include "{basename}.hxx"')
 
                 builder.anchor_gen_endregion('include')
                 builder.line_empty()

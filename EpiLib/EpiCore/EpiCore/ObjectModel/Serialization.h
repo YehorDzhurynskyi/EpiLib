@@ -17,9 +17,9 @@ struct is_fundamental
     : std::integral_constant<
         bool,
         std::is_fundamental_v<T> ||
-        std::is_same_v<epiString, T>// ||
-//        std::is_same_v<FiniteFloating<float>, T> ||
-//        std::is_same_v<FiniteFloating<double>, T>
+        std::is_same_v<epiString, T> ||
+        std::is_same_v<FiniteFloating<float>, T> ||
+        std::is_same_v<FiniteFloating<double>, T>
     >
 {};
 
@@ -27,9 +27,9 @@ template<typename T>
 struct is_arithmetic
     : std::integral_constant<
         bool,
-        std::is_arithmetic_v<T>// ||
-//        std::is_same_v<FiniteFloating<float>, T> ||
-//        std::is_same_v<FiniteFloating<double>, T>
+        std::is_arithmetic_v<T> ||
+        std::is_same_v<FiniteFloating<float>, T> ||
+        std::is_same_v<FiniteFloating<double>, T>
     >
 {};
 
@@ -37,9 +37,9 @@ template<typename T>
 struct is_floating_point
     : std::integral_constant<
         bool,
-        std::is_floating_point_v<T>// ||
-//        std::is_same_v<FiniteFloating<float>, T> ||
-//        std::is_same_v<FiniteFloating<double>, T>
+        std::is_floating_point_v<T> ||
+        std::is_same_v<FiniteFloating<float>, T> ||
+        std::is_same_v<FiniteFloating<double>, T>
     >
 {};
 
