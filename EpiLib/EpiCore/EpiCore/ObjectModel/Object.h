@@ -12,7 +12,7 @@ class Object
 {
 public:
     static MetaClass EmitMetaClass();
-    constexpr static MetaTypeID TypeID{ MetaTypeID::Object };
+    constexpr static MetaTypeID TypeID{epiHashCompileTime(Object)};
 
 public:
     Object() = default;

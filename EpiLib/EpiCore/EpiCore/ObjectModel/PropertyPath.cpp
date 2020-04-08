@@ -130,11 +130,13 @@ epiByte* PropertyPath::GetValue(const Object& object) const
         {
             if (node.Type == PathNodeType::Index)
             {
+#if 0
                 value = MetaType::GetElementByIndex(value, *property, node.Index);
             }
             else if (node.Type == PathNodeType::Hash)
             {
                 value = MetaType::GetElementByHash(value, *property, node.Hash);
+#endif
             }
 
             if (value == nullptr)

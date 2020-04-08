@@ -30,13 +30,10 @@ add_library(EpiCore
     EpiCore/Containers/HashMap.h
 
     EpiCore/ObjectModel/Serialization.h
-    EpiCore/ObjectModel/EmitMeta.h
     EpiCore/ObjectModel/Object.h
     EpiCore/ObjectModel/Object.cpp
     EpiCore/ObjectModel/MetaObject.h
     EpiCore/ObjectModel/MetaObject.cpp
-    EpiCore/ObjectModel/ClassRegistry.h
-    EpiCore/ObjectModel/ClassRegistry.cpp
     EpiCore/ObjectModel/PropertyPath.h
     EpiCore/ObjectModel/PropertyPath.cpp
     EpiCore/ObjectModel/Handle.h

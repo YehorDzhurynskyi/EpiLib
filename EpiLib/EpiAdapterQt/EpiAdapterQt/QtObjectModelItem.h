@@ -1,16 +1,12 @@
 #pragma once
 
-#include "EpiCore/types.h"
+#include "EpiCore/ObjectModel/MetaObject.h"
 #include <QVariant>
 
 namespace epi
 {
 
-enum class MetaTypeID : epiU32;
 class epiBaseArray;
-class Object;
-class MetaClassData;
-class MetaProperty;
 class QtObjectModelItem
 {
 public:

@@ -17,7 +17,5 @@
 #include "EpiCore/common.h"
 #include "EpiCore/Hash.h"
 #include "EpiCore/ObjectModel/Serialization.h"
-#include "EpiCore/ObjectModel/EmitMeta.h"
-#include "EpiCore/ObjectModel/ClassRegistry.h"
 #include "EpiCore/ObjectModel/MetaObject.h"
 #include "EpiCore/Containers/Array.h"

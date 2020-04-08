@@ -1,61 +1,106 @@
 #pragma once
 
-#include "ClassRegistry.h"
-#include "EmitMeta.h"
+#include "EpiCore/Hash.h"
 
 namespace epi
 {
 
 using MetaPropertyID = epiHash_t;
-enum class MetaTypeID : epiU32
+using MetaTypeID = epiHash_t;
+
+class Object;
+class MetaProperty final
 {
-    None = 0,
+    friend MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID);
 
-    epiChar,
-    epiBool,
-    epiByte,
-    epiFloat,
-    epiDouble,
-    epiSize_t,
-    epiString,
-    epiU8,
-    epiU16,
-    epiU32,
-    epiU64,
-    epiS8,
-    epiS16,
-    epiS32,
-    epiS64,
+private:
+    MetaProperty() = default;
 
-    epiArray,
-    epiPtrArray,
-    HashMap,
-    Vec2,
-    Vec3,
-    Vec4,
+public:
+    MetaProperty(const MetaProperty&) = default;
+    MetaProperty& operator=(const MetaProperty&) = default;
+    MetaProperty(MetaProperty&&) = default;
+    MetaProperty& operator=(MetaProperty&&) = default;
+    ~MetaProperty() = default;
 
-    Handle,
+    epiBool IsValid() const;
+    epiBool HasNested() const;
 
-    Object,
+    MetaTypeID GetTypeID() const;
+    MetaTypeID GetNestedTypeID() const;
 
-// CUSTOM TYPES
-    Test,
-    Vessel,
-    Bloodstream,
-    Model,
-    StaticVentricle,
-    StaticRegulator,
-    Sensor,
-    StaticRegulatedVessel,
-    StaticRegulatedBloodstream,
-    StaticModel,
-    Simulation,
-    SimulationWard,
-    DynamicVentricle,
-    DynamicBloodstream,
-    DynamicModel,
-    StaticRegulatedModel,
-    ModelItem
+    epiByte* GetValue(const Object& object) const;
+
+protected:
+    MetaTypeID m_TypeID;
+    MetaTypeID m_NestedTypeID;
+    epiSize_t m_Offset;
+
+#ifdef epiUSE_METAPROPERTY_NAME
+public:
+    const epiChar* GetName() const { return m_Name.c_str(); }
+
+protected:
+    void SetName(const epiChar* name) { m_Name = name; }
+
+protected:
+    epiString m_Name;
+#else // epiUSE_METAPROPERTY_NAME
+public:
+    const epiChar* GetName() const { return ""; }
+
+protected:
+    void SetName(const epiChar* name) {}
+#endif // epiUSE_METAPROPERTY_NAME
+};
+
+#define epiMetaProperty(_Name, _Owner, _Type, _NestedType) \
+    { \
+        auto m = epiMetaProperty_Impl(#_Name, \
+                                      offsetof(_Owner, m_##_Name), \
+                                      _Type, \
+                                      _NestedType); \
+        data.AddProperty(epiHashCompileTime(#_Name), std::move(m)); \
+    } \
+
+inline MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID)
+{
+    MetaProperty prty;
+
+    prty.SetName(name);
+    prty.m_Offset = offset;
+    prty.m_TypeID = typeID;
+    prty.m_NestedTypeID = nestedTypeID;
+
+    assert(prty.IsValid());
+
+    return prty;
+}
+
+enum : MetaTypeID
+{
+    MetaTypeID_epiNone = 0,
+
+    MetaTypeID_epiChar = epiHashCompileTime(epiChar),
+    MetaTypeID_epiBool = epiHashCompileTime(epiBool),
+    MetaTypeID_epiByte = epiHashCompileTime(epiByte),
+    MetaTypeID_epiFloat = epiHashCompileTime(epiFloat),
+    MetaTypeID_epiDouble = epiHashCompileTime(epiDouble),
+    MetaTypeID_epiSize_t = epiHashCompileTime(epiSize_t),
+    MetaTypeID_epiString = epiHashCompileTime(epiString),
+    MetaTypeID_epiU8 = epiHashCompileTime(epiU8),
+    MetaTypeID_epiU16 = epiHashCompileTime(epiU16),
+    MetaTypeID_epiU32 = epiHashCompileTime(epiU32),
+    MetaTypeID_epiU64 = epiHashCompileTime(epiU64),
+    MetaTypeID_epiS8 = epiHashCompileTime(epiS8),
+    MetaTypeID_epiS16 = epiHashCompileTime(epiS16),
+    MetaTypeID_epiS32 = epiHashCompileTime(epiS32),
+    MetaTypeID_epiS64 = epiHashCompileTime(epiS64),
+
+    MetaTypeID_epiArray = epiHashCompileTime(epiArray),
+    MetaTypeID_epiPtrArray = epiHashCompileTime(epiPtrArray),
+
+    MetaTypeID_epiHandle = epiHashCompileTime(epiHandle)
 };
 
 class MetaType
@@ -67,11 +112,10 @@ public:
     static epiBool IsMultiDimensionalInplace(MetaTypeID typeID);
     static epiBool IsCompound(MetaTypeID typeID);
 
+#if 0
     static epiByte* GetElementByIndex(const epiByte* container, const MetaProperty& meta, epiS32 index);
     static epiByte* GetElementByHash(const epiByte* container, const MetaProperty& meta, epiHash_t hash);
-
-    template<typename T>
-    static MetaTypeID TypeOf();
+#endif
 };
 
 class MetaClassData
@@ -124,33 +168,24 @@ protected:
     epiString m_Name;
 };
 
-template<typename T>
-MetaTypeID MetaType::TypeOf()
-{
-    if constexpr (std::is_fundamental<T>::value)
-    {
-        if constexpr (std::is_same<epiChar, T>::value) return MetaTypeID::Char;
-        else if constexpr (std::is_same<epiBool, T>::value) return MetaTypeID::Bool;
-        else if constexpr (std::is_same<epiByte, T>::value) return MetaTypeID::Byte;
-        else if constexpr (std::is_same<epiFloat, T>::value) return MetaTypeID::Float;
-        else if constexpr (std::is_same<epiDouble, T>::value) return MetaTypeID::Double;
-        else if constexpr (std::is_same<epiSize_t, T>::value) return MetaTypeID::Size_t;
-        else if constexpr (std::is_same<epiU8, T>::value) return MetaTypeID::U8;
-        else if constexpr (std::is_same<epiU16, T>::value) return MetaTypeID::U16;
-        else if constexpr (std::is_same<epiU32, T>::value) return MetaTypeID::U32;
-        else if constexpr (std::is_same<epiU64, T>::value) return MetaTypeID::U64;
-        else if constexpr (std::is_same<epiS8, T>::value) return MetaTypeID::S8;
-        else if constexpr (std::is_same<epiS16, T>::value) return MetaTypeID::S16;
-        else if constexpr (std::is_same<epiS32, T>::value) return MetaTypeID::S32;
-        else if constexpr (std::is_same<epiS64, T>::value) return MetaTypeID::S64;
-    }
-    else
-    {
-        static_assert(std::is_base_of<Object, T>::value);
-        return T::TypeID;
-    }
+extern std::map<MetaTypeID, MetaClass> g_ClassRegistry;
 
-    return MetaTypeID::None;
+const MetaClass* ClassRegistry_Type_Lookup(MetaTypeID typeID);
+const MetaClass* ClassRegistry_Name_Lookup(const epiChar* typeName, epiSize_t len);
+
+template<typename T>
+MetaClass& Register()
+{
+    auto& [it, exists] = g_ClassRegistry.try_emplace(T::TypeID, std::move(T::EmitMetaClass()));
+    assert(!exists);
+    return it->second;
+}
+
+template<typename T>
+const MetaClass& ClassRegistry_GetMetaClass()
+{
+    static MetaClass t = Register<T>();
+    return t;
 }
 
 }

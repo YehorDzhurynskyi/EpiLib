@@ -247,17 +247,20 @@ class CodeGenerator:
 
             for p in clss.properties:
 
-                nestedtype = 'None'
+                hash_typenested = '0'
                 if p.form == EpiVariable.Form.Array:
-                    nestedtype = p.nestedtokentype.text
+                    hash_typenested = f'epiHashCompileTime({p.nestedtokentype.text})'
 
+                hash_type = f'epiHashCompileTime({p.tokentype.text.rstrip("*")})'
                 # TODO: remove rstrip
-                builder.line(f'epiMetaProperty({p.name}, {clss.name}, {p.tokentype.text.rstrip("*")}, {nestedtype});')
+                builder.line(f'epiMetaProperty({p.name}, {clss.name}, {hash_type}, {hash_typenested});')
 
             builder.line_empty()
 
             clss_parent = clss.parent if clss.parent is not None else 'Object'
-            builder.line(f'return MetaClass(std::move(data), MetaTypeID::{clss.name}, MetaTypeID::{clss_parent}, sizeof({clss.name}), "{clss.name}");')
+            hash_parent = f'epiHashCompileTime({clss_parent})'
+            hash_clss = f'epiHashCompileTime({clss.name})'
+            builder.line(f'return MetaClass(std::move(data), {hash_clss}, {hash_parent}, sizeof({clss.name}), "{clss.name}");')
 
             builder.tab(-1)
             builder.line('}')
@@ -285,7 +288,7 @@ const MetaClass& GetMetaClass() const override
 
 epiBool Is(MetaTypeID rhs) const override
 {{
-    return rhs == MetaTypeID::{clss.name} || super::Is(rhs);
+    return rhs == {clss.name}::TypeID || super::Is(rhs);
 }}
 
 void Serialization(json_t& json) override;
@@ -354,7 +357,7 @@ void Deserialization(const json_t& json) override;
             builder.line_empty()
 
             crc = hex(zlib.crc32(clss.name.encode()) & 0xffffffff)
-            builder.line(f'constexpr static MetaTypeID TypeID{{MetaTypeID::{clss.name}}};')
+            builder.line(f'constexpr static MetaTypeID TypeID{{{crc}}};')
             builder.line_empty()
 
             # pids
@@ -413,9 +416,6 @@ void Deserialization(const json_t& json) override;
 
         injection = f'{emit_class_meta(symbol).build()}\n'
         self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
-
-        #injection = f'MetaClass {symbol.name}::{symbol.name}_MetaClass;// = {symbol.name}::EmitMetaClass();\n\n'
-        #self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
 
         injection = f'\n{emit_class_declaration_hidden(symbol).build()}'
         self._code_generate_inject(injection, basename, 'hxx')

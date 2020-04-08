@@ -11,12 +11,12 @@ namespace epi
 
 epiBool MetaProperty::IsValid() const
 {
-    return m_TypeID != MetaTypeID::None;
+    return m_TypeID != MetaTypeID_epiNone;
 }
 
 epiBool MetaProperty::HasNested() const
 {
-    return m_NestedTypeID != MetaTypeID::None;
+    return m_NestedTypeID != MetaTypeID_epiNone;
 }
 
 MetaTypeID MetaProperty::GetTypeID() const
@@ -39,38 +39,55 @@ epiByte* MetaProperty::GetValue(const Object& object) const
 
 epiBool MetaType::IsFundamental(MetaTypeID typeID)
 {
-    return typeID >= MetaTypeID::epiChar && typeID <= MetaTypeID::epiS64;
+    switch (typeID)
+    {
+    case MetaTypeID_epiChar:
+    case MetaTypeID_epiBool:
+    case MetaTypeID_epiByte:
+    case MetaTypeID_epiFloat:
+    case MetaTypeID_epiDouble:
+    case MetaTypeID_epiSize_t:
+    case MetaTypeID_epiString:
+    case MetaTypeID_epiU8:
+    case MetaTypeID_epiU16:
+    case MetaTypeID_epiU32:
+    case MetaTypeID_epiU64:
+    case MetaTypeID_epiS8:
+    case MetaTypeID_epiS16:
+    case MetaTypeID_epiS32:
+    case MetaTypeID_epiS64:
+        return true;
+    default: return false;
+    }
 }
 
 epiBool MetaType::IsHandle(MetaTypeID typeID)
 {
-    return typeID == MetaTypeID::Handle;
+    return typeID == MetaTypeID_epiHandle;
 }
 
 epiBool MetaType::IsMultiDimensional(MetaTypeID typeID)
 {
-    return typeID == MetaTypeID::epiArray ||
-        typeID == MetaTypeID::HashMap ||
+    return
+        typeID == MetaTypeID_epiArray ||
         IsMultiDimensionalInplace(typeID);
 }
 
 epiBool MetaType::IsMultiDimensionalInplace(MetaTypeID typeID)
 {
-    return
-        typeID == MetaTypeID::Vec2 ||
-        typeID == MetaTypeID::Vec3 ||
-        typeID == MetaTypeID::Vec4;
+    return false; // TODO: add vector, inplace array types
 }
 
 epiBool MetaType::IsCompound(MetaTypeID typeID)
 {
     return
-        typeID != MetaTypeID::None &&
+        typeID != MetaTypeID_epiNone &&
         !IsFundamental(typeID) &&
         !IsMultiDimensional(typeID) &&
         !IsHandle(typeID);
 }
 
+#if 0
 epiByte* MetaType::GetElementByIndex(const epiByte* container, const MetaProperty& meta, epiS32 index)
 {
     if (!IsMultiDimensional(meta.GetTypeID()) || !meta.HasNested()) goto invalid_input;
@@ -123,6 +140,7 @@ invalid_input:
     assert(!"Invalid Input");
     return nullptr;
 }
+#endif
 
 void MetaClassData::AddProperty(MetaPropertyID propertyID, MetaProperty&& metaProperty)
 {
@@ -183,7 +201,7 @@ const MetaProperty* MetaClass::GetProperty_FromBase(MetaPropertyID pid) const
         superMetaClass = ClassRegistry_Type_Lookup(superMetaClass->m_SuperTypeID);
         assert(superMetaClass != nullptr);
 
-        if (superMetaClass->m_TypeID == MetaTypeID::None)
+        if (superMetaClass->m_TypeID == MetaTypeID_epiNone)
         {
             return nullptr;
         }
@@ -286,6 +304,34 @@ epiSize_t MetaClass::GetSizeOf() const
     assert(IsValid());
 
     return m_SizeOf;
+}
+
+std::map<MetaTypeID, MetaClass> g_ClassRegistry;
+
+const MetaClass* ClassRegistry_Type_Lookup(MetaTypeID typeID)
+{
+    const auto it = g_ClassRegistry.find(typeID);
+    if (it == g_ClassRegistry.end())
+    {
+        assert(!"No such class has been registred");
+        return nullptr;
+    }
+
+    return &it->second;
+}
+
+const MetaClass* ClassRegistry_Name_Lookup(const epiChar* typeName, epiSize_t len)
+{
+    for (const auto& [k, v] : g_ClassRegistry)
+    {
+        const epiChar* name = v.GetName();
+        if (strlen(name) == len && strncmp(name, typeName, len) == 0)
+        {
+            return &v;
+        }
+    }
+
+    return nullptr;
 }
 
 }

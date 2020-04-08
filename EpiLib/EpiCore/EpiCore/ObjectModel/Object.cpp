@@ -8,7 +8,7 @@ MetaClass Object::EmitMetaClass()
 {
     MetaClassData data;
 
-    return MetaClass(std::move(data), MetaTypeID::Object, MetaTypeID::None, sizeof(Object), "Object");
+    return MetaClass(std::move(data), epiHashCompileTime(Object), MetaTypeID_epiNone, sizeof(Object), "Object");
 }
 
 const MetaClass& Object::GetMetaClass() const
@@ -18,7 +18,7 @@ const MetaClass& Object::GetMetaClass() const
 
 epiBool Object::Is(MetaTypeID rhs) const
 {
-    return rhs == MetaTypeID::Object;
+    return rhs == Object::TypeID;
 }
 
 void Object::Serialize(json_t& json)

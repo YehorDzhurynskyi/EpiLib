@@ -20,7 +20,7 @@ QWidget* QtObjectDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
     assert(MetaType::IsFundamental(typeID));
 
     QWidget* widget = nullptr;
-    if (typeID == MetaTypeID::epiFloat)
+    if (typeID == MetaTypeID_epiFloat)
     {
         QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
         editor->setFrame(false);
@@ -28,7 +28,7 @@ QWidget* QtObjectDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
         editor->setDecimals(FLT_DIG);
         widget = editor;
     }
-    else if (typeID == MetaTypeID::epiString)
+    else if (typeID == MetaTypeID_epiString)
     {
         QLineEdit* editor = new QLineEdit(parent);
         editor->setFrame(false);
@@ -49,12 +49,12 @@ void QtObjectDelegate::setEditorData(QWidget* editor, const QModelIndex& index) 
     assert(item->IsEditable());
 
     const QVariant value = index.model()->data(index, Qt::EditRole);
-    if (typeID == MetaTypeID::epiFloat)
+    if (typeID == MetaTypeID_epiFloat)
     {
         QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
         spinBox->setValue(value.toFloat());
     }
-    else if (typeID == MetaTypeID::epiString)
+    else if (typeID == MetaTypeID_epiString)
     {
         QLineEdit *lineEdit = static_cast<QLineEdit*>(editor);
         lineEdit->setText(value.toString());
@@ -72,13 +72,13 @@ void QtObjectDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, 
     assert(item->IsEditable());
 
     QVariant value;
-    if (typeID == MetaTypeID::epiFloat)
+    if (typeID == MetaTypeID_epiFloat)
     {
         QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
         spinBox->interpretText();
         value = spinBox->value();
     }
-    else if (typeID == MetaTypeID::epiString)
+    else if (typeID == MetaTypeID_epiString)
     {
         QLineEdit* lineEdit = static_cast<QLineEdit*>(editor);
         value = lineEdit->text();
