@@ -259,6 +259,10 @@ class CodeGenerator:
                 if p.form == EpiVariable.Form.Array:
                     hash_typenested = f'epiHashCompileTime({p.nestedtokentype.text})'
 
+                # TODO: handle properly
+                if any(a.tokentype == TokenType.Virtual for a in p.attrs):
+                    continue
+
                 hash_type = f'epiHashCompileTime({p.tokentype.text.rstrip("*")})'
                 # TODO: remove rstrip
                 builder.line(f'epiMetaProperty({p.name}, {clss.name}, {hash_type}, {hash_typenested});')
@@ -419,15 +423,20 @@ void Deserialization(const json_t& json) override;
             builder.tab(-1)
             builder.line('};')
             builder.line_empty()
-            builder.tab(-1)
-            builder.line('protected:')
-            builder.tab()
 
             # prts
+            distinguished = False
             for p in clss.properties:
 
                 if not any(a.tokentype == TokenType.Virtual for a in p.attrs):
                     continue
+
+                if not distinguished:
+
+                    builder.tab(-1)
+                    builder.line('protected:')
+                    builder.tab()
+                    distinguished = True
 
                 ptype = p.tokentype.text
 
@@ -436,15 +445,17 @@ void Deserialization(const json_t& json) override;
 
                 if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
 
-                    builder.line(f'inline {ptype}& Get{p.name}_Callback();')
+                    builder.line(f'{ptype}& Get{p.name}_Callback();')
                     ptype = f'const {ptype}&'
 
-                builder.line(f'inline {ptype} Get{p.name}_Callback() const;')
+                builder.line(f'{ptype} Get{p.name}_Callback() const;')
 
                 if not any(a.tokentype == TokenType.ReadOnly for a in p.attrs):
-                    builder.line(f'inline void Set{p.name}_Callback({ptype} value);')
+                    builder.line(f'void Set{p.name}_Callback({ptype} value);')
 
-            builder.line_empty()
+            if distinguished:
+                builder.line_empty()
+
             builder.tab(-1)
             builder.line('protected:')
             builder.tab()

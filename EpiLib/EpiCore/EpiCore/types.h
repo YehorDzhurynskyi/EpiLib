@@ -24,6 +24,9 @@ using epiS16 = int16_t;
 using epiS32 = int32_t;
 using epiS64 = int64_t;
 
+using epiFloat = float;
+using epiDouble = double;
+
 using epiString = std::string;
 
 using epiV2F = glm::vec2;
@@ -41,13 +44,3 @@ using epiV4 = glm::vec<4, T>;
 using epiMat2x2F = glm::mat2x2;
 using epiMat3x3F = glm::mat3x3;
 using epiMat4x4F = glm::mat4x4;
-
-#include "EpiCore/Debug/FiniteFloating.h"
-
-#ifdef epiDEBUG
-using epiFloat = epi::FiniteFloating<float>;
-using epiDouble = epi::FiniteFloating<double>;
-#else
-using epiFloat = float;
-using epiDouble = double;
-#endif

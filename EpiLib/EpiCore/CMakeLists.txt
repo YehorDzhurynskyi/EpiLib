@@ -24,8 +24,6 @@ add_library(EpiCore
     EpiCore/Pool.h
     EpiCore/RotatingBuffer.h
 
-    EpiCore/Debug/FiniteFloating.h
-
     EpiCore/Containers/Array.h
     EpiCore/Containers/HashMap.h
 
@@ -36,6 +34,8 @@ add_library(EpiCore
     EpiCore/ObjectModel/MetaObject.cpp
     EpiCore/ObjectModel/PropertyPath.h
     EpiCore/ObjectModel/PropertyPath.cpp
+    EpiCore/ObjectModel/PropertyPointer.h
+    EpiCore/ObjectModel/PropertyPointer.cpp
     EpiCore/ObjectModel/Handle.h
 )
 get_target_property(EpiCore_SRCs EpiCore SOURCES)

@@ -46,7 +46,7 @@ public:
 protected:
     MetaTypeID m_TypeID;
     MetaTypeID m_NestedTypeID;
-    epiSize_t m_Offset;
+    size_t m_Offset;
 
 #ifdef epiUSE_METAPROPERTY_NAME
 public:
@@ -75,7 +75,7 @@ protected:
         data.AddProperty(epiHashCompileTime(#_Name), std::move(m)); \
     } \
 
-inline MetaProperty epiMetaProperty_Impl(const epiChar* name, void* readPtr, void* writePtr, MetaTypeID typeID, MetaTypeID nestedTypeID)
+inline MetaProperty epiMetaProperty_Impl(const epiChar* name, size_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID)
 {
     MetaProperty prty;
 

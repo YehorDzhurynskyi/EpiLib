@@ -8,7 +8,8 @@
 #define EPI_NAMESPACE_BEGIN() namespace epi {
 #define EPI_NAMESPACE_END() }
 
-#define epiExpect(_x) assert(_x)
+#define epiAssert(_x, _msg) assert(_x && _msg)
+#define epiExpect(_x, _msg) assert(_x && _msg)
 
 #define epiFor(_n) for (int index = 0; index < _n; ++index)
 
