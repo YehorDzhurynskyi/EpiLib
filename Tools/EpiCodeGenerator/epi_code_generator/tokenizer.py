@@ -12,12 +12,12 @@ class TokenType(Enum):
     CloseBrace = auto()
     OpenAngleBracket = auto()
     CloseAngleBracket = auto()
-    # OpenBracket = auto()
-    # CloseBracket = auto()
-    # OpenSqBracket = auto()
-    # CloseSqBracket = auto()
+    OpenBracket = auto()
+    CloseBracket = auto()
+    OpenSqBracket = auto()
+    CloseSqBracket = auto()
     Assing = auto()
-    # Comma = auto()
+    Comma = auto()
     Asterisk = auto()
     Ampersand = auto()
     Colon = auto()
@@ -47,23 +47,21 @@ class TokenType(Enum):
     # EnumType = auto()
     # InterfaceType = auto()
 
-    # OwnerAttr = auto()
-    # ReadOnlyAttr = auto()
-    # WriteOnlyAttr = auto()
-    # WriteCallbackAttr = auto()
-    # ReadCallbackAttr = auto()
-    # VirtualAttr = auto()
-    # AssertMinAttr = auto()
-    # AssertMaxAttr = auto()
-    # AssertMinMaxAttr = auto()
-    # ForceMinAttr = auto()
-    # ForceMaxAttr = auto()
-    # ForceMinMaxAttr = auto()
-    # NoDuplicateAttr = auto()
-    # TransientAttr = auto()
-    # AdditionalInterfaceAttr = auto()
-    # SerializationCallbackAttr = auto()
-    # DllEntryAttr = auto()
+    # Owner = auto()
+    ReadOnly = auto()
+    # WriteOnly = auto()
+    # WriteCallback = auto()
+    # ReadCallback = auto()
+    Virtual = auto()
+    ExpectMin = auto()
+    ExpectMax = auto()
+    ForceMin = auto()
+    ForceMax = auto()
+    # NoDuplicate = auto()
+    Transient = auto()
+    # AdditionalInterface = auto()
+    # SerializationCallback = auto()
+    # DllEntry = auto()
 
     # ConstModifier = auto()
 
@@ -91,14 +89,14 @@ class Tokenizer:
         '}': TokenType.CloseBrace,
         '<': TokenType.OpenAngleBracket,
         '>': TokenType.CloseAngleBracket,
-        # '(': TokenType.OpenBracket,
-        # ')': TokenType.CloseBracket,
-        # '[': TokenType.OpenSqBracket,
-        # ']': TokenType.CloseSqBracket,
+        '(': TokenType.OpenBracket,
+        ')': TokenType.CloseBracket,
+        '[': TokenType.OpenSqBracket,
+        ']': TokenType.CloseSqBracket,
         '=': TokenType.Assing,
         '*': TokenType.Asterisk,
         '&': TokenType.Ampersand,
-        # ',': TokenType.Comma,
+        ',': TokenType.Comma,
         # '::': TokenType.DoubleColon,
         ':': TokenType.Colon,
         ';': TokenType.Semicolon
@@ -145,32 +143,30 @@ class Tokenizer:
     }
 
     BUILTIN_CLSS_ATTRS = {
-        # 'AdditionalInterface': TokenType.AdditionalInterfaceAttr,
-        # 'SerializationCallback': TokenType.SerializationCallbackAttr,
-        # 'DllEntry': TokenType.DllEntryAttr
+        # 'AdditionalInterface': TokenType.AdditionalInterface,
+        # 'SerializationCallback': TokenType.SerializationCallback,
+        # 'DllEntry': TokenType.DllEntry
     }
 
     BUILTIN_PRTY_ATTRS = {
-        # 'Owner': TokenType.OwnerAttr,
-        # 'ReadOnly': TokenType.ReadOnlyAttr,
-        # 'WriteOnly': TokenType.WriteOnlyAttr,
-        # 'WriteCallback': TokenType.WriteCallbackAttr,
-        # 'ReadCallback': TokenType.ReadCallbackAttr,
-        # 'Virtual': TokenType.VirtualAttr,
-        # 'AssertMin': TokenType.AssertMinAttr,
-        # 'AssertMax': TokenType.AssertMaxAttr,
-        # 'AssertMinMax': TokenType.AssertMinMaxAttr,
-        # 'ForceMin': TokenType.ForceMinAttr,
-        # 'ForceMax': TokenType.ForceMaxAttr,
-        # 'ForceMinMax': TokenType.ForceMinMaxAttr,
-        # 'NoDuplicate': TokenType.NoDuplicateAttr,
-        # 'Transient': TokenType.TransientAttr,
-        # 'DllEntry': TokenType.DllEntryAttr
-        # TBD: 'Hidden': TokenType.HiddenAttr,
-        # TBD: 'DisplayName': TokenType.DisplayNameAttr,
-        # TBD: 'Description': TokenType.DescriptionAttr,
-        # TBD: 'EventCallback': TokenType.EventCallbackAttr,
-        # TBD: 'Category': TokenType.CategoryAttr,
+        # 'Owner': TokenType.Owner,
+        'ReadOnly': TokenType.ReadOnly,
+        # 'WriteOnly': TokenType.WriteOnly,
+        # 'WriteCallback': TokenType.WriteCallback,
+        # 'ReadCallback': TokenType.ReadCallback,
+        'Virtual': TokenType.Virtual,
+        'ExpectMin': TokenType.ExpectMin,
+        'ExpectMax': TokenType.ExpectMax,
+        'ForceMin': TokenType.ForceMin,
+        'ForceMax': TokenType.ForceMax,
+        # 'NoDuplicate': TokenType.NoDuplicate,
+        'Transient': TokenType.Transient,
+        # 'DllEntry': TokenType.DllEntry
+        # TBD: 'Hidden': TokenType.Hidden,
+        # TBD: 'DisplayName': TokenType.DisplayName,
+        # TBD: 'Description': TokenType.Description,
+        # TBD: 'EventCallback': TokenType.EventCallback,
+        # TBD: 'Category': TokenType.Category,
     }
 
     def __init__(self, abspath: str, relpath: str):

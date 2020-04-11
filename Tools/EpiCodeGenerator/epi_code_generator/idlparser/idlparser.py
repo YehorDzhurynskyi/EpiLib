@@ -4,6 +4,8 @@ from epi_code_generator.tokenizer import Tokenizer
 from epi_code_generator.tokenizer import Token
 from epi_code_generator.tokenizer import TokenType
 
+from epi_code_generator.symbol import EpiAttributeInvalidListError
+from epi_code_generator.symbol import EpiAttribute
 from epi_code_generator.symbol import EpiVariable
 from epi_code_generator.symbol import EpiClass
 
@@ -13,26 +15,24 @@ class IDLSyntaxErrorCode(Enum):
     NoMatchingClosingBrace = auto()
     NoMatchingOpeningBrace = auto()
     NoMatchingClosingBracket = auto()
-    NestedBracket = auto()
     UnexpectedToken = auto()
     UnexpectedKeywordUsage = auto()
     UnexpectedEOF = auto()
     IncorrectValueLiteral = auto()
-    UnsupportedProperty = auto()
-    MatchingTokenOnSameLine = auto()
+    InvalidArgumentsNumber = auto()
+    InvalidAttribute = auto()
 
 
 SYNTAX_ERROR_MSGS = {
     IDLSyntaxErrorCode.NoMatchingClosingBrace: 'No matching closing brace for',
     IDLSyntaxErrorCode.NoMatchingOpeningBrace: 'No matching opening brace for',
     IDLSyntaxErrorCode.NoMatchingClosingBracket: 'No matching closing bracket for',
-    IDLSyntaxErrorCode.NestedBracket: 'Nested brackets \'[]\', \'()\' are forbidden',
     IDLSyntaxErrorCode.UnexpectedToken: 'Unexpected token',
     IDLSyntaxErrorCode.UnexpectedKeywordUsage: 'Unexpected keyword usage',
     IDLSyntaxErrorCode.UnexpectedEOF: 'Unexpected end of file',
     IDLSyntaxErrorCode.IncorrectValueLiteral: 'Incorrect value literal',
-    IDLSyntaxErrorCode.UnsupportedProperty: 'Specified property declaration is unsupported',
-    IDLSyntaxErrorCode.MatchingTokenOnSameLine: 'Matching token should be located on same line'
+    IDLSyntaxErrorCode.InvalidArgumentsNumber: 'Invalid number of arguments',
+    IDLSyntaxErrorCode.InvalidAttribute: 'Invalid attribute'
 }
 
 
@@ -72,7 +72,7 @@ class IDLParser:
 
         return curr
 
-    def parse(self):
+    def parse(self) -> dict:
 
         if self.tokens[-1].type != TokenType.EOF:
 
@@ -101,6 +101,9 @@ class IDLParser:
                     assert False, 'Handle other usertypes'
 
                 clss = self._parse_class()
+                if clss is None:
+                    break
+
                 registry[clss.name] = clss
 
         except IndexError:
@@ -108,7 +111,7 @@ class IDLParser:
 
         return registry, self.syntax_errors
 
-    def _parse_class(self):
+    def _parse_class(self) -> EpiClass:
 
         t = self._next()
         if t.type != TokenType.ClassType:
@@ -145,6 +148,9 @@ class IDLParser:
                     unpack_scope(e)
 
         scope = self._parse_scope()
+        if scope is None:
+            return None
+
         unpack_scope(scope)
 
         t = self._next()
@@ -155,7 +161,7 @@ class IDLParser:
 
         return clss
 
-    def _parse_scope(self):
+    def _parse_scope(self, attrs_inherited: list = []) -> list:
 
         t = self._next()
         if t.type != TokenType.OpenBrace:
@@ -166,17 +172,32 @@ class IDLParser:
         scope = []
         while True:
 
-            # t = self._curr()
-            # attrs = self._parse_attr_list() if t.type == TokenType.OpenSqBracket else []
+            t = self._curr()
+            attrs_local = self._parse_attr_list()
+            if attrs_local is None:
+                return None
 
+            attrs_merged = attrs_inherited + attrs_local
             # TODO: check if property isn't reference
 
             if self._curr().type == TokenType.CloseBrace:
                 break
             elif self._curr().type == TokenType.OpenBrace:
-                scope.append(self._parse_scope())
+                scope.append(self._parse_scope(attrs_merged))
             else:
-                scope.append(self._parse_variable())
+
+                var = self._parse_variable()
+                if var is None:
+                    return None
+
+                try:
+                    var.attrs = attrs_merged
+                except EpiAttributeInvalidListError as e:
+
+                    self.syntax_errors.append(var.tokentype, IDLSyntaxErrorCode.InvalidAttribute, str(e))
+                    return None
+
+                scope.append(var)
 
         t = self._next()
         if t.type != TokenType.CloseBrace:
@@ -186,8 +207,7 @@ class IDLParser:
 
         return scope
 
-    """
-    def _parse_attr_list(self):
+    def _parse_attr_list(self) -> list:
 
         attrs = []
         while True:
@@ -197,56 +217,79 @@ class IDLParser:
                 break
 
             self._next()
-            while self._curr().text in Tokenizer.BUILTIN_PRTY_ATTRS.keys() | Tokenizer.BUILTIN_CLSS_ATTRS.keys():
+            while True:
+
+                if self._curr().text not in Tokenizer.BUILTIN_PRTY_ATTRS.keys() | Tokenizer.BUILTIN_CLSS_ATTRS.keys():
+
+                    self._error_push_unexpected_token(self._curr(), 'Expected an attribute')
+                    return None
 
                 attr = self._parse_attr()
-                if not attr:
+                if attr is None:
                     return None
 
                 attrs.append(attr)
 
-                t = self._curr()
-                if t.type != TokenType.Comma:
+                if self._curr().type != TokenType.Comma:
                     break
 
                 self._next()
 
             t = self._next()
             if t.type != TokenType.CloseSqBracket:
+
+                self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.NoMatchingClosingBracket, 'Expected \']\''))
                 return None
 
         return attrs
 
-    def _parse_attr(self):
+    def _parse_attr(self) -> EpiAttribute:
 
         a_t = self._next()
 
         attr = EpiAttribute(a_t.type)
 
-        if self._curr().type != TokenType.OpenBracket:
+        lbound, rbound = EpiAttribute.RANGES[a_t.type]
+        if rbound == 0:
             return attr
 
-        ob_t = self._next()
-        if ob_t.type != TokenType.OpenBracket:
-            return None
+        if lbound == 0 and self._curr().type != TokenType.OpenBracket:
+            return attr
 
-        while self._curr().type != TokenType.CloseBracket:
+        self._next()
+        for i in range(rbound):
+
+            if self._curr().type == TokenType.CloseBracket:
+                break
 
             attr.params.append(self._next())
-            t = self._curr()
-            if t.type != TokenType.Comma:
+
+            if self._curr().type != TokenType.Comma:
                 break
 
             self._next()
 
-        cb_t = self._next()
-        if cb_t.type != TokenType.CloseBracket:
+        if i > rbound:
+
+            tip = f'Maximum number of args is {rbound} but {i} provided'
+            self.syntax_errors.append(IDLSyntaxError(a_t, IDLSyntaxErrorCode.InvalidArgumentsNumber, tip))
+            return None
+
+        t = self._next()
+        if t.type != TokenType.CloseBracket:
+
+            self.syntax_errors.append(IDLSyntaxError(t, IDLSyntaxErrorCode.NoMatchingClosingBracket, 'Expected \')\''))
+            return None
+
+        if i < lbound:
+
+            tip = f'Minimum number of args is {lbound} but {i} provided'
+            self.syntax_errors.append(IDLSyntaxError(a_t, IDLSyntaxErrorCode.InvalidArgumentsNumber, tip))
             return None
 
         return attr
-    """
 
-    def _parse_variable(self):
+    def _parse_variable(self) -> EpiVariable:
 
         if not self._is_next_type():
 

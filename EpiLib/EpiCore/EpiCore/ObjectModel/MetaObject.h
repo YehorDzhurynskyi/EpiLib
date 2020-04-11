@@ -23,6 +23,18 @@ public:
     MetaProperty& operator=(MetaProperty&&) = default;
     ~MetaProperty() = default;
 
+    union Flags
+    {
+        struct
+        {
+            epiU64 HasReadCallback  : 1;
+            epiU64 HasWriteCallback : 1;
+            epiU64 _                : 62;
+        };
+        epiU64 Flags;
+    };
+    static_assert(sizeof(Flags) == sizeof(epiU64));
+
     epiBool IsValid() const;
     epiBool HasNested() const;
 
@@ -63,7 +75,7 @@ protected:
         data.AddProperty(epiHashCompileTime(#_Name), std::move(m)); \
     } \
 
-inline MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID)
+inline MetaProperty epiMetaProperty_Impl(const epiChar* name, void* readPtr, void* writePtr, MetaTypeID typeID, MetaTypeID nestedTypeID)
 {
     MetaProperty prty;
 

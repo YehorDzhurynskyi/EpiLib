@@ -7,49 +7,34 @@ from epi_code_generator.tokenizer import Token
 from epi_code_generator.tokenizer import TokenType
 
 
-'''
+class EpiAttributeInvalidListError(Exception):
+    pass
+
+
 class EpiAttribute:
 
-    PARAM_RANGES = {
-        # NOTE: Common attributes
-        TokenType.DllEntryAttr: range(0, 1),
-
-        # NOTE: Property attributes
-        TokenType.OwnerAttr: range(0, 1),
-        TokenType.ReadOnlyAttr: range(0, 1),
-        TokenType.WriteOnlyAttr: range(0, 1),
-        TokenType.WriteCallbackAttr: range(0, 1),
-        TokenType.ReadCallbackAttr: range(0, 1),
-        TokenType.VirtualAttr: range(0, 1),
-        TokenType.AssertMinAttr: range(1, 2),
-        TokenType.AssertMaxAttr: range(1, 2),
-        TokenType.AssertMinMaxAttr: range(2, 3),
-        TokenType.ForceMinAttr: range(1, 2),
-        TokenType.ForceMaxAttr: range(1, 2),
-        TokenType.ForceMinMaxAttr: range(2, 3),
-        TokenType.NoDuplicateAttr: range(0, 1),
-        TokenType.TransientAttr: range(0, 1),
-
-        # NOTE: Class attributes
-        TokenType.AdditionalInterfaceAttr: range(1, sys.maxsize),
-        TokenType.SerializationCallbackAttr: range(0, 1)
+    RANGES = {
+        TokenType.Virtual: (0, 0),
+        TokenType.ReadOnly: (0, 0),
+        TokenType.Transient: (0, 0),
+        TokenType.ExpectMin: (1, 1),
+        TokenType.ExpectMax: (1, 1),
+        TokenType.ForceMin: (1, 1),
+        TokenType.ForceMax: (1, 1)
     }
-    assert len(PARAM_RANGES.keys()) == len(Tokenizer.BUILDIN_PRTY_ATTRS.keys() | Tokenizer.BUILDIN_CLSS_ATTRS.keys())
 
-    def __init__(self, type):
+    def __init__(self, tokentype):
 
-        self.type = type
+        self.tokentype = tokentype
         self.params = []
 
-
-class EpiInvalidAttributeListError(Exception):
-    pass
-'''
 
 class EpiSymbol(abc.ABC):
 
     def __init__(self, token):
+
         self.token = token
+        self.__attrs = []
 
     @property
     def name(self):
@@ -58,9 +43,6 @@ class EpiSymbol(abc.ABC):
     def __str__(self):
         return str(self.token)
 
-'''
-        self.attrs = []
-
     @property
     def attrs(self):
         return self.__attrs
@@ -68,15 +50,15 @@ class EpiSymbol(abc.ABC):
     @attrs.setter
     def attrs(self, attrs):
 
-        if self._is_valid_attrs(attrs):
-            self.__attrs = attrs
-        else:
-            raise EpiInvalidAttributeListError
+        self._preprocess_attrs(attrs)
+        self.__attrs = attrs
 
     @abc.abstractmethod
-    def _is_valid_attrs(self, attrs):
-        pass
-'''
+    def _preprocess_attrs(self, attrs):
+
+        if len(attrs) != len(set(attrs)):
+            raise EpiAttributeInvalidListError(f'Duplicating attribute')
+
 
 '''
 class EpiMethod(EpiSymbol):
@@ -131,10 +113,59 @@ class EpiVariable(EpiSymbol):
 
         return value
 
-'''
-    def _is_valid_attrs(self, attrs):
-        return True
-'''
+    def _preprocess_attrs(self, attrs):
+
+        super(EpiVariable, self)._preprocess_attrs(attrs)
+
+        if any(a.tokentype == TokenType.Virtual for a in attrs):
+            attrs.append(EpiAttribute(TokenType.Transient))
+
+        for attr in attrs:
+
+            if attr.tokentype.name not in Tokenizer.BUILTIN_PRTY_ATTRS.keys():
+                raise EpiAttributeInvalidListError(f'Variable doesn\'t support `{attr.tokentype.name}` attribute')
+
+            if attr.tokentype not in [
+                TokenType.ExpectMin,
+                TokenType.ExpectMax,
+                TokenType.ForceMin,
+                TokenType.ForceMax
+            ]:
+                continue
+
+            if attr.tokentype == TokenType.ExpectMin and any(a.tokentype == TokenType.ForceMin for a in attrs):
+                raise EpiAttributeInvalidListError(f'Mutually exclusive attributes `ExpectMin` and `ForceMin`')
+
+            if attr.tokentype == TokenType.ForceMin and any(a.tokentype == TokenType.ExpectMin for a in attrs):
+                raise EpiAttributeInvalidListError(f'Mutually exclusive attributes `ExpectMin` and `ForceMin`')
+
+            if attr.tokentype == TokenType.ExpectMax and any(a.tokentype == TokenType.ForceMax for a in attrs):
+                raise EpiAttributeInvalidListError(f'Mutually exclusive attributes `ExpectMax` and `ForceMax`')
+
+            if attr.tokentype == TokenType.ForceMax and any(a.tokentype == TokenType.ExpectMax for a in attrs):
+                raise EpiAttributeInvalidListError(f'Mutually exclusive attributes `ExpectMax` and `ForceMax`')
+
+            if self.tokentype not in [
+                TokenType.FloatingType,
+                TokenType.IntType,
+                TokenType.UIntType,
+                TokenType.ByteType,
+                TokenType.SizeTType,
+                TokenType.HashTType
+            ]:
+                raise EpiAttributeInvalidListError(f'Attribute type {attr.tokentype.name} for this variable')
+
+            if self.tokentype == TokenType.FloatingType and not all(p.type == TokenType.FloatingLiteral for p in attr.params):
+                raise EpiAttributeInvalidListError(f'Attribute parameter type (Expected a float)')
+
+            if self.tokentype in [
+                TokenType.IntType,
+                TokenType.UIntType,
+                TokenType.ByteType,
+                TokenType.SizeTType,
+                TokenType.HashTType
+            ] and not all(p.type == TokenType.IntegerLiteral for p in attr.params):
+                raise EpiAttributeInvalidListError(f'Attribute parameter type (Expected an integer)')
 
 
 class EpiClass(EpiSymbol):
@@ -146,10 +177,8 @@ class EpiClass(EpiSymbol):
         self.parent = None
         self.properties = []
 
-'''
-    def _is_valid_attrs(self, attrs):
-        return True
-'''
+    def _preprocess_attrs(self, attrs):
+        super(EpiClass, self)._preprocess_attrs(attrs)
 
 
 '''

@@ -206,8 +206,8 @@ class CodeGenerator:
                 builder.anchor_namespace_begin()
                 builder.line_empty()
                 builder.anchor_namespace_end()
-                builder.line_empty()
 
+            builder.line_empty()
             return builder.build()
 
         def emit_class_serialization(clss: EpiClass, builder: Builder = Builder()) -> Builder:
@@ -219,7 +219,9 @@ class CodeGenerator:
             builder.line_empty()
 
             for p in clss.properties:
-                builder.line(f'epiSerialize({p.name}, json);')
+
+                if not any(a.tokentype == TokenType.Transient for a in p.attrs):
+                    builder.line(f'epiSerialize({p.name}, json);')
 
             builder.tab(-1)
             builder.line('}')
@@ -232,7 +234,9 @@ class CodeGenerator:
             builder.line_empty()
 
             for p in clss.properties:
-                builder.line(f'epiDeserialize({p.name}, json);')
+
+                if not any(a.tokentype == TokenType.Transient for a in p.attrs):
+                    builder.line(f'epiDeserialize({p.name}, json);')
 
             builder.tab(-1)
             builder.line('}')
@@ -310,13 +314,49 @@ void Deserialization(const json_t& json) override;
                 if p.form == EpiVariable.Form.Array:
                     ptype = f'{ptype}<{p.nestedtokentype.text}>'
 
+                body_prologue_set = ''
+                body_epilogue_set = f'm_{p.name} = value;'
+                body_prologue_get = ''
+                body_epilogue_get = f'return m_{p.name};'
+
+                for a in p.attrs:
+
+                    if a.tokentype == TokenType.ExpectMin:
+
+                        v = a.params[0].text
+                        body_prologue_set = f'{body_prologue_set}epiExpect(value >= {v});'
+
+                    if a.tokentype == TokenType.ExpectMax:
+
+                        v = a.params[0].text
+                        body_prologue_set = f'{body_prologue_set}epiExpect(value <= {v});'
+
+                    if a.tokentype == TokenType.ForceMin:
+
+                        v = a.params[0].text
+                        body_prologue_set = f'{body_prologue_set}value = std::max(value, {v});'
+
+                    if a.tokentype == TokenType.ForceMax:
+
+                        v = a.params[0].text
+                        body_prologue_set = f'{body_prologue_set}value = std::min(value, {v});'
+
+                    if a.tokentype == TokenType.Virtual:
+
+                        body_epilogue_get = f'return Get{p.name}_Callback();'
+                        body_epilogue_set = f'Set{p.name}_Callback(value);'
+
+                body_get = f'{body_prologue_get}{body_epilogue_get}'
+                body_set = f'{body_prologue_set}{body_epilogue_set}'
                 if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
 
-                    builder.line(f'inline {ptype}& Get{p.name}() {{ return m_{p.name}; }} \\')
+                    builder.line(f'inline {ptype}& Get{p.name}() {{ {body_get} }} \\')
                     ptype = f'const {ptype}&'
 
-                builder.line(f'inline {ptype} Get{p.name}() const {{ return m_{p.name}; }} \\')
-                builder.line(f'inline void Set{p.name}({ptype} value) {{ m_{p.name} = value; }} \\')
+                builder.line(f'inline {ptype} Get{p.name}() const {{ {body_get} }} \\')
+
+                if not any(a.tokentype == TokenType.ReadOnly for a in p.attrs):
+                    builder.line(f'inline void Set{p.name}({ptype} value) {{ {body_set} }} \\')
 
             builder.line('\\')
 
@@ -385,6 +425,35 @@ void Deserialization(const json_t& json) override;
 
             # prts
             for p in clss.properties:
+
+                if not any(a.tokentype == TokenType.Virtual for a in p.attrs):
+                    continue
+
+                ptype = p.tokentype.text
+
+                if p.form == EpiVariable.Form.Array:
+                    ptype = f'{ptype}<{p.nestedtokentype.text}>'
+
+                if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
+
+                    builder.line(f'inline {ptype}& Get{p.name}_Callback();')
+                    ptype = f'const {ptype}&'
+
+                builder.line(f'inline {ptype} Get{p.name}_Callback() const;')
+
+                if not any(a.tokentype == TokenType.ReadOnly for a in p.attrs):
+                    builder.line(f'inline void Set{p.name}_Callback({ptype} value);')
+
+            builder.line_empty()
+            builder.tab(-1)
+            builder.line('protected:')
+            builder.tab()
+
+            # prts
+            for p in clss.properties:
+
+                if any(a.tokentype == TokenType.Virtual for a in p.attrs):
+                    continue
 
                 typename = f'{p.tokentype.text}'
                 if p.form == EpiVariable.Form.Array:

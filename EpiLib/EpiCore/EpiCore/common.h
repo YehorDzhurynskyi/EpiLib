@@ -2,6 +2,14 @@
 
 #include <algorithm>
 
+#define EPI_GENREGION_BEGIN(x)
+#define EPI_GENREGION_END(x)
+
+#define EPI_NAMESPACE_BEGIN() namespace epi {
+#define EPI_NAMESPACE_END() }
+
+#define epiExpect(_x) assert(_x)
+
 #define epiFor(_n) for (int index = 0; index < _n; ++index)
 
 #define epiTriggerBreakpoint() __debugbreak()
