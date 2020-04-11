@@ -42,6 +42,11 @@ function(epi_extern_add _extern)
                      "${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern/build"
                      EXCLUDE_FROM_ALL)
 
-    epi_extern_register(${_extern})
-
+    if (${ARGC} EQUAL 1)
+        epi_extern_register(${_extern})
+    else()
+        foreach(ARG IN LISTS ARGN)
+            epi_extern_register(${ARG})
+        endforeach()
+    endif()
 endfunction()

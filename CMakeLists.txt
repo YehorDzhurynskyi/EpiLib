@@ -2,9 +2,10 @@ cmake_minimum_required(VERSION 3.1)
 
 project(EpiLib)
 
-set(Epi_USE_QT ON CACHE BOOL "")
+set(Epi_USE_QT OFF CACHE BOOL "")
 
 add_subdirectory(EpiLib/EpiCore)
+add_subdirectory(EpiLib/EpiAdapterwxWidgets)
 #add_subdirectory(EpiLib/EpiMultiMedia)
 
 if (Epi_USE_QT)
