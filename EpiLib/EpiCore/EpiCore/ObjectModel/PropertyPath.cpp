@@ -123,7 +123,8 @@ epiByte* PropertyPath::GetValue(const Object& object) const
         {
             return nullptr;
         }
-        value = property->GetValue(*current);
+        // TODO: repair
+        value = nullptr; // property->GetValue(*current);
 
         // TODO: refactor
         if (node.Type != PathNodeType::Plain)

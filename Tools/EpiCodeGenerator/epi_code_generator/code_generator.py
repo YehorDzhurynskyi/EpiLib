@@ -263,9 +263,24 @@ class CodeGenerator:
                 if any(a.tokentype == TokenType.Virtual for a in p.attrs):
                     continue
 
-                hash_type = f'epiHashCompileTime({p.tokentype.text.rstrip("*")})'
                 # TODO: remove rstrip
-                builder.line(f'epiMetaProperty({p.name}, {clss.name}, {hash_type}, {hash_typenested});')
+                hash_type = f'epiHashCompileTime({p.tokentype.text.rstrip("*")})'
+
+                builder.line('{')
+                builder.tab()
+                builder.line('MetaProperty m = epiMetaProperty(')
+                builder.tab()
+                builder.line(f'/* Name */ "{p.name}",')
+                builder.line(f'/* PtrRead */ (void*)offsetof({clss.name}, m_{p.name}),')
+                builder.line(f'/* PtrWrite */ (void*)offsetof({clss.name}, m_{p.name}),')
+                builder.line('/* Flags */ {},')
+                builder.line(f'/* typeID */ {hash_type},')
+                builder.line(f'/* nestedTypeID */ {hash_typenested}')
+                builder.tab(-1)
+                builder.line(');')
+                builder.line(f'data.AddProperty(epiHashCompileTime({p.name}), std::move(m));')
+                builder.tab(-1)
+                builder.line('}')
 
             builder.line_empty()
 

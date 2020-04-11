@@ -202,7 +202,8 @@ void QtObjectModelItem::FillChildren(Object& object, const MetaClassData& meta)
     {
         std::unique_ptr<QtObjectModelItem> item = std::make_unique<QtObjectModelItem>(index++, this);
 
-        item->m_ValueAddr = property.GetValue(object);
+        // TODO: repair
+        item->m_ValueAddr = nullptr; // property.GetValue(object);
         item->m_Meta = &property;
 
         if (MetaType::IsCompound(property.GetTypeID()))

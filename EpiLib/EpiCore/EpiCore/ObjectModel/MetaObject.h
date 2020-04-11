@@ -11,8 +11,6 @@ using MetaTypeID = epiHash_t;
 class Object;
 class MetaProperty final
 {
-    friend MetaProperty epiMetaProperty_Impl(const epiChar* name, epiSize_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID);
-
 private:
     MetaProperty() = default;
 
@@ -27,11 +25,11 @@ public:
     {
         struct
         {
-            epiU64 HasReadCallback  : 1;
-            epiU64 HasWriteCallback : 1;
+            epiU64 HasCallbackRead  : 1;
+            epiU64 HasCallbackWrite : 1;
             epiU64 _                : 62;
         };
-        epiU64 Flags;
+        epiU64 Mask;
     };
     static_assert(sizeof(Flags) == sizeof(epiU64));
 
@@ -41,12 +39,12 @@ public:
     MetaTypeID GetTypeID() const;
     MetaTypeID GetNestedTypeID() const;
 
-    epiByte* GetValue(const Object& object) const;
-
 protected:
+    Flags m_Flags;
     MetaTypeID m_TypeID;
     MetaTypeID m_NestedTypeID;
-    size_t m_Offset;
+    void* m_PtrRead;
+    void* m_PtrWrite;
 
 #ifdef epiUSE_METAPROPERTY_NAME
 public:
@@ -64,23 +62,25 @@ public:
 protected:
     void SetName(const epiChar* name) {}
 #endif // epiUSE_METAPROPERTY_NAME
+
+public:
+    friend class PropertyPointer;
+    friend MetaProperty epiMetaProperty(const epiChar*, void*, void*, MetaProperty::Flags, MetaTypeID, MetaTypeID);
 };
 
-#define epiMetaProperty(_Name, _Owner, _Type, _NestedType) \
-    { \
-        auto m = epiMetaProperty_Impl(#_Name, \
-                                      offsetof(_Owner, m_##_Name), \
-                                      _Type, \
-                                      _NestedType); \
-        data.AddProperty(epiHashCompileTime(#_Name), std::move(m)); \
-    } \
-
-inline MetaProperty epiMetaProperty_Impl(const epiChar* name, size_t offset, MetaTypeID typeID, MetaTypeID nestedTypeID)
+inline MetaProperty epiMetaProperty(const epiChar* name,
+                                    void* ptrRead,
+                                    void* ptrWrite,
+                                    MetaProperty::Flags flags,
+                                    MetaTypeID typeID,
+                                    MetaTypeID nestedTypeID)
 {
     MetaProperty prty;
 
     prty.SetName(name);
-    prty.m_Offset = offset;
+    prty.m_PtrRead = ptrRead;
+    prty.m_PtrWrite = ptrWrite;
+    prty.m_Flags = flags;
     prty.m_TypeID = typeID;
     prty.m_NestedTypeID = nestedTypeID;
 

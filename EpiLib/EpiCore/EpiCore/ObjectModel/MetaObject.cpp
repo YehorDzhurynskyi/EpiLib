@@ -31,12 +31,6 @@ MetaTypeID MetaProperty::GetNestedTypeID() const
     return m_NestedTypeID;
 }
 
-epiByte* MetaProperty::GetValue(const Object& object) const
-{
-    assert(IsValid());
-    return (epiByte*)&object + m_Offset;
-}
-
 epiBool MetaType::IsFundamental(MetaTypeID typeID)
 {
     switch (typeID)
