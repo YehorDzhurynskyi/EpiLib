@@ -189,13 +189,11 @@ class CodeGenerator:
                 builder.line(header.strip())
                 builder.line_empty()
 
-            if ext in ['cxx', 'cpp', 'h']:
+            if ext in ['cpp', 'h']:
 
                 builder.anchor_gen_region('include')
 
-                if ext == 'cxx':
-                    builder.line(f'#include "{basename}.h"')
-                elif ext == 'cpp':
+                if ext == 'cpp':
                     builder.line(f'#include "{basename}.h"')
                     builder.line(f'#include "{basename}.cxx"')
                 elif ext == 'h':
@@ -203,11 +201,14 @@ class CodeGenerator:
 
                 builder.anchor_gen_endregion('include')
                 builder.line_empty()
+
+            if ext in ['cxx', 'cpp', 'h']:
+
                 builder.anchor_namespace_begin()
                 builder.line_empty()
                 builder.anchor_namespace_end()
+                builder.line_empty()
 
-            builder.line_empty()
             return builder.build()
 
         def emit_class_serialization(clss: EpiClass, builder: Builder = Builder()) -> Builder:
