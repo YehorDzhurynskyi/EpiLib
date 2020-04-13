@@ -43,10 +43,10 @@ epi_add_precompiled_header(EpiCore EpiCore/pch.h SOURCE_CXX EpiCore/pch.cpp)
 epi_pack_sources(${EpiCore_SRCs})
 
 add_subdirectory(Extern/exprtk)
+epi_extern_register(exprtk)
 
 epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
-epi_extern_register(exprtk)
 
 configure_file(EpiCore/epi_config.h.in EpiCore/epi_config.h)
 
