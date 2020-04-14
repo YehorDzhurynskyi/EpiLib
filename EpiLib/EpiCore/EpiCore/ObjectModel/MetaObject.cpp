@@ -64,12 +64,39 @@ epiBool MetaType::IsMultiDimensional(MetaTypeID typeID)
 {
     return
         typeID == MetaTypeID_epiArray ||
+        typeID == MetaTypeID_epiPtrArray ||
         IsMultiDimensionalInplace(typeID);
 }
 
 epiBool MetaType::IsMultiDimensionalInplace(MetaTypeID typeID)
 {
-    return false; // TODO: add vector, inplace array types
+    epiBool isMultiDimensionalInplace = false;
+
+    switch (typeID)
+    {
+    case MetaTypeID_epiVec2f:
+    case MetaTypeID_epiVec2d:
+    case MetaTypeID_epiVec2s:
+    case MetaTypeID_epiVec2u:
+
+    case MetaTypeID_epiVec3f:
+    case MetaTypeID_epiVec3d:
+    case MetaTypeID_epiVec3s:
+    case MetaTypeID_epiVec3u:
+
+    case MetaTypeID_epiVec4f:
+    case MetaTypeID_epiVec4d:
+    case MetaTypeID_epiVec4s:
+    case MetaTypeID_epiVec4u:
+
+    case MetaTypeID_epiMat2x2f:
+    case MetaTypeID_epiMat3x3f:
+    case MetaTypeID_epiMat4x4f:
+
+    isMultiDimensionalInplace = true;
+    }
+
+    return isMultiDimensionalInplace;
 }
 
 epiBool MetaType::IsCompound(MetaTypeID typeID)

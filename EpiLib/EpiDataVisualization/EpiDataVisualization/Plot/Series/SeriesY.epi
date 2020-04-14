@@ -1,0 +1,5 @@
+class SeriesY : SeriesBase
+{
+    DataCollection DataY;
+    epiFloat StepX;
+};

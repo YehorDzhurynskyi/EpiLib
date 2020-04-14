@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/PlotLine.hxx"
+#include "EpiDataVisualization/Plot/PlotLine.hxx"
 EPI_GENREGION_END(include)
 
 #include "PlotBase.h"
@@ -20,8 +20,6 @@ public:
     {
         PID_COUNT = 0
     };
-
-protected:
 
 EPI_GENREGION_END(PlotLine)
 };

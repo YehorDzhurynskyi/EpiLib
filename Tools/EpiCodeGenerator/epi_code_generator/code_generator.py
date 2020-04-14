@@ -416,6 +416,61 @@ void Deserialization(const json_t& json) override;
 
             return builder
 
+        def emit_properties(properties: list, accessor_modifier: str, builder: Builder = Builder()) -> Builder:
+
+            if len(properties) == 0:
+                return builder
+
+            builder.tab(-1)
+            builder.line(f'{accessor_modifier}:')
+            builder.tab()
+
+            for p in properties:
+
+                typename = f'{p.tokentype.text}'
+                if p.form == EpiVariable.Form.Array:
+                    typename = f'{typename}<{p.nestedtokentype.text}>'
+                value = f'{{{p.value}}}' if p.value is not None else ''
+
+                builder.line(f'{typename} m_{p.name}{value};')
+
+            builder.line_empty()
+
+            return builder
+
+        def emit_property_callbacks(properties: list, accessor_modifier: str, builder: Builder = Builder()) -> Builder:
+
+            if len(properties) == 0:
+                return builder
+
+            builder.tab(-1)
+            builder.line(f'{accessor_modifier}:')
+            builder.tab()
+
+            for p in properties:
+
+                has_attr_readcallback = any(a.tokentype == TokenType.ReadCallback for a in p.attrs)
+                has_attr_writecallback = any(a.tokentype == TokenType.WriteCallback for a in p.attrs)
+
+                ptype = p.tokentype.text
+
+                if p.form == EpiVariable.Form.Array:
+                    ptype = f'{ptype}<{p.nestedtokentype.text}>'
+
+                if has_attr_readcallback:
+
+                    if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
+                        ptype = f'const {ptype}&'
+
+                    builder.line(f'{ptype} Get{p.name}_Callback() const;')
+
+                if has_attr_writecallback and not any(a.tokentype == TokenType.ReadOnly for a in p.attrs):
+                    builder.line(f'void Set{p.name}_Callback({ptype} value);')
+
+            builder.line_empty()
+
+            return builder
+
         def emit_class_declaration(clss: EpiClass, builder: Builder = Builder()) -> Builder:
 
             builder.line('public:')
@@ -443,58 +498,36 @@ void Deserialization(const json_t& json) override;
             builder.line('};')
             builder.line_empty()
 
-            # prt callbacks
-            distinguished = False
-            for p in clss.properties:
+            filter_properties_non_virtual = lambda p: not any(a.tokentype in [
+                TokenType.Virtual,
+            ] for a in p.attrs)
 
-                has_attr_readcallback = any(a.tokentype == TokenType.ReadCallback for a in p.attrs)
-                has_attr_writecallback = any(a.tokentype == TokenType.WriteCallback for a in p.attrs)
-                if not has_attr_readcallback and not has_attr_writecallback:
-                    continue
+            filter_properties_cb = lambda p: any(a.tokentype in [
+                TokenType.ReadCallback,
+                TokenType.WriteCallback
+            ] for a in p.attrs)
 
-                if not distinguished:
+            filter_properties_non_private = lambda p: not any(a.tokentype in [
+                TokenType.Private
+            ] for a in p.attrs)
 
-                    builder.tab(-1)
-                    builder.line('protected:')
-                    builder.tab()
-                    distinguished = True
+            filter_properties_private = lambda p: any(a.tokentype in [
+                TokenType.Private
+            ] for a in p.attrs)
 
-                ptype = p.tokentype.text
+            properties_cb = list(filter(filter_properties_cb, clss.properties))
+            properties_non_private = list(filter(filter_properties_non_private, properties_cb))
+            properties_private = list(filter(filter_properties_private, properties_cb))
 
-                if p.form == EpiVariable.Form.Array:
-                    ptype = f'{ptype}<{p.nestedtokentype.text}>'
+            emit_property_callbacks(properties_non_private, 'protected', builder)
+            emit_property_callbacks(properties_private, 'private', builder)
 
-                if has_attr_readcallback:
+            properties_non_virtual = list(filter(filter_properties_non_virtual, clss.properties))
+            properties_non_private = list(filter(filter_properties_non_private, properties_non_virtual))
+            properties_private = list(filter(filter_properties_private, properties_non_virtual))
 
-                    if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
-                        ptype = f'const {ptype}&'
-
-                    builder.line(f'{ptype} Get{p.name}_Callback() const;')
-
-                if has_attr_writecallback and not any(a.tokentype == TokenType.ReadOnly for a in p.attrs):
-                    builder.line(f'void Set{p.name}_Callback({ptype} value);')
-
-            if distinguished:
-                builder.line_empty()
-
-            builder.tab(-1)
-            builder.line('protected:')
-            builder.tab()
-
-            # prts
-            for p in clss.properties:
-
-                if any(a.tokentype == TokenType.Virtual for a in p.attrs):
-                    continue
-
-                typename = f'{p.tokentype.text}'
-                if p.form == EpiVariable.Form.Array:
-                    typename = f'{typename}<{p.nestedtokentype.text}>'
-                value = f'{{{p.value}}}' if p.value is not None else ''
-
-                builder.line(f'{typename} m_{p.name}{value};')
-
-            builder.line_empty()
+            emit_properties(properties_non_private, 'protected', builder)
+            emit_properties(properties_private, 'private', builder)
 
             return builder
 

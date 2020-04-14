@@ -3,6 +3,10 @@ project(EpiGraphics)
 add_library(EpiGraphics
     EpiGraphics/pch.h
     EpiGraphics/pch.cpp
+
+    EpiGraphics/Drawer.epi
+    EpiGraphics/Drawer.h
+    EpiGraphics/Drawer.cpp
 )
 get_target_property(EpiGraphics_SRCs EpiGraphics SOURCES) 
 epi_add_precompiled_header(EpiGraphics EpiGraphics/pch.h SOURCE_CXX EpiGraphics/pch.cpp)

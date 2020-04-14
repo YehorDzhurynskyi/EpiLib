@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/DrawerPlotLine.hxx"
+#include "EpiDataVisualization/Drawer/DrawerPlotLine.hxx"
 EPI_GENREGION_END(include)
 
 #include "DrawerPlotBase.h"
@@ -20,8 +20,6 @@ public:
     {
         PID_COUNT = 0
     };
-
-protected:
 
 EPI_GENREGION_END(DrawerPlotLine)
 };

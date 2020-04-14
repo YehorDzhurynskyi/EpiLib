@@ -232,5 +232,5 @@ if __name__ == "__main__":
             logging.error(str(e))
             exit(-1)
 
-    # TODO: check crc32 collisions
+    # TODO: check crc32 collisions considering Private attribute
     code_generator.flush()

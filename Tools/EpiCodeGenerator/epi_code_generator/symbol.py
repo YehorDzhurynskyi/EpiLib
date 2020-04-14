@@ -14,6 +14,7 @@ class EpiAttributeInvalidListError(Exception):
 class EpiAttribute:
 
     RANGES = {
+        TokenType.Private: (0, 0),
         TokenType.WriteCallback: (0, 0),
         TokenType.ReadCallback: (0, 0),
         TokenType.Virtual: (0, 0),

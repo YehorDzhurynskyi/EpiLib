@@ -112,6 +112,25 @@ enum : MetaTypeID
     MetaTypeID_epiArray = epiHashCompileTime(epiArray),
     MetaTypeID_epiPtrArray = epiHashCompileTime(epiPtrArray),
 
+    MetaTypeID_epiVec2f = epiHashCompileTime(epiVec2f),
+    MetaTypeID_epiVec2d = epiHashCompileTime(epiVec2d),
+    MetaTypeID_epiVec2s = epiHashCompileTime(epiVec2s),
+    MetaTypeID_epiVec2u = epiHashCompileTime(epiVec2u),
+
+    MetaTypeID_epiVec3f = epiHashCompileTime(epiVec3f),
+    MetaTypeID_epiVec3d = epiHashCompileTime(epiVec3d),
+    MetaTypeID_epiVec3s = epiHashCompileTime(epiVec3s),
+    MetaTypeID_epiVec3u = epiHashCompileTime(epiVec3u),
+
+    MetaTypeID_epiVec4f = epiHashCompileTime(epiVec4f),
+    MetaTypeID_epiVec4d = epiHashCompileTime(epiVec4d),
+    MetaTypeID_epiVec4s = epiHashCompileTime(epiVec4s),
+    MetaTypeID_epiVec4u = epiHashCompileTime(epiVec4u),
+
+    MetaTypeID_epiMat2x2f = epiHashCompileTime(epiMat2x2f),
+    MetaTypeID_epiMat3x3f = epiHashCompileTime(epiMat3x3f),
+    MetaTypeID_epiMat4x4f = epiHashCompileTime(epiMat4x4f),
+
     MetaTypeID_epiHandle = epiHashCompileTime(epiHandle)
 };
 

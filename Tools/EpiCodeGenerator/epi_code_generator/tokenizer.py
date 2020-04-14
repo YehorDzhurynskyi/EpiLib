@@ -66,6 +66,7 @@ class TokenType(Enum):
     # Owner = auto()
     ReadOnly = auto()
     # WriteOnly = auto()
+    Private = auto()
     WriteCallback = auto()
     ReadCallback = auto()
     Virtual = auto()
@@ -183,6 +184,7 @@ class Tokenizer:
         # 'Owner': TokenType.Owner,
         'ReadOnly': TokenType.ReadOnly,
         # 'WriteOnly': TokenType.WriteOnly,
+        'Private': TokenType.Private,
         'WriteCallback': TokenType.WriteCallback,
         'ReadCallback': TokenType.ReadCallback,
         'Virtual': TokenType.Virtual,

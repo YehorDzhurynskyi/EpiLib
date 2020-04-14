@@ -1,8 +1,8 @@
 #include "EpiDataVisualization/pch.h"
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/PlotLine.h"
-#include "EpiDataVisualization/PlotLine.cxx"
+#include "EpiDataVisualization/Plot/PlotLine.h"
+#include "EpiDataVisualization/Plot/PlotLine.cxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()

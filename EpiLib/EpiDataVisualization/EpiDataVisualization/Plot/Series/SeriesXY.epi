@@ -1,0 +1,5 @@
+class SeriesXY : SeriesBase
+{
+    DataCollection DataX;
+    DataCollection DataY;
+};

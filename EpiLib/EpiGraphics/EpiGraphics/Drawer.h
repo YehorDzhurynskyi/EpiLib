@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/DrawerPlotBase.hxx"
+#include "EpiGraphics/Drawer.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
@@ -9,26 +9,22 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-class DrawerPlotBase : public Object
+class Drawer : public Object
 {
-EPI_GENREGION_BEGIN(DrawerPlotBase)
+EPI_GENREGION_BEGIN(Drawer)
 public:
-    EPI_GENHIDDEN_DrawerPlotBase()
+    EPI_GENHIDDEN_Drawer()
 
-    constexpr static MetaTypeID TypeID{0x73712b06};
+    constexpr static MetaTypeID TypeID{0xd2bc3b37};
 
-    enum DrawerPlotBase_PIDs
+    enum Drawer_PIDs
     {
         PID_COUNT = 0
     };
 
-protected:
-
-EPI_GENREGION_END(DrawerPlotBase)
+EPI_GENREGION_END(Drawer)
 
 public:
-
-    // TODO: move to EpiGraphics::DrawerBase
     void DrawLine(epiVec2f p1, epiVec2f p2, Color color);
     void DrawRect(Rect2f rect, Color edgeColor, Color fillColor);
     void DrawText(const char* text, epiVec2f pos, epiFloat fontSize, Color color /* alignment, cliprect, wrapping */);

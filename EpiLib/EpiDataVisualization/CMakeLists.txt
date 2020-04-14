@@ -4,30 +4,33 @@ add_library(EpiDataVisualization
     EpiDataVisualization/pch.h
     EpiDataVisualization/pch.cpp
 
-    EpiDataVisualization/DataCollection.epi
-    EpiDataVisualization/DataCollection.h
-    EpiDataVisualization/DataCollection.cpp
+    EpiDataVisualization/Data/DataCollection.epi
+    EpiDataVisualization/Data/DataCollection.h
+    EpiDataVisualization/Data/DataCollection.cpp
 
-    EpiDataVisualization/SeriesY.epi
-    EpiDataVisualization/SeriesY.h
-    EpiDataVisualization/SeriesY.cpp
-    EpiDataVisualization/SeriesXY.epi
-    EpiDataVisualization/SeriesXY.h
-    EpiDataVisualization/SeriesXY.cpp
+    EpiDataVisualization/Plot/PlotBase.epi
+    EpiDataVisualization/Plot/PlotBase.h
+    EpiDataVisualization/Plot/PlotBase.cpp
+    EpiDataVisualization/Plot/PlotLine.epi
+    EpiDataVisualization/Plot/PlotLine.h
+    EpiDataVisualization/Plot/PlotLine.cpp
 
-    EpiDataVisualization/PlotBase.epi
-    EpiDataVisualization/PlotBase.h
-    EpiDataVisualization/PlotBase.cpp
-    EpiDataVisualization/PlotLine.epi
-    EpiDataVisualization/PlotLine.h
-    EpiDataVisualization/PlotLine.cpp
+    EpiDataVisualization/Plot/Series/SeriesBase.epi
+    EpiDataVisualization/Plot/Series/SeriesBase.h
+    EpiDataVisualization/Plot/Series/SeriesBase.cpp
+    EpiDataVisualization/Plot/Series/SeriesY.epi
+    EpiDataVisualization/Plot/Series/SeriesY.h
+    EpiDataVisualization/Plot/Series/SeriesY.cpp
+    EpiDataVisualization/Plot/Series/SeriesXY.epi
+    EpiDataVisualization/Plot/Series/SeriesXY.h
+    EpiDataVisualization/Plot/Series/SeriesXY.cpp
 
-    EpiDataVisualization/DrawerPlotBase.epi
-    EpiDataVisualization/DrawerPlotBase.h
-    EpiDataVisualization/DrawerPlotBase.cpp
-    EpiDataVisualization/DrawerPlotLine.epi
-    EpiDataVisualization/DrawerPlotLine.h
-    EpiDataVisualization/DrawerPlotLine.cpp
+    EpiDataVisualization/Drawer/DrawerPlotBase.epi
+    EpiDataVisualization/Drawer/DrawerPlotBase.h
+    EpiDataVisualization/Drawer/DrawerPlotBase.cpp
+    EpiDataVisualization/Drawer/DrawerPlotLine.epi
+    EpiDataVisualization/Drawer/DrawerPlotLine.h
+    EpiDataVisualization/Drawer/DrawerPlotLine.cpp
 )
 get_target_property(EpiDataVisualization_SRCs EpiDataVisualization SOURCES) 
 epi_add_precompiled_header(EpiDataVisualization EpiDataVisualization/pch.h SOURCE_CXX EpiDataVisualization/pch.cpp)
