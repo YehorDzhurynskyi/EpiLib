@@ -86,6 +86,20 @@ inline auto epiSerialize_Impl_Fetch(T& v)
         // TODO: implement
         return nullptr;
     }
+    else if constexpr (std::is_same_v<epiVec2f, T> || std::is_same_v<epiVec2d, T> ||
+                       std::is_same_v<epiVec2s, T> || std::is_same_v<epiVec2u, T> ||
+                       std::is_same_v<epiVec3f, T> || std::is_same_v<epiVec3d, T> ||
+                       std::is_same_v<epiVec3s, T> || std::is_same_v<epiVec3u, T> ||
+                       std::is_same_v<epiVec4f, T> || std::is_same_v<epiVec4d, T> ||
+                       std::is_same_v<epiVec4s, T> || std::is_same_v<epiVec4u, T>)
+    {
+        auto arr = json_t::array();
+        for (int i = 0; i < T::length(); ++i)
+        {
+            arr.push_back(epiSerialize_Impl_Fetch(v[i]));
+        }
+        return arr;
+    }
     else
     {
         static_assert(false, "Unhandled type for seriazliation (epiSerialize_Impl_Fetch)");
@@ -142,9 +156,22 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
     {
         // TODO: implement
     }
+    else if constexpr (std::is_same_v<epiVec2f, T> || std::is_same_v<epiVec2d, T> ||
+                       std::is_same_v<epiVec2s, T> || std::is_same_v<epiVec2u, T> ||
+                       std::is_same_v<epiVec3f, T> || std::is_same_v<epiVec3d, T> ||
+                       std::is_same_v<epiVec3s, T> || std::is_same_v<epiVec3u, T> ||
+                       std::is_same_v<epiVec4f, T> || std::is_same_v<epiVec4d, T> ||
+                       std::is_same_v<epiVec4s, T> || std::is_same_v<epiVec4u, T>)
+    {
+        assert(json.size() == T::length());
+        for (int i = 0; i < T::length(); ++i)
+        {
+            epiDeserialize_Impl_Fetch(v[i], json[i]);
+        }
+    }
     else
     {
-        static_assert(false, "Unhandled type for seriazliation (epiSerialize_Impl_Fetch)");
+        static_assert(false, "Unhandled type for seriazliation (epiDeserialize_Impl_Fetch)");
     }
 }
 

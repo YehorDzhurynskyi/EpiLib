@@ -14,6 +14,8 @@ class EpiAttributeInvalidListError(Exception):
 class EpiAttribute:
 
     RANGES = {
+        TokenType.WriteCallback: (0, 0),
+        TokenType.ReadCallback: (0, 0),
         TokenType.Virtual: (0, 0),
         TokenType.ReadOnly: (0, 0),
         TokenType.Transient: (0, 0),
@@ -118,7 +120,10 @@ class EpiVariable(EpiSymbol):
         super(EpiVariable, self)._preprocess_attrs(attrs)
 
         if any(a.tokentype == TokenType.Virtual for a in attrs):
+
             attrs.append(EpiAttribute(TokenType.Transient))
+            attrs.append(EpiAttribute(TokenType.ReadCallback))
+            attrs.append(EpiAttribute(TokenType.WriteCallback))
 
         for attr in attrs:
 

@@ -29,18 +29,30 @@ using epiDouble = double;
 
 using epiString = std::string;
 
-using epiV2F = glm::vec2;
-using epiV2S = glm::ivec2;
-using epiV3F = glm::vec3;
-using epiV4F = glm::vec4;
+template<size_t N, typename T>
+using epiVec = glm::vec<N, T>;
 
 template<typename T>
-using epiV2 = glm::vec<2, T>;
-template<typename T>
-using epiV3 = glm::vec<3, T>;
-template<typename T>
-using epiV4 = glm::vec<4, T>;
+using epiVec2 = epiVec<2, T>;
+using epiVec2f = epiVec2<epiFloat>;
+using epiVec2d = epiVec2<epiDouble>;
+using epiVec2s = epiVec2<epiS32>;
+using epiVec2u = epiVec2<epiU32>;
 
-using epiMat2x2F = glm::mat2x2;
-using epiMat3x3F = glm::mat3x3;
-using epiMat4x4F = glm::mat4x4;
+template<typename T>
+using epiVec3 = epiVec<3, T>;
+using epiVec3f = epiVec3<epiFloat>;
+using epiVec3d = epiVec3<epiDouble>;
+using epiVec3s = epiVec3<epiS32>;
+using epiVec3u = epiVec3<epiU32>;
+
+template<typename T>
+using epiVec4 = epiVec<4, T>;
+using epiVec4f = epiVec4<epiFloat>;
+using epiVec4d = epiVec4<epiDouble>;
+using epiVec4s = epiVec4<epiS32>;
+using epiVec4u = epiVec2<epiU32>;
+
+using epiMat2x2f = glm::mat2x2;
+using epiMat3x3f = glm::mat3x3;
+using epiMat4x4f = glm::mat4x4;

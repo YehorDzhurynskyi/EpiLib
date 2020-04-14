@@ -5,6 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/Color.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -24,6 +25,13 @@ public:
 protected:
 
 EPI_GENREGION_END(DrawerPlotBase)
+
+public:
+
+    // TODO: move to EpiGraphics::DrawerBase
+    void DrawLine(epiVec2f p1, epiVec2f p2, Color color);
+    void DrawRect(Rect2f rect, Color edgeColor, Color fillColor);
+    void DrawText(const char* text, epiVec2f pos, epiFloat fontSize, Color color /* alignment, cliprect, wrapping */);
 };
 
 EPI_NAMESPACE_END()

@@ -42,6 +42,22 @@ class TokenType(Enum):
     ArrayType = auto()
     PtrArrayType = auto()
     FloatingType = auto()
+    Vec2FType = auto()
+    Vec2DType = auto()
+    Vec2SType = auto()
+    Vec2UType = auto()
+    Vec3FType = auto()
+    Vec3DType = auto()
+    Vec3SType = auto()
+    Vec3UType = auto()
+    Vec4FType = auto()
+    Vec4DType = auto()
+    Vec4SType = auto()
+    Vec4UType = auto()
+    Mat2x2FType = auto()
+    Mat3x3FType = auto()
+    Mat4x4FType = auto()
+
     ClassType = auto()
     # StructType = auto()
     # EnumType = auto()
@@ -50,8 +66,8 @@ class TokenType(Enum):
     # Owner = auto()
     ReadOnly = auto()
     # WriteOnly = auto()
-    # WriteCallback = auto()
-    # ReadCallback = auto()
+    WriteCallback = auto()
+    ReadCallback = auto()
     Virtual = auto()
     ExpectMin = auto()
     ExpectMax = auto()
@@ -132,7 +148,22 @@ class Tokenizer:
     BUILTIN_COMPOUND_TYPES = {
         'epiString': TokenType.StringType,
         'epiArray': TokenType.ArrayType,
-        'epiPtrArray': TokenType.PtrArrayType
+        'epiPtrArray': TokenType.PtrArrayType,
+        'epiVec2f': TokenType.Vec2FType,
+        'epiVec2d': TokenType.Vec2DType,
+        'epiVec2s': TokenType.Vec2SType,
+        'epiVec2u': TokenType.Vec2UType,
+        'epiVec3f': TokenType.Vec3FType,
+        'epiVec3d': TokenType.Vec3DType,
+        'epiVec3s': TokenType.Vec3SType,
+        'epiVec3u': TokenType.Vec3UType,
+        'epiVec4f': TokenType.Vec4FType,
+        'epiVec4d': TokenType.Vec4DType,
+        'epiVec4s': TokenType.Vec4SType,
+        'epiVec4u': TokenType.Vec4UType,
+        'epiMat2x2f': TokenType.Mat2x2FType,
+        'epiMat3x3f': TokenType.Mat3x3FType,
+        'epiMat4x4f': TokenType.Mat4x4FType
     }
 
     BUILTIN_USER_TYPES = {
@@ -152,8 +183,8 @@ class Tokenizer:
         # 'Owner': TokenType.Owner,
         'ReadOnly': TokenType.ReadOnly,
         # 'WriteOnly': TokenType.WriteOnly,
-        # 'WriteCallback': TokenType.WriteCallback,
-        # 'ReadCallback': TokenType.ReadCallback,
+        'WriteCallback': TokenType.WriteCallback,
+        'ReadCallback': TokenType.ReadCallback,
         'Virtual': TokenType.Virtual,
         'ExpectMin': TokenType.ExpectMin,
         'ExpectMax': TokenType.ExpectMax,

@@ -10,6 +10,7 @@
 
 #define epiAssert(_x, _msg) assert(_x && _msg)
 #define epiExpect(_x, _msg) assert(_x && _msg)
+#define epiValidate(_x, _msg) isValid = isValid && (_x); epiExpect(_x, _msg)
 
 #define epiFor(_n) for (int index = 0; index < _n; ++index)
 
@@ -25,39 +26,18 @@
 namespace epi
 {
 
-template<typename T>
-T clamp(const T& val, const T& min, const T& max)
-{
-    return std::min<T>(max, std::max<T>(val, min));
-}
-
-template <typename T> epiS32 sign(T val)
+template <typename T>
+epiS32 sign(T val)
 {
     return (T(0) < val) - (val < T(0));
 }
 
-template<typename T>
-epiFloat dir2degree(const epiV2<T>& dir)
-{
-    return epiToDegree(atan2(dir.y, dir.x)) - 90.0f;
-}
-
-template<typename T>
-epiV2<T> degree2dir(epiFloat degree)
-{
-    return
-    {
-        std::cos(epiToRadians(degree + 90.0f)),
-        std::sin(epiToRadians(degree + 90.0f))
-    };
-}
-
-inline epiMat2x2F RotationMatrix2D(epiFloat orientation)
+inline epiMat2x2f RotationMatrix2D(epiFloat orientation)
 {
     const epiFloat c = std::cosf(epiToRadians(orientation));
     const epiFloat s = std::sinf(epiToRadians(orientation));
 
-    epiMat2x2F rot;
+    epiMat2x2f rot;
     rot[0][0] = c;
     rot[0][1] = s;
     rot[1][0] = -s;
@@ -67,26 +47,28 @@ inline epiMat2x2F RotationMatrix2D(epiFloat orientation)
 }
 
 template<typename T>
-union Rect
+union Rect2
 {
     struct
     {
-        T Right;
         T Top;
         T Left;
         T Bottom;
-    } _sides;
+        T Right;
+    };
 
     struct
     {
-        epiV2<T> RightTop;
-        epiV2<T> LeftBottom;
+        epiVec2<T> TopLeft;
+        epiVec2<T> BottomRight;
     } _corners;
 
-    epiV4<T> _rtlb;
+    epiVec4<T> tlbr;
 };
 
-using fRect = Rect<epiFloat>;
-using sRect = Rect<epiS32>;
+using Rect2f = Rect2<epiFloat>;
+using Rect2d = Rect2<epiDouble>;
+using Rect2s = Rect2<epiS32>;
+using Rect2u = Rect2<epiU32>;
 
 }

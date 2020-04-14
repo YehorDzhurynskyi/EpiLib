@@ -346,31 +346,34 @@ void Deserialization(const json_t& json) override;
                         v = a.params[0].text
                         body_prologue_set = f'{body_prologue_set}epiExpect(value >= {v});'
 
-                    if a.tokentype == TokenType.ExpectMax:
+                    elif a.tokentype == TokenType.ExpectMax:
 
                         v = a.params[0].text
                         body_prologue_set = f'{body_prologue_set}epiExpect(value <= {v});'
 
-                    if a.tokentype == TokenType.ForceMin:
+                    elif a.tokentype == TokenType.ForceMin:
 
                         v = a.params[0].text
                         body_prologue_set = f'{body_prologue_set}value = std::max(value, {v});'
 
-                    if a.tokentype == TokenType.ForceMax:
+                    elif a.tokentype == TokenType.ForceMax:
 
                         v = a.params[0].text
                         body_prologue_set = f'{body_prologue_set}value = std::min(value, {v});'
 
-                    if a.tokentype == TokenType.Virtual:
-
+                    elif a.tokentype == TokenType.ReadCallback:
                         body_epilogue_get = f'return Get{p.name}_Callback();'
+
+                    elif a.tokentype == TokenType.WriteCallback:
                         body_epilogue_set = f'Set{p.name}_Callback(value);'
 
                 body_get = f'{body_prologue_get}{body_epilogue_get}'
                 body_set = f'{body_prologue_set}{body_epilogue_set}'
                 if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
 
-                    builder.line(f'inline {ptype}& Get{p.name}() {{ {body_get} }} \\')
+                    if not any(a.tokentype == TokenType.ReadCallback for a in p.attrs):
+                        builder.line(f'inline {ptype}& Get{p.name}() {{ {body_get} }} \\')
+
                     ptype = f'const {ptype}&'
 
                 builder.line(f'inline {ptype} Get{p.name}() const {{ {body_get} }} \\')
@@ -440,11 +443,13 @@ void Deserialization(const json_t& json) override;
             builder.line('};')
             builder.line_empty()
 
-            # prts
+            # prt callbacks
             distinguished = False
             for p in clss.properties:
 
-                if not any(a.tokentype == TokenType.Virtual for a in p.attrs):
+                has_attr_readcallback = any(a.tokentype == TokenType.ReadCallback for a in p.attrs)
+                has_attr_writecallback = any(a.tokentype == TokenType.WriteCallback for a in p.attrs)
+                if not has_attr_readcallback and not has_attr_writecallback:
                     continue
 
                 if not distinguished:
@@ -459,14 +464,14 @@ void Deserialization(const json_t& json) override;
                 if p.form == EpiVariable.Form.Array:
                     ptype = f'{ptype}<{p.nestedtokentype.text}>'
 
-                if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
+                if has_attr_readcallback:
 
-                    builder.line(f'{ptype}& Get{p.name}_Callback();')
-                    ptype = f'const {ptype}&'
+                    if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer:
+                        ptype = f'const {ptype}&'
 
-                builder.line(f'{ptype} Get{p.name}_Callback() const;')
+                    builder.line(f'{ptype} Get{p.name}_Callback() const;')
 
-                if not any(a.tokentype == TokenType.ReadOnly for a in p.attrs):
+                if has_attr_writecallback and not any(a.tokentype == TokenType.ReadOnly for a in p.attrs):
                     builder.line(f'void Set{p.name}_Callback({ptype} value);')
 
             if distinguished:

@@ -14,6 +14,10 @@ add_library(EpiCore
     EpiCore/Clock.h
     EpiCore/Clock.cpp
 
+    EpiCore/Color.epi
+    EpiCore/Color.h
+    EpiCore/Color.cpp
+
     EpiCore/Hash.h
     EpiCore/Hash.cpp
 
