@@ -7,6 +7,14 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+gfxShader::~gfxShader()
+{
+    if (GetIsCreated())
+    {
+        Destroy();
+    }
+}
+
 gfxShader::gfxShader(gfxShader&& rhs)
 {
     m_ShaderID = rhs.m_ShaderID;
@@ -23,11 +31,6 @@ gfxShader& gfxShader::operator=(gfxShader&& rhs)
     rhs.m_Type = gfxShaderType::None;
 
     return *this;
-}
-
-gfxShader::~gfxShader()
-{
-    Destroy();
 }
 
 void gfxShader::CreateFromSource(const epiChar* source, gfxShaderType type)
@@ -61,6 +64,7 @@ void gfxShader::CreateFromSource(const epiChar* source, gfxShaderType type)
         glGetShaderInfoLog(m_ShaderID, sizeof(log), nullptr, log);
 
         // TODO: log
+        epiAssert(false, "");
 
         Destroy();
     }
@@ -70,12 +74,9 @@ void gfxShader::Destroy()
 {
     epiExpect(GetIsCreated(), "Destroy method should be called on already created shader");
 
-    if (GetIsCreated())
-    {
-        glDeleteShader(m_ShaderID);
-        m_ShaderID = 0;
-        m_Type = gfxShaderType::None;
-    }
+    glDeleteShader(m_ShaderID);
+    m_ShaderID = 0;
+    m_Type = gfxShaderType::None;
 }
 
 epiBool gfxShader::GetIsCreated_Callback() const
@@ -86,6 +87,14 @@ epiBool gfxShader::GetIsCreated_Callback() const
 gfxShaderProgram::gfxShaderProgram()
 {
     Create();
+}
+
+gfxShaderProgram::~gfxShaderProgram()
+{
+    if (GetIsCreated())
+    {
+        Destroy();
+    }
 }
 
 gfxShaderProgram::gfxShaderProgram(gfxShaderProgram&& rhs)
@@ -114,11 +123,6 @@ gfxShaderProgram& gfxShaderProgram::operator=(gfxShaderProgram&& rhs)
     return *this;
 }
 
-gfxShaderProgram::~gfxShaderProgram()
-{
-    Destroy();
-}
-
 void gfxShaderProgram::Create()
 {
     m_ProgramID = glCreateProgram();
@@ -128,14 +132,11 @@ void gfxShaderProgram::Destroy()
 {
     epiExpect(GetIsCreated(), "Destroy method should be called on already created shader program");
 
-    if (GetIsCreated())
-    {
-        glDeleteProgram(m_ProgramID);
-        m_ProgramID = 0;
-        m_ShaderVertex = nullptr;
-        m_ShaderGeometry = nullptr;
-        m_ShaderPixel = nullptr;
-    }
+    glDeleteProgram(m_ProgramID);
+    m_ProgramID = 0;
+    m_ShaderVertex = nullptr;
+    m_ShaderGeometry = nullptr;
+    m_ShaderPixel = nullptr;
 }
 
 epiBool gfxShaderProgram::GetIsCreated_Callback() const
@@ -207,6 +208,7 @@ void gfxShaderProgram::Build()
         glGetProgramInfoLog(m_ProgramID, sizeof(log), nullptr, log);
 
         // TODO: log
+        epiAssert(false, "");
 
         Destroy();
     }

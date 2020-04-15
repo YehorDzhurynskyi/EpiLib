@@ -6,6 +6,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxShaderProgram.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace
 {
@@ -90,8 +91,8 @@ gfxShaderProgram CreateGridProgram()
     gfxShader pixel;
 
     vertex.CreateFromSource(ShaderSourceVertex, gfxShaderType::Vertex);
-    vertex.CreateFromSource(ShaderSourceGeometry, gfxShaderType::Geometry);
-    vertex.CreateFromSource(ShaderSourcePixel, gfxShaderType::Pixel);
+    geometry.CreateFromSource(ShaderSourceGeometry, gfxShaderType::Geometry);
+    pixel.CreateFromSource(ShaderSourcePixel, gfxShaderType::Pixel);
 
     gfxShaderProgram program;
 
@@ -107,20 +108,24 @@ EPI_NAMESPACE_BEGIN()
 
 void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f position, const epiVec2f& dimension, epiS32 nsteps)
 {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+
     static gfxShaderProgram gridProgram = CreateGridProgram();
 
-    gfxBindableScoped scope(gridProgram, ctx.GetNullVertexArray());
+    const gfxBindableScoped scope(gridProgram, ctx.GetNullVertexArray());
 
-#if 0
-    epiMat4x4f model;
-    model = transform_rotate_x(&model, M_PI_2);
-    mvp = mat4f_mat4f_mult(&model, vp);
-    glUniformMatrix4fv(program->u_location_mvp, 1, GL_FALSE, &mvp.data[0][0]);
-    glUniform1f(program->u_location_dimension, 50.0f);
-    glUniform1i(program->u_location_nsteps, 50);
-    glUniform4f(program->u_location_color_tint, 0.55f, 0.55f, 0.55f, 1.0f);
+    const epiS32 locationMVP = glGetUniformLocation(gridProgram.GetProgramID(), "u_mvp");
+    const epiS32 locationDimension = glGetUniformLocation(gridProgram.GetProgramID(), "u_dimension");
+    const epiS32 locationNSteps = glGetUniformLocation(gridProgram.GetProgramID(), "u_nsteps");
+    const epiS32 locationColorTint = glGetUniformLocation(gridProgram.GetProgramID(), "u_color_tint");
+
+    epiMat4x4f mvp = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.0f);
+    glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &mvp[0][0]);
+    glUniform1f(locationDimension, 0.5f);
+    glUniform1i(locationNSteps, 50);
+    glUniform4f(locationColorTint, 0.55f, 0.0f, 0.55f, 1.0f);
     glDrawArrays(GL_POINTS, 0, 1);
-#endif
 }
 
 EPI_NAMESPACE_END()

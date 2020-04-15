@@ -12,6 +12,14 @@ gfxVertexArray::gfxVertexArray()
     Create();
 }
 
+gfxVertexArray::~gfxVertexArray()
+{
+    if (GetIsCreated())
+    {
+        Destroy();
+    }
+}
+
 gfxVertexArray::gfxVertexArray(gfxVertexArray&& rhs)
 {
     m_ID = rhs.m_ID;
@@ -26,11 +34,6 @@ gfxVertexArray& gfxVertexArray::operator=(gfxVertexArray&& rhs)
     return *this;
 }
 
-gfxVertexArray::~gfxVertexArray()
-{
-    Destroy();
-}
-
 void gfxVertexArray::Create()
 {
     glGenVertexArrays(1, &m_ID);
@@ -40,11 +43,8 @@ void gfxVertexArray::Destroy()
 {
     epiExpect(GetIsCreated(), "Destroy method should be called on already created vertex array");
 
-    if (GetIsCreated())
-    {
-        glDeleteVertexArrays(1, &m_ID);
-        m_ID = 0;
-    }
+    glDeleteVertexArrays(1, &m_ID);
+    m_ID = 0;
 }
 
 epiBool gfxVertexArray::GetIsCreated_Callback() const
