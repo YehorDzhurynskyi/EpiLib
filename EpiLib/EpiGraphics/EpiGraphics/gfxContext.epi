@@ -1,4 +1,5 @@
 class gfxContext
 {
-    gfxVertexArray VAO_NULL;
+    [ReadOnly]
+    gfxVertexArray NullVertexArray;
 };

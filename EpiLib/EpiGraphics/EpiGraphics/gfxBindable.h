@@ -32,7 +32,6 @@ public:
 template<typename... T>
 class gfxBindableScoped final
 {
-    static_assert((std::is_base_of_v<gfxBindable, T> && ...), "T should be derived from gfxBindable");
 public:
     gfxBindableScoped(const gfxBindableScoped&) = delete;
     gfxBindableScoped& operator=(const gfxBindableScoped&) = delete;
@@ -45,7 +44,8 @@ public:
     {
         std::apply([](T&... t)
         {
-            t.Bind();
+            char i[] = { (t.Bind(), 0)... };
+            (void)i;
         }, m_Bindables);
     }
 
@@ -53,7 +53,8 @@ public:
     {
         std::apply([](T&... t)
         {
-            t.UnBind();
+            char i[] = { (t.UnBind(), 0)... };
+            (void)i;
         }, m_Bindables);
     }
 

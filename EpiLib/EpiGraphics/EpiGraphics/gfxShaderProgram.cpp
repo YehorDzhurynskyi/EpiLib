@@ -83,6 +83,11 @@ epiBool gfxShader::GetIsCreated_Callback() const
     return m_ShaderID != 0;
 }
 
+gfxShaderProgram::gfxShaderProgram()
+{
+    Create();
+}
+
 gfxShaderProgram::gfxShaderProgram(gfxShaderProgram&& rhs)
 {
     m_ProgramID = rhs.m_ProgramID;
@@ -138,7 +143,7 @@ epiBool gfxShaderProgram::GetIsCreated_Callback() const
     return m_ProgramID != 0;
 }
 
-void gfxShaderProgram::AttachShader(const gfxShader& shader)
+void gfxShaderProgram::ShaderAttach(const gfxShader& shader)
 {
     epiExpect(GetIsCreated(), "A program expected to be created");
     epiExpect(shader.GetIsCreated(), "A shader expected to be created");
@@ -163,7 +168,7 @@ void gfxShaderProgram::AttachShader(const gfxShader& shader)
     glAttachShader(m_ProgramID, shader.GetShaderID());
 }
 
-void gfxShaderProgram::DettachShader(gfxShaderType type)
+void gfxShaderProgram::ShaderDettach(gfxShaderType type)
 {
     epiExpect(GetIsCreated(), "A program expected to be created");
 
@@ -207,9 +212,9 @@ void gfxShaderProgram::Build()
     }
     else
     {
-        if (m_ShaderVertex) DettachShader(gfxShaderType::Vertex);
-        if (m_ShaderGeometry) DettachShader(gfxShaderType::Geometry);
-        if (m_ShaderPixel) DettachShader(gfxShaderType::Pixel);
+        if (m_ShaderVertex) ShaderDettach(gfxShaderType::Vertex);
+        if (m_ShaderGeometry) ShaderDettach(gfxShaderType::Geometry);
+        if (m_ShaderPixel) ShaderDettach(gfxShaderType::Pixel);
     }
 }
 

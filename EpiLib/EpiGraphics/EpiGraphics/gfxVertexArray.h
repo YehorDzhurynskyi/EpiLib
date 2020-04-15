@@ -18,9 +18,13 @@ public:
 
     enum gfxVertexArray_PIDs
     {
+        PID_IsCreated = 0x560b66db,
         PID_ID = 0x11d3633a,
-        PID_COUNT = 1
+        PID_COUNT = 2
     };
+
+protected:
+    epiBool GetIsCreated_Callback() const;
 
 protected:
     epiU32 m_ID{0};
@@ -28,6 +32,17 @@ protected:
 EPI_GENREGION_END(gfxVertexArray)
 
 public:
+    gfxVertexArray();
+    gfxVertexArray(const gfxVertexArray& rhs) = delete;
+    gfxVertexArray& operator=(const gfxVertexArray& rhs) = delete;
+    gfxVertexArray(gfxVertexArray&& rhs);
+    gfxVertexArray& operator=(gfxVertexArray&& rhs);
+    ~gfxVertexArray();
+
+public:
+    void Create();
+    void Destroy();
+
     void Bind() override;
     void UnBind() override;
 };

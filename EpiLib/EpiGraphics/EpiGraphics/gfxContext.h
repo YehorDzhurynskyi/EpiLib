@@ -19,12 +19,12 @@ public:
 
     enum gfxContext_PIDs
     {
-        PID_VAO_NULL = 0x624075a1,
+        PID_NullVertexArray = 0xee1c89c1,
         PID_COUNT = 1
     };
 
 protected:
-    gfxVertexArray m_VAO_NULL;
+    gfxVertexArray m_NullVertexArray;
 
 EPI_GENREGION_END(gfxContext)
 };

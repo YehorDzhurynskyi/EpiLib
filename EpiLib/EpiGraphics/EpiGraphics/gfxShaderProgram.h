@@ -43,8 +43,8 @@ EPI_GENREGION_END(gfxShader)
 
 public:
     gfxShader() = default;
-    gfxShader(const gfxShader& rhs) = default;
-    gfxShader& operator=(const gfxShader& rhs) = default;
+    gfxShader(const gfxShader& rhs) = delete;
+    gfxShader& operator=(const gfxShader& rhs) = delete;
     gfxShader(gfxShader&& rhs);
     gfxShader& operator=(gfxShader&& rhs);
     ~gfxShader();
@@ -83,19 +83,19 @@ protected:
 EPI_GENREGION_END(gfxShaderProgram)
 
 public:
-    gfxShaderProgram() = default;
-    gfxShaderProgram(const gfxShaderProgram & rhs) = default;
-    gfxShaderProgram& operator=(const gfxShaderProgram & rhs) = default;
-    gfxShaderProgram(gfxShaderProgram && rhs);
-    gfxShaderProgram& operator=(gfxShaderProgram && rhs);
+    gfxShaderProgram();
+    gfxShaderProgram(const gfxShaderProgram & rhs) = delete;
+    gfxShaderProgram& operator=(const gfxShaderProgram & rhs) = delete;
+    gfxShaderProgram(gfxShaderProgram&& rhs);
+    gfxShaderProgram& operator=(gfxShaderProgram&& rhs);
     ~gfxShaderProgram();
 
 public:
     void Create();
     void Destroy();
 
-    void AttachShader(const gfxShader& shader);
-    void DettachShader(gfxShaderType type);
+    void ShaderAttach(const gfxShader& shader);
+    void ShaderDettach(gfxShaderType type);
 
     void Build();
 
