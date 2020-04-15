@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.1)
-
 project(EpiLib)
 
 set(Epi_USE_QT OFF CACHE BOOL "")
