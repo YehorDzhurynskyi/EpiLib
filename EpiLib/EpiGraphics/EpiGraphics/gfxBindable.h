@@ -29,29 +29,36 @@ public:
     virtual void UnBind() = 0;
 };
 
-template<typename T>
-class gfxBindableGuard final
+template<typename... T>
+class gfxBindableScoped final
 {
-    static_assert(std::is_base_of_v<gfxBindable, T>);
+    static_assert((std::is_base_of_v<gfxBindable, T> && ...), "T should be derived from gfxBindable");
 public:
-    gfxBindableGuard(const gfxBindableGuard&) = delete;
-    gfxBindableGuard& operator=(const gfxBindableGuard&) = delete;
-    gfxBindableGuard(gfxBindableGuard&&) = delete;;
-    gfxBindableGuard& operator=(gfxBindableGuard&&) = delete;
+    gfxBindableScoped(const gfxBindableScoped&) = delete;
+    gfxBindableScoped& operator=(const gfxBindableScoped&) = delete;
+    gfxBindableScoped(gfxBindableScoped&&) = delete;
+    gfxBindableScoped& operator=(gfxBindableScoped&&) = delete;
 
-    gfxBindableGuard(gfxBindable& bindable)
-        : m_Bindable(bindable)
+public:
+    explicit gfxBindableScoped(T&... t)
+        : m_Bindables(std::tie(t...))
     {
-        m_Bindable.Bind();
+        std::apply([](T&... t)
+        {
+            t.Bind();
+        }, m_Bindables);
     }
 
-    ~gfxBindableGuard()
+    ~gfxBindableScoped()
     {
-        m_Bindable.UnBind();
+        std::apply([](T&... t)
+        {
+            t.UnBind();
+        }, m_Bindables);
     }
 
 private:
-    gfxBindable& m_Bindable;
+    std::tuple<T&...> m_Bindables;
 };
 
 EPI_NAMESPACE_END()
