@@ -4,11 +4,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/Drawer/DrawerPlotBase.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/Drawer.h"
+#include "EpiGraphics/gfxDrawer.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class DrawerPlotBase : public Drawer
+class DrawerPlotBase : public gfxDrawer
 {
 EPI_GENREGION_BEGIN(DrawerPlotBase)
 public:

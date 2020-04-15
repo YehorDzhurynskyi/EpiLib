@@ -4,9 +4,25 @@ add_library(EpiGraphics
     EpiGraphics/pch.h
     EpiGraphics/pch.cpp
 
-    EpiGraphics/Drawer.epi
-    EpiGraphics/Drawer.h
-    EpiGraphics/Drawer.cpp
+    EpiGraphics/gfxContext.epi
+    EpiGraphics/gfxContext.h
+    EpiGraphics/gfxContext.cpp
+
+    EpiGraphics/gfxBindable.epi
+    EpiGraphics/gfxBindable.h
+    EpiGraphics/gfxBindable.cpp
+
+    EpiGraphics/gfxVertexArray.epi
+    EpiGraphics/gfxVertexArray.h
+    EpiGraphics/gfxVertexArray.cpp
+
+    EpiGraphics/gfxShaderProgram.epi
+    EpiGraphics/gfxShaderProgram.h
+    EpiGraphics/gfxShaderProgram.cpp
+
+    EpiGraphics/gfxDrawer.epi
+    EpiGraphics/gfxDrawer.h
+    EpiGraphics/gfxDrawer.cpp
 )
 get_target_property(EpiGraphics_SRCs EpiGraphics SOURCES) 
 epi_add_precompiled_header(EpiGraphics EpiGraphics/pch.h SOURCE_CXX EpiGraphics/pch.cpp)

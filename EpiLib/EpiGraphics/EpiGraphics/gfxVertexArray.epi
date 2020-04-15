@@ -1,0 +1,5 @@
+class gfxVertexArray : gfxBindable
+{
+    [Transient]
+    epiU32 ID;
+};

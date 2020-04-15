@@ -1,0 +1,17 @@
+class gfxShader
+{
+    [Virtual, ReadOnly]
+    epiBool IsCreated;
+
+    [Transient]
+    epiU32 ShaderID;
+};
+
+class gfxShaderProgram : gfxBindable
+{
+    [Virtual, ReadOnly]
+    epiBool IsCreated;
+
+    [Transient]
+    epiU32 ProgramID;
+};
