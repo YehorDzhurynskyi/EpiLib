@@ -26,6 +26,9 @@ protected:
     epiRect2f m_FrameDimension;
 
 EPI_GENREGION_END(gfxCameraOrtho)
+
+protected:
+    epiMat4x4f GetProjectionMatrix_Internal() const override;
 };
 
 EPI_NAMESPACE_END()

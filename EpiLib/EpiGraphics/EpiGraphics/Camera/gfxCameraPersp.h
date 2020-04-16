@@ -26,6 +26,9 @@ protected:
     epiFloat m_FOV{0.0f};
 
 EPI_GENREGION_END(gfxCameraPersp)
+
+protected:
+    epiMat4x4f GetProjectionMatrix_Internal() const override;
 };
 
 EPI_NAMESPACE_END()
