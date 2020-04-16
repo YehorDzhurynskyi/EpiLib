@@ -165,8 +165,8 @@ void gfxShaderProgram::ShaderAttach(const gfxShader& shader)
         return;
     }
 
-    *attached = &shader;
     glAttachShader(m_ProgramID, shader.GetShaderID());
+    *attached = &shader;
 }
 
 void gfxShaderProgram::ShaderDettach(gfxShaderType type)
@@ -189,8 +189,8 @@ void gfxShaderProgram::ShaderDettach(gfxShaderType type)
         return;
     }
 
-    *attached = nullptr;
     glDetachShader(m_ProgramID, (*attached)->GetShaderID());
+    *attached = nullptr;
 }
 
 void gfxShaderProgram::Build()
@@ -201,7 +201,7 @@ void gfxShaderProgram::Build()
     glLinkProgram(m_ProgramID);
 
     GLint status = 0;
-    glGetShaderiv(m_ProgramID, GL_LINK_STATUS, &status);
+    glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &status);
     if (status == GL_FALSE)
     {
         GLchar log[4096];

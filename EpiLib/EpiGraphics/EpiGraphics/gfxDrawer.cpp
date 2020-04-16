@@ -100,6 +100,8 @@ gfxShaderProgram CreateGridProgram()
     program.ShaderAttach(geometry);
     program.ShaderAttach(pixel);
 
+    program.Build();
+
     return program;
 }
 }
