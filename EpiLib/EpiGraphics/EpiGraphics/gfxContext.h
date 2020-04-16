@@ -6,6 +6,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 #include "EpiGraphics/gfxVertexArray.h"
+#include "EpiGraphics/Camera/gfxCameraOrtho.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -20,11 +21,13 @@ public:
     enum gfxContext_PIDs
     {
         PID_NullVertexArray = 0xee1c89c1,
-        PID_COUNT = 1
+        PID_Camera = 0x3cb0eb33,
+        PID_COUNT = 2
     };
 
 protected:
     gfxVertexArray m_NullVertexArray;
+    gfxCameraOrtho m_Camera;
 
 EPI_GENREGION_END(gfxContext)
 };
