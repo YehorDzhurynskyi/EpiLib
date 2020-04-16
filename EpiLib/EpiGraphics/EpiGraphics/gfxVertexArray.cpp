@@ -36,6 +36,8 @@ gfxVertexArray& gfxVertexArray::operator=(gfxVertexArray&& rhs)
 
 void gfxVertexArray::Create()
 {
+    epiExpect(!GetIsCreated(), "Create method should be called on destroyed vertex array");
+
     glGenVertexArrays(1, &m_ID);
 }
 
@@ -55,12 +57,16 @@ epiBool gfxVertexArray::GetIsCreated_Callback() const
 void gfxVertexArray::Bind()
 {
     epiExpect(GetIsCreated(), "A vertex array expected to be created");
+
+    super::Bind();
     glBindVertexArray(m_ID);
 }
 
 void gfxVertexArray::UnBind()
 {
     epiExpect(GetIsCreated(), "A vertex array expected to be created");
+
+    super::UnBind();
     glBindVertexArray(0);
 }
 

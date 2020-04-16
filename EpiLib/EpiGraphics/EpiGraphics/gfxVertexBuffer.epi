@@ -1,0 +1,11 @@
+class gfxVertexBuffer : gfxBindable
+{
+    [Virtual, ReadOnly]
+    epiBool IsCreated;
+
+    [Transient]
+    epiU32 ID;
+
+    epiSize_t Capacity;
+    epiSize_t Size;
+};

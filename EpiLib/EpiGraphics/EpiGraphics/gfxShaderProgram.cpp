@@ -35,8 +35,9 @@ gfxShader& gfxShader::operator=(gfxShader&& rhs)
 
 void gfxShader::CreateFromSource(const epiChar* source, gfxShaderType type)
 {
-    GLenum glType;
+    epiExpect(!GetIsCreated(), "Create method should be called on destroyed shader");
 
+    GLenum glType;
     switch (type)
     {
     case gfxShaderType::Vertex: glType = GL_VERTEX_SHADER; break;
@@ -125,6 +126,8 @@ gfxShaderProgram& gfxShaderProgram::operator=(gfxShaderProgram&& rhs)
 
 void gfxShaderProgram::Create()
 {
+    epiExpect(!GetIsCreated(), "Create method should be called on destroyed shader program");
+
     m_ProgramID = glCreateProgram();
 }
 
@@ -223,12 +226,16 @@ void gfxShaderProgram::Build()
 void gfxShaderProgram::Bind()
 {
     epiExpect(GetIsCreated(), "A program expected to be created");
+
+    super::Bind();
     glUseProgram(m_ProgramID);
 }
 
 void gfxShaderProgram::UnBind()
 {
     epiExpect(GetIsCreated(), "A program expected to be created");
+
+    super::UnBind();
     glUseProgram(0);
 }
 

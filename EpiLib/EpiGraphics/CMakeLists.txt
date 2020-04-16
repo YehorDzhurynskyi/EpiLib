@@ -15,6 +15,9 @@ add_library(EpiGraphics
     EpiGraphics/gfxVertexArray.epi
     EpiGraphics/gfxVertexArray.h
     EpiGraphics/gfxVertexArray.cpp
+    EpiGraphics/gfxVertexBuffer.epi
+    EpiGraphics/gfxVertexBuffer.h
+    EpiGraphics/gfxVertexBuffer.cpp
 
     EpiGraphics/gfxShaderProgram.epi
     EpiGraphics/gfxShaderProgram.h

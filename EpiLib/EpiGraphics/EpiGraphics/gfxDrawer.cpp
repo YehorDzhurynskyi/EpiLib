@@ -5,12 +5,15 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxDrawer.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphics/gfxContext.h"
+#include "EpiGraphics/gfxVertexBuffer.h"
 #include "EpiGraphics/gfxShaderProgram.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace
 {
-const epiChar ShaderSourceVertex[] = R"(
+
+const epiChar ShaderSourceGridVertex[] = R"(
 #version 400
 
 void main(void)
@@ -19,8 +22,8 @@ void main(void)
 }
 )";
 
-const epiChar ShaderSourceGeometry[] = R"(
-#version 400
+const epiChar ShaderSourceGridGeometry[] = R"(
+#version 400 core
 
 layout (points) in;
 layout (line_strip, max_vertices = 225) out;
@@ -70,8 +73,8 @@ void main()
     }
 })";
 
-const epiChar ShaderSourcePixel[] = R"(
-#version 400
+const epiChar ShaderSourceGridPixel[] = R"(
+#version 400 core
 
 uniform vec4 u_color_tint;
 
@@ -83,6 +86,28 @@ void main(void)
 }
 )";
 
+const epiChar ShaderSourceStaticVertex[] = R"(
+#version 400 core
+
+in vec4 position;
+
+void main(void)
+{
+    gl_Position = position;
+}
+)";
+
+const epiChar ShaderSourceStaticPixel[] = R"(
+#version 400 core
+
+out vec4 fragcolor;
+
+void main(void)
+{
+    fragcolor = vec4(0.0, 0.0, 1.0, 1.0);
+}
+)";
+
 using namespace epi;
 gfxShaderProgram CreateGridProgram()
 {
@@ -90,9 +115,9 @@ gfxShaderProgram CreateGridProgram()
     gfxShader geometry;
     gfxShader pixel;
 
-    vertex.CreateFromSource(ShaderSourceVertex, gfxShaderType::Vertex);
-    geometry.CreateFromSource(ShaderSourceGeometry, gfxShaderType::Geometry);
-    pixel.CreateFromSource(ShaderSourcePixel, gfxShaderType::Pixel);
+    vertex.CreateFromSource(ShaderSourceGridVertex, gfxShaderType::Vertex);
+    geometry.CreateFromSource(ShaderSourceGridGeometry, gfxShaderType::Geometry);
+    pixel.CreateFromSource(ShaderSourceGridPixel, gfxShaderType::Pixel);
 
     gfxShaderProgram program;
 
@@ -104,15 +129,71 @@ gfxShaderProgram CreateGridProgram()
 
     return program;
 }
+
+gfxShaderProgram CreateStaticProgram()
+{
+    gfxShader vertex;
+    gfxShader pixel;
+
+    vertex.CreateFromSource(ShaderSourceStaticVertex, gfxShaderType::Vertex);
+    pixel.CreateFromSource(ShaderSourceStaticPixel, gfxShaderType::Pixel);
+
+    gfxShaderProgram program;
+
+    program.ShaderAttach(vertex);
+    program.ShaderAttach(pixel);
+
+    program.Build();
+
+    return program;
+}
+
 }
 
 EPI_NAMESPACE_BEGIN()
 
-void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f position, const epiVec2f& dimension, epiS32 nsteps)
+void gfxDrawer::DrawLine(gfxContext& ctx, const epiVec3f& p1, const epiVec3f& p2, Color color)
 {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+    static gfxShaderProgram staticProgram = CreateStaticProgram();
 
+    gfxVertexArray vao;
+
+    {
+        const gfxBindableScoped scope(vao);
+
+        gfxVertexBuffer vbo;
+
+        vbo.Create(1024, gfxVertexBufferUsage::DynamicDraw);
+        vbo.Bind();
+
+        const GLint locationPosition = glGetAttribLocation(staticProgram.GetProgramID(), "position");
+        glEnableVertexAttribArray(locationPosition);
+        glVertexAttribPointer(locationPosition, 4, GL_FLOAT, false, 0, nullptr);
+
+        epiVec4f* mapped = reinterpret_cast<epiVec4f*>(vbo.Map(gfxVertexBufferMapAccess::WriteOnly));
+        mapped[0] = epiVec4f(-1.0f, 1.0f, 0.0f, 1.0f);
+        mapped[1] = epiVec4f(-1.0f, -1.0f, 0.0f, 1.0f);
+        mapped[2] = epiVec4f(1.0f, -1.0f, 0.0f, 1.0f);
+        mapped[3] = epiVec4f(1.0f, -1.0f, 0.0f, 1.0f);
+        mapped[4] = epiVec4f(1.0f, 1.0f, 0.0f, 1.0f);
+        mapped[5] = epiVec4f(-1.0f, 1.0f, 0.0f, 1.0f);
+
+        vbo.UnMap();
+    }
+
+    // TODO: repair
+    // const gfxBindableScoped scope(staticProgram, vao);
+    staticProgram.Bind();
+    vao.Bind();
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    vao.UnBind();
+    staticProgram.UnBind();
+}
+
+void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec2f& dimension, epiS32 nsteps)
+{
     static gfxShaderProgram gridProgram = CreateGridProgram();
 
     const gfxBindableScoped scope(gridProgram, ctx.GetNullVertexArray());
@@ -122,11 +203,18 @@ void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f position, const epiVec2
     const epiS32 locationNSteps = glGetUniformLocation(gridProgram.GetProgramID(), "u_nsteps");
     const epiS32 locationColorTint = glGetUniformLocation(gridProgram.GetProgramID(), "u_color_tint");
 
-    epiMat4x4f mvp = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.0f);
-    glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &mvp[0][0]);
+    const gfxCamera& camera = ctx.GetCamera();
+    const epiMat4x4f& projMat = camera.GetProjectionMatrix();
+    const epiMat4x4f& viewMat = camera.GetViewMatrix();
+    const epiMat4x4f& modelMat = epiMat4x4f();
+
+    const epiMat4x4f& MVP = projMat * viewMat * modelMat;
+
+    glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &MVP[0][0]);
     glUniform1f(locationDimension, 0.5f);
     glUniform1i(locationNSteps, 50);
     glUniform4f(locationColorTint, 0.55f, 0.0f, 0.55f, 1.0f);
+
     glDrawArrays(GL_POINTS, 0, 1);
 }
 

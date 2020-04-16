@@ -19,14 +19,18 @@ public:
 
     enum gfxBindable_PIDs
     {
-        PID_COUNT = 0
+        PID_IsBounded = 0x6b91588e,
+        PID_COUNT = 1
     };
+
+private:
+    epiBool m_IsBounded{false};
 
 EPI_GENREGION_END(gfxBindable)
 
 public:
-    virtual void Bind() = 0;
-    virtual void UnBind() = 0;
+    virtual void Bind();
+    virtual void UnBind();
 };
 
 template<typename... T>
