@@ -15,10 +15,11 @@ class EpiAttribute:
 
     RANGES = {
         TokenType.Private: (0, 0),
-        TokenType.WriteCallback: (0, 0),
-        TokenType.ReadCallback: (0, 0),
+        TokenType.WriteCallback: (0, 1),
+        TokenType.ReadCallback: (0, 1),
         TokenType.Virtual: (0, 0),
         TokenType.ReadOnly: (0, 0),
+        TokenType.WriteOnly: (0, 0),
         TokenType.Transient: (0, 0),
         TokenType.ExpectMin: (1, 1),
         TokenType.ExpectMax: (1, 1),
@@ -30,6 +31,13 @@ class EpiAttribute:
 
         self.tokentype = tokentype
         self.params = []
+
+    def find_param(self, param: str):
+
+        p = [p for p in self.params if p.text == param]
+        p = p[0] if len(p) != 0 else None
+
+        return p
 
 
 class EpiSymbol(abc.ABC):
@@ -55,6 +63,13 @@ class EpiSymbol(abc.ABC):
 
         self._preprocess_attrs(attrs)
         self.__attrs = attrs
+
+    def find_attr(self, tokentype: TokenType):
+
+        attr = [a for a in self.attrs if a.tokentype == tokentype]
+        attr = attr[0] if len(attr) != 0 else None
+
+        return attr
 
     @abc.abstractmethod
     def _preprocess_attrs(self, attrs):
@@ -122,9 +137,14 @@ class EpiVariable(EpiSymbol):
 
         if any(a.tokentype == TokenType.Virtual for a in attrs):
 
-            attrs.append(EpiAttribute(TokenType.Transient))
-            attrs.append(EpiAttribute(TokenType.ReadCallback))
-            attrs.append(EpiAttribute(TokenType.WriteCallback))
+            if not any(a.tokentype == TokenType.Transient for a in attrs):
+                attrs.append(EpiAttribute(TokenType.Transient))
+
+            if not any(a.tokentype == TokenType.ReadCallback for a in attrs):
+                attrs.append(EpiAttribute(TokenType.ReadCallback))
+
+            if not any(a.tokentype == TokenType.WriteCallback for a in attrs):
+                attrs.append(EpiAttribute(TokenType.WriteCallback))
 
         for attr in attrs:
 

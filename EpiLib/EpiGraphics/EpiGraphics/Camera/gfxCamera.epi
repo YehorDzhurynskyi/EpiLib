@@ -1,0 +1,24 @@
+class gfxCamera
+{
+    [Virtual, ReadOnly, ReadCallback("SuppressRef")]
+    {
+        epiMat3x3f ProjectionMatrix2D;
+        epiMat4x4f ProjectionMatrix3D;
+
+        epiMat3x3f ViewMatrix2D;
+        epiMat4x4f ViewMatrix3D;
+    }
+
+    [Virtual, WriteOnly]
+    {
+        epiVec3f LookAtPosition;
+    }
+
+    epiVec3f Position;
+    epiVec3f LookAtDirection;
+    epiVec3f UpDirection;
+
+    epiFloat PlaneFar;
+    epiFloat PlaneNear;
+    epiFloat AspectRation;
+};

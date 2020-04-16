@@ -100,6 +100,16 @@ inline auto epiSerialize_Impl_Fetch(T& v)
         }
         return arr;
     }
+    else if constexpr (std::is_same_v<epiRect2f, T> || std::is_same_v<epiRect2d, T> ||
+                       std::is_same_v<epiRect2s, T> || std::is_same_v<epiRect2u, T>)
+    {
+        auto arr = json_t::array();
+        arr.push_back(epiSerialize_Impl_Fetch(v.X));
+        arr.push_back(epiSerialize_Impl_Fetch(v.Y));
+        arr.push_back(epiSerialize_Impl_Fetch(v.Width));
+        arr.push_back(epiSerialize_Impl_Fetch(v.Height));
+        return arr;
+    }
     else
     {
         static_assert(false, "Unhandled type for seriazliation (epiSerialize_Impl_Fetch)");
@@ -168,6 +178,15 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
         {
             epiDeserialize_Impl_Fetch(v[i], json[i]);
         }
+    }
+    else if constexpr (std::is_same_v<epiRect2f, T> || std::is_same_v<epiRect2d, T> ||
+                       std::is_same_v<epiRect2s, T> || std::is_same_v<epiRect2u, T>)
+    {
+        assert(json.size() == 4);
+        epiDeserialize_Impl_Fetch(v.X, json[0]);
+        epiDeserialize_Impl_Fetch(v.Y, json[1]);
+        epiDeserialize_Impl_Fetch(v.Width, json[2]);
+        epiDeserialize_Impl_Fetch(v.Height, json[3]);
     }
     else
     {

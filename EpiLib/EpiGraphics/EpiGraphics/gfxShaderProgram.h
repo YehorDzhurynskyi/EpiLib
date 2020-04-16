@@ -84,8 +84,8 @@ EPI_GENREGION_END(gfxShaderProgram)
 
 public:
     gfxShaderProgram();
-    gfxShaderProgram(const gfxShaderProgram & rhs) = delete;
-    gfxShaderProgram& operator=(const gfxShaderProgram & rhs) = delete;
+    gfxShaderProgram(const gfxShaderProgram& rhs) = delete;
+    gfxShaderProgram& operator=(const gfxShaderProgram& rhs) = delete;
     gfxShaderProgram(gfxShaderProgram&& rhs);
     gfxShaderProgram& operator=(gfxShaderProgram&& rhs);
     ~gfxShaderProgram();

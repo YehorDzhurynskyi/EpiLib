@@ -23,6 +23,16 @@ add_library(EpiGraphics
     EpiGraphics/gfxDrawer.epi
     EpiGraphics/gfxDrawer.h
     EpiGraphics/gfxDrawer.cpp
+
+    EpiGraphics/Camera/gfxCamera.epi
+    EpiGraphics/Camera/gfxCamera.h
+    EpiGraphics/Camera/gfxCamera.cpp
+    EpiGraphics/Camera/gfxCameraOrtho.epi
+    EpiGraphics/Camera/gfxCameraOrtho.h
+    EpiGraphics/Camera/gfxCameraOrtho.cpp
+    EpiGraphics/Camera/gfxCameraPersp.epi
+    EpiGraphics/Camera/gfxCameraPersp.h
+    EpiGraphics/Camera/gfxCameraPersp.cpp
 )
 get_target_property(EpiGraphics_SRCs EpiGraphics SOURCES) 
 epi_add_precompiled_header(EpiGraphics EpiGraphics/pch.h SOURCE_CXX EpiGraphics/pch.cpp)

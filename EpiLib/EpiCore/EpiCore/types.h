@@ -52,3 +52,64 @@ using epiVec4u = epiVec2<epiU32>;
 using epiMat2x2f = glm::mat2x2;
 using epiMat3x3f = glm::mat3x3;
 using epiMat4x4f = glm::mat4x4;
+
+template<typename T>
+class epiRect2
+{
+public:
+    epiRect2() = default;
+    epiRect2(const epiRect2& rhs) = default;
+    epiRect2& operator=(const epiRect2& rhs) = default;
+    epiRect2(epiRect2&& rhs) = default;
+    epiRect2& operator=(epiRect2&& rhs) = default;
+    ~epiRect2() = default;
+
+    epiBool Validate() const
+    {
+        epiBool isValid = true;
+
+        epiValidate(Width > T{}, "Width should be greater than 0");
+        epiValidate(Height > T{}, "Height should be greater than 0");
+
+        return isValid;
+    }
+
+    epiRect2(const epiVec2<T>& tl, const epiVec2<T>& br)
+        : X(tl.x)
+        , Y(tl.y)
+        , Width(br.x - tl.x)
+        , Height(br.y - tl.y)
+    {
+        Validate();
+    }
+
+    epiRect2(T x, T y, T width, T height)
+        : X(x)
+        , Y(y)
+        , Width(width)
+        , Height(height)
+    {}
+
+    epiVec2<T> TopLeft() const
+    {
+        Validate();
+        return epiVec2<T>(X, Y);
+    }
+
+    epiVec2<T> BottomRight() const
+    {
+        Validate();
+        return epiVec2<T>(X + Width, Y + Height);
+    }
+
+public:
+    T X{};
+    T Y{};
+    T Width{};
+    T Height{};
+};
+
+using epiRect2f = epiRect2<epiFloat>;
+using epiRect2d = epiRect2<epiDouble>;
+using epiRect2s = epiRect2<epiS32>;
+using epiRect2u = epiRect2<epiU32>;

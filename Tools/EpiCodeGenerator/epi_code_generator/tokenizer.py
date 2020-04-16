@@ -57,6 +57,10 @@ class TokenType(Enum):
     Mat2x2FType = auto()
     Mat3x3FType = auto()
     Mat4x4FType = auto()
+    Rect2FType = auto()
+    Rect2DType = auto()
+    Rect2SType = auto()
+    Rect2UType = auto()
 
     ClassType = auto()
     # StructType = auto()
@@ -65,7 +69,7 @@ class TokenType(Enum):
 
     # Owner = auto()
     ReadOnly = auto()
-    # WriteOnly = auto()
+    WriteOnly = auto()
     Private = auto()
     WriteCallback = auto()
     ReadCallback = auto()
@@ -164,7 +168,11 @@ class Tokenizer:
         'epiVec4u': TokenType.Vec4UType,
         'epiMat2x2f': TokenType.Mat2x2FType,
         'epiMat3x3f': TokenType.Mat3x3FType,
-        'epiMat4x4f': TokenType.Mat4x4FType
+        'epiMat4x4f': TokenType.Mat4x4FType,
+        'epiRect2f': TokenType.Rect2FType,
+        'epiRect2d': TokenType.Rect2DType,
+        'epiRect2s': TokenType.Rect2SType,
+        'epiRect2u': TokenType.Rect2UType
     }
 
     BUILTIN_USER_TYPES = {
@@ -183,7 +191,7 @@ class Tokenizer:
     BUILTIN_PRTY_ATTRS = {
         # 'Owner': TokenType.Owner,
         'ReadOnly': TokenType.ReadOnly,
-        # 'WriteOnly': TokenType.WriteOnly,
+        'WriteOnly': TokenType.WriteOnly,
         'Private': TokenType.Private,
         'WriteCallback': TokenType.WriteCallback,
         'ReadCallback': TokenType.ReadCallback,
