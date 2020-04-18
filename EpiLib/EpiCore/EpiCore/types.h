@@ -69,45 +69,48 @@ public:
     {
         epiBool isValid = true;
 
-        epiValidate(Width > T{}, "Width should be greater than 0");
-        epiValidate(Height > T{}, "Height should be greater than 0");
+        epiValidate(GetWidth() > T{}, "Width should be greater than 0");
+        epiValidate(GetHeight() > T{}, "Height should be greater than 0");
 
         return isValid;
     }
 
     epiRect2(const epiVec2<T>& tl, const epiVec2<T>& br)
-        : X(tl.x)
-        , Y(tl.y)
-        , Width(br.x - tl.x)
-        , Height(br.y - tl.y)
+        : Left(tl.x)
+        , Top(tl.y)
+        , Right(br.x)
+        , Bottom(br.y)
     {
         Validate();
     }
 
-    epiRect2(T x, T y, T width, T height)
-        : X(x)
-        , Y(y)
-        , Width(width)
-        , Height(height)
-    {}
-
     epiVec2<T> TopLeft() const
     {
         Validate();
-        return epiVec2<T>(X, Y);
+        return epiVec2<T>(Left, Top);
     }
 
     epiVec2<T> BottomRight() const
     {
         Validate();
-        return epiVec2<T>(X + Width, Y + Height);
+        return epiVec2<T>(Right, Bottom);
+    }
+
+    T GetWidth() const
+    {
+        return Right - Left;
+    }
+
+    T GetHeight() const
+    {
+        return Top - Bottom;
     }
 
 public:
-    T X{};
-    T Y{};
-    T Width{};
-    T Height{};
+    T Left{};
+    T Top{};
+    T Right{};
+    T Bottom{};
 };
 
 using epiRect2f = epiRect2<epiFloat>;

@@ -30,14 +30,13 @@ layout (line_strip, max_vertices = 225) out;
 
 uniform mat4 u_mvp;
 
-uniform float u_dimension;
+uniform vec2 u_dimension;
 uniform int u_nsteps;
 
 void main()
 {
-    float half_dim = u_dimension / 2.0;
-
     {
+        float half_dim = u_dimension.x / 2.0;
         float y = -half_dim;
         float x = -half_dim;
         float dy = (half_dim - y) / (u_nsteps - 1);
@@ -55,6 +54,7 @@ void main()
         EndPrimitive();
     }
     {
+        float half_dim = u_dimension.y / 2.0;
         float y = -half_dim;
         float x = -half_dim;
         float dy = (half_dim - y) / (u_nsteps - 1);
@@ -91,9 +91,11 @@ const epiChar ShaderSourceStaticVertex[] = R"(
 
 in vec4 position;
 
+uniform mat4 u_mvp;
+
 void main(void)
 {
-    gl_Position = position;
+    gl_Position = u_mvp * position;
 }
 )";
 
@@ -157,11 +159,10 @@ void gfxDrawer::DrawLine(gfxContext& ctx, const epiVec3f& p1, const epiVec3f& p2
     static gfxShaderProgram staticProgram = CreateStaticProgram();
 
     gfxVertexArray vao;
+    gfxVertexBuffer vbo;
 
     {
         const gfxBindableScoped scope(vao);
-
-        gfxVertexBuffer vbo;
 
         vbo.Create(1024, gfxVertexBufferUsage::DynamicDraw);
         vbo.Bind();
@@ -171,25 +172,28 @@ void gfxDrawer::DrawLine(gfxContext& ctx, const epiVec3f& p1, const epiVec3f& p2
         glVertexAttribPointer(locationPosition, 4, GL_FLOAT, false, 0, nullptr);
 
         epiVec4f* mapped = reinterpret_cast<epiVec4f*>(vbo.Map(gfxVertexBufferMapAccess::WriteOnly));
-        mapped[0] = epiVec4f(-1.0f, 1.0f, 0.0f, 1.0f);
-        mapped[1] = epiVec4f(-1.0f, -1.0f, 0.0f, 1.0f);
-        mapped[2] = epiVec4f(1.0f, -1.0f, 0.0f, 1.0f);
-        mapped[3] = epiVec4f(1.0f, -1.0f, 0.0f, 1.0f);
-        mapped[4] = epiVec4f(1.0f, 1.0f, 0.0f, 1.0f);
-        mapped[5] = epiVec4f(-1.0f, 1.0f, 0.0f, 1.0f);
+        mapped[0] = epiVec4f(-0.5f, 0.5f, 0.0f, 1.0f);
+        mapped[1] = epiVec4f(-0.5f, -0.5f, 0.0f, 1.0f);
+        mapped[2] = epiVec4f(0.5f, -0.5f, 0.0f, 1.0f);
+        mapped[3] = epiVec4f(0.5f, -0.5f, 0.0f, 1.0f);
+        mapped[4] = epiVec4f(0.5f, 0.5f, 0.0f, 1.0f);
+        mapped[5] = epiVec4f(-0.5f, 0.5f, 0.0f, 1.0f);
 
         vbo.UnMap();
     }
 
-    // TODO: repair
-    // const gfxBindableScoped scope(staticProgram, vao);
-    staticProgram.Bind();
-    vao.Bind();
+    const gfxBindableScoped scope(staticProgram, vao);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    const epiS32 locationMVP = glGetUniformLocation(staticProgram.GetProgramID(), "u_mvp");
+    const gfxCamera& camera = ctx.GetCamera();
+    const epiMat4x4f& projMat = camera.GetProjectionMatrix();
+    const epiMat4x4f& viewMat = camera.GetViewMatrix();
 
-    vao.UnBind();
-    staticProgram.UnBind();
+    const epiMat4x4f& MVP = projMat * viewMat;
+
+    glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &MVP[0][0]);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec2f& dimension, epiS32 nsteps)
@@ -204,16 +208,15 @@ void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec
     const epiS32 locationColorTint = glGetUniformLocation(gridProgram.GetProgramID(), "u_color_tint");
 
     const gfxCamera& camera = ctx.GetCamera();
-    const epiMat4x4f& projMat = camera.GetProjectionMatrix();
+    //const epiMat4x4f& projMat = camera.GetProjectionMatrix();
     const epiMat4x4f& viewMat = camera.GetViewMatrix();
-    const epiMat4x4f& modelMat = epiMat4x4f();
 
-    const epiMat4x4f& MVP = projMat * viewMat * modelMat;
+    const epiMat4x4f& MVP = viewMat;
 
     glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &MVP[0][0]);
-    glUniform1f(locationDimension, 0.5f);
-    glUniform1i(locationNSteps, 50);
-    glUniform4f(locationColorTint, 0.55f, 0.0f, 0.55f, 1.0f);
+    glUniform2fv(locationDimension, 1, &dimension[0]);
+    glUniform1i(locationNSteps, nsteps);
+    glUniform4f(locationColorTint, 0.55f, 1.0f, 0.55f, 1.0f);
 
     glDrawArrays(GL_POINTS, 0, 1);
 }

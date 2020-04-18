@@ -394,7 +394,7 @@ void Deserialization(const json_t& json) override;
                         if not attr_writecallback or attr_writecallback.find_param('"SuppressRef"') is None:
                             pptype = f'const {pptype}&'
 
-                    builder.line(f'inline void Set{p.name}({ptype} value) {{ {body_set} }} \\')
+                    builder.line(f'inline void Set{p.name}({pptype} value) {{ {body_set} }} \\')
 
             builder.line('\\')
 

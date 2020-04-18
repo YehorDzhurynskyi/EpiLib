@@ -48,8 +48,7 @@ public:
     {
         std::apply([](T&... t)
         {
-            char i[] = { (t.Bind(), 0)... };
-            (void)i;
+            char i[] = { (t.Bind(), 0)... }; (void)i;
         }, m_Bindables);
     }
 
@@ -57,8 +56,7 @@ public:
     {
         std::apply([](T&... t)
         {
-            char i[] = { (t.UnBind(), 0)... };
-            (void)i;
+            char i[] = { (t.UnBind(), 0)... }; (void)i;
         }, m_Bindables);
     }
 

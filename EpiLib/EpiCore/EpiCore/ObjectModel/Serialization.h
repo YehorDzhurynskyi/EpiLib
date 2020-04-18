@@ -104,10 +104,10 @@ inline auto epiSerialize_Impl_Fetch(T& v)
                        std::is_same_v<epiRect2s, T> || std::is_same_v<epiRect2u, T>)
     {
         auto arr = json_t::array();
-        arr.push_back(epiSerialize_Impl_Fetch(v.X));
-        arr.push_back(epiSerialize_Impl_Fetch(v.Y));
-        arr.push_back(epiSerialize_Impl_Fetch(v.Width));
-        arr.push_back(epiSerialize_Impl_Fetch(v.Height));
+        arr.push_back(epiSerialize_Impl_Fetch(v.Left));
+        arr.push_back(epiSerialize_Impl_Fetch(v.Top));
+        arr.push_back(epiSerialize_Impl_Fetch(v.Right));
+        arr.push_back(epiSerialize_Impl_Fetch(v.Bottom));
         return arr;
     }
     else
@@ -183,10 +183,10 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
                        std::is_same_v<epiRect2s, T> || std::is_same_v<epiRect2u, T>)
     {
         assert(json.size() == 4);
-        epiDeserialize_Impl_Fetch(v.X, json[0]);
-        epiDeserialize_Impl_Fetch(v.Y, json[1]);
-        epiDeserialize_Impl_Fetch(v.Width, json[2]);
-        epiDeserialize_Impl_Fetch(v.Height, json[3]);
+        epiDeserialize_Impl_Fetch(v.Left, json[0]);
+        epiDeserialize_Impl_Fetch(v.Top, json[1]);
+        epiDeserialize_Impl_Fetch(v.Right, json[2]);
+        epiDeserialize_Impl_Fetch(v.Bottom, json[3]);
     }
     else
     {
