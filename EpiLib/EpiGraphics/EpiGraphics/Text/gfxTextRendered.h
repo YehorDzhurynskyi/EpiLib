@@ -11,6 +11,7 @@ EPI_NAMESPACE_BEGIN()
 
 class gfxTextRendered : public Object
 {
+    friend class gfxTextFace;
 EPI_GENREGION_BEGIN(gfxTextRendered)
 public:
     EPI_GENHIDDEN_gfxTextRendered()

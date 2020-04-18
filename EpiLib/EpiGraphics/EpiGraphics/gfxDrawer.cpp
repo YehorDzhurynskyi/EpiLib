@@ -224,4 +224,9 @@ void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec
     glDrawArrays(GL_POINTS, 0, 1);
 }
 
+void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& position, const gfxTextRenderedAtlas& atlas)
+{
+    
+}
+
 EPI_NAMESPACE_END()

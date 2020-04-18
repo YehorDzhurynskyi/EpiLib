@@ -10,6 +10,7 @@ EPI_NAMESPACE_BEGIN()
 
 class gfxTextRenderedAtlas : public gfxTextRendered
 {
+    friend class gfxTextFace;
 EPI_GENREGION_BEGIN(gfxTextRenderedAtlas)
 public:
     EPI_GENHIDDEN_gfxTextRenderedAtlas()
@@ -22,6 +23,12 @@ public:
     };
 
 EPI_GENREGION_END(gfxTextRenderedAtlas)
+
+public:
+    epiBool UVBoxOf(epiRect2f& uv, epiWChar ch);
+
+private:
+    std::map<epiWChar, epiRect2f> m_CharMap;
 };
 
 EPI_NAMESPACE_END()

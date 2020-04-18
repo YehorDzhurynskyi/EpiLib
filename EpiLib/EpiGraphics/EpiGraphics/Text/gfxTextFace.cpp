@@ -238,19 +238,6 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
     const epiS32 texHeight = (metricsSize.ascender >> 6) - (metricsSize.descender >> 6);
     std::unique_ptr<epiByte[]> data = std::make_unique<epiByte[]>(texHeight * texWidth * 4);
 
-#if 0
-    for (int y = 0; y < texHeight; ++y)
-    {
-        float s = (float)y / texHeight;
-        for (int x = 0; x < texWidth; ++x)
-        {
-            data[(x + texWidth * y) * 4 + 0] = 0xff * s;
-            data[(x + texWidth * y) * 4 + 1] = 0xff * s;
-            data[(x + texWidth * y) * 4 + 2] = 0xff * s;
-            data[(x + texWidth * y) * 4 + 3] = 0xff;
-        }
-    }
-#else
     epiS32 pen = 0;
     for (epiU32 i = 0; i < atlasTextLen; ++i)
     {
@@ -280,21 +267,29 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
 
         for (epiU32 y = 0, i = 0; y < bitmap.rows; ++y)
         {
+            const epiU32 coordY = bitmap.rows - 1 - y;
             for (epiU32 x = 0; x < bitmap.width; ++x, ++i)
             {
-                // (x + texWidth * y) * 4
-                // (y + (texHeight - bitmap.rows))
-                const epiU32 coord = 4 * ((bitmap.rows - 1 - y) * texWidth + pen + x);
+                const epiU32 coordX = pen + x;
+                const epiU32 coord = 4 * (coordY * texWidth + coordX);
+
                 data[coord + 0] = color.GetRu();
                 data[coord + 1] = color.GetGu();
                 data[coord + 2] = color.GetBu();
                 data[coord + 3] = bitmap.buffer[i];
+
             }
         }
+        epiRect2f uv;
+        uv.Left = pen / static_cast<epiFloat>(texWidth);
+        uv.Top = bitmap.rows / static_cast<epiFloat>(texHeight);
+        uv.Bottom = 0.0f;
+        uv.Right = (pen + bitmap.width) / static_cast<epiFloat>(texWidth);
+
+        target.m_CharMap.try_emplace(ch, uv);
 
         pen += bitmap.width;
     }
-#endif
 
     gfxTexture& texture = target.GetTexture();
     texture.Create2D(data.get(), texWidth, texHeight, gfxTextureFormat::RGBA, gfxTexturePixelType::UBYTE);
