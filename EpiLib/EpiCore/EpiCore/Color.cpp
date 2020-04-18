@@ -7,6 +7,22 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+Color::Color(epiFloat r, epiFloat g, epiFloat b, epiFloat a)
+{
+    SetRf(r);
+    SetGf(g);
+    SetBf(b);
+    SetAf(a);
+}
+
+Color::Color(epiS32 r, epiS32 g, epiS32 b, epiS32 a)
+{
+    SetRu(r);
+    SetGu(g);
+    SetBu(b);
+    SetAu(a);
+}
+
 // TODO: create an interface IValidation with `epiBool IValidate()` & `epiBool IValidate_Callback()`
 // methods and call on each accessor method, declare IValidate as a wrapper for IValidate_Callback
 // and soround IValidation with EPI_DEBUG
@@ -24,115 +40,92 @@ epiBool Color::Validate() const
 
 epiU8 Color::GetRu_Callback() const
 {
-    Validate();
     return static_cast<epiU8>(m_Color.r * 255.0f);
 }
 
 void Color::SetRu_Callback(epiU8 value)
 {
-    Validate();
     m_Color.r = static_cast<epiFloat>(value / 255.0f);
-    Validate();
 }
 
 epiU8 Color::GetGu_Callback() const
 {
-    Validate();
     return static_cast<epiU8>(m_Color.g * 255.0f);
 }
 
 void Color::SetGu_Callback(epiU8 value)
 {
-    Validate();
     m_Color.g = static_cast<epiFloat>(value / 255.0f);
-    Validate();
 }
 
 epiU8 Color::GetBu_Callback() const
 {
-    Validate();
     return static_cast<epiU8>(m_Color.b * 255.0f);
 }
 
 void Color::SetBu_Callback(epiU8 value)
 {
-    Validate();
     m_Color.b = static_cast<epiFloat>(value / 255.0f);
-    Validate();
 }
 
 epiU8 Color::GetAu_Callback() const
 {
-    Validate();
     return static_cast<epiU8>(m_Color.a * 255.0f);
 }
 
 void Color::SetAu_Callback(epiU8 value)
 {
-    Validate();
     m_Color.a = static_cast<epiFloat>(value / 255.0f);
-    Validate();
 }
 
 epiFloat Color::GetRf_Callback() const
 {
-    Validate();
     return m_Color.r;
 }
 
 void Color::SetRf_Callback(epiFloat value)
 {
-    Validate();
     epiExpect(value >= 0.0f && value <= 1.0f, "color channel value should be in range [0 - 1]");
     m_Color.r = value;
-    Validate();
 }
 
 epiFloat Color::GetGf_Callback() const
 {
-    Validate();
     return m_Color.g;
 }
 
 void Color::SetGf_Callback(epiFloat value)
 {
-    Validate();
     epiExpect(value >= 0.0f && value <= 1.0f, "Color channels should be in range [0 - 1]");
     m_Color.g = value;
-    Validate();
 }
 
 epiFloat Color::GetBf_Callback() const
 {
-    Validate();
     return m_Color.b;
 }
 
 void Color::SetBf_Callback(epiFloat value)
 {
-    Validate();
     epiExpect(value >= 0.0f && value <= 1.0f, "color channel value should be in range [0 - 1]");
     m_Color.b = value;
-    Validate();
 }
 
 epiFloat Color::GetAf_Callback() const
 {
-    Validate();
     return m_Color.a;
 }
 
 void Color::SetAf_Callback(epiFloat value)
 {
-    Validate();
     epiExpect(value >= 0.0f && value <= 1.0f, "color channel value should be in range [0 - 1]");
     m_Color.a = value;
-    Validate();
 }
 
 epiU32 Color::GetRGBA32_Callback() const
 {
     Validate();
+
     const epiU32 r = static_cast<epiU32>(m_Color.r * 255.0f);
     const epiU32 g = static_cast<epiU32>(m_Color.g * 255.0f);
     const epiU32 b = static_cast<epiU32>(m_Color.b * 255.0f);
@@ -143,17 +136,18 @@ epiU32 Color::GetRGBA32_Callback() const
 
 void Color::SetRGBA32_Callback(epiU32 value)
 {
-    Validate();
     SetRu((value >> 24) & 0xff);
     SetGu((value >> 16) & 0xff);
     SetBu((value >> 8) & 0xff);
     SetAu((value >> 0) & 0xff);
+
     Validate();
 }
 
 epiU32 Color::GetBGRA32_Callback() const
 {
     Validate();
+
     const epiU32 r = static_cast<epiU32>(m_Color.r * 255.0f);
     const epiU32 g = static_cast<epiU32>(m_Color.g * 255.0f);
     const epiU32 b = static_cast<epiU32>(m_Color.b * 255.0f);
@@ -164,17 +158,18 @@ epiU32 Color::GetBGRA32_Callback() const
 
 void Color::SetBGRA32_Callback(epiU32 value)
 {
-    Validate();
     SetBu((value >> 24) & 0xff);
     SetGu((value >> 16) & 0xff);
     SetRu((value >> 8) & 0xff);
     SetAu((value >> 0) & 0xff);
+
     Validate();
 }
 
 epiU32 Color::GetRGB24_Callback() const
 {
     Validate();
+
     const epiU32 r = static_cast<epiU32>(m_Color.r * 255.0f);
     const epiU32 g = static_cast<epiU32>(m_Color.g * 255.0f);
     const epiU32 b = static_cast<epiU32>(m_Color.b * 255.0f);
@@ -184,17 +179,18 @@ epiU32 Color::GetRGB24_Callback() const
 
 void Color::SetRGB24_Callback(epiU32 value)
 {
-    Validate();
     SetRu((value >> 24) & 0xff);
     SetGu((value >> 16) & 0xff);
     SetBu((value >> 8) & 0xff);
     SetAu(0);
+
     Validate();
 }
 
 epiU32 Color::GetBGR24_Callback() const
 {
     Validate();
+
     const epiU32 r = static_cast<epiU32>(m_Color.r * 255.0f);
     const epiU32 g = static_cast<epiU32>(m_Color.g * 255.0f);
     const epiU32 b = static_cast<epiU32>(m_Color.b * 255.0f);
@@ -204,11 +200,11 @@ epiU32 Color::GetBGR24_Callback() const
 
 void Color::SetBGR24_Callback(epiU32 value)
 {
-    Validate();
     SetBu((value >> 24) & 0xff);
     SetGu((value >> 16) & 0xff);
     SetRu((value >> 8) & 0xff);
     SetAu(0);
+
     Validate();
 }
 
@@ -220,7 +216,6 @@ const epiVec4f& Color::GetColor_Callback() const
 
 void Color::SetColor_Callback(const epiVec4f& value)
 {
-    Validate();
     m_Color = value;
     Validate();
 }

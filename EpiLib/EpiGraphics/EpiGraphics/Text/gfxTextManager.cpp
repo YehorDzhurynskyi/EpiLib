@@ -5,13 +5,23 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/Text/gfxTextManager.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/Text/gfxTextFont.h"
+#include "EpiGraphics/Text/gfxTextFace.h"
 
 EPI_NAMESPACE_BEGIN()
 
 gfxTextManager::gfxTextManager()
 {
-    FT_Init_FreeType(&m_FTLibrary);
+    if (FT_Init_FreeType(&m_FTLibrary))
+    {
+        // TODO: log
+        epiAssert(false, "FreeType Library initialization failed!");
+    }
+
+    if (!CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\verdana.ttf"))
+    {
+        // TODO: log
+        epiAssert(false, "FreeType Library Default FontFace initialization failed!");
+    }
 }
 
 gfxTextManager::~gfxTextManager()
@@ -19,17 +29,10 @@ gfxTextManager::~gfxTextManager()
     FT_Done_FreeType(m_FTLibrary);
 }
 
-std::unique_ptr<gfxTextFont> gfxTextManager::CreateFont(const epiChar* ttf)
+epiBool gfxTextManager::CreateFace(gfxTextFace& target, const epiChar* ttf) const
 {
-    auto font = std::make_unique<gfxTextFont>();
-
-    const FT_Error error = FT_New_Face(m_FTLibrary, ttf, 0, &font->m_Face);
-    if (error != 0)
-    {
-        font.release();
-    }
-
-    return font;
+    const FT_Error error = FT_New_Face(m_FTLibrary, ttf, 0, &target.m_Face);
+    return error == 0;
 }
 
 EPI_NAMESPACE_END()

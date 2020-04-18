@@ -11,12 +11,32 @@ EPI_NAMESPACE_BEGIN()
 // TODO: move to epi
 enum class gfxTextureType
 {
-    Texture1D,
+    None,
     Texture2D,
-    Texture3D,
-    Texture1DArray,
-    Texture2DArray,
-    Texture3DArray,
+    COUNT
+};
+
+// TODO: move to epi
+enum class gfxTextureFormat
+{
+    R,
+    RG,
+    RGB,
+    BGR,
+    RGBA,
+    BGRA,
+    COUNT
+};
+
+// TODO: move to epi
+enum class gfxTexturePixelType
+{
+    BYTE,
+    UBYTE,
+    SHORT,
+    USHORT,
+    INT,
+    UINT,
     COUNT
 };
 
@@ -52,11 +72,19 @@ public:
     ~gfxTexture();
 
 public:
-    void Create(epiSize_t capacity, gfxTextureType type);
+    void Create2D(void* initData,
+                  epiSize_t width,
+                  epiSize_t height,
+                  gfxTextureFormat format,
+                  gfxTexturePixelType pixelType);
+
     void Destroy();
 
     void Bind() override;
     void UnBind() override;
+
+protected:
+    gfxTextureType m_Type{gfxTextureType::None};
 };
 
 EPI_NAMESPACE_END()

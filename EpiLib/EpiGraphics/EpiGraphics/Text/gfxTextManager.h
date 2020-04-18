@@ -5,14 +5,14 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
+#include "EpiGraphics/Text/gfxTextFace.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include FT_GLYPH_H
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxTextFont;
+class gfxTextFace;
 class gfxTextManager final : public Object
 {
 EPI_GENREGION_BEGIN(gfxTextManager)
@@ -23,8 +23,12 @@ public:
 
     enum gfxTextManager_PIDs
     {
-        PID_COUNT = 0
+        PID_DefaultFace = 0x40b63159,
+        PID_COUNT = 1
     };
+
+protected:
+    gfxTextFace m_DefaultFace;
 
 EPI_GENREGION_END(gfxTextManager)
 
@@ -37,10 +41,11 @@ public:
     ~gfxTextManager();
 
 public:
-    std::unique_ptr<gfxTextFont> CreateFont(const epiChar* ttf);
+    epiBool CreateFace(gfxTextFace& target, const epiChar* ttf) const;
 
 protected:
     FT_Library m_FTLibrary;
+
 };
 
 EPI_NAMESPACE_END()

@@ -167,7 +167,7 @@ void gfxDrawer::DrawLine(gfxContext& ctx, const epiVec3f& p1, const epiVec3f& p2
     {
         const gfxBindableScoped scope(vao);
 
-        vbo.Create(1024, gfxVertexBufferUsage::DynamicDraw);
+        vbo.Create(nullptr, 1024, gfxVertexBufferUsage::DynamicDraw);
         vbo.Bind();
 
         const GLint locationPosition = glGetAttribLocation(staticProgram.GetProgramID(), "position");

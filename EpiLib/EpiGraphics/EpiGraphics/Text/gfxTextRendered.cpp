@@ -1,8 +1,8 @@
 #include "EpiGraphics/pch.h"
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/Text/gfxTextAtlasInstance.h"
-#include "EpiGraphics/Text/gfxTextAtlasInstance.cxx"
+#include "EpiGraphics/Text/gfxTextRendered.h"
+#include "EpiGraphics/Text/gfxTextRendered.cxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()

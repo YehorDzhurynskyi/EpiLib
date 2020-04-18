@@ -44,15 +44,15 @@ add_library(EpiGraphics
     EpiGraphics/Text/gfxTextManager.epi
     EpiGraphics/Text/gfxTextManager.h
     EpiGraphics/Text/gfxTextManager.cpp
-    EpiGraphics/Text/gfxTextFont.epi
-    EpiGraphics/Text/gfxTextFont.h
-    EpiGraphics/Text/gfxTextFont.cpp
-    EpiGraphics/Text/gfxTextInstance.epi
-    EpiGraphics/Text/gfxTextInstance.h
-    EpiGraphics/Text/gfxTextInstance.cpp
-    EpiGraphics/Text/gfxTextAtlasInstance.epi
-    EpiGraphics/Text/gfxTextAtlasInstance.h
-    EpiGraphics/Text/gfxTextAtlasInstance.cpp
+    EpiGraphics/Text/gfxTextFace.epi
+    EpiGraphics/Text/gfxTextFace.h
+    EpiGraphics/Text/gfxTextFace.cpp
+    EpiGraphics/Text/gfxTextRendered.epi
+    EpiGraphics/Text/gfxTextRendered.h
+    EpiGraphics/Text/gfxTextRendered.cpp
+    EpiGraphics/Text/gfxTextRenderedAtlas.epi
+    EpiGraphics/Text/gfxTextRenderedAtlas.h
+    EpiGraphics/Text/gfxTextRenderedAtlas.cpp
 )
 get_target_property(EpiGraphics_SRCs EpiGraphics SOURCES) 
 epi_add_precompiled_header(EpiGraphics EpiGraphics/pch.h SOURCE_CXX EpiGraphics/pch.cpp)

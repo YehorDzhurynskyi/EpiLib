@@ -67,6 +67,17 @@ protected:
 
 EPI_GENREGION_END(Color)
 
+public:
+    Color() = default;
+    Color(const Color& rhs) = default;
+    Color& operator=(const Color& rhs) = default;
+    Color(Color&& rhs) = default;
+    Color& operator=(Color&& rhs) = default;
+    ~Color() = default;
+
+    Color(epiFloat r, epiFloat g, epiFloat b, epiFloat a);
+    Color(epiS32 r, epiS32 g, epiS32 b, epiS32 a);
+
 protected:
     epiBool Validate() const;
 

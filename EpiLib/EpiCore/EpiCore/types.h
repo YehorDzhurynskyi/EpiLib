@@ -2,9 +2,11 @@
 
 #include "common.h"
 #include <string>
+#include <wchar.h>
 #include <glm/glm.hpp>
 
 using epiChar = char;
+using epiWChar = wchar_t;
 using epiBool = bool;
 using epiByte = uint8_t;
 

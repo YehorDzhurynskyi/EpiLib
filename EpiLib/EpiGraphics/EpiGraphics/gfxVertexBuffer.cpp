@@ -90,7 +90,7 @@ void gfxVertexBuffer::UnBind()
     epiExpect(GetIsCreated(), "A vertex buffer expected to be created");
 
     super::UnBind();
-    glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void* gfxVertexBuffer::Map(gfxVertexBufferMapAccess access)
