@@ -63,7 +63,7 @@ public:
     ~gfxVertexBuffer();
 
 public:
-    void Create(epiSize_t capacity, gfxVertexBufferUsage usage);
+    void Create(void* initData, epiSize_t capacity, gfxVertexBufferUsage usage);
     void Destroy();
 
     void Bind() override;

@@ -19,6 +19,10 @@ add_library(EpiGraphics
     EpiGraphics/gfxVertexBuffer.h
     EpiGraphics/gfxVertexBuffer.cpp
 
+    EpiGraphics/gfxTexture.epi
+    EpiGraphics/gfxTexture.h
+    EpiGraphics/gfxTexture.cpp
+
     EpiGraphics/gfxShaderProgram.epi
     EpiGraphics/gfxShaderProgram.h
     EpiGraphics/gfxShaderProgram.cpp
@@ -36,10 +40,25 @@ add_library(EpiGraphics
     EpiGraphics/Camera/gfxCameraPersp.epi
     EpiGraphics/Camera/gfxCameraPersp.h
     EpiGraphics/Camera/gfxCameraPersp.cpp
+
+    EpiGraphics/Text/gfxTextManager.epi
+    EpiGraphics/Text/gfxTextManager.h
+    EpiGraphics/Text/gfxTextManager.cpp
+    EpiGraphics/Text/gfxTextFont.epi
+    EpiGraphics/Text/gfxTextFont.h
+    EpiGraphics/Text/gfxTextFont.cpp
+    EpiGraphics/Text/gfxTextInstance.epi
+    EpiGraphics/Text/gfxTextInstance.h
+    EpiGraphics/Text/gfxTextInstance.cpp
+    EpiGraphics/Text/gfxTextAtlasInstance.epi
+    EpiGraphics/Text/gfxTextAtlasInstance.h
+    EpiGraphics/Text/gfxTextAtlasInstance.cpp
 )
 get_target_property(EpiGraphics_SRCs EpiGraphics SOURCES) 
 epi_add_precompiled_header(EpiGraphics EpiGraphics/pch.h SOURCE_CXX EpiGraphics/pch.cpp)
 epi_pack_sources(${EpiGraphics_SRCs})
+
+epi_extern_add(freetype)
 
 add_subdirectory(Extern/glad)
 epi_extern_register(glad)
@@ -54,6 +73,7 @@ target_link_libraries(EpiGraphics
     PUBLIC
         EpiCore
         glad
+        freetype
 )
 
 epi_module_register(EpiGraphics)

@@ -1,0 +1,8 @@
+class gfxTexture : gfxBindable
+{
+    [Virtual, ReadOnly]
+    epiBool IsCreated;
+
+    [Transient]
+    epiU32 ID;
+};

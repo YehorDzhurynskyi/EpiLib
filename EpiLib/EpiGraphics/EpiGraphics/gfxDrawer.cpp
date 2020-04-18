@@ -31,21 +31,24 @@ layout (line_strip, max_vertices = 225) out;
 uniform mat4 u_mvp;
 
 uniform vec2 u_dimension;
-uniform int u_nsteps;
+uniform ivec2 u_nsteps;
 
 void main()
 {
+    float half_dim_x = u_dimension.x / 2.0;
+    float half_dim_y = u_dimension.y / 2.0;
+
+/*
     {
-        float half_dim = u_dimension.x / 2.0;
-        float y = -half_dim;
-        float x = -half_dim;
-        float dy = (half_dim - y) / (u_nsteps - 1);
-        float dx = dy;
-        for (int r = 0; r < u_nsteps; ++r)
+        float y = -half_dim_y;
+        float x = -half_dim_x;
+        float dy = u_dimension.y / (u_nsteps.y - 1);
+        float dx = u_dimension.x / (u_nsteps.x - 1);
+        for (int r = 0; r < u_nsteps.x; ++r)
         {
             gl_Position = u_mvp * vec4(x, y, 0.0, 1.0);
             EmitVertex();
-            x += dx * (u_nsteps - 1);
+            x += dx * (u_nsteps.x - 1);
             gl_Position = u_mvp * vec4(x, y, 0.0, 1.0);
             EmitVertex();
             dx = -dx;
@@ -53,17 +56,17 @@ void main()
         }
         EndPrimitive();
     }
+*/
     {
-        float half_dim = u_dimension.y / 2.0;
-        float y = -half_dim;
-        float x = -half_dim;
-        float dy = (half_dim - y) / (u_nsteps - 1);
-        float dx = dy;
-        for (int r = 0; r < u_nsteps; ++r)
+        float y = -half_dim_y;
+        float x = -half_dim_x;
+        float dy = u_dimension.y / (u_nsteps.y - 1);
+        float dx = u_dimension.x / (u_nsteps.x - 1);;
+        for (int r = 0; r < u_nsteps.y; ++r)
         {
             gl_Position = u_mvp * vec4(x, y, 0.0, 1.0);
             EmitVertex();
-            y += dy * (u_nsteps - 1);
+            y += dy * (u_nsteps.y - 1);
             gl_Position = u_mvp * vec4(x, y, 0.0, 1.0);
             EmitVertex();
             dy = -dy;
@@ -196,7 +199,7 @@ void gfxDrawer::DrawLine(gfxContext& ctx, const epiVec3f& p1, const epiVec3f& p2
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec2f& dimension, epiS32 nsteps)
+void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec2f& dimension, const epiVec2s& nsteps)
 {
     static gfxShaderProgram gridProgram = CreateGridProgram();
 
@@ -208,14 +211,14 @@ void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec
     const epiS32 locationColorTint = glGetUniformLocation(gridProgram.GetProgramID(), "u_color_tint");
 
     const gfxCamera& camera = ctx.GetCamera();
-    //const epiMat4x4f& projMat = camera.GetProjectionMatrix();
+    const epiMat4x4f& projMat = camera.GetProjectionMatrix();
     const epiMat4x4f& viewMat = camera.GetViewMatrix();
 
-    const epiMat4x4f& MVP = viewMat;
+    const epiMat4x4f& MVP = projMat * viewMat;
 
     glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &MVP[0][0]);
     glUniform2fv(locationDimension, 1, &dimension[0]);
-    glUniform1i(locationNSteps, nsteps);
+    glUniform2iv(locationNSteps, 1, &nsteps[0]);
     glUniform4f(locationColorTint, 0.55f, 1.0f, 0.55f, 1.0f);
 
     glDrawArrays(GL_POINTS, 0, 1);

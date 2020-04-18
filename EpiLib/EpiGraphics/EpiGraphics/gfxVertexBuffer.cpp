@@ -37,9 +37,10 @@ gfxVertexBuffer& gfxVertexBuffer::operator=(gfxVertexBuffer&& rhs)
     return *this;
 }
 
-void gfxVertexBuffer::Create(epiSize_t capacity, gfxVertexBufferUsage usage)
+void gfxVertexBuffer::Create(void* initData, epiSize_t capacity, gfxVertexBufferUsage usage)
 {
     epiExpect(!GetIsCreated(), "Create method should be called on destroyed vertex buffer");
+    epiExpect(capacity > 0, "Capacity of buffer should be greater than 0");
 
     GLenum glUsage;
     switch (usage)
@@ -58,7 +59,7 @@ void gfxVertexBuffer::Create(epiSize_t capacity, gfxVertexBufferUsage usage)
     }
 
     Bind();
-    glBufferData(GL_ARRAY_BUFFER, capacity, nullptr, glUsage);
+    glBufferData(GL_ARRAY_BUFFER, capacity, initData, glUsage);
 }
 
 void gfxVertexBuffer::Destroy()

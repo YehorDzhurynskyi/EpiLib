@@ -30,7 +30,7 @@ public:
     //void DrawRect(Rect2f rect, Color edgeColor, Color fillColor);
     //void DrawText(const char* text, epiVec2f pos, epiFloat fontSize, Color color /* alignment, cliprect, wrapping */);
     static void DrawLine(gfxContext& ctx, const epiVec3f& p1, const epiVec3f& p2, Color color);
-    static void DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec2f& dimension, epiS32 nsteps);
+    static void DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec2f& dimension, const epiVec2s& nsteps);
 };
 
 EPI_NAMESPACE_END()

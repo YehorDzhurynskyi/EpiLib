@@ -30,6 +30,14 @@ protected:
     gfxCameraOrtho m_Camera;
 
 EPI_GENREGION_END(gfxContext)
+
+public:
+    gfxContext();
+    gfxContext(const gfxContext& rhs) = delete;
+    gfxContext& operator=(const gfxContext& rhs) = delete;
+    gfxContext(gfxContext&& rhs) = delete;
+    gfxContext& operator=(gfxContext&& rhs) = delete;
+    ~gfxContext() = default;
 };
 
 EPI_NAMESPACE_END()
