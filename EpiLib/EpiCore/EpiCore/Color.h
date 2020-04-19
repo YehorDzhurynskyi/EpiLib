@@ -67,10 +67,10 @@ protected:
 
 EPI_GENREGION_END(Color)
 public:
-    static const Color White;
-    static const Color Black;
-    static const Color DarkGray;
-    static const Color Magenta;
+    static const Color kWhite;
+    static const Color kBlack;
+    static const Color kDarkGray;
+    static const Color kMagenta;
 
 public:
     Color() = default;

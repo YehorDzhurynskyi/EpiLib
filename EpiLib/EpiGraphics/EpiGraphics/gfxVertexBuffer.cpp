@@ -45,6 +45,8 @@ void gfxVertexBuffer::Create(void* initData, epiSize_t capacity, gfxVertexBuffer
     case gfxVertexBufferUsage::StaticDraw: glUsage = GL_STATIC_DRAW; break;
     case gfxVertexBufferUsage::DynamicRead:  glUsage = GL_DYNAMIC_READ; break;
     case gfxVertexBufferUsage::DynamicDraw: glUsage = GL_DYNAMIC_DRAW; break;
+    case gfxVertexBufferUsage::StreamRead:  glUsage = GL_STREAM_READ; break;
+    case gfxVertexBufferUsage::StreamDraw: glUsage = GL_STREAM_DRAW; break;
     default: epiAssert(false, "Unhandled case"); return;
     }
 

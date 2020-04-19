@@ -4,6 +4,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/Plot/dvPlotBase.hxx"
 EPI_GENREGION_END(include)
 
+#include "EpiDataVisualization/Plot/Series/dvSeriesBase.h"
 #include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -18,8 +19,14 @@ public:
 
     enum dvPlotBase_PIDs
     {
-        PID_COUNT = 0
+        PID_ClipBox = 0xa7011dd3,
+        PID_Series = 0x3dbc041b,
+        PID_COUNT = 2
     };
+
+protected:
+    epiRect2f m_ClipBox;
+    epiArray<dvSeriesBase> m_Series;
 
 EPI_GENREGION_END(dvPlotBase)
 };

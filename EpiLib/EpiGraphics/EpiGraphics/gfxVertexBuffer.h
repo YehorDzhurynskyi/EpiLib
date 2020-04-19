@@ -15,6 +15,8 @@ enum class gfxVertexBufferUsage
     StaticDraw,
     DynamicRead,
     DynamicDraw,
+    StreamRead,
+    StreamDraw,
     COUNT
 };
 
@@ -72,6 +74,51 @@ public:
 
 private:
     epiBool m_IsMapped{false};
+};
+
+template<typename T>
+class gfxVertexBufferMapping final
+{
+public:
+    gfxVertexBufferMapping(gfxVertexBuffer& buffer)
+        : m_Buffer(buffer)
+    {}
+
+    ~gfxVertexBufferMapping()
+    {
+        UnMap();
+    }
+
+    void Map(gfxVertexBufferMapAccess access)
+    {
+        // TODO: make o
+        m_Mapped = static_cast<T*>(m_Buffer.Map(access));
+
+    }
+
+    epiSize_t UnMap()
+    {
+        const epiSize_t size = m_Size;
+
+        m_Buffer.UnMap();
+        m_Mapped = nullptr;
+        m_Size = 0;
+
+        return size;
+    }
+
+    T& Push(T&& t = T())
+    {
+        epiAssert(m_Mapped != nullptr, "should be mapped before pushing");
+
+        m_Mapped[m_Size] = std::forward<T&&>(t);
+        return m_Mapped[m_Size++];
+    }
+
+private:
+    gfxVertexBuffer& m_Buffer;
+    T* m_Mapped{nullptr};
+    epiSize_t m_Size{0};
 };
 
 EPI_NAMESPACE_END()
