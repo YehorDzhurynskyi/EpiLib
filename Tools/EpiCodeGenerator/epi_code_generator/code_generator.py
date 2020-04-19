@@ -1,5 +1,6 @@
 import os
 import zlib
+import pickle
 from enum import Enum, auto
 
 from .tokenizer import Token
@@ -46,30 +47,69 @@ class CodeGenerator:
 
         self.output_dir = output_dir
         self.output_dir_cxx_hxx = output_dir_cxx_hxx
-        self.filecache = {}
+        self.generated_files_cache = {}
+        self.files_outbuff_cache = {}
 
-    def flush(self):
+        if os.path.exists(f'{output_dir}/epigen_cache.bin'):
 
-        for path, content in self.filecache.items():
+            with open(f'{output_dir}/epigen_cache.bin', 'rb') as f:
+                self.generated_files_cache = pickle.load(f)
+
+    def dump(self):
+
+        import hashlib
+
+        for path, content in self.files_outbuff_cache.items():
 
             with open(path, 'w') as f:
                 f.write(content)
+
+            self.generated_files_cache[path] = hashlib.md5(content.encode()).hexdigest()
+
+        with open(f'{self.output_dir}/epigen_cache.bin', 'wb') as f:
+            pickle.dump(self.generated_files_cache, f)
 
     def _lookup(self, needle: str, basename: str, ext: str) -> int:
 
         assert ext == 'h' or ext == 'cpp'
 
         path = f'{os.path.join(self.output_dir, basename)}.{ext}'
-        if path not in self.filecache:
+        if path not in self.files_outbuff_cache:
 
             with open(path, 'r') as f:
 
                 content = f.read()
-                self.filecache[path] = content
+                self.files_outbuff_cache[path] = content
 
-        content = self.filecache[path]
+        content = self.files_outbuff_cache[path]
 
         return content.find(needle)
+
+
+    def _should_be_regenerated(self, filename: str):
+
+        if not os.path.exists(filename):
+            return True
+
+        if filename not in self.generated_files_cache:
+            return True
+
+        checksum = self.generated_files_cache[filename]
+        if self._calc_file_checksum(filename) == checksum:
+            return False
+
+        return True
+
+    def _calc_file_checksum(self, filename: str):
+
+        import hashlib
+
+        with open(filename, 'r') as f:
+
+            content = f.read()
+            digest = hashlib.md5(content.encode()).hexdigest()
+
+        return digest
 
     def _code_generate_inject(self,
                               inj: str,
@@ -81,13 +121,13 @@ class CodeGenerator:
         outdir = self.output_dir if ext == 'h' or ext == 'cpp' else self.output_dir_cxx_hxx
 
         path = f'{os.path.join(outdir, basename)}.{ext}'
-        if path not in self.filecache:
+        if path not in self.files_outbuff_cache:
 
             with open(path, 'r') as f:
                 content = f.read()
 
         else:
-            content = self.filecache[path]
+            content = self.files_outbuff_cache[path]
 
         if before is None and after is None:
             lbound = len(content)
@@ -108,7 +148,7 @@ class CodeGenerator:
             tip = f'Can\'t find `{before if before is not None else after}` anchor'
             raise CodeGenerationError(f'{basename}.{ext}', CodeGenerationErrorCode.CorruptedFile, tip)
 
-        self.filecache[path] = content[:lbound] + inj + content[rbound:]
+        self.files_outbuff_cache[path] = content[:lbound] + inj + content[rbound:]
 
     def code_generate(self, symbol: EpiSymbol, basename: str):
 
@@ -559,60 +599,73 @@ void Deserialization(const json_t& json) override;
         os.makedirs(os.path.dirname(os.path.join(self.output_dir_cxx_hxx, basename)), exist_ok=True)
         basename = os.path.splitext(basename)[0]
 
-        if not os.path.exists(f'{os.path.join(self.output_dir, basename)}.cpp'):
-
-            with open(f'{os.path.join(self.output_dir, basename)}.cpp', 'w') as f:
-                f.write(emit_sekeleton_file(basename, 'cpp'))
-
-        if not os.path.exists(f'{os.path.join(self.output_dir, basename)}.h'):
-
-            with open(f'{os.path.join(self.output_dir, basename)}.h', 'w') as f:
-                f.write(emit_sekeleton_file(basename, 'h'))
-
-        with open(f'{os.path.join(self.output_dir_cxx_hxx, basename)}.hxx', 'w') as f:
-            f.write(emit_sekeleton_file(basename, 'hxx'))
-
-        with open(f'{os.path.join(self.output_dir_cxx_hxx, basename)}.cxx', 'w') as f:
-            f.write(emit_sekeleton_file(basename, 'cxx'))
-
         assert isinstance(symbol, EpiClass)
 
-        injection = f'{emit_class_serialization(symbol).build()}\n'
-        self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
+        filename = f'{os.path.join(self.output_dir, basename)}.hxx'
+        if self._should_be_regenerated(filename):
 
-        injection = f'{emit_class_meta(symbol).build()}\n'
-        self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
+            with open(filename, 'w') as f:
+                f.write(emit_sekeleton_file(basename, 'hxx'))
 
-        injection = f'\n{emit_class_declaration_hidden(symbol).build()}'
-        self._code_generate_inject(injection, basename, 'hxx')
+            injection = f'\n{emit_class_declaration_hidden(symbol).build()}'
+            self._code_generate_inject(injection, basename, 'hxx')
 
-        if self._lookup(f'EPI_GENREGION_END({symbol.name})', basename, 'h') == -1:
+        filename = f'{os.path.join(self.output_dir, basename)}.cxx'
+        if self._should_be_regenerated(filename):
 
-            if self._lookup(f'EPI_GENREGION_BEGIN({symbol.name})', basename, 'h') != -1:
+            with open(filename, 'w') as f:
+                f.write(emit_sekeleton_file(basename, 'cxx'))
 
-                tip = f'`EPI_GENREGION_END({symbol.name})` is absent while corresponding anchor `EPI_GENREGION_BEGIN({symbol.name})` is present'
-                raise CodeGenerationError(f'{basename}.h', CodeGenerationErrorCode.CorruptedAnchor, tip)
+            injection = f'{emit_class_serialization(symbol).build()}\n'
+            self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
 
-            injection = f'{emit_skeleton_class(symbol).build()}\n'
-            self._code_generate_inject(
-                injection,
-                basename,
-                'h',
-                before='EPI_NAMESPACE_END()'
-            )
+            injection = f'{emit_class_meta(symbol).build()}\n'
+            self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
 
-        else:
+        filename = f'{os.path.join(self.output_dir, basename)}.cpp'
+        if self._should_be_regenerated(filename):
 
-            if self._lookup(f'EPI_GENREGION_BEGIN({symbol.name})', basename, 'h') == -1:
+            if not os.path.exists(filename):
+                with open(filename, 'w') as f:
+                    f.write(emit_sekeleton_file(basename, 'cpp'))
 
-                tip = f'`EPI_GENREGION_BEGIN({symbol.name})` is absent while corresponding anchor `EPI_GENREGION_END({symbol.name})` is present'
-                raise CodeGenerationError(f'{basename}.h', CodeGenerationErrorCode.CorruptedAnchor, tip)
+            # NOTE: fake injection to force cache its content
+            self._code_generate_inject('', basename, 'cpp', before='EPI_NAMESPACE_END()')
 
-            injection = f'\n{emit_class_declaration(symbol).build()}\n'
-            self._code_generate_inject(
-                injection,
-                basename,
-                'h',
-                before=f'EPI_GENREGION_END({symbol.name})',
-                after=f'EPI_GENREGION_BEGIN({symbol.name})'
-            )
+        filename = f'{os.path.join(self.output_dir, basename)}.h'
+        if self._should_be_regenerated(filename):
+
+            if not os.path.exists(filename):
+                with open(filename, 'w') as f:
+                    f.write(emit_sekeleton_file(basename, 'h'))
+
+            if self._lookup(f'EPI_GENREGION_END({symbol.name})', basename, 'h') == -1:
+
+                if self._lookup(f'EPI_GENREGION_BEGIN({symbol.name})', basename, 'h') != -1:
+
+                    tip = f'`EPI_GENREGION_END({symbol.name})` is absent while corresponding anchor `EPI_GENREGION_BEGIN({symbol.name})` is present'
+                    raise CodeGenerationError(f'{basename}.h', CodeGenerationErrorCode.CorruptedAnchor, tip)
+
+                injection = f'{emit_skeleton_class(symbol).build()}\n'
+                self._code_generate_inject(
+                    injection,
+                    basename,
+                    'h',
+                    before='EPI_NAMESPACE_END()'
+                )
+
+            else:
+
+                if self._lookup(f'EPI_GENREGION_BEGIN({symbol.name})', basename, 'h') == -1:
+
+                    tip = f'`EPI_GENREGION_BEGIN({symbol.name})` is absent while corresponding anchor `EPI_GENREGION_END({symbol.name})` is present'
+                    raise CodeGenerationError(f'{basename}.h', CodeGenerationErrorCode.CorruptedAnchor, tip)
+
+                injection = f'\n{emit_class_declaration(symbol).build()}\n'
+                self._code_generate_inject(
+                    injection,
+                    basename,
+                    'h',
+                    before=f'EPI_GENREGION_END({symbol.name})',
+                    after=f'EPI_GENREGION_BEGIN({symbol.name})'
+                )
