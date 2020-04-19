@@ -1,4 +1,0 @@
-class DataCollection
-{
-    epiArray<epiFloat> Data;
-};

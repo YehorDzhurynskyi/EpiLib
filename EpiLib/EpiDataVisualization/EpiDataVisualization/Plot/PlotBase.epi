@@ -1,5 +1,0 @@
-class PlotBase
-{
-    epiVec2f Size;
-    Color BGColor;
-};
