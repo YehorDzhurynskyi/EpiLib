@@ -66,6 +66,11 @@ protected:
     epiVec4f m_Color;
 
 EPI_GENREGION_END(Color)
+public:
+    static const Color White;
+    static const Color Black;
+    static const Color DarkGray;
+    static const Color Magenta;
 
 public:
     Color() = default;

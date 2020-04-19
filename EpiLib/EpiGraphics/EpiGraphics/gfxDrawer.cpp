@@ -251,10 +251,11 @@ in vec2 uv;
 out vec4 fragcolor;
 
 uniform sampler2D u_texture;
+uniform vec4 u_color;
 
 void main(void)
 {
-    fragcolor = vec4(1.0, 0.0, 1.0, texture(u_texture, uv).r);
+    fragcolor = u_color * vec4(1.0, 1.0, 1.0, texture(u_texture, uv).r);
 }
 )";
 
@@ -278,7 +279,7 @@ gfxShaderProgram CreateTextProgram()
 
 }
 
-void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& position, gfxTextRenderedAtlas& atlas)
+void gfxDrawer::DrawText(gfxContext& ctx, gfxTextRenderedAtlas& atlas, const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color)
 {
     static gfxShaderProgram program = CreateTextProgram();
 
@@ -299,8 +300,6 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), (void*)sizeof(epiVec2f));
 
         epiVec2f* mapped = reinterpret_cast<epiVec2f*>(vbo.Map(gfxVertexBufferMapAccess::WriteOnly));
-
-        const epiFloat textHeight = 0.05f;
 
         epiVec2f pos{};
         const epiSize_t textlen = wcslen(text);
@@ -344,6 +343,11 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
     glActiveTexture(GL_TEXTURE0);
     glUniform1i(sampler, 0);
 
+    const epiS32 locationColor = glGetUniformLocation(program.GetProgramID(), "u_color");
+
+    const epiVec4f& col = color.GetColor();
+    glUniform4fv(locationColor, 1, &col[0]);
+
     const epiS32 locationMVP = glGetUniformLocation(program.GetProgramID(), "u_mvp");
     const gfxCamera& camera = ctx.GetCamera();
     const epiMat4x4f& projMat = camera.GetProjectionMatrix();
@@ -355,29 +359,16 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
     glDrawArrays(GL_TRIANGLES, 0, 6 * actualTextlen);
 }
 
-void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& position, gfxTextRenderedABC& abc)
+void gfxDrawer::DrawText(gfxContext& ctx, gfxTextRenderedABC& abc, const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color)
 {
+    // NOTE: this method is worse than Atlas
+    epiAssert(false, "Use Atlas method instead");
+    return;
+
     static gfxShaderProgram program = CreateTextProgram();
-    gfxVertexArray vao;
-    gfxVertexBuffer vbo;
-
-    const gfxBindableScoped scope(program, vao);
-
-    const epiS32 sampler = glGetUniformLocation(program.GetProgramID(), "u_texture");
-    glActiveTexture(GL_TEXTURE0);
-    glUniform1i(sampler, 0);
-
-    vbo.Create(nullptr, 1024, gfxVertexBufferUsage::DynamicDraw);
-    vbo.Bind();
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), nullptr);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), (void*)sizeof(epiVec2f));
-
-    const epiFloat textHeight = 0.05f;
 
     epiVec2f pos{};
+    pos.x = -0.5f;
     const epiSize_t textlen = wcslen(text);
     for (epiS32 i = 0; i < textlen; ++i)
     {
@@ -390,34 +381,58 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
         const epiVec2u& bearing = glyph->GetBearing();
         const epiVec2u& size = glyph->GetSize();
 
-        const epiFloat x = pos.x + bearing.x * textHeight;
-        const epiFloat y = pos.y - (size.y - bearing.y) * textHeight;
+        const epiFloat x = pos.x;
+        const epiFloat y = pos.y;
 
-        const epiFloat w = size.x * textHeight;
-        const epiFloat h = size.y * textHeight;
+        const epiFloat w = (size.x / static_cast<epiFloat>(size.y)) * textHeight;
+        const epiFloat h = textHeight;
+
+        gfxVertexArray vao;
+        gfxVertexBuffer vbo;
+
+        const gfxBindableScoped scope(program, vao);
+
+        const epiS32 sampler = glGetUniformLocation(program.GetProgramID(), "u_texture");
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(sampler, 0);
+
+        const epiS32 locationMVP = glGetUniformLocation(program.GetProgramID(), "u_mvp");
+        const gfxCamera& camera = ctx.GetCamera();
+        const epiMat4x4f& projMat = camera.GetProjectionMatrix();
+        const epiMat4x4f& viewMat = camera.GetViewMatrix();
+        const epiMat4x4f& MVP = projMat * viewMat;
+        glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &MVP[0][0]);
+
+        vbo.Create(nullptr, 1024, gfxVertexBufferUsage::DynamicDraw);
+        vbo.Bind();
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), nullptr);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), (void*)sizeof(epiVec2f));
 
         epiVec2f* mapped = reinterpret_cast<epiVec2f*>(vbo.Map(gfxVertexBufferMapAccess::WriteOnly));
 
-        mapped[i * 12 + 0] = epiVec2f(x, y + h);
-        mapped[i * 12 + 1] = epiVec2f(0.0f, 0.0f);
-        mapped[i * 12 + 2] = epiVec2f(x, y);
-        mapped[i * 12 + 3] = epiVec2f(0.0f, 1.0f);
-        mapped[i * 12 + 4] = epiVec2f(x + w, y);
-        mapped[i * 12 + 5] = epiVec2f(1.0f, 1.0f);
+        mapped[0] = epiVec2f(x, y + h);
+        mapped[1] = epiVec2f(0.0f, 0.0f);
+        mapped[2] = epiVec2f(x, y);
+        mapped[3] = epiVec2f(0.0f, 1.0f);
+        mapped[4] = epiVec2f(x + w, y);
+        mapped[5] = epiVec2f(1.0f, 1.0f);
 
-        mapped[i * 12 + 6] = epiVec2f(x, y + h);
-        mapped[i * 12 + 7] = epiVec2f(0.0f, 0.0f);
-        mapped[i * 12 + 8] = epiVec2f(x + w, y);
-        mapped[i * 12 + 9] = epiVec2f(1.0f, 1.0f);
-        mapped[i * 12 + 10] = epiVec2f(x + w, y + h);
-        mapped[i * 12 + 11] = epiVec2f(1.0f, 0.0f);
+        mapped[6] = epiVec2f(x, y + h);
+        mapped[7] = epiVec2f(0.0f, 0.0f);
+        mapped[8] = epiVec2f(x + w, y);
+        mapped[9] = epiVec2f(1.0f, 1.0f);
+        mapped[10] = epiVec2f(x + w, y + h);
+        mapped[11] = epiVec2f(1.0f, 0.0f);
 
         vbo.UnMap();
 
         gfxBindableScoped scoped(glyph->GetTexture());
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        pos.x += glyph->GetAdvance() * textHeight;
+        pos.x += w;
     }
 }
 

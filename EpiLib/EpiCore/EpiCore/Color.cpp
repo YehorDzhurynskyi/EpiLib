@@ -7,6 +7,11 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+const Color Color::White = Color(0xff, 0xff, 0xff, 0xff);
+const Color Color::Black = Color(0x0, 0x0, 0x0, 0xff);
+const Color Color::DarkGray = Color(0x33, 0x33, 0x33, 0xff);
+const Color Color::Magenta = Color(0xff, 0x0, 0xff, 0xff);
+
 Color::Color(epiFloat r, epiFloat g, epiFloat b, epiFloat a)
 {
     SetRf(r);
