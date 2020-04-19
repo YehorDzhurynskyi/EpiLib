@@ -274,7 +274,6 @@ gfxShaderProgram CreateTextProgram()
     program.Build();
 
     return program;
-
 }
 
 }
@@ -301,21 +300,23 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
 
         epiVec2f* mapped = reinterpret_cast<epiVec2f*>(vbo.Map(gfxVertexBufferMapAccess::WriteOnly));
 
-        const epiFloat textHeight = 0.5f;
+        const epiFloat textHeight = 0.05f;
 
         epiVec2f pos{};
         const epiSize_t textlen = wcslen(text);
         for (epiS32 i = 0; i < textlen; ++i)
         {
-            epiRect2f uv;
-            if (!atlas.UVBoxOf(uv, text[i]))
+            const gfxTextRenderedAtlasGlyph* glyph = atlas.GlyphOf(text[i]);
+            if (glyph == nullptr)
             {
                 continue;
             }
+
             ++actualTextlen;
 
-            const epiFloat w = ((uv.GetWidth() * 10) / uv.GetHeight()) * textHeight;
-            const epiFloat h = uv.GetHeight() * textHeight;
+            const epiRect2f& uv = glyph->GetUV();
+            const epiFloat w = glyph->GetAspectRatio() * textHeight;
+            const epiFloat h = textHeight;
 
             mapped[i * 12 + 0] = epiVec2f(pos.x, pos.y);
             mapped[i * 12 + 1] = epiVec2f(uv.Left, uv.Bottom);
@@ -344,7 +345,11 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
     glUniform1i(sampler, 0);
 
     const epiS32 locationMVP = glGetUniformLocation(program.GetProgramID(), "u_mvp");
-    const epiMat4x4f MVP = glm::identity<epiMat4x4f>();// ctx.GetCamera().GetProjectionMatrix();
+    const gfxCamera& camera = ctx.GetCamera();
+    const epiMat4x4f& projMat = camera.GetProjectionMatrix();
+    const epiMat4x4f& viewMat = camera.GetViewMatrix();
+
+    const epiMat4x4f& MVP = projMat * viewMat;
     glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &MVP[0][0]);
 
     glDrawArrays(GL_TRIANGLES, 0, 6 * actualTextlen);

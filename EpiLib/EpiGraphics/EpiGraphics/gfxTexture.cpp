@@ -43,6 +43,9 @@ void gfxTexture::Create2D(void* initData,
     switch (format)
     {
     case gfxTextureFormat::R: glFormat = GL_RED; break;
+    case gfxTextureFormat::G: glFormat = GL_GREEN; break;
+    case gfxTextureFormat::B: glFormat = GL_BLUE; break;
+    case gfxTextureFormat::A: glFormat = GL_ALPHA; break;
     case gfxTextureFormat::RG: glFormat = GL_RG; break;
     case gfxTextureFormat::RGB:  glFormat = GL_RGB; break;
     case gfxTextureFormat::BGR:  glFormat = GL_BGR; break;
@@ -71,11 +74,12 @@ void gfxTexture::Create2D(void* initData,
     m_Type = gfxTextureType::Texture2D;
 
     Bind();
-    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, glPixelType, initData);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, glPixelType, initData);
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void gfxTexture::Destroy()

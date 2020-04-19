@@ -192,8 +192,8 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
                                          Color color) const
 {
     // TODO: determine dpi from platform call
-    const FT_UInt dpiX = 96;
-    const FT_UInt dpiY = 96;
+    const FT_UInt dpiX = 282;
+    const FT_UInt dpiY = 282;
 
     if (FT_Set_Char_Size(m_Face, 0, fontSize * 64, dpiX, dpiY))
     {
@@ -285,13 +285,18 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
             }
         }
 
+        gfxTextRenderedAtlasGlyph atlasGlyph;
+
         epiRect2f uv;
         uv.Left = (pen + slot->bitmap_left) / static_cast<epiFloat>(texWidth);
-        uv.Top = (slot->bitmap_top - (metricsSize.descender >> 6)) / static_cast<epiFloat>(texHeight);
-        uv.Right = (pen + bitmap.width) / static_cast<epiFloat>(texWidth);
-        uv.Bottom = (-(metricsSize.descender >> 6) + 1) / static_cast<epiFloat>(texHeight);
+        uv.Top = (slot->bitmap_top + 1 - (metricsSize.descender >> 6)) / static_cast<epiFloat>(texHeight);
+        uv.Right = (pen + slot->bitmap_left + bitmap.width) / static_cast<epiFloat>(texWidth);
+        uv.Bottom = (1 - (metricsSize.descender >> 6)) / static_cast<epiFloat>(texHeight);
 
-        target.m_CharMap.try_emplace(ch, uv);
+        atlasGlyph.SetUV(uv);
+        atlasGlyph.SetAspectRatio(bitmap.width / static_cast<epiFloat>(bitmap.rows));
+
+        target.m_CharMap.try_emplace(ch, atlasGlyph);
 
         pen += slot->advance.x >> 6;
     }

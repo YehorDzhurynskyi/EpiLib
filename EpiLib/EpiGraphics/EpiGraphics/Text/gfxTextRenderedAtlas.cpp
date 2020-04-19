@@ -7,17 +7,16 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-epiBool gfxTextRenderedAtlas::UVBoxOf(epiRect2f& uv, epiWChar ch) const
+const gfxTextRenderedAtlasGlyph* gfxTextRenderedAtlas::GlyphOf(epiWChar ch) const
 {
     auto it = m_CharMap.find(ch);
     if (it == m_CharMap.end())
     {
         // TODO: log
         epiAssert(false, "Failed to get uv coords of ch!");
-        return false;
+        return nullptr;
     }
-    uv = it->second;
-    return true;
+    return &it->second;
 }
 
 EPI_NAMESPACE_END()

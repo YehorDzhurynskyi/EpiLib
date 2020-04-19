@@ -1,3 +1,9 @@
+class gfxTextRenderedAtlasGlyph
+{
+    epiRect2f UV;
+    epiFloat AspectRatio;
+};
+
 class gfxTextRenderedAtlas : gfxTextRendered
 {
 };
