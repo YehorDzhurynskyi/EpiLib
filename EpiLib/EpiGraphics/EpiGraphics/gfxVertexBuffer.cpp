@@ -19,20 +19,16 @@ gfxVertexBuffer::gfxVertexBuffer(gfxVertexBuffer&& rhs)
 {
     m_ID = rhs.m_ID;
     m_Capacity = rhs.m_Capacity;
-    m_Size = rhs.m_Size;
     rhs.m_ID = 0;
     rhs.m_Capacity = 0;
-    rhs.m_Size = 0;
 }
 
 gfxVertexBuffer& gfxVertexBuffer::operator=(gfxVertexBuffer&& rhs)
 {
     m_ID = rhs.m_ID;
     m_Capacity = rhs.m_Capacity;
-    m_Size = rhs.m_Size;
     rhs.m_ID = 0;
     rhs.m_Capacity = 0;
-    rhs.m_Size = 0;
 
     return *this;
 }
@@ -69,7 +65,6 @@ void gfxVertexBuffer::Destroy()
     glDeleteBuffers(1, &m_ID);
     m_ID = 0;
     m_Capacity = 0;
-    m_Size = 0;
 }
 
 epiBool gfxVertexBuffer::GetIsCreated_Callback() const

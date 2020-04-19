@@ -224,9 +224,130 @@ void gfxDrawer::DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec
     glDrawArrays(GL_POINTS, 0, 1);
 }
 
-void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& position, const gfxTextRenderedAtlas& atlas)
+namespace
 {
-    
+
+const epiChar ShaderSourceTextVertex[] = R"(
+#version 400 core
+
+layout(location = 0) in vec2 a_position;
+layout(location = 1) in vec2 a_uv;
+
+uniform mat4 u_mvp;
+
+out vec2 uv;
+
+void main(void)
+{
+    gl_Position = u_mvp * vec4(a_position, 0.0, 1.0);
+    uv = a_uv;
+}
+)";
+
+const epiChar ShaderSourceTextPixel[] = R"(
+#version 400 core
+
+in vec2 uv;
+out vec4 fragcolor;
+
+uniform sampler2D u_atlas;
+
+void main(void)
+{
+    fragcolor = texture(u_atlas, uv);
+}
+)";
+
+gfxShaderProgram CreateTextProgram()
+{
+    gfxShader vertex;
+    gfxShader pixel;
+
+    vertex.CreateFromSource(ShaderSourceTextVertex, gfxShaderType::Vertex);
+    pixel.CreateFromSource(ShaderSourceTextPixel, gfxShaderType::Pixel);
+
+    gfxShaderProgram program;
+
+    program.ShaderAttach(vertex);
+    program.ShaderAttach(pixel);
+
+    program.Build();
+
+    return program;
+
+}
+
+}
+
+void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& position, gfxTextRenderedAtlas& atlas)
+{
+    static gfxShaderProgram program = CreateTextProgram();
+
+    epiSize_t actualTextlen = 0;
+
+    gfxVertexArray vao;
+    gfxVertexBuffer vbo;
+
+    {
+        const gfxBindableScoped scope(vao);
+
+        vbo.Create(nullptr, 1024, gfxVertexBufferUsage::DynamicDraw);
+        vbo.Bind();
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), nullptr);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), (void*)sizeof(epiVec2f));
+
+        epiVec2f* mapped = reinterpret_cast<epiVec2f*>(vbo.Map(gfxVertexBufferMapAccess::WriteOnly));
+
+        const epiFloat textHeight = 0.5f;
+
+        epiVec2f pos{};
+        const epiSize_t textlen = wcslen(text);
+        for (epiS32 i = 0; i < textlen; ++i)
+        {
+            epiRect2f uv;
+            if (!atlas.UVBoxOf(uv, text[i]))
+            {
+                continue;
+            }
+            ++actualTextlen;
+
+            const epiFloat w = ((uv.GetWidth() * 10) / uv.GetHeight()) * textHeight;
+            const epiFloat h = uv.GetHeight() * textHeight;
+
+            mapped[i * 12 + 0] = epiVec2f(pos.x, pos.y);
+            mapped[i * 12 + 1] = epiVec2f(uv.Left, uv.Bottom);
+            mapped[i * 12 + 2] = epiVec2f(pos.x + w, pos.y);
+            mapped[i * 12 + 3] = epiVec2f(uv.Right, uv.Bottom);
+            mapped[i * 12 + 4] = epiVec2f(pos.x + w, pos.y + h);
+            mapped[i * 12 + 5] = epiVec2f(uv.Right, uv.Top);
+
+            mapped[i * 12 + 6] = epiVec2f(pos.x + w, pos.y + h);
+            mapped[i * 12 + 7] = epiVec2f(uv.Right, uv.Top);
+            mapped[i * 12 + 8] = epiVec2f(pos.x, pos.y + h);
+            mapped[i * 12 + 9] = epiVec2f(uv.Left, uv.Top);
+            mapped[i * 12 + 10] = epiVec2f(pos.x, pos.y);
+            mapped[i * 12 + 11] = epiVec2f(uv.Left, uv.Bottom);
+
+            pos.x += w;
+        }
+
+        vbo.UnMap();
+    }
+
+    gfxBindableScoped scope(program, vao, atlas);
+
+    const epiS32 sampler = glGetUniformLocation(program.GetProgramID(), "u_atlas");
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(sampler, 0);
+
+    const epiS32 locationMVP = glGetUniformLocation(program.GetProgramID(), "u_mvp");
+    const epiMat4x4f MVP = glm::identity<epiMat4x4f>();// ctx.GetCamera().GetProjectionMatrix();
+    glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &MVP[0][0]);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * actualTextlen);
 }
 
 EPI_NAMESPACE_END()

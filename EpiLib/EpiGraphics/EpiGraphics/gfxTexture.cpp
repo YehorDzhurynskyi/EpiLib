@@ -104,7 +104,7 @@ void gfxTexture::UnBind()
     epiExpect(GetIsCreated(), "A texture expected to be created");
 
     super::UnBind();
-    glBindBuffer(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 

@@ -40,8 +40,7 @@ public:
         PID_IsCreated = 0x560b66db,
         PID_ID = 0x11d3633a,
         PID_Capacity = 0x4c9ed322,
-        PID_Size = 0x57f28b54,
-        PID_COUNT = 4
+        PID_COUNT = 3
     };
 
 protected:
@@ -50,7 +49,6 @@ protected:
 protected:
     epiU32 m_ID{0};
     epiSize_t m_Capacity{0};
-    epiSize_t m_Size{0};
 
 EPI_GENREGION_END(gfxVertexBuffer)
 

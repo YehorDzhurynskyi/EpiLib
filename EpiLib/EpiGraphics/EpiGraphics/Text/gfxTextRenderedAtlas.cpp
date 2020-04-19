@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-epiBool gfxTextRenderedAtlas::UVBoxOf(epiRect2f& uv, epiWChar ch)
+epiBool gfxTextRenderedAtlas::UVBoxOf(epiRect2f& uv, epiWChar ch) const
 {
     auto it = m_CharMap.find(ch);
     if (it == m_CharMap.end())

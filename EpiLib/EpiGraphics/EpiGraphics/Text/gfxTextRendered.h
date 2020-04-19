@@ -4,12 +4,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/Text/gfxTextRendered.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiCore/ObjectModel/Object.h"
 #include "EpiGraphics/gfxTexture.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxTextRendered : public Object
+class gfxTextRendered : public gfxBindable
 {
     friend class gfxTextFace;
 EPI_GENREGION_BEGIN(gfxTextRendered)
@@ -28,6 +27,10 @@ protected:
     gfxTexture m_Texture;
 
 EPI_GENREGION_END(gfxTextRendered)
+
+public:
+    virtual void Bind();
+    virtual void UnBind();
 };
 
 EPI_NAMESPACE_END()

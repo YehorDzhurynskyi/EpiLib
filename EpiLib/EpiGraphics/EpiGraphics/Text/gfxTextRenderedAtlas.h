@@ -25,7 +25,7 @@ public:
 EPI_GENREGION_END(gfxTextRenderedAtlas)
 
 public:
-    epiBool UVBoxOf(epiRect2f& uv, epiWChar ch);
+    epiBool UVBoxOf(epiRect2f& uv, epiWChar ch) const;
 
 private:
     std::map<epiWChar, epiRect2f> m_CharMap;

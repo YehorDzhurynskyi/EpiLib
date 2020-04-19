@@ -275,7 +275,7 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
 
             for (epiU32 x = 0; x < bitmap.width; ++x, ++i)
             {
-                const epiU32 coordX = slot->bitmap_left + pen + x;
+                const epiU32 coordX = pen + slot->bitmap_left + x;
                 const epiU32 coord = 4 * (coordY * texWidth + coordX);
 
                 data[coord + 0] = color.GetRu();
@@ -284,11 +284,12 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
                 data[coord + 3] = bitmap.buffer[i];
             }
         }
+
         epiRect2f uv;
-        uv.Left = pen / static_cast<epiFloat>(texWidth);
-        uv.Top = bitmap.rows / static_cast<epiFloat>(texHeight);
-        uv.Bottom = 0.0f;
-        uv.Right = (pen + slot->advance.x >> 6) / static_cast<epiFloat>(texWidth);
+        uv.Left = (pen + slot->bitmap_left) / static_cast<epiFloat>(texWidth);
+        uv.Top = (slot->bitmap_top - (metricsSize.descender >> 6)) / static_cast<epiFloat>(texHeight);
+        uv.Right = (pen + bitmap.width) / static_cast<epiFloat>(texWidth);
+        uv.Bottom = (-(metricsSize.descender >> 6) + 1) / static_cast<epiFloat>(texHeight);
 
         target.m_CharMap.try_emplace(ch, uv);
 
