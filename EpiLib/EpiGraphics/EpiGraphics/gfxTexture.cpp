@@ -43,9 +43,6 @@ void gfxTexture::Create2D(void* initData,
     switch (format)
     {
     case gfxTextureFormat::R: glFormat = GL_RED; break;
-    case gfxTextureFormat::G: glFormat = GL_GREEN; break;
-    case gfxTextureFormat::B: glFormat = GL_BLUE; break;
-    case gfxTextureFormat::A: glFormat = GL_ALPHA; break;
     case gfxTextureFormat::RG: glFormat = GL_RG; break;
     case gfxTextureFormat::RGB:  glFormat = GL_RGB; break;
     case gfxTextureFormat::BGR:  glFormat = GL_BGR; break;

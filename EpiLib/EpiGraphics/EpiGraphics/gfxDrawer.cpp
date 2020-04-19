@@ -254,7 +254,7 @@ uniform sampler2D u_texture;
 
 void main(void)
 {
-    fragcolor = vec4(1.0, 0.0, 1.0, texture(u_texture, uv).a);
+    fragcolor = vec4(1.0, 0.0, 1.0, texture(u_texture, uv).r);
 }
 )";
 
@@ -378,8 +378,6 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
     const epiFloat textHeight = 0.05f;
 
     epiVec2f pos{};
-    pos.x = -0.5f;
-
     const epiSize_t textlen = wcslen(text);
     for (epiS32 i = 0; i < textlen; ++i)
     {

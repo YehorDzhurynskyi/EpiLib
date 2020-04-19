@@ -50,9 +50,9 @@ class CodeGenerator:
         self.generated_files_cache = {}
         self.files_outbuff_cache = {}
 
-        if os.path.exists(f'{output_dir}/epigen_cache.bin'):
+        if os.path.exists(f'{output_dir_cxx_hxx}/epigen_cache.bin'):
 
-            with open(f'{output_dir}/epigen_cache.bin', 'rb') as f:
+            with open(f'{output_dir_cxx_hxx}/epigen_cache.bin', 'rb') as f:
                 self.generated_files_cache = pickle.load(f)
 
     def dump(self):
@@ -66,7 +66,7 @@ class CodeGenerator:
 
             self.generated_files_cache[path] = hashlib.md5(content.encode()).hexdigest()
 
-        with open(f'{self.output_dir}/epigen_cache.bin', 'wb') as f:
+        with open(f'{self.output_dir_cxx_hxx}/epigen_cache.bin', 'wb') as f:
             pickle.dump(self.generated_files_cache, f)
 
     def _lookup(self, needle: str, basename: str, ext: str) -> int:
@@ -601,7 +601,7 @@ void Deserialization(const json_t& json) override;
 
         assert isinstance(symbol, EpiClass)
 
-        filename = f'{os.path.join(self.output_dir, basename)}.hxx'
+        filename = f'{os.path.join(self.output_dir_cxx_hxx, basename)}.hxx'
         if self._should_be_regenerated(filename):
 
             with open(filename, 'w') as f:
@@ -610,7 +610,7 @@ void Deserialization(const json_t& json) override;
             injection = f'\n{emit_class_declaration_hidden(symbol).build()}'
             self._code_generate_inject(injection, basename, 'hxx')
 
-        filename = f'{os.path.join(self.output_dir, basename)}.cxx'
+        filename = f'{os.path.join(self.output_dir_cxx_hxx, basename)}.cxx'
         if self._should_be_regenerated(filename):
 
             with open(filename, 'w') as f:

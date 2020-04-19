@@ -20,9 +20,6 @@ enum class gfxTextureType
 enum class gfxTextureFormat
 {
     R,
-    G,
-    B,
-    A,
     RG,
     RGB,
     BGR,

@@ -55,7 +55,7 @@ void gfxTextFace::CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWCh
     }
 
     gfxTexture& texture = target.GetTexture();
-    texture.Create2D(slot->bitmap.buffer, slot->bitmap.width, slot->bitmap.rows, gfxTextureFormat::A, gfxTexturePixelType::UBYTE);
+    texture.Create2D(slot->bitmap.buffer, slot->bitmap.width, slot->bitmap.rows, gfxTextureFormat::R, gfxTexturePixelType::UBYTE);
 
     epiVec2u bearing(slot->bitmap_left, slot->bitmap_top);
     target.SetBearing(bearing);
@@ -68,19 +68,25 @@ void gfxTextFace::CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWCh
 
 void gfxTextFace::CreateRenderedABC(gfxTextRenderedABC& target, const epiWChar* abc, epiS32 fontSize) const
 {
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // TODO: move to proper place
     const epiSize_t abclen = wcslen(abc); // TODO: replace all wcslen with safe version
     for (epiU32 i = 0; i < abclen; ++i)
     {
-        auto& [it, exists] = target.m_ABC.emplace(abc[i]);
-        epiAssert(!exists, "abc should have unique characters");
+        auto& [it, inserted] = target.m_ABC.try_emplace(abc[i]);
+        if (!inserted)
+        {
+            epiAssert(inserted, "abc items should be unique");
+            continue;
+        }
 
-        CreateRenderedGlyph(it->second, abc[i], fontSize);
+        gfxTextRenderedGlyph& glyph = it->second;
+        CreateRenderedGlyph(glyph, abc[i], fontSize);
     }
 }
 
 void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWChar* atlasText, epiS32 fontSize) const
 {
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // TODO: move to proper place
     // TODO: determine dpi from platform call
     const FT_UInt dpiX = 282;
     const FT_UInt dpiY = 282;
@@ -189,7 +195,7 @@ void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWCh
     }
 
     gfxTexture& texture = target.GetTexture();
-    texture.Create2D(data.get(), texWidth, texHeight, gfxTextureFormat::A, gfxTexturePixelType::UBYTE);
+    texture.Create2D(data.get(), texWidth, texHeight, gfxTextureFormat::R, gfxTexturePixelType::UBYTE);
 }
 
 
