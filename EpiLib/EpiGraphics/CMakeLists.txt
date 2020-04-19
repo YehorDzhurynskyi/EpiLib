@@ -53,6 +53,9 @@ add_library(EpiGraphics
     EpiGraphics/Text/gfxTextRenderedAtlas.epi
     EpiGraphics/Text/gfxTextRenderedAtlas.h
     EpiGraphics/Text/gfxTextRenderedAtlas.cpp
+    EpiGraphics/Text/gfxTextRenderedGlyph.epi
+    EpiGraphics/Text/gfxTextRenderedGlyph.h
+    EpiGraphics/Text/gfxTextRenderedGlyph.cpp
 )
 get_target_property(EpiGraphics_SRCs EpiGraphics SOURCES) 
 epi_add_precompiled_header(EpiGraphics EpiGraphics/pch.h SOURCE_CXX EpiGraphics/pch.cpp)

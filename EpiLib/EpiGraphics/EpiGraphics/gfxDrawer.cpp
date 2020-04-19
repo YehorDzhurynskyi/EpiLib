@@ -250,11 +250,11 @@ const epiChar ShaderSourceTextPixel[] = R"(
 in vec2 uv;
 out vec4 fragcolor;
 
-uniform sampler2D u_atlas;
+uniform sampler2D u_texture;
 
 void main(void)
 {
-    fragcolor = texture(u_atlas, uv);
+    fragcolor = vec4(1.0, 0.0, 1.0, texture(u_texture, uv).a);
 }
 )";
 
@@ -340,7 +340,7 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
 
     gfxBindableScoped scope(program, vao, atlas);
 
-    const epiS32 sampler = glGetUniformLocation(program.GetProgramID(), "u_atlas");
+    const epiS32 sampler = glGetUniformLocation(program.GetProgramID(), "u_texture");
     glActiveTexture(GL_TEXTURE0);
     glUniform1i(sampler, 0);
 
@@ -354,5 +354,74 @@ void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& 
 
     glDrawArrays(GL_TRIANGLES, 0, 6 * actualTextlen);
 }
+
+void gfxDrawer::DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& position, gfxTextRenderedABC& abc)
+{
+    static gfxShaderProgram program = CreateTextProgram();
+    gfxVertexArray vao;
+    gfxVertexBuffer vbo;
+
+    const gfxBindableScoped scope(program, vao);
+
+    const epiS32 sampler = glGetUniformLocation(program.GetProgramID(), "u_texture");
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(sampler, 0);
+
+    vbo.Create(nullptr, 1024, gfxVertexBufferUsage::DynamicDraw);
+    vbo.Bind();
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), nullptr);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, false, 2 * sizeof(epiVec2f), (void*)sizeof(epiVec2f));
+
+    const epiFloat textHeight = 0.05f;
+
+    epiVec2f pos{};
+    pos.x = -0.5f;
+
+    const epiSize_t textlen = wcslen(text);
+    for (epiS32 i = 0; i < textlen; ++i)
+    {
+        gfxTextRenderedGlyph* glyph = abc.GlyphOf(text[i]);
+        if (glyph == nullptr)
+        {
+            continue;
+        }
+
+        const epiVec2u& bearing = glyph->GetBearing();
+        const epiVec2u& size = glyph->GetSize();
+
+        const epiFloat x = pos.x + bearing.x * textHeight;
+        const epiFloat y = pos.y - (size.y - bearing.y) * textHeight;
+
+        const epiFloat w = size.x * textHeight;
+        const epiFloat h = size.y * textHeight;
+
+        epiVec2f* mapped = reinterpret_cast<epiVec2f*>(vbo.Map(gfxVertexBufferMapAccess::WriteOnly));
+
+        mapped[i * 12 + 0] = epiVec2f(x, y + h);
+        mapped[i * 12 + 1] = epiVec2f(0.0f, 0.0f);
+        mapped[i * 12 + 2] = epiVec2f(x, y);
+        mapped[i * 12 + 3] = epiVec2f(0.0f, 1.0f);
+        mapped[i * 12 + 4] = epiVec2f(x + w, y);
+        mapped[i * 12 + 5] = epiVec2f(1.0f, 1.0f);
+
+        mapped[i * 12 + 6] = epiVec2f(x, y + h);
+        mapped[i * 12 + 7] = epiVec2f(0.0f, 0.0f);
+        mapped[i * 12 + 8] = epiVec2f(x + w, y);
+        mapped[i * 12 + 9] = epiVec2f(1.0f, 1.0f);
+        mapped[i * 12 + 10] = epiVec2f(x + w, y + h);
+        mapped[i * 12 + 11] = epiVec2f(1.0f, 0.0f);
+
+        vbo.UnMap();
+
+        gfxBindableScoped scoped(glyph->GetTexture());
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        pos.x += glyph->GetAdvance() * textHeight;
+    }
+}
+
 
 EPI_NAMESPACE_END()

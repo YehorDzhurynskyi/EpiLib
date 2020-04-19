@@ -1,0 +1,10 @@
+class gfxTextRenderedGlyph : gfxTextRendered
+{
+    epiVec2u Bearing;
+    epiVec2u Size;
+    epiU32 Advance; 
+};
+
+class gfxTextRenderedABC
+{
+};

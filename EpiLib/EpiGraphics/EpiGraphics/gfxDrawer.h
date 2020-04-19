@@ -8,6 +8,7 @@ EPI_GENREGION_END(include)
 #include "EpiCore/Color.h"
 #include "EpiGraphics/gfxContext.h"
 #include "EpiGraphics/Text/gfxTextRenderedAtlas.h"
+#include "EpiGraphics/Text/gfxTextRenderedGlyph.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -32,6 +33,7 @@ public:
     static void DrawLine(gfxContext& ctx, const epiVec3f& p1, const epiVec3f& p2, Color color);
     static void DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec2f& dimension, const epiVec2s& nsteps);
     static void DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& position, gfxTextRenderedAtlas& atlas);
+    static void DrawText(gfxContext& ctx, const epiWChar* text, const epiVec2f& position, gfxTextRenderedABC& abc);
 };
 
 EPI_NAMESPACE_END()

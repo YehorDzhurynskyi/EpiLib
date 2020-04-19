@@ -12,7 +12,8 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxTextRendered;
+class gfxTextRenderedGlyph;
+class gfxTextRenderedABC;
 class gfxTextRenderedAtlas;
 class gfxTextFace : public Object
 {
@@ -41,15 +42,9 @@ public:
     ~gfxTextFace();
 
 public:
-    epiBool CreateRendered(gfxTextRendered& target,
-                           const epiWChar* text,
-                           epiS32 fontSize,
-                           Color color) const;
-
-    epiBool CreateRenderedAtlas(gfxTextRenderedAtlas& target,
-                                const epiWChar* atlasText,
-                                epiS32 fontSize,
-                                Color color) const;
+    void CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWChar ch, epiS32 fontSize) const;
+    void CreateRenderedABC(gfxTextRenderedABC& target, const epiWChar* abc, epiS32 fontSize) const;
+    void CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWChar* atlasText, epiS32 fontSize) const;
 
 protected:
     FT_Face m_Face;
