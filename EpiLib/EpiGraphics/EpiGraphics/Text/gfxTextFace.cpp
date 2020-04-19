@@ -8,6 +8,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/Text/gfxTextRendered.h"
 #include "EpiGraphics/Text/gfxTextRenderedAtlas.h"
 
+#include FT_GLYPH_H
+
 EPI_NAMESPACE_BEGIN()
 
 gfxTextFace::~gfxTextFace()
@@ -40,10 +42,10 @@ epiBool gfxTextFace::CreateRendered(gfxTextRendered& target,
 
         const FT_UInt glyph_index = FT_Get_Char_Index(m_Face, charcode);
         FT_Load_Glyph(m_Face, glyph_index, FT_LOAD_DEFAULT);
-        FT_Render_Glyph(m_Face->glyph, FT_RENDER_MODE_NORMAL);
+        FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL);
 
         FT_Glyph glyph;
-        FT_Get_Glyph(m_Face->glyph, &glyph);
+        FT_Get_Glyph(slot, &glyph);
         FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
 
         FT_BitmapGlyph bitmap_glyph = (FT_BitmapGlyph)glyph;
@@ -105,10 +107,10 @@ epiBool gfxTextFace::CreateRendered(gfxTextRendered& target,
 
         const FT_UInt glyph_index = FT_Get_Char_Index(m_Face, charcode);
         FT_Load_Glyph(m_Face, glyph_index, FT_LOAD_DEFAULT);
-        FT_Render_Glyph(m_Face->glyph, FT_RENDER_MODE_NORMAL);
+        FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL);
 
         FT_Glyph glyph;
-        FT_Get_Glyph(m_Face->glyph, &glyph);
+        FT_Get_Glyph(slot, &glyph);
         FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
 
         FT_BitmapGlyph bitmap_glyph = (FT_BitmapGlyph)glyph;
@@ -201,6 +203,7 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
     }
 
     const FT_Size_Metrics& metricsSize = m_Face->size->metrics;
+    FT_GlyphSlot slot = m_Face->glyph;
 
     epiS32 texWidth = 0;
     const epiSize_t atlasTextLen = wcslen(atlasText);
@@ -217,9 +220,9 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
             return false;
         }
 
-        if (m_Face->glyph->format != FT_GLYPH_FORMAT_BITMAP)
+        if (slot->format != FT_GLYPH_FORMAT_BITMAP)
         {
-            if (FT_Render_Glyph(m_Face->glyph, FT_RENDER_MODE_NORMAL))
+            if (FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL))
             {
                 // TODO: replace with a log
                 epiAssert(false, "FT_Render_Glyph failed!");
@@ -227,12 +230,12 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
             }
         }
 
-        const FT_Glyph_Metrics& metricsGlyph = m_Face->glyph->metrics;
-        const FT_Bitmap& bitmap = m_Face->glyph->bitmap;
+        const FT_Glyph_Metrics& metricsGlyph = slot->metrics;
+        const FT_Bitmap& bitmap = slot->bitmap;
 
         epiAssert(bitmap.width == metricsGlyph.width >> 6, "same things");
 
-        texWidth += bitmap.width;
+        texWidth += slot->advance.x >>  6;
     }
 
     const epiS32 texHeight = (metricsSize.ascender >> 6) - (metricsSize.descender >> 6);
@@ -252,9 +255,9 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
             return false;
         }
 
-        if (m_Face->glyph->format != FT_GLYPH_FORMAT_BITMAP)
+        if (slot->format != FT_GLYPH_FORMAT_BITMAP)
         {
-            if (FT_Render_Glyph(m_Face->glyph, FT_RENDER_MODE_NORMAL))
+            if (FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL))
             {
                 // TODO: replace with a log
                 epiAssert(false, "FT_Render_Glyph failed!");
@@ -262,33 +265,34 @@ epiBool gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target,
             }
         }
 
-        const FT_Glyph_Metrics& metricsGlyph = m_Face->glyph->metrics;
-        const FT_Bitmap& bitmap = m_Face->glyph->bitmap;
+        const FT_Glyph_Metrics& metricsGlyph = slot->metrics;
+        const FT_Bitmap& bitmap = slot->bitmap;
 
         for (epiU32 y = 0, i = 0; y < bitmap.rows; ++y)
         {
-            const epiU32 coordY = bitmap.rows - 1 - y;
+            const epiU32 offset = slot->bitmap_top - (bitmap.rows - 1);
+            const epiU32 coordY = (bitmap.rows - 1) - y - (metricsSize.descender >> 6) + offset;
+
             for (epiU32 x = 0; x < bitmap.width; ++x, ++i)
             {
-                const epiU32 coordX = pen + x;
+                const epiU32 coordX = slot->bitmap_left + pen + x;
                 const epiU32 coord = 4 * (coordY * texWidth + coordX);
 
                 data[coord + 0] = color.GetRu();
                 data[coord + 1] = color.GetGu();
                 data[coord + 2] = color.GetBu();
                 data[coord + 3] = bitmap.buffer[i];
-
             }
         }
         epiRect2f uv;
         uv.Left = pen / static_cast<epiFloat>(texWidth);
         uv.Top = bitmap.rows / static_cast<epiFloat>(texHeight);
         uv.Bottom = 0.0f;
-        uv.Right = (pen + bitmap.width) / static_cast<epiFloat>(texWidth);
+        uv.Right = (pen + slot->advance.x >> 6) / static_cast<epiFloat>(texWidth);
 
         target.m_CharMap.try_emplace(ch, uv);
 
-        pen += bitmap.width;
+        pen += slot->advance.x >> 6;
     }
 
     gfxTexture& texture = target.GetTexture();
