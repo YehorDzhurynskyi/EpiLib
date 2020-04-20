@@ -17,7 +17,7 @@ gfxTextManager::gfxTextManager()
         epiAssert(false, "FreeType Library initialization failed!");
     }
 
-    if (!CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\verdana.ttf"))
+    if (!CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\arial.ttf"))
     {
         // TODO: log
         epiAssert(false, "FreeType Library Default FontFace initialization failed!");

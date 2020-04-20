@@ -28,6 +28,16 @@ protected:
 
 EPI_GENREGION_END(gfxTextRendered)
 
+protected:
+    gfxTextRendered() = default;
+
+public:
+    gfxTextRendered(const gfxTextRendered& rhs) = delete;
+    gfxTextRendered& operator=(const gfxTextRendered& rhs) = delete;
+    gfxTextRendered(gfxTextRendered&& rhs) = default;
+    gfxTextRendered& operator=(gfxTextRendered&& rhs) = default;
+    ~gfxTextRendered() = default;
+
 public:
     virtual void Bind();
     virtual void UnBind();

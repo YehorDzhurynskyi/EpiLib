@@ -9,6 +9,10 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/gfxContext.h"
 #include "EpiGraphics/Text/gfxTextRenderedAtlas.h"
 #include "EpiGraphics/Text/gfxTextRenderedGlyph.h"
+#include "EpiGraphics/Text/gfxTextFace.h"
+#include "EpiGraphics/gfxVertexArray.h"
+#include "EpiGraphics/gfxVertexBuffer.h"
+#include "EpiGraphics/gfxShaderProgram.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -29,11 +33,34 @@ public:
 EPI_GENREGION_END(gfxDrawer)
 
 public:
-    //void DrawRect(Rect2f rect, Color edgeColor, Color fillColor);
-    static void DrawLine(gfxContext& ctx, const epiVec3f& p1, const epiVec3f& p2, Color color);
-    static void DrawGrid(gfxContext& ctx, const epiVec3f& position, const epiVec2f& dimension, const epiVec2s& nsteps);
-    static void DrawText(gfxContext& ctx, gfxTextRenderedAtlas& atlas, const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color = Color::kDarkGray);
-    static void DrawText(gfxContext& ctx, gfxTextRenderedABC& abc, const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color = Color::kDarkGray);
+    gfxDrawer(const gfxTextFace& face, const epiWChar* abc, const gfxCamera& camera);
+
+public:
+    void DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color = Color::kDarkGray);
+    void DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color = Color::kLightBlue);
+
+    void SceneBegin();
+    void SceneEnd();
+
+private:
+    gfxVertexArray m_VertexArrayText;
+    gfxVertexArray m_VertexArrayLines;
+
+    gfxVertexBuffer m_VertexBufferText;
+    gfxVertexBuffer m_VertexBufferLines;
+
+    gfxShaderProgram m_ShaderProgramText;
+    gfxShaderProgram m_ShaderProgramLines;
+
+private:
+    gfxVertexBufferMapping m_VertexBufferMappingText;
+    gfxVertexBufferMapping m_VertexBufferMappingLines;
+
+private:
+    gfxTextRenderedAtlas m_TextAtlas;
+
+private:
+    const gfxCamera& m_Camera;
 };
 
 EPI_NAMESPACE_END()

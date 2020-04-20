@@ -18,8 +18,10 @@ gfxTextFace::~gfxTextFace()
     FT_Done_Face(m_Face);
 }
 
-void gfxTextFace::CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWChar ch, epiS32 fontSize) const
+gfxTextRenderedGlyph gfxTextFace::CreateRenderedGlyph(const epiWChar ch, epiS32 fontSize) const
 {
+    gfxTextRenderedGlyph target;
+
     // TODO: determine dpi from platform call
     const FT_UInt dpiX = 282;
     const FT_UInt dpiY = 282;
@@ -28,7 +30,7 @@ void gfxTextFace::CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWCh
     {
         // TODO: replace with a log
         epiAssert(false, "FT_Set_Char_Size failed!");
-        return;
+        return target;
     }
 
     const FT_Size_Metrics& metricsSize = m_Face->size->metrics;
@@ -41,7 +43,7 @@ void gfxTextFace::CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWCh
     {
         // TODO: replace with a log
         epiAssert(false, "FT_Load_Glyph failed!");
-        return;
+        return target;
     }
 
     if (slot->format != FT_GLYPH_FORMAT_BITMAP)
@@ -50,7 +52,7 @@ void gfxTextFace::CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWCh
         {
             // TODO: replace with a log
             epiAssert(false, "FT_Render_Glyph failed!");
-            return;
+            return target;
         }
     }
 
@@ -64,10 +66,14 @@ void gfxTextFace::CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWCh
     target.SetSize(size);
 
     target.SetAdvance(slot->advance.x >> 6);
+
+    return target;
 }
 
-void gfxTextFace::CreateRenderedABC(gfxTextRenderedABC& target, const epiWChar* abc, epiS32 fontSize) const
+gfxTextRenderedABC gfxTextFace::CreateRenderedABC(const epiWChar* abc, epiS32 fontSize) const
 {
+    gfxTextRenderedABC target;
+
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // TODO: move to proper place
     const epiSize_t abclen = wcslen(abc); // TODO: replace all wcslen with safe version
     for (epiU32 i = 0; i < abclen; ++i)
@@ -80,12 +86,16 @@ void gfxTextFace::CreateRenderedABC(gfxTextRenderedABC& target, const epiWChar* 
         }
 
         gfxTextRenderedGlyph& glyph = it->second;
-        CreateRenderedGlyph(glyph, abc[i], fontSize);
+        glyph = CreateRenderedGlyph(abc[i], fontSize);
     }
+
+    return target;
 }
 
-void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWChar* atlasText, epiS32 fontSize) const
+gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText, epiS32 fontSize) const
 {
+    gfxTextRenderedAtlas target;
+
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // TODO: move to proper place
     // TODO: determine dpi from platform call
     const FT_UInt dpiX = 282;
@@ -95,7 +105,7 @@ void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWCh
     {
         // TODO: replace with a log
         epiAssert(false, "FT_Set_Char_Size failed!");
-        return;
+        return target;
     }
 
     const FT_Size_Metrics& metricsSize = m_Face->size->metrics;
@@ -113,7 +123,7 @@ void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWCh
         {
             // TODO: replace with a log
             epiAssert(false, "FT_Load_Glyph failed!");
-            return;
+            return target;
         }
 
         if (slot->format != FT_GLYPH_FORMAT_BITMAP)
@@ -122,7 +132,7 @@ void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWCh
             {
                 // TODO: replace with a log
                 epiAssert(false, "FT_Render_Glyph failed!");
-                return;
+                return target;
             }
         }
 
@@ -148,7 +158,7 @@ void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWCh
         {
             // TODO: replace with a log
             epiAssert(false, "FT_Load_Glyph failed!");
-            return;
+            return target;
         }
 
         if (slot->format != FT_GLYPH_FORMAT_BITMAP)
@@ -157,7 +167,7 @@ void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWCh
             {
                 // TODO: replace with a log
                 epiAssert(false, "FT_Render_Glyph failed!");
-                return;
+                return target;
             }
         }
 
@@ -196,6 +206,8 @@ void gfxTextFace::CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWCh
 
     gfxTexture& texture = target.GetTexture();
     texture.Create2D(data.get(), texWidth, texHeight, gfxTextureFormat::R, gfxTexturePixelType::UBYTE);
+
+    return target;
 }
 
 

@@ -76,7 +76,6 @@ private:
     epiBool m_IsMapped{false};
 };
 
-template<typename T>
 class gfxVertexBufferMapping final
 {
 public:
@@ -92,8 +91,7 @@ public:
     void Map(gfxVertexBufferMapAccess access)
     {
         // TODO: make o
-        m_Mapped = static_cast<T*>(m_Buffer.Map(access));
-
+        m_Mapped = reinterpret_cast<epiByte*>(m_Buffer.Map(access));
     }
 
     epiSize_t UnMap()
@@ -107,17 +105,23 @@ public:
         return size;
     }
 
+    template<typename T>
     T& Push(T&& t = T())
     {
         epiAssert(m_Mapped != nullptr, "should be mapped before pushing");
+        epiAssert(m_Size + sizeof(T) <= m_Buffer.GetCapacity(), "buffer capacity overflow");
 
-        m_Mapped[m_Size] = std::forward<T&&>(t);
-        return m_Mapped[m_Size++];
+        const epiU32 size = m_Size;
+
+        *((T*)(m_Mapped + size)) = std::forward<T&&>(t);
+        m_Size += sizeof(T);
+
+        return *((T*)(m_Mapped + size));
     }
 
 private:
     gfxVertexBuffer& m_Buffer;
-    T* m_Mapped{nullptr};
+    epiByte* m_Mapped{nullptr};
     epiSize_t m_Size{0};
 };
 

@@ -42,9 +42,9 @@ public:
     ~gfxTextFace();
 
 public:
-    void CreateRenderedGlyph(gfxTextRenderedGlyph& target, const epiWChar ch, epiS32 fontSize) const;
-    void CreateRenderedABC(gfxTextRenderedABC& target, const epiWChar* abc, epiS32 fontSize) const;
-    void CreateRenderedAtlas(gfxTextRenderedAtlas& target, const epiWChar* atlasText, epiS32 fontSize) const;
+    gfxTextRenderedGlyph CreateRenderedGlyph(const epiWChar ch, epiS32 fontSize) const;
+    gfxTextRenderedABC CreateRenderedABC(const epiWChar* abc, epiS32 fontSize) const;
+    gfxTextRenderedAtlas CreateRenderedAtlas(const epiWChar* atlasText, epiS32 fontSize) const;
 
 protected:
     FT_Face m_Face;
