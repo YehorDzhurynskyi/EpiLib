@@ -7,4 +7,9 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+void dvSeriesY::Add(epiFloat y)
+{
+    GetDataY().PushBack(y);
+}
+
 EPI_NAMESPACE_END()

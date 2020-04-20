@@ -5,6 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/Plot/Series/dvSeriesBase.h"
+#include "EpiDataVisualization/Data/dvDataCollection.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -18,10 +19,19 @@ public:
 
     enum dvSeriesY_PIDs
     {
-        PID_COUNT = 0
+        PID_DataY = 0xd562eac8,
+        PID_StepX = 0x595fdc36,
+        PID_COUNT = 2
     };
 
+protected:
+    dvDataCollection m_DataY;
+    epiFloat m_StepX{0.0f};
+
 EPI_GENREGION_END(dvSeriesY)
+
+public:
+    void Add(epiFloat y);
 };
 
 EPI_NAMESPACE_END()

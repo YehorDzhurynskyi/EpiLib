@@ -7,4 +7,9 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+void dvDataCollection::PushBack(epiFloat value)
+{
+    m_Buffer.PushBack(std::move(value));
+}
+
 EPI_NAMESPACE_END()

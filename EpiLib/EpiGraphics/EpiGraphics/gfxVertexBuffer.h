@@ -106,7 +106,7 @@ public:
     }
 
     template<typename T>
-    T& Push(T&& t = T())
+    T& PushBack(T&& t = T())
     {
         epiAssert(m_Mapped != nullptr, "should be mapped before pushing");
         epiAssert(m_Size + sizeof(T) <= m_Buffer.GetCapacity(), "buffer capacity overflow");

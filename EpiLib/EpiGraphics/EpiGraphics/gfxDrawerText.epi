@@ -1,0 +1,3 @@
+class gfxDrawerText : gfxDrawer
+{
+};

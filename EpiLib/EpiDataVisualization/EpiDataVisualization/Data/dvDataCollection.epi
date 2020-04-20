@@ -1,3 +1,4 @@
 class dvDataCollection
 {
+    epiArray<epiFloat> Buffer;
 };

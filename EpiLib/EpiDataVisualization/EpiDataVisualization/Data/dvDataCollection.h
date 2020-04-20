@@ -18,10 +18,17 @@ public:
 
     enum dvDataCollection_PIDs
     {
-        PID_COUNT = 0
+        PID_Buffer = 0x36f6f5c4,
+        PID_COUNT = 1
     };
 
+protected:
+    epiArray<epiFloat> m_Buffer;
+
 EPI_GENREGION_END(dvDataCollection)
+
+public:
+    void PushBack(epiFloat value);
 };
 
 EPI_NAMESPACE_END()

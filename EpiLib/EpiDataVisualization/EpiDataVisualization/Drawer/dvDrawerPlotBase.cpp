@@ -5,7 +5,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/Drawer/dvDrawerPlotBase.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphics/gfxDrawerPrimitive.h"
+
 #include <glad/glad.h> // TODO: remove (should be available only from gfx)
+
+#include "EpiCore/Color.h"
 
 namespace
 {
@@ -17,12 +21,12 @@ const epiU32 kMaxGridLineCount = 10;
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlotBase::Draw(const dvPlotBase& plot)
+void dvDrawerPlotBase::Draw(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive)
 {
-    Draw_Internal(plot);
+    Draw_Internal(plot, drawerPrimitive);
 }
 
-void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot)
+void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive)
 {
     const epiRect2f& clipbox = plot.GetClipBox();
 
@@ -49,7 +53,7 @@ void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot)
     {
         epiVec2f p(x, 0.0f);
 
-        DrawLine(p, p + epiVec2f(0.0f, h), Color::kDarkGray);
+        drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, h), Color::kDarkGray);
         x += stride;
     }
 }

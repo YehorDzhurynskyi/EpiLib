@@ -63,7 +63,7 @@ public:
         m_Vector.reserve(size);
     }
 
-    T& Push(T&& value = T())
+    T& PushBack(T&& value = T())
     {
         m_Vector.push_back(std::forward<T&&>(value));
         return m_Vector.back();

@@ -30,6 +30,12 @@ add_library(EpiGraphics
     EpiGraphics/gfxDrawer.epi
     EpiGraphics/gfxDrawer.h
     EpiGraphics/gfxDrawer.cpp
+    EpiGraphics/gfxDrawerPrimitive.epi
+    EpiGraphics/gfxDrawerPrimitive.h
+    EpiGraphics/gfxDrawerPrimitive.cpp
+    EpiGraphics/gfxDrawerText.epi
+    EpiGraphics/gfxDrawerText.h
+    EpiGraphics/gfxDrawerText.cpp
 
     EpiGraphics/Camera/gfxCamera.epi
     EpiGraphics/Camera/gfxCamera.h

@@ -1,0 +1,3 @@
+class gfxDrawerPrimitive : gfxDrawer
+{
+};

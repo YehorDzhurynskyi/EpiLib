@@ -31,6 +31,12 @@ add_library(EpiDataVisualization
     EpiDataVisualization/Drawer/dvDrawerPlotLine.epi
     EpiDataVisualization/Drawer/dvDrawerPlotLine.h
     EpiDataVisualization/Drawer/dvDrawerPlotLine.cpp
+    EpiDataVisualization/Drawer/dvDrawerSeriesBase.epi
+    EpiDataVisualization/Drawer/dvDrawerSeriesBase.h
+    EpiDataVisualization/Drawer/dvDrawerSeriesBase.cpp
+    EpiDataVisualization/Drawer/dvDrawerSeriesY.epi
+    EpiDataVisualization/Drawer/dvDrawerSeriesY.h
+    EpiDataVisualization/Drawer/dvDrawerSeriesY.cpp
 )
 get_target_property(EpiDataVisualization_SRCs EpiDataVisualization SOURCES) 
 epi_add_precompiled_header(EpiDataVisualization EpiDataVisualization/pch.h SOURCE_CXX EpiDataVisualization/pch.cpp)
