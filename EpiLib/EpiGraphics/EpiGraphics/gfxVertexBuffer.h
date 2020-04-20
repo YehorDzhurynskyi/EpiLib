@@ -85,20 +85,27 @@ public:
 
     ~gfxVertexBufferMapping()
     {
-        UnMap();
+        if (m_Mapped != nullptr)
+        {
+            UnMap();
+        }
     }
 
     void Map(gfxVertexBufferMapAccess access)
     {
         // TODO: make o
+        m_Buffer.Bind();
         m_Mapped = reinterpret_cast<epiByte*>(m_Buffer.Map(access));
+        m_Buffer.UnBind();
     }
 
     epiSize_t UnMap()
     {
         const epiSize_t size = m_Size;
 
+        m_Buffer.Bind();
         m_Buffer.UnMap();
+        m_Buffer.UnBind();
         m_Mapped = nullptr;
         m_Size = 0;
 

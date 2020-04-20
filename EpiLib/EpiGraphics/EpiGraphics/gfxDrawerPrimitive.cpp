@@ -353,7 +353,7 @@ const epiU32 kMaxLineCount = 512;
 struct VertexLine
 {
     epiVec2f Position;
-    Color ColorTint;
+    epiVec4f ColorTint;
 };
 
 }
@@ -382,11 +382,11 @@ void gfxDrawerPrimitive::DrawLine(const epiVec2f& p1, const epiVec2f& p2, const 
 {
     VertexLine& vertex1 = m_VertexBufferMappingLines.PushBack<VertexLine>();
     vertex1.Position = p1;
-    vertex1.ColorTint = color;
+    vertex1.ColorTint = color.GetColor();
 
     VertexLine& vertex2 = m_VertexBufferMappingLines.PushBack<VertexLine>();
     vertex2.Position = p2;
-    vertex2.ColorTint = color;
+    vertex2.ColorTint = color.GetColor();
 }
 
 void gfxDrawerPrimitive::SceneBegin()

@@ -8,6 +8,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
 
+#include "EpiGraphics/Camera/gfxCameraOrtho.h"
+
 #include <glad/glad.h> // TODO: remove (should be available only from gfx)
 
 #include "EpiCore/Color.h"
@@ -36,11 +38,11 @@ void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive&
 {
     const epiRect2f& clipbox = plot.GetClipBox();
 
-    const epiFloat h = clipbox.Top - clipbox.Bottom;
-    const epiFloat w = clipbox.Right - clipbox.Left;
-    const epiS32 order = static_cast<epiS32>(std::log10f(w));
+    const epiFloat rangeH = clipbox.Top - clipbox.Bottom;
+    const epiFloat domainW = clipbox.Right - clipbox.Left;
+    const epiS32 order = static_cast<epiS32>(std::log10f(domainW));
 
-    epiU32 nLines = w / std::powf(10.0f, order);
+    epiU32 nLines = domainW / std::powf(10.0f, order);
     while (nLines < kMaxGridLineCount)
     {
         if (nLines >= kMinGridLineCount)
@@ -51,16 +53,35 @@ void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive&
     }
     nLines = std::clamp(nLines, kMinGridLineCount, kMaxGridLineCount);
 
-    const epiFloat xOffset = 0.0f;
-    const epiFloat stride = w / nLines;
-    epiFloat x = xOffset;
+    const gfxCameraOrtho* cameraOrtho = As<const gfxCameraOrtho>(&m_Camera);
+
+    const epiRect2f& frameBox = cameraOrtho->GetFrameDimension();
+    const epiFloat frameH = frameBox.Top - frameBox.Bottom;
+    const epiFloat frameW = frameBox.Right - frameBox.Left;
+
+    const epiFloat stride = frameW / nLines;
+    const epiU32 strideDomain = domainW / nLines;
+
+    epiU32 domain = strideDomain;
+    epiFloat x = stride;
 
     for (epiU32 i = 0; i < nLines; ++i)
     {
-        epiVec2f p(x, 0.0f);
+        epiVec2f p(frameBox.Left + x, frameBox.Bottom);
 
-        drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, h), Color::kDarkGray);
+        drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, frameH), Color::kDarkGray);
+
+        // TODO: replace with fmt
+        const epiU32 sec = domain % 60;
+        const epiU32 min = domain / 60;
+
+        epiWString str(L":");
+        str = std::to_wstring(min) + str + std::to_wstring(sec);
+
+        drawerText.DrawText(str.c_str(), p, 14.0f);
+
         x += stride;
+        domain += strideDomain;
     }
 }
 

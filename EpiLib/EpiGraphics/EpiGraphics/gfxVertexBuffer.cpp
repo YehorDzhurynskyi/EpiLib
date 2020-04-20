@@ -58,6 +58,7 @@ void gfxVertexBuffer::Create(void* initData, epiSize_t capacity, gfxVertexBuffer
 
     Bind();
     glBufferData(GL_ARRAY_BUFFER, capacity, initData, glUsage);
+    m_Capacity = capacity;
 }
 
 void gfxVertexBuffer::Destroy()

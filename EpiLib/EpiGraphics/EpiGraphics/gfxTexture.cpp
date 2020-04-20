@@ -18,13 +18,17 @@ gfxTexture::~gfxTexture()
 gfxTexture::gfxTexture(gfxTexture&& rhs)
 {
     m_ID = rhs.m_ID;
+    m_Type = rhs.m_Type;
     rhs.m_ID = 0;
+    rhs.m_Type = gfxTextureType::None;
 }
 
 gfxTexture& gfxTexture::operator=(gfxTexture&& rhs)
 {
     m_ID = rhs.m_ID;
+    m_Type = rhs.m_Type;
     rhs.m_ID = 0;
+    rhs.m_Type = gfxTextureType::None;
 
     return *this;
 }

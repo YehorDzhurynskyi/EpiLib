@@ -9,6 +9,8 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+// TODO: https://stackoverflow.com/questions/5262951/what-is-state-of-the-art-for-text-rendering-in-opengl-as-of-version-4-1
+
 gfxTextManager::gfxTextManager()
 {
     if (FT_Init_FreeType(&m_FTLibrary))
@@ -17,7 +19,7 @@ gfxTextManager::gfxTextManager()
         epiAssert(false, "FreeType Library initialization failed!");
     }
 
-    if (!CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\arial.ttf"))
+    if (!CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\verdana.ttf"))
     {
         // TODO: log
         epiAssert(false, "FreeType Library Default FontFace initialization failed!");

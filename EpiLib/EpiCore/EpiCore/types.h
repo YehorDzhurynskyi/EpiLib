@@ -27,6 +27,7 @@ using epiFloat = float;
 using epiDouble = double;
 
 using epiString = std::string;
+using epiWString = std::wstring;
 
 template<size_t N, typename T>
 using epiVec = glm::vec<N, T>;

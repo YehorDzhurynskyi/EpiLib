@@ -21,10 +21,18 @@ public:
 
     enum dvPlotBase_PIDs
     {
+        PID_RangeX = 0xbf8d4d13,
+        PID_RangeY = 0xc88a7d85,
         PID_ClipBox = 0xa7011dd3,
         PID_Series = 0x3dbc041b,
-        PID_COUNT = 2
+        PID_COUNT = 4
     };
+
+protected:
+    epiVec2f GetRangeX_Callback() const;
+    void SetRangeX_Callback(const epiVec2f& value);
+    epiVec2f GetRangeY_Callback() const;
+    void SetRangeY_Callback(const epiVec2f& value);
 
 protected:
     epiRect2f m_ClipBox;

@@ -69,7 +69,7 @@ struct VertexText
 {
     epiVec2f Position;
     epiVec2f UV;
-    Color ColorTint;
+    epiVec4f ColorTint;
 };
 
 }
@@ -117,42 +117,42 @@ void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epi
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
             vertex.Position = epiVec2f(pos.x, pos.y);
             vertex.UV = epiVec2f(uv.Left, uv.Bottom);
-            vertex.ColorTint = color;
+            vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
             vertex.Position = epiVec2f(pos.x + w, pos.y);
             vertex.UV = epiVec2f(uv.Right, uv.Bottom);
-            vertex.ColorTint = color;
+            vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
             vertex.Position = epiVec2f(pos.x + w, pos.y + h);
             vertex.UV = epiVec2f(uv.Right, uv.Top);
-            vertex.ColorTint = color;
+            vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
             vertex.Position = epiVec2f(pos.x + w, pos.y + h);
             vertex.UV = epiVec2f(uv.Right, uv.Top);
-            vertex.ColorTint = color;
+            vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
             vertex.Position = epiVec2f(pos.x, pos.y + h);
             vertex.UV = epiVec2f(uv.Left, uv.Top);
-            vertex.ColorTint = color;
+            vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
             vertex.Position = epiVec2f(pos.x, pos.y);
             vertex.UV = epiVec2f(uv.Left, uv.Bottom);
-            vertex.ColorTint = color;
+            vertex.ColorTint = color.GetColor();
         }
 
         pos.x += w;
