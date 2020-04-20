@@ -78,7 +78,7 @@ void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive&
         epiWString str(L":");
         str = std::to_wstring(min) + str + std::to_wstring(sec);
 
-        drawerText.DrawText(str.c_str(), p, 14.0f);
+        //drawerText.DrawText(str.c_str(), p, 10.0f);
 
         x += stride;
         domain += strideDomain;

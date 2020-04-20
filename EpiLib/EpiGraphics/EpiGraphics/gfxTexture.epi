@@ -1,5 +1,11 @@
 class gfxTexture : gfxBindable
 {
+    [ReadOnly]
+    {
+        epiSize_t Width;
+        epiSize_t Height;
+    }
+
     [Virtual, ReadOnly]
     epiBool IsCreated;
 

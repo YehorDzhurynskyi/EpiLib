@@ -80,7 +80,9 @@ void gfxTexture::Create2D(void* initData,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, glPixelType, initData);
-    glGenerateMipmap(GL_TEXTURE_2D);
+
+    m_Width = width;
+    m_Height = height;
 }
 
 void gfxTexture::Destroy()

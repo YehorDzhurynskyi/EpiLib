@@ -50,15 +50,19 @@ public:
 
     enum gfxTexture_PIDs
     {
+        PID_Width = 0x4ddb6a2b,
+        PID_Height = 0xf2e1e039,
         PID_IsCreated = 0x560b66db,
         PID_ID = 0x11d3633a,
-        PID_COUNT = 2
+        PID_COUNT = 4
     };
 
 protected:
     epiBool GetIsCreated_Callback() const;
 
 protected:
+    epiSize_t m_Width{0};
+    epiSize_t m_Height{0};
     epiU32 m_ID{0};
 
 EPI_GENREGION_END(gfxTexture)

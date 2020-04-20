@@ -41,7 +41,7 @@ public:
     ~gfxTextManager();
 
 public:
-    epiBool CreateFace(gfxTextFace& target, const epiChar* ttf) const;
+    void CreateFace(gfxTextFace& target, const epiChar* ttf) const;
 
 protected:
     FT_Library m_FTLibrary;

@@ -13,6 +13,84 @@ using namespace epi;
 const epiChar kShaderSourceVertexText[] = R"(
 #version 400 core
 
+uniform mat4 u_view_projection;
+
+layout(location = 0) in vec2 a_position;
+layout(location = 1) in vec2 a_uv;
+layout(location = 2) in vec4 a_color;
+
+out vec2 uv;
+out vec4 color;
+
+void main()
+{
+    color = a_color;
+    uv = a_uv;
+    gl_Position = u_view_projection * vec4(a_position, 0.0, 1.0);
+}
+)";
+
+const epiChar kShaderSourceTextPixel[] = R"(
+#version 400 core
+
+uniform sampler2D u_texture;
+uniform vec2 u_pixel_size;
+uniform float u_shift = 0.0;
+uniform float u_gamma = 1.43;
+
+in vec4 color;
+in vec2 uv;
+
+out vec4 fragcolor;
+
+void main()
+{
+    vec4 current = texture2D(u_texture, uv);
+    vec4 previous = texture2D(u_texture, uv + vec2(-1.0, 0.0) * u_pixel_size);
+    // vec4 next = texture2D(u_texture, uv + vec2(1.0, 0.0) * u_pixel_size);
+
+    current = pow(current, vec4(1.0 / u_gamma));
+    previous = pow(previous, vec4(1.0 / u_gamma));
+
+    float r = current.r;
+    float g = current.g;
+    float b = current.b;
+
+    if (u_shift <= 0.333)
+    {
+        float z = u_shift / 0.333;
+        r = mix(current.r, previous.b, z);
+        g = mix(current.g, current.r,  z);
+        b = mix(current.b, current.g,  z);
+    }
+    else if (u_shift <= 0.666)
+    {
+        float z = (u_shift - 0.33) / 0.333;
+        r = mix(previous.b, previous.g, z);
+        g = mix(current.r, previous.b, z);
+        b = mix(current.g, current.r,  z);
+    }
+   else if (u_shift < 1.0)
+    {
+        float z = (u_shift - 0.66) / 0.334;
+        r = mix(previous.g, previous.r, z);
+        g = mix(previous.b, previous.g, z);
+        b = mix(current.r, previous.b, z);
+    }
+
+   float t = max(max(r, g), b);
+
+   vec4 col = vec4(color.rgb, (r + g + b) / 3.0);
+   col = t * col + (1.0 - t) * vec4(r, g, b, min(min(r, g), b));
+
+   fragcolor = vec4(col.rgb, color.a * col.a);
+}
+)";
+
+#if 0
+const epiChar kShaderSourceVertexText[] = R"(
+#version 400 core
+
 layout(location = 0) in vec2 a_position;
 layout(location = 1) in vec2 a_uv;
 layout(location = 2) in vec4 a_color;
@@ -45,6 +123,7 @@ void main(void)
     fragcolor = color * vec4(1.0, 1.0, 1.0, texture(u_texture, uv).r);
 }
 )";
+#endif
 
 gfxShaderProgram CreateTextProgram()
 {
@@ -79,7 +158,7 @@ EPI_NAMESPACE_BEGIN()
 gfxDrawerText::gfxDrawerText(const gfxCamera& camera, const gfxTextFace& face, const epiWChar* abc)
     : super(camera)
     , m_VertexBufferMappingText(m_VertexBufferText)
-    , m_TextAtlas(face.CreateRenderedAtlas(abc, 72))
+    , m_TextAtlas(face.CreateRenderedAtlas(abc, 8))
 {
     m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw);
 
@@ -178,6 +257,12 @@ void gfxDrawerText::SceneEnd()
         const epiS32 locationSampler = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_texture");
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(locationSampler, 0);
+
+        const epiS32 locationPixelSize = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_pixel_size");
+        const epiSize_t atlasW = m_TextAtlas.GetTexture().GetWidth();
+        const epiSize_t atlasH = m_TextAtlas.GetTexture().GetHeight();
+        const epiVec2f pixelSize(1.0f / atlasW, 1.0f / atlasH);
+        glUniform2fv(locationPixelSize, 1, &pixelSize[0]);
 
         const epiS32 locationVP = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_view_projection");
         const epiMat4x4f& VP = m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix();

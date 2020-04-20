@@ -35,8 +35,8 @@ private:
     gfxTextFace() = default;
 
 public:
-    gfxTextFace(const gfxTextFace& rhs) = default;
-    gfxTextFace& operator=(const gfxTextFace& rhs) = default;
+    gfxTextFace(const gfxTextFace& rhs) = delete;
+    gfxTextFace& operator=(const gfxTextFace& rhs) = delete;
     gfxTextFace(gfxTextFace&& rhs) = default;
     gfxTextFace& operator=(gfxTextFace&& rhs) = default;
     ~gfxTextFace();
@@ -45,6 +45,9 @@ public:
     gfxTextRenderedGlyph CreateRenderedGlyph(const epiWChar ch, epiS32 fontSize) const;
     gfxTextRenderedABC CreateRenderedABC(const epiWChar* abc, epiS32 fontSize) const;
     gfxTextRenderedAtlas CreateRenderedAtlas(const epiWChar* atlasText, epiS32 fontSize) const;
+
+protected:
+    void PrepareFontMetrics(epiS32 fontSize) const;
 
 protected:
     FT_Face m_Face;
