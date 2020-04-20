@@ -6,6 +6,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxDrawerPrimitive.h"
+#include "EpiGraphics/gfxDrawerText.h"
 
 #include <glad/glad.h> // TODO: remove (should be available only from gfx)
 
@@ -21,12 +22,17 @@ const epiU32 kMaxGridLineCount = 10;
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlotBase::Draw(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive)
+dvDrawerPlotBase::dvDrawerPlotBase(const gfxCamera& camera)
+    : super(camera)
 {
-    Draw_Internal(plot, drawerPrimitive);
 }
 
-void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive)
+void dvDrawerPlotBase::Draw(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive, gfxDrawerText& drawerText)
+{
+    Draw_Internal(plot, drawerPrimitive, drawerText);
+}
+
+void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive, gfxDrawerText& drawerText)
 {
     const epiRect2f& clipbox = plot.GetClipBox();
 

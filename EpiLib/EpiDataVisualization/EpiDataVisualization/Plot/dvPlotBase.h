@@ -5,7 +5,9 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/Plot/Series/dvSeriesBase.h"
+
 #include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/Containers/Array.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -26,7 +28,7 @@ public:
 
 protected:
     epiRect2f m_ClipBox;
-    epiArray<dvSeriesBase> m_Series;
+    epiPtrArray<dvSeriesBase> m_Series;
 
 EPI_GENREGION_END(dvPlotBase)
 };

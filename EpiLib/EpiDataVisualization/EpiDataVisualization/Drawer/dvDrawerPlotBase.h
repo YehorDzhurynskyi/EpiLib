@@ -10,6 +10,7 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 class gfxDrawerPrimitive;
+class gfxDrawerText;
 class dvDrawerPlotBase : public gfxDrawer
 {
 EPI_GENREGION_BEGIN(dvDrawerPlotBase)
@@ -26,10 +27,13 @@ public:
 EPI_GENREGION_END(dvDrawerPlotBase)
 
 public:
-    void Draw(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive);
+    dvDrawerPlotBase(const gfxCamera& camera);
+
+public:
+    void Draw(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive, gfxDrawerText& drawerText);
 
 protected:
-    virtual void Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive);
+    virtual void Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive, gfxDrawerText& drawerText);
 };
 
 EPI_NAMESPACE_END()

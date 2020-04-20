@@ -1,5 +1,7 @@
 class dvPlotBase
 {
     epiRect2f ClipBox;
-    epiArray<dvSeriesBase> Series;
+
+    [ReadOnly]
+    epiPtrArray<dvSeriesBase> Series;
 };

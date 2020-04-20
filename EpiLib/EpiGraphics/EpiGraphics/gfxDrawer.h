@@ -28,7 +28,7 @@ EPI_GENREGION_END(gfxDrawer)
 public:
     gfxDrawer(const gfxCamera& camera);
 
-protected:
+public:
     virtual void SceneBegin() {}
     virtual void SceneEnd() {}
 
