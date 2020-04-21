@@ -12,6 +12,8 @@
 #include <functional>
 #include <type_traits>
 
+#include <fmt/core.h>
+
 #include "EpiCore/epi_config.h"
 #include "EpiCore/types.h"
 #include "EpiCore/common.h"

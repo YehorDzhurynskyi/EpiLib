@@ -55,6 +55,7 @@ epi_extern_register(exprtk)
 
 epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
+epi_extern_add(fmt)
 
 configure_file(EpiCore/epi_config.h.in EpiCore/epi_config.h)
 
@@ -74,6 +75,7 @@ target_link_libraries(EpiCore
     PUBLIC
         nlohmann_json
         glm
+        fmt
         exprtk
 )
 

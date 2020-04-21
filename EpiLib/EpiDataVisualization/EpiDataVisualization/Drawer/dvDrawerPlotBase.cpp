@@ -75,10 +75,10 @@ void dvDrawerPlotBase::Draw_Internal(const dvPlotBase& plot, gfxDrawerPrimitive&
         const epiU32 sec = domain % 60;
         const epiU32 min = domain / 60;
 
-        epiWString str(L":");
-        str = std::to_wstring(min) + str + std::to_wstring(sec);
+        epiString str = fmt::format("{:02d}:{:02d}", min, sec);
+        epiWString wstr(str.begin(), str.end());
 
-        drawerText.DrawText(str.c_str(), p, 24.0f);
+        drawerText.DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 16.0f);
 
         x += stride;
         domain += strideDomain;
