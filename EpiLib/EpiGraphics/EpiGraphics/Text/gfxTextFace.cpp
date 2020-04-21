@@ -60,16 +60,7 @@ gfxTextRenderedGlyph gfxTextFace::CreateRenderedGlyph(const epiWChar ch, epiS32 
 {
     gfxTextRenderedGlyph target;
 
-    // TODO: determine dpi from platform call
-    const FT_UInt dpiX = 282;
-    const FT_UInt dpiY = 282;
-
-    if (FT_Set_Char_Size(m_Face, 0, fontSize * 64, dpiX, dpiY))
-    {
-        // TODO: replace with a log
-        epiAssert(false, "FT_Set_Char_Size failed!");
-        return target;
-    }
+    PrepareFontMetrics(fontSize);
 
     const FT_Size_Metrics& metricsSize = m_Face->size->metrics;
     FT_GlyphSlot slot = m_Face->glyph;
@@ -178,6 +169,7 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
         }
 
         const FT_Bitmap& bitmap = slot->bitmap;
+        //epiAssert(bitmap.width == bitmap.pitch, "");
         for (epiU32 y = 0; y < bitmap.rows; ++y)
         {
             const epiU32 offset = slot->bitmap_top - (bitmap.rows - 1);
@@ -234,16 +226,8 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
     gfxTextRenderedAtlas target;
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // TODO: move to proper place
-    // TODO: determine dpi from platform call
-    const FT_UInt dpiX = 282;
-    const FT_UInt dpiY = 282;
 
-    if (FT_Set_Char_Size(m_Face, 0, fontSize * 64, dpiX, dpiY))
-    {
-        // TODO: replace with a log
-        epiAssert(false, "FT_Set_Char_Size failed!");
-        return target;
-    }
+    PrepareFontMetrics(fontSize);
 
     const FT_Size_Metrics& metricsSize = m_Face->size->metrics;
     FT_GlyphSlot slot = m_Face->glyph;

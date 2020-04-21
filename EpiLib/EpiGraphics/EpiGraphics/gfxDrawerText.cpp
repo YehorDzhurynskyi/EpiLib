@@ -36,8 +36,8 @@ const epiChar kShaderSourceTextPixel[] = R"(
 
 uniform sampler2D u_texture;
 uniform vec2 u_pixel_size;
-uniform float u_shift = 0.0;
-uniform float u_gamma = 1.43;
+uniform float u_shift;
+uniform float u_gamma;
 
 in vec4 color;
 in vec2 uv;
@@ -87,7 +87,6 @@ void main()
    fragcolor = vec4(col.rgb, color.a * col.a);
 }
 )";
-
 #else
 const epiChar kShaderSourceVertexText[] = R"(
 #version 400 core
@@ -259,11 +258,19 @@ void gfxDrawerText::SceneEnd()
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(locationSampler, 0);
 
+#if 1
+        const epiS32 locationShift = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_shift");
+        glUniform1f(locationShift, 0.0f);
+
+        const epiS32 locationGamma = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_gamma");
+        glUniform1f(locationGamma, 2.2f);
+
         const epiS32 locationPixelSize = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_pixel_size");
         const epiSize_t atlasW = m_TextAtlas.GetTexture().GetWidth();
         const epiSize_t atlasH = m_TextAtlas.GetTexture().GetHeight();
         const epiVec2f pixelSize(1.0f / atlasW, 1.0f / atlasH);
         glUniform2fv(locationPixelSize, 1, &pixelSize[0]);
+#endif
 
         const epiS32 locationVP = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_view_projection");
         epiMat4x4f P = m_Camera.GetProjectionMatrix();
