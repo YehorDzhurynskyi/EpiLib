@@ -191,50 +191,52 @@ void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epi
         const epiRect2f& uv = glyph->GetUV();
         const epiFloat w = glyph->GetAspectRatio() * textHeight;
         const epiFloat h = textHeight;
+        const epiFloat advance = glyph->GetAdvance().x * w;
+        const epiFloat bearingX = glyph->GetBearing().x * w;
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pos.x, pos.y);
+            vertex.Position = epiVec2f(bearingX + pos.x, pos.y);
             vertex.UV = epiVec2f(uv.Left, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pos.x + w, pos.y);
+            vertex.Position = epiVec2f(bearingX + pos.x + w, pos.y);
             vertex.UV = epiVec2f(uv.Right, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pos.x + w, pos.y + h);
+            vertex.Position = epiVec2f(bearingX + pos.x + w, pos.y + h);
             vertex.UV = epiVec2f(uv.Right, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pos.x + w, pos.y + h);
+            vertex.Position = epiVec2f(bearingX + pos.x + w, pos.y + h);
             vertex.UV = epiVec2f(uv.Right, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pos.x, pos.y + h);
+            vertex.Position = epiVec2f(bearingX + pos.x, pos.y + h);
             vertex.UV = epiVec2f(uv.Left, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pos.x, pos.y);
+            vertex.Position = epiVec2f(bearingX + pos.x, pos.y);
             vertex.UV = epiVec2f(uv.Left, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
 
-        pos.x += w;
+        pos.x += advance;
     }
 }
 

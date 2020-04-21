@@ -2,6 +2,8 @@ class gfxTextRenderedAtlasGlyph
 {
     epiRect2f UV;
     epiFloat AspectRatio;
+    epiVec2f Advance;
+    epiVec2f Bearing;
 };
 
 class gfxTextRenderedAtlas : gfxTextRendered

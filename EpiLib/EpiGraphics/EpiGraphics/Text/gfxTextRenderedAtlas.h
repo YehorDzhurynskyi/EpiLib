@@ -20,12 +20,16 @@ public:
     {
         PID_UV = 0x41d4f2f,
         PID_AspectRatio = 0xd8f95d9b,
-        PID_COUNT = 2
+        PID_Advance = 0x283c226f,
+        PID_Bearing = 0x1c0b5150,
+        PID_COUNT = 4
     };
 
 protected:
     epiRect2f m_UV;
     epiFloat m_AspectRatio{0.0f};
+    epiVec2f m_Advance;
+    epiVec2f m_Bearing;
 
 EPI_GENREGION_END(gfxTextRenderedAtlasGlyph)
 };

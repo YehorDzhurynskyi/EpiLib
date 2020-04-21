@@ -190,6 +190,18 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
         atlasGlyph.SetUV(uv);
         atlasGlyph.SetAspectRatio((bitmap.width / 3) / static_cast<epiFloat>(bitmap.rows));
 
+        epiVec2f advance;
+        advance.x = (slot->advance.x >> 6) / static_cast<epiFloat>(bitmap.width / 3);
+        advance.y = 0.0f; // TODO: set
+
+        atlasGlyph.SetAdvance(advance);
+
+        epiVec2f bearing;
+        bearing.x = slot->bitmap_left / static_cast<epiFloat>(bitmap.width / 3);
+        bearing.y = slot->bitmap_top / static_cast<epiFloat>(bitmap.rows);
+
+        atlasGlyph.SetBearing(bearing);
+
         target.m_CharMap.try_emplace(ch, atlasGlyph);
 
         pen += slot->advance.x >> 6;
