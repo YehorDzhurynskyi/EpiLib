@@ -23,7 +23,7 @@ gfxTextManager::gfxTextManager()
 
     CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\verdana.ttf");
 
-    FT_Library_SetLcdFilter(m_FTLibrary, FT_LCD_FILTER_DEFAULT);
+    FT_Library_SetLcdFilter(m_FTLibrary, FT_LCD_FILTER_LIGHT);
 }
 
 gfxTextManager::~gfxTextManager()

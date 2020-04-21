@@ -47,8 +47,10 @@ void gfxTextFace::PrepareFontMetrics(epiS32 fontSize) const
 #endif
 
     // TODO: retrieve this values from platform
-    const epiU32 dpiX = 64;
-    const epiU32 dpiY = 72;
+    //const epiU32 dpiX = 64;
+    //const epiU32 dpiY = 72;
+    const epiU32 dpiX = 282;
+    const epiU32 dpiY = 282;
     if (FT_Set_Char_Size(m_Face, 0, fontSize * 64, dpiX, dpiY))
     {
         // TODO: log
@@ -140,10 +142,8 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
     const FT_Size_Metrics& metricsSize = m_Face->size->metrics;
     FT_GlyphSlot slot = m_Face->glyph;
 
+    const epiS32 texHeight = (metricsSize.ascender >> 6) - (metricsSize.descender >> 6);
     epiS32 texWidth = 0;
-    //const epiS32 texHeight = (metricsSize.ascender >> 6) - (metricsSize.descender >> 6);
-    epiS32 texHeight = 0;
-
     const epiSize_t atlasTextLen = wcslen(atlasText);
     for (epiU32 i = 0; i < atlasTextLen; ++i)
     {
@@ -158,9 +158,7 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
             return target;
         }
 
-        //texWidth += slot->advance.x >> 6;
-        texWidth += slot->bitmap.width / 3;
-        texHeight = slot->bitmap.rows;
+        texWidth += slot->advance.x >> 6;
     }
 
     // TODO: check if should be divided by static_cast<epiFloat>(kDpiX);
@@ -187,6 +185,7 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
             const epiU32 offset = slot->bitmap_top - (bitmap.rows - 1);
             const epiU32 coordY = (bitmap.rows - 1) - y - (metricsSize.descender >> 6) + offset;
 
+            #if 0
             for (epiU32 x = 0; x < bitmap.width / 3; ++x)
             {
                 const epiU32 srccoord = y * bitmap.pitch + x * 3;
@@ -195,7 +194,7 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
                 data[dstcoord + 1] = bitmap.buffer[srccoord + 1];
                 data[dstcoord + 2] = bitmap.buffer[srccoord + 2];
             }
-            #if 0
+            #else
             for (epiU32 x = 0; x < bitmap.width / 3; ++x)
             {
                 const epiU32 coordX = pen + slot->bitmap_left + x;
@@ -222,13 +221,6 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
         atlasGlyph.SetAspectRatio((bitmap.width / 3) / static_cast<epiFloat>(bitmap.rows));
 
         target.m_CharMap.try_emplace(ch, atlasGlyph);
-
-        //if (FT_Load_Glyph(m_Face, glyphIndex, FT_LOAD_RENDER | FT_LOAD_NO_HINTING))
-        //{
-        //    // TODO: replace with a log
-        //    epiAssert(false, "FT_Load_Glyph failed!");
-        //    return target;
-        //}
 
         pen += slot->advance.x >> 6;
     }
