@@ -406,7 +406,9 @@ void gfxDrawerPrimitive::SceneEnd()
         gfxBindableScoped scope(m_ShaderProgramLines, m_VertexArrayLines);
 
         const GLint locationVP = glGetUniformLocation(m_ShaderProgramLines.GetProgramID(), "u_view_projection");
-        const epiMat4x4f& VP = m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix();
+        epiMat4x4f P = m_Camera.GetProjectionMatrix();
+        P[0][0] *= m_Camera.GetAspectRatio();
+        const epiMat4x4f& VP = P * m_Camera.GetViewMatrix();
         glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
 
         glDrawArrays(GL_LINES, 0, 2 * lineVerticesCount);

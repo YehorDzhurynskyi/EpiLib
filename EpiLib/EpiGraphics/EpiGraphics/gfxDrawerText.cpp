@@ -263,7 +263,7 @@ void gfxDrawerText::SceneEnd()
         glUniform1f(locationShift, 0.0f);
 
         const epiS32 locationGamma = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_gamma");
-        glUniform1f(locationGamma, 2.2f);
+        glUniform1f(locationGamma, 1.43f);
 
         const epiS32 locationPixelSize = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_pixel_size");
         const epiSize_t atlasW = m_TextAtlas.GetTexture().GetWidth();

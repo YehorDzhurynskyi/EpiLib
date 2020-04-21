@@ -11,17 +11,6 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/Platform/DisplayDevice.h"
 
-#include FT_GLYPH_H
-
-namespace
-{
-
-// TODO: retrieve this values from platform
-// const epiU32 kDpiY = 72;
-// const epiU32 kDpiX = 64;
-
-}
-
 EPI_NAMESPACE_BEGIN()
 
 gfxTextFace::~gfxTextFace()
@@ -126,6 +115,8 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
 {
     gfxTextRenderedAtlas target;
 
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // TODO: move to proper place
+
     PrepareFontMetrics(fontSize);
 
     const FT_Size_Metrics& metricsSize = m_Face->size->metrics;
@@ -169,22 +160,12 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
         }
 
         const FT_Bitmap& bitmap = slot->bitmap;
-        //epiAssert(bitmap.width == bitmap.pitch, "");
+
         for (epiU32 y = 0; y < bitmap.rows; ++y)
         {
             const epiU32 offset = slot->bitmap_top - (bitmap.rows - 1);
             const epiU32 coordY = (bitmap.rows - 1) - y - (metricsSize.descender >> 6) + offset;
 
-            #if 0
-            for (epiU32 x = 0; x < bitmap.width / 3; ++x)
-            {
-                const epiU32 srccoord = y * bitmap.pitch + x * 3;
-                const epiU32 dstcoord = y * texWidth * 3 + x * 3;
-                data[dstcoord + 0] = bitmap.buffer[srccoord + 0];
-                data[dstcoord + 1] = bitmap.buffer[srccoord + 1];
-                data[dstcoord + 2] = bitmap.buffer[srccoord + 2];
-            }
-            #else
             for (epiU32 x = 0; x < bitmap.width / 3; ++x)
             {
                 const epiU32 coordX = pen + slot->bitmap_left + x;
@@ -196,7 +177,6 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
                 data[coordDst + 1] = bitmap.buffer[coordSrc + 1];
                 data[coordDst + 2] = bitmap.buffer[coordSrc + 2];
             }
-            #endif
         }
 
         gfxTextRenderedAtlasGlyph atlasGlyph;
