@@ -9,6 +9,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/Text/gfxTextRenderedAtlas.h"
 #include "EpiGraphics/Text/gfxTextRenderedGlyph.h"
 
+#include "EpiCore/Platform/DisplayDevice.h"
+
 #include FT_GLYPH_H
 
 namespace
@@ -46,12 +48,8 @@ void gfxTextFace::PrepareFontMetrics(epiS32 fontSize) const
     FT_Set_Transform(m_Face, &matrix, NULL);
 #endif
 
-    // TODO: retrieve this values from platform
-    //const epiU32 dpiX = 64;
-    //const epiU32 dpiY = 72;
-    const epiU32 dpiX = 282;
-    const epiU32 dpiY = 282;
-    if (FT_Set_Char_Size(m_Face, 0, fontSize * 64, dpiX, dpiY))
+    const epiVec2u dpi = DisplayDevice::DPI();
+    if (FT_Set_Char_Size(m_Face, 0, fontSize * 64, dpi.x, dpi.y))
     {
         // TODO: log
         epiAssert(false, "FT_Set_Char_Size Failed");

@@ -10,6 +10,7 @@ namespace
 
 using namespace epi;
 
+#if 1
 const epiChar kShaderSourceVertexText[] = R"(
 #version 400 core
 
@@ -87,7 +88,7 @@ void main()
 }
 )";
 
-#if 0
+#else
 const epiChar kShaderSourceVertexText[] = R"(
 #version 400 core
 
@@ -158,7 +159,7 @@ EPI_NAMESPACE_BEGIN()
 gfxDrawerText::gfxDrawerText(const gfxCamera& camera, const gfxTextFace& face, const epiWChar* abc)
     : super(camera)
     , m_VertexBufferMappingText(m_VertexBufferText)
-    , m_TextAtlas(face.CreateRenderedAtlas(abc, 16))
+    , m_TextAtlas(face.CreateRenderedAtlas(abc, 12))
 {
     m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw);
 

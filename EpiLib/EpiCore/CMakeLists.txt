@@ -21,6 +21,10 @@ add_library(EpiCore
     EpiCore/Hash.h
     EpiCore/Hash.cpp
 
+    EpiCore/Platform/DisplayDevice.epi
+    EpiCore/Platform/DisplayDevice.h
+    EpiCore/Platform/DisplayDevice.cpp
+
     EpiCore/Expression.h
     EpiCore/Expression.cpp
 
