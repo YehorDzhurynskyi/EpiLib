@@ -1,0 +1,4 @@
+class gfxCameraUI : gfxCamera
+{
+    epiRect2f FrameDimension;
+};

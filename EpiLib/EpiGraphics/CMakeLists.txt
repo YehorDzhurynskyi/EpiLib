@@ -40,6 +40,9 @@ add_library(EpiGraphics
     EpiGraphics/Camera/gfxCamera.epi
     EpiGraphics/Camera/gfxCamera.h
     EpiGraphics/Camera/gfxCamera.cpp
+    EpiGraphics/Camera/gfxCameraUI.epi
+    EpiGraphics/Camera/gfxCameraUI.h
+    EpiGraphics/Camera/gfxCameraUI.cpp
     EpiGraphics/Camera/gfxCameraOrtho.epi
     EpiGraphics/Camera/gfxCameraOrtho.h
     EpiGraphics/Camera/gfxCameraOrtho.cpp
