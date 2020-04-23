@@ -18,12 +18,14 @@ public:
 
     enum gfxCameraUI_PIDs
     {
-        PID_FrameDimension = 0x3726fb2,
-        PID_COUNT = 1
+        PID_FrameDimensionPhysical = 0xc6386992,
+        PID_FrameDimensionVirtual = 0x20eafb6c,
+        PID_COUNT = 2
     };
 
 protected:
-    epiRect2f m_FrameDimension;
+    epiRect2f m_FrameDimensionPhysical;
+    epiRect2f m_FrameDimensionVirtual;
 
 EPI_GENREGION_END(gfxCameraUI)
 

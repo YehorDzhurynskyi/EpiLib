@@ -11,7 +11,7 @@ EPI_NAMESPACE_BEGIN()
 
 epiMat4x4f gfxCameraUI::GetProjectionMatrix_Internal() const
 {
-    const epiRect2f& rect = GetFrameDimension();
+    const epiRect2f& rect = GetFrameDimensionVirtual();
     const epiVec2f& tl = rect.TopLeft();
     const epiVec2f& br = rect.BottomRight();
 

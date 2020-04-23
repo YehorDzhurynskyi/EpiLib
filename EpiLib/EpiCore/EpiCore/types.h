@@ -109,6 +109,78 @@ public:
         return Top - Bottom;
     }
 
+    friend epiRect2<T> operator*(const epiRect2<T>& lhs, epiFloat rhs)
+    {
+        epiRect2<T> rect;
+
+        rect.Left = lhs.Left * rhs;
+        rect.Top = lhs.Top * rhs;
+        rect.Right = lhs.Right * rhs;
+        rect.Bottom = lhs.Bottom * rhs;
+
+        return rect;
+    }
+
+    friend epiRect2<T> operator*(epiFloat lhs, const epiRect2<T>& rhs)
+    {
+        epiRect2<T> rect;
+
+        rect.Left = rhs.Left * lhs;
+        rect.Top = rhs.Top * lhs;
+        rect.Right = rhs.Right * lhs;
+        rect.Bottom = rhs.Bottom * lhs;
+
+        return rect;
+    }
+
+    friend epiRect2<T> operator+(const epiRect2<T>& lhs, const epiVec2<T>& rhs)
+    {
+        epiRect2<T> rect;
+
+        rect.Left = lhs.Left + rhs.x;
+        rect.Top = lhs.Top + rhs.y;
+        rect.Right = lhs.Right + rhs.x;
+        rect.Bottom = lhs.Bottom + rhs.y;
+
+        return rect;
+    }
+
+    friend epiRect2<T> operator+(const epiVec2<T>& lhs, const epiRect2<T>& rhs)
+    {
+        epiRect2<T> rect;
+
+        rect.Left = rhs.Left + lhs.x;
+        rect.Top = rhs.Top + lhs.y;
+        rect.Right = rhs.Right + lhs.x;
+        rect.Bottom = rhs.Bottom + lhs.y;
+
+        return rect;
+    }
+
+    friend epiRect2<T> operator*(const epiRect2<T>& lhs, const epiVec2<T>& rhs)
+    {
+        epiRect2<T> rect;
+
+        rect.Left = lhs.Left * rhs.x;
+        rect.Top = lhs.Top * rhs.y;
+        rect.Right = lhs.Right * rhs.x;
+        rect.Bottom = lhs.Bottom * rhs.y;
+
+        return rect;
+    }
+
+    friend epiRect2<T> operator*(const epiVec2<T>& lhs, const epiRect2<T>& rhs)
+    {
+        epiRect2<T> rect;
+
+        rect.Left = rhs.Left * lhs.x;
+        rect.Top = rhs.Top * lhs.y;
+        rect.Right = rhs.Right * lhs.x;
+        rect.Bottom = rhs.Bottom * lhs.y;
+
+        return rect;
+    }
+
 public:
     T Left{};
     T Top{};

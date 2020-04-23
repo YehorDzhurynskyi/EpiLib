@@ -21,7 +21,7 @@ gfxTextManager::gfxTextManager()
         epiAssert(false, "FreeType Library initialization failed!");
     }
 
-    CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\verdana.ttf");
+    CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\arial.ttf");
 
     FT_Library_SetLcdFilter(m_FTLibrary, FT_LCD_FILTER_LIGHT);
 }

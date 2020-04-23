@@ -122,6 +122,7 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
     const FT_Size_Metrics& metricsSize = m_Face->size->metrics;
     FT_GlyphSlot slot = m_Face->glyph;
 
+    const epiFloat maxHeight = (metricsSize.ascender >> 6) - (metricsSize.descender >> 6);
     const epiS32 texHeight = (metricsSize.ascender >> 6) - (metricsSize.descender >> 6);
     epiS32 texWidth = 0;
     const epiSize_t atlasTextLen = wcslen(atlasText);
@@ -160,11 +161,9 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
         }
 
         const FT_Bitmap& bitmap = slot->bitmap;
-
         for (epiU32 y = 0; y < bitmap.rows; ++y)
         {
-            const epiU32 offset = slot->bitmap_top - (bitmap.rows - 1);
-            const epiU32 coordY = (bitmap.rows - 1) - y - (metricsSize.descender >> 6) + offset;
+            const epiU32 coordY = slot->bitmap_top - y - (metricsSize.descender >> 6);
 
             for (epiU32 x = 0; x < bitmap.width / 3; ++x)
             {
@@ -189,6 +188,7 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
 
         atlasGlyph.SetUV(uv);
         atlasGlyph.SetAspectRatio((bitmap.width / 3) / static_cast<epiFloat>(bitmap.rows));
+        atlasGlyph.SetHeight(bitmap.rows / static_cast<epiFloat>(maxHeight));
 
         epiVec2f advance;
         advance.x = (slot->advance.x >> 6) / static_cast<epiFloat>(bitmap.width / 3);
@@ -206,6 +206,10 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
 
         pen += slot->advance.x >> 6;
     }
+
+    target.SetDescender((metricsSize.descender >> 6) / maxHeight);
+    target.SetAscender((metricsSize.ascender >> 6) / maxHeight);
+    target.SetHeight(metricsSize.height >> 6);
 
     gfxTexture& texture = target.GetTexture();
     texture.Create2D(data.get(), texWidth, texHeight, gfxTextureFormat::RGB, gfxTexturePixelType::UBYTE);

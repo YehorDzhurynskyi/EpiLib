@@ -1,0 +1,17 @@
+class dvViewModelPlotBase
+{
+    [Virtual, ReadCallback("SuppressRef")]
+    {
+        epiFloat ClipLeft;
+        epiFloat ClipTop;
+        epiFloat ClipRight;
+        epiFloat ClipBottom;
+
+        epiFloat ZoomX;
+        epiFloat ZoomY;
+    }
+
+    epiRect2f ClipBox;
+    epiVec2f Origin;
+    epiVec2f Zoom;
+};

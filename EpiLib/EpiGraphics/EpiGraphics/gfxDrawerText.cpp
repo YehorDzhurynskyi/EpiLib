@@ -158,7 +158,7 @@ EPI_NAMESPACE_BEGIN()
 gfxDrawerText::gfxDrawerText(const gfxCamera& camera, const gfxTextFace& face, const epiWChar* abc)
     : super(camera)
     , m_VertexBufferMappingText(m_VertexBufferText)
-    , m_TextAtlas(face.CreateRenderedAtlas(abc, 12))
+    , m_TextAtlas(face.CreateRenderedAtlas(abc, 18))
 {
     m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw);
 
@@ -178,6 +178,8 @@ gfxDrawerText::gfxDrawerText(const gfxCamera& camera, const gfxTextFace& face, c
 
 void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color)
 {
+    const epiFloat descender = m_TextAtlas.GetDescender() * textHeight;
+
     epiVec2f pos = position;
     const epiSize_t textlen = wcslen(text);
     for (epiS32 i = 0; i < textlen; ++i)
@@ -189,54 +191,60 @@ void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epi
         }
 
         const epiRect2f& uv = glyph->GetUV();
-        const epiFloat w = glyph->GetAspectRatio() * textHeight;
-        const epiFloat h = textHeight;
-        const epiFloat advance = glyph->GetAdvance().x * w;
+
+        const epiFloat h = textHeight * glyph->GetHeight();
+        const epiFloat w = glyph->GetAspectRatio() * h;
+
+        const epiFloat advanceX = glyph->GetAdvance().x * w;
+
         const epiFloat bearingX = glyph->GetBearing().x * w;
+        const epiFloat bearingY = glyph->GetBearing().y * h;
+
+        const epiVec2f pen(pos.x + bearingX, pos.y + bearingY - h - descender);
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(bearingX + pos.x, pos.y);
+            vertex.Position = epiVec2f(pen.x, pen.y);
             vertex.UV = epiVec2f(uv.Left, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(bearingX + pos.x + w, pos.y);
+            vertex.Position = epiVec2f(pen.x + w, pen.y);
             vertex.UV = epiVec2f(uv.Right, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(bearingX + pos.x + w, pos.y + h);
+            vertex.Position = epiVec2f(pen.x + w, pen.y + h);
             vertex.UV = epiVec2f(uv.Right, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(bearingX + pos.x + w, pos.y + h);
+            vertex.Position = epiVec2f(pen.x + w, pen.y + h);
             vertex.UV = epiVec2f(uv.Right, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(bearingX + pos.x, pos.y + h);
+            vertex.Position = epiVec2f(pen.x, pen.y + h);
             vertex.UV = epiVec2f(uv.Left, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(bearingX + pos.x, pos.y);
+            vertex.Position = epiVec2f(pen.x, pen.y);
             vertex.UV = epiVec2f(uv.Left, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
 
-        pos.x += advance;
+        pos.x += advanceX;
     }
 }
 
@@ -275,9 +283,7 @@ void gfxDrawerText::SceneEnd()
 #endif
 
         const epiS32 locationVP = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_view_projection");
-        epiMat4x4f P = m_Camera.GetProjectionMatrix();
-        P[0][0] *= m_Camera.GetAspectRatio();
-        const epiMat4x4f& VP = P * m_Camera.GetViewMatrix();
+        const epiMat4x4f& VP = m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix();
         glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
 
         glDrawArrays(GL_TRIANGLES, 0, 6 * textVerticesCount);

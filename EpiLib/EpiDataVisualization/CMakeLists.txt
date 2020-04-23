@@ -25,6 +25,10 @@ add_library(EpiDataVisualization
     EpiDataVisualization/Plot/Series/dvSeriesXY.h
     EpiDataVisualization/Plot/Series/dvSeriesXY.cpp
 
+    EpiDataVisualization/ViewModel/dvViewModelPlotBase.epi
+    EpiDataVisualization/ViewModel/dvViewModelPlotBase.h
+    EpiDataVisualization/ViewModel/dvViewModelPlotBase.cpp
+
     EpiDataVisualization/Drawer/dvDrawerPlotBase.epi
     EpiDataVisualization/Drawer/dvDrawerPlotBase.h
     EpiDataVisualization/Drawer/dvDrawerPlotBase.cpp

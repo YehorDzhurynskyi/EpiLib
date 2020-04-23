@@ -43,6 +43,8 @@ public:
 public:
     void CreateFace(gfxTextFace& target, const epiChar* ttf) const;
 
+    void Embolden();
+
 protected:
     FT_Library m_FTLibrary;
 

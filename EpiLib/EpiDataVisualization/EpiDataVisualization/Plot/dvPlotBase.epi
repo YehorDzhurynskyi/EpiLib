@@ -1,13 +1,5 @@
 class dvPlotBase
 {
-    [Virtual, ReadCallback("SuppressRef")]
-    {
-        epiVec2f RangeX;
-        epiVec2f RangeY;
-    }
-
-    epiRect2f ClipBox;
-
     [ReadOnly]
     epiPtrArray<dvSeriesBase> Series;
 };
