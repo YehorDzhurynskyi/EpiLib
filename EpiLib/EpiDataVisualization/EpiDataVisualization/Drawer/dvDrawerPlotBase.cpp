@@ -19,8 +19,9 @@ namespace
 
 using namespace epi;
 
-const epiU32 kMinGridLineCount = 6;
-const epiU32 kMaxGridLineCount = 13;
+const epiU32 kGridLineCountSecondary = 6;
+const epiU32 kGridLineCountMin = 6;
+const epiU32 kGridLineCountMax = 13;
 
 void CalcGridMarkup(epiFloat domain, epiFloat& step, epiU32& nLines)
 {
@@ -28,13 +29,13 @@ void CalcGridMarkup(epiFloat domain, epiFloat& step, epiU32& nLines)
     step = std::powf(10.0f, order);
     nLines = std::roundf(domain / step);
 
-    while (nLines < kMinGridLineCount || nLines > kMaxGridLineCount)
+    while (nLines < kGridLineCountMin || nLines > kGridLineCountMax)
     {
-        if (nLines > kMaxGridLineCount)
+        if (nLines > kGridLineCountMax)
         {
             step *= 2.0f;
         }
-        else if (nLines < kMinGridLineCount)
+        else if (nLines < kGridLineCountMin)
         {
             order -= 1.0f;
             step = std::powf(10.0f, order);
@@ -96,9 +97,9 @@ void dvDrawerPlotBase::Draw_Internal(const dvViewModelPlotBase& plot, gfxDrawerP
 
         drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack);
 
-        const epiFloat secondaryStepX = stepX / 3.0f;
+        const epiFloat secondaryStepX = stepX / static_cast<epiFloat>(kGridLineCountSecondary);
         epiFloat x2 = x + secondaryStepX;
-        for (epiU32 j = 0; j < 3; ++j)
+        for (epiU32 j = 0; j < kGridLineCountSecondary; ++j)
         {
             const epiFloat xx2 = ((x2 - box.Left) / domainX) * frame.GetWidth();
             epiVec2f p(frame.Left + xx2, frame.Bottom);
@@ -124,9 +125,9 @@ void dvDrawerPlotBase::Draw_Internal(const dvViewModelPlotBase& plot, gfxDrawerP
 
         drawerPrimitive.DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack);
 
-        const epiFloat secondaryStepY = stepY / 3.0f;
+        const epiFloat secondaryStepY = stepY / static_cast<epiFloat>(kGridLineCountSecondary);
         epiFloat y2 = y + secondaryStepY;
-        for (epiU32 j = 0; j < 3; ++j)
+        for (epiU32 j = 0; j < kGridLineCountSecondary; ++j)
         {
             const epiFloat yy2 = ((y2 - box.Bottom) / domainY) * frame.GetHeight();
             epiVec2f p(frame.Left, frame.Bottom + yy2);
