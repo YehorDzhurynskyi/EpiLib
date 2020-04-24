@@ -71,7 +71,13 @@ void dvDrawerPlotBase::Draw_Internal(const dvViewModelPlotBase& plot, gfxDrawerP
     const epiWString wstr2(str2.begin(), str2.end());
     drawerText.DrawText(wstr2.c_str(), { frame.Right - 100, 0.0f }, 24.0f);
 
-    epiFloat x = box.Left + domain - (nLines * step);
+    epiFloat offset = std::fabsf(std::fmodf(box.Left, step));
+    if (box.Left >= 0.0f)
+    {
+        offset = step - offset;
+    }
+
+    epiFloat x = box.Left + offset;
     for (epiU32 i = 0; i < nLines; ++i)
     {
         const epiFloat xx = ((x - box.Left) / domain) * frame.GetWidth();
