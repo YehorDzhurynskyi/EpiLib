@@ -7,8 +7,4 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxDrawer::gfxDrawer(const gfxCamera& camera)
-    : m_Camera(camera)
-{}
-
 EPI_NAMESPACE_END()

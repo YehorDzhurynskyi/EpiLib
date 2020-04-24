@@ -99,6 +99,18 @@ public:
         return epiVec2<T>(Right, Bottom);
     }
 
+    epiVec2<T> BottomLeft() const
+    {
+        Validate();
+        return epiVec2<T>(Left, Bottom);
+    }
+
+    epiVec2<T> TopRight() const
+    {
+        Validate();
+        return epiVec2<T>(Right, Top);
+    }
+
     T GetWidth() const
     {
         return Right - Left;
@@ -107,6 +119,15 @@ public:
     T GetHeight() const
     {
         return Top - Bottom;
+    }
+
+    epiBool IsIn(const epiVec2<T>& vec) const
+    {
+        return
+            vec.x >= Left &&
+            vec.x <= Left &&
+            vec.y >= Bottom &&
+            vec.y <= Top;
     }
 
     friend epiRect2<T> operator*(const epiRect2<T>& lhs, epiFloat rhs)

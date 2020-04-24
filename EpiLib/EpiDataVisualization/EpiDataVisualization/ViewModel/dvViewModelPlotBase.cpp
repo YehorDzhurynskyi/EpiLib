@@ -67,4 +67,9 @@ void dvViewModelPlotBase::SetZoomY_Callback(epiFloat value)
     m_Zoom.y = value;
 }
 
+epiRect2f dvViewModelPlotBase::GetWorkingBox_Callback() const
+{
+    return GetClipBox() * GetZoom() + GetOrigin();
+}
+
 EPI_NAMESPACE_END()

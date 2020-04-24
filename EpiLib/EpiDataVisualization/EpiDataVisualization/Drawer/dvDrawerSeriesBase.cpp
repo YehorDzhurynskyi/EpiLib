@@ -73,9 +73,8 @@ struct VertexLine
 
 EPI_NAMESPACE_BEGIN()
 
-dvDrawerSeriesBase::dvDrawerSeriesBase(const gfxCamera& camera)
-    : super(camera)
-    , m_VertexBufferMappingLineStrip(m_VertexBufferLineStrip)
+dvDrawerSeriesBase::dvDrawerSeriesBase()
+    : m_VertexBufferMappingLineStrip(m_VertexBufferLineStrip)
 {
     m_VertexBufferLineStrip.Create(nullptr, sizeof(VertexLine) * kMaxLineVerticesCount, gfxVertexBufferUsage::DynamicDraw);
 
@@ -102,22 +101,18 @@ void dvDrawerSeriesBase::Draw_Internal(const dvPlotBase& plot, const dvSeriesBas
 
 void dvDrawerSeriesBase::SceneBegin()
 {
-    super::SceneBegin();
-
     m_VertexBufferMappingLineStrip.Map(gfxVertexBufferMapAccess::WriteOnly);
 }
 
-void dvDrawerSeriesBase::SceneEnd()
+void dvDrawerSeriesBase::SceneEnd(const gfxCamera& camera)
 {
-    super::SceneEnd();
-
     const epiSize_t lineStripVerticesCount = m_VertexBufferMappingLineStrip.UnMap() / sizeof(VertexLine);
 
     {
         gfxBindableScoped scope(m_ShaderProgramLineStrip, m_VertexArrayLineStrip);
 
         const GLint locationVP = glGetUniformLocation(m_ShaderProgramLineStrip.GetProgramID(), "u_view_projection");
-        const epiMat4x4f& VP = m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix();
+        const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
 
         glDrawArrays(GL_LINE_STRIP, 0, lineStripVerticesCount);

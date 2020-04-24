@@ -1,15 +1,15 @@
-#include "EpiGraphics/pch.h"
+#include "EpiUI/pch.h"
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/Camera/gfxCameraUI.h"
-#include "EpiGraphics/Camera/gfxCameraUI.cxx"
+#include "EpiUI/uiCamera.h"
+#include "EpiUI/uiCamera.cxx"
 EPI_GENREGION_END(include)
 
 #include <glm/gtc/matrix_transform.hpp>
 
 EPI_NAMESPACE_BEGIN()
 
-epiMat4x4f gfxCameraUI::GetProjectionMatrix_Internal() const
+epiMat4x4f uiCamera::GetProjectionMatrix_Internal() const
 {
     const epiRect2f& rect = GetFrameDimensionVirtual();
     const epiVec2f& tl = rect.TopLeft();

@@ -1,22 +1,22 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/Camera/gfxCameraUI.hxx"
+#include "EpiUI/uiCamera.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphics/Camera/gfxCamera.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxCameraUI : public gfxCamera
+class uiCamera : public gfxCamera
 {
-EPI_GENREGION_BEGIN(gfxCameraUI)
+EPI_GENREGION_BEGIN(uiCamera)
 public:
-    EPI_GENHIDDEN_gfxCameraUI()
+    EPI_GENHIDDEN_uiCamera()
 
-    constexpr static MetaTypeID TypeID{0xaa6ed86e};
+    constexpr static MetaTypeID TypeID{0x12ce033b};
 
-    enum gfxCameraUI_PIDs
+    enum uiCamera_PIDs
     {
         PID_FrameDimensionPhysical = 0xc6386992,
         PID_FrameDimensionVirtual = 0x20eafb6c,
@@ -27,7 +27,7 @@ protected:
     epiRect2f m_FrameDimensionPhysical;
     epiRect2f m_FrameDimensionVirtual;
 
-EPI_GENREGION_END(gfxCameraUI)
+EPI_GENREGION_END(uiCamera)
 
 protected:
     epiMat4x4f GetProjectionMatrix_Internal() const override;

@@ -24,10 +24,11 @@ public:
         PID_ClipBottom = 0x30ad1bef,
         PID_ZoomX = 0x21ac8713,
         PID_ZoomY = 0x56abb785,
+        PID_WorkingBox = 0x3cf1ba0c,
         PID_ClipBox = 0xa7011dd3,
         PID_Origin = 0xd95d5328,
         PID_Zoom = 0x1719d64a,
-        PID_COUNT = 9
+        PID_COUNT = 10
     };
 
 protected:
@@ -43,6 +44,7 @@ protected:
     void SetZoomX_Callback(epiFloat value);
     epiFloat GetZoomY_Callback() const;
     void SetZoomY_Callback(epiFloat value);
+    epiRect2f GetWorkingBox_Callback() const;
 
 protected:
     epiRect2f m_ClipBox;

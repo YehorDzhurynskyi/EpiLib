@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
 
-#include "EpiGraphics/Camera/gfxCameraUI.h"
+#include "EpiUI/uiCamera.h"
 
 #include <glad/glad.h> // TODO: remove (should be available only from gfx)
 
@@ -48,25 +48,19 @@ void CalcGridMarkup(epiFloat domain, epiFloat& step, epiU32& nLines)
 
 EPI_NAMESPACE_BEGIN()
 
-dvDrawerPlotBase::dvDrawerPlotBase(const gfxCamera& camera)
-    : super(camera)
+void dvDrawerPlotBase::Draw(uiContext& uiContext, const dvViewPlotBase& plot)
 {
+    Draw_Internal(uiContext, plot);
 }
 
-void dvDrawerPlotBase::Draw(const dvViewModelPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive, gfxDrawerText& drawerText)
+void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase& plot)
 {
-    Draw_Internal(plot, drawerPrimitive, drawerText);
-}
-
-void dvDrawerPlotBase::Draw_Internal(const dvViewModelPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive, gfxDrawerText& drawerText)
-{
-    const epiRect2f& box = plot.GetClipBox() * plot.GetZoom() + plot.GetOrigin();
+    const epiRect2f& box = plot.GetViewModel().GetWorkingBox();
 
     const epiFloat domainX = box.GetWidth();
     const epiFloat domainY = box.GetHeight();
 
-    const gfxCameraUI* cameraUI = As<const gfxCameraUI>(&m_Camera);
-    const epiRect2f& frame = cameraUI->GetFrameDimensionVirtual();
+    const epiRect2f& frame = uiContext.GetCamera().GetFrameDimensionVirtual();
 
     epiFloat stepX;
     epiU32 nLinesX;
@@ -95,23 +89,23 @@ void dvDrawerPlotBase::Draw_Internal(const dvViewModelPlotBase& plot, gfxDrawerP
         const epiFloat xx = ((x - box.Left) / domainX) * frame.GetWidth();
         epiVec2f p(frame.Left + xx, frame.Bottom);
 
-        drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack);
+        uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack);
 
         const epiFloat secondaryStepX = stepX / static_cast<epiFloat>(kGridLineCountSecondary);
-        epiFloat x2 = x + secondaryStepX;
+        epiFloat x2 = x - stepX + secondaryStepX;
         for (epiU32 j = 0; j < kGridLineCountSecondary; ++j)
         {
             const epiFloat xx2 = ((x2 - box.Left) / domainX) * frame.GetWidth();
             epiVec2f p(frame.Left + xx2, frame.Bottom);
 
-            drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.5f));
+            uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.5f));
 
             x2 += secondaryStepX;
         }
 
         const epiString str = fmt::format("{:.{}f}", x, fpWidthX);
         const epiWString wstr(str.begin(), str.end());
-        drawerText.DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
+        uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
 
         x += stepX;
     }
@@ -123,23 +117,23 @@ void dvDrawerPlotBase::Draw_Internal(const dvViewModelPlotBase& plot, gfxDrawerP
         const epiFloat yy = ((y - box.Bottom) / domainY) * frame.GetHeight();
         epiVec2f p(frame.Left, frame.Bottom + yy);
 
-        drawerPrimitive.DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack);
+        uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack);
 
         const epiFloat secondaryStepY = stepY / static_cast<epiFloat>(kGridLineCountSecondary);
-        epiFloat y2 = y + secondaryStepY;
+        epiFloat y2 = y - stepY + secondaryStepY;
         for (epiU32 j = 0; j < kGridLineCountSecondary; ++j)
         {
             const epiFloat yy2 = ((y2 - box.Bottom) / domainY) * frame.GetHeight();
             epiVec2f p(frame.Left, frame.Bottom + yy2);
 
-            drawerPrimitive.DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.5f));
+            uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.5f));
 
             y2 += secondaryStepY;
         }
 
         const epiString str = fmt::format("{:.{}f}", y, fpWidthY);
         const epiWString wstr(str.begin(), str.end());
-        drawerText.DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
+        uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
 
         y += stepY;
     }

@@ -4,6 +4,8 @@ class gfxCamera
     {
         epiMat4x4f ProjectionMatrix;
         epiMat4x4f ViewMatrix;
+        epiMat4x4f ProjectionMatrixInverse;
+        epiMat4x4f ViewMatrixInverse;
     }
 
     epiVec3f Position;

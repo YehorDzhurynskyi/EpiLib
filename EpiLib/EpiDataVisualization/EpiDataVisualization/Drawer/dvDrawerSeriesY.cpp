@@ -9,11 +9,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-dvDrawerSeriesY::dvDrawerSeriesY(const gfxCamera& camera)
-    : super(camera)
-{
-}
-
 void dvDrawerSeriesY::Draw_Internal(const dvPlotBase& plot, const dvSeriesBase& series)
 {
     epiAssert(series.Is(dvSeriesY::TypeID), "series should be instance of dvSeriesY");

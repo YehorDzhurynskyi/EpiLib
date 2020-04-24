@@ -29,6 +29,10 @@ add_library(EpiDataVisualization
     EpiDataVisualization/ViewModel/dvViewModelPlotBase.h
     EpiDataVisualization/ViewModel/dvViewModelPlotBase.cpp
 
+    EpiDataVisualization/View/dvViewPlotBase.epi
+    EpiDataVisualization/View/dvViewPlotBase.h
+    EpiDataVisualization/View/dvViewPlotBase.cpp
+
     EpiDataVisualization/Drawer/dvDrawerPlotBase.epi
     EpiDataVisualization/Drawer/dvDrawerPlotBase.h
     EpiDataVisualization/Drawer/dvDrawerPlotBase.cpp
@@ -55,6 +59,7 @@ target_include_directories(EpiDataVisualization
 target_link_libraries(EpiDataVisualization
     PUBLIC
         EpiCore
+        EpiUI
         EpiGraphics
 )
 

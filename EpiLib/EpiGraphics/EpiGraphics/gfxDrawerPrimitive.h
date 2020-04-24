@@ -33,13 +33,14 @@ public:
 EPI_GENREGION_END(gfxDrawerPrimitive)
 
 public:
-    gfxDrawerPrimitive(const gfxCamera& camera);
+    gfxDrawerPrimitive();
+    // TODO: rule of 6
 
 public:
     void DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color = Color::kLightBlue);
 
-    void SceneBegin() override;
-    void SceneEnd() override;
+    void SceneBegin();
+    void SceneEnd(const gfxCamera& camera);
 
 private:
     gfxVertexArray m_VertexArrayLines;

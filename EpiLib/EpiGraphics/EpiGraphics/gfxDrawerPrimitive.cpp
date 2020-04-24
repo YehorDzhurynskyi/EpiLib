@@ -360,9 +360,8 @@ struct VertexLine
 
 EPI_NAMESPACE_BEGIN()
 
-gfxDrawerPrimitive::gfxDrawerPrimitive(const gfxCamera& camera)
-    : super(camera)
-    , m_VertexBufferMappingLines(m_VertexBufferLines)
+gfxDrawerPrimitive::gfxDrawerPrimitive()
+    : m_VertexBufferMappingLines(m_VertexBufferLines)
 {
     m_VertexBufferLines.Create(nullptr, sizeof(VertexLine) * 2 * kMaxLineCount, gfxVertexBufferUsage::DynamicDraw);
 
@@ -391,22 +390,18 @@ void gfxDrawerPrimitive::DrawLine(const epiVec2f& p1, const epiVec2f& p2, const 
 
 void gfxDrawerPrimitive::SceneBegin()
 {
-    super::SceneBegin();
-
     m_VertexBufferMappingLines.Map(gfxVertexBufferMapAccess::WriteOnly);
 }
 
-void gfxDrawerPrimitive::SceneEnd()
+void gfxDrawerPrimitive::SceneEnd(const gfxCamera& camera)
 {
-    super::SceneEnd();
-
     const epiSize_t lineVerticesCount = m_VertexBufferMappingLines.UnMap() / sizeof(VertexLine);
 
     {
         gfxBindableScoped scope(m_ShaderProgramLines, m_VertexArrayLines);
 
         const GLint locationVP = glGetUniformLocation(m_ShaderProgramLines.GetProgramID(), "u_view_projection");
-        const epiMat4x4f& VP = m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix();
+        const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
 
         glDrawArrays(GL_LINES, 0, 2 * lineVerticesCount);

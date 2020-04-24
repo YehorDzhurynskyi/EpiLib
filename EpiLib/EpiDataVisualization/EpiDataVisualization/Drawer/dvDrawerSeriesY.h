@@ -24,9 +24,6 @@ public:
 EPI_GENREGION_END(dvDrawerSeriesY)
 
 public:
-    dvDrawerSeriesY(const gfxCamera& camera);
-
-public:
     void Draw_Internal(const dvPlotBase& plot, const dvSeriesBase& series) override;
 };
 

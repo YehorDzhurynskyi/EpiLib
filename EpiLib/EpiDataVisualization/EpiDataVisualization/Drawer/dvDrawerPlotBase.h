@@ -4,7 +4,10 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/Drawer/dvDrawerPlotBase.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/ViewModel/dvViewModelPlotBase.h"
+#include "EpiDataVisualization/View/dvViewPlotBase.h"
+
+#include "EpiUI/uiContext.h"
+
 #include "EpiGraphics/gfxDrawer.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -27,13 +30,10 @@ public:
 EPI_GENREGION_END(dvDrawerPlotBase)
 
 public:
-    dvDrawerPlotBase(const gfxCamera& camera);
-
-public:
-    void Draw(const dvViewModelPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive, gfxDrawerText& drawerText);
+    void Draw(uiContext& uiContext, const dvViewPlotBase& plot);
 
 protected:
-    virtual void Draw_Internal(const dvViewModelPlotBase& plot, gfxDrawerPrimitive& drawerPrimitive, gfxDrawerText& drawerText);
+    virtual void Draw_Internal(uiContext& uiContext, const dvViewPlotBase& plot);
 };
 
 EPI_NAMESPACE_END()

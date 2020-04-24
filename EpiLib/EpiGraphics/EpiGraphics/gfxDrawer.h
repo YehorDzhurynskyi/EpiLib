@@ -24,16 +24,6 @@ public:
     };
 
 EPI_GENREGION_END(gfxDrawer)
-
-public:
-    gfxDrawer(const gfxCamera& camera);
-
-public:
-    virtual void SceneBegin() {}
-    virtual void SceneEnd() {}
-
-protected:
-    const gfxCamera& m_Camera; // TODO: move to epi
 };
 
 EPI_NAMESPACE_END()

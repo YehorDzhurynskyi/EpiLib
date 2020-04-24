@@ -1,0 +1,12 @@
+class uiContext
+{
+    [ReadOnly]
+    {
+        gfxDrawerText DrawerText;
+        gfxDrawerPrimitive DrawerPrimitive;
+
+        uiCamera Camera;
+
+        epiPtrArray<uiWidget> Children;
+    }
+};

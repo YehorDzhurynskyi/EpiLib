@@ -1,4 +1,4 @@
-class gfxCameraUI : gfxCamera
+class uiCamera : gfxCamera
 {
     epiRect2f FrameDimensionPhysical;
     epiRect2f FrameDimensionVirtual;

@@ -155,10 +155,8 @@ struct VertexText
 
 EPI_NAMESPACE_BEGIN()
 
-gfxDrawerText::gfxDrawerText(const gfxCamera& camera, const gfxTextFace& face, const epiWChar* abc)
-    : super(camera)
-    , m_VertexBufferMappingText(m_VertexBufferText)
-    , m_TextAtlas(face.CreateRenderedAtlas(abc, 18))
+gfxDrawerText::gfxDrawerText()
+    : m_VertexBufferMappingText(m_VertexBufferText)
 {
     m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw);
 
@@ -174,6 +172,11 @@ gfxDrawerText::gfxDrawerText(const gfxCamera& camera, const gfxTextFace& face, c
     }
 
     m_ShaderProgramText = CreateTextProgram();
+}
+
+void gfxDrawerText::CreateAtlas(const gfxTextFace& face, const epiWChar* abc, epiU32 fontSize)
+{
+    m_TextAtlas = face.CreateRenderedAtlas(abc, fontSize);
 }
 
 void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color)
@@ -250,15 +253,11 @@ void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epi
 
 void gfxDrawerText::SceneBegin()
 {
-    super::SceneBegin();
-
     m_VertexBufferMappingText.Map(gfxVertexBufferMapAccess::WriteOnly);
 }
 
-void gfxDrawerText::SceneEnd()
+void gfxDrawerText::SceneEnd(const gfxCamera& camera)
 {
-    super::SceneEnd();
-
     const epiSize_t textVerticesCount = m_VertexBufferMappingText.UnMap() / sizeof(VertexText);
 
     {
@@ -283,7 +282,7 @@ void gfxDrawerText::SceneEnd()
 #endif
 
         const epiS32 locationVP = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_view_projection");
-        const epiMat4x4f& VP = m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix();
+        const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
 
         glDrawArrays(GL_TRIANGLES, 0, 6 * textVerticesCount);

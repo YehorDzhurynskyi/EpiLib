@@ -18,7 +18,7 @@ gfxTextFace::~gfxTextFace()
     FT_Done_Face(m_Face);
 }
 
-void gfxTextFace::PrepareFontMetrics(epiS32 fontSize) const
+void gfxTextFace::PrepareFontMetrics(epiU32 fontSize) const
 {
 #if 0
     FT_Matrix matrix = {
@@ -45,7 +45,7 @@ void gfxTextFace::PrepareFontMetrics(epiS32 fontSize) const
     }
 }
 
-gfxTextRenderedGlyph gfxTextFace::CreateRenderedGlyph(const epiWChar ch, epiS32 fontSize) const
+gfxTextRenderedGlyph gfxTextFace::CreateRenderedGlyph(const epiWChar ch, epiU32 fontSize) const
 {
     gfxTextRenderedGlyph target;
 
@@ -88,7 +88,7 @@ gfxTextRenderedGlyph gfxTextFace::CreateRenderedGlyph(const epiWChar ch, epiS32 
     return target;
 }
 
-gfxTextRenderedABC gfxTextFace::CreateRenderedABC(const epiWChar* abc, epiS32 fontSize) const
+gfxTextRenderedABC gfxTextFace::CreateRenderedABC(const epiWChar* abc, epiU32 fontSize) const
 {
     gfxTextRenderedABC target;
 
@@ -111,7 +111,7 @@ gfxTextRenderedABC gfxTextFace::CreateRenderedABC(const epiWChar* abc, epiS32 fo
 }
 
 #if 1
-gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText, epiS32 fontSize) const
+gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText, epiU32 fontSize) const
 {
     gfxTextRenderedAtlas target;
 
@@ -217,7 +217,7 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
     return target;
 }
 #else
-gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText, epiS32 fontSize) const
+gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText, epiU32 fontSize) const
 {
     gfxTextRenderedAtlas target;
 

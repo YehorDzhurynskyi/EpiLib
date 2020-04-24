@@ -30,13 +30,14 @@ public:
 EPI_GENREGION_END(dvDrawerSeriesBase)
 
 public:
-    dvDrawerSeriesBase(const gfxCamera& camera);
+    dvDrawerSeriesBase();
+    // TODO: rule of 6
 
 public:
     void Draw(const dvPlotBase& plot, const dvSeriesBase& series);
 
-    void SceneBegin() override;
-    void SceneEnd() override;
+    void SceneBegin();
+    void SceneEnd(const gfxCamera& camera);
 
 protected:
     virtual void Draw_Internal(const dvPlotBase& plot, const dvSeriesBase& series);

@@ -9,6 +9,11 @@ class dvViewModelPlotBase
 
         epiFloat ZoomX;
         epiFloat ZoomY;
+
+        [ReadOnly]
+        {
+            epiRect2f WorkingBox;
+        }
     }
 
     epiRect2f ClipBox;

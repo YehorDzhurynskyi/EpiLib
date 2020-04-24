@@ -1,0 +1,12 @@
+class uiWidget
+{
+    [Virtual]
+    {
+        epiVec2f Position;
+
+        epiFloat Width;
+        epiFloat Height;
+    }
+
+    epiRect2f BBox;
+};

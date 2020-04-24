@@ -34,15 +34,20 @@ public:
 EPI_GENREGION_END(gfxDrawerText)
 
 public:
-    gfxDrawerText(const gfxCamera& camera, const gfxTextFace& face, const epiWChar* abc);
+    gfxDrawerText();
+    // TODO: rule of 6
 
 public:
     void DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color = Color::kDarkGray);
 
-    void SceneBegin() override;
-    void SceneEnd() override;
+    void SceneBegin();
+    void SceneEnd(const gfxCamera& camera);
+
+    // TODO: move to proper place
+    void CreateAtlas(const gfxTextFace& face, const epiWChar* abc, epiU32 fontSize);
 
 protected:
+    // TODO: move to proper place
     gfxTextRenderedAtlas m_TextAtlas;
 
 private:
