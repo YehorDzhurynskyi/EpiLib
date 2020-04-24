@@ -17,8 +17,31 @@ EPI_GENREGION_END(include)
 namespace
 {
 
+using namespace epi;
+
 const epiU32 kMinGridLineCount = 6;
 const epiU32 kMaxGridLineCount = 13;
+
+void CalcGridMarkup(epiFloat domain, epiFloat& step, epiU32& nLines)
+{
+    epiFloat order = std::floorf(std::log10f(domain));
+    step = std::powf(10.0f, order);
+    nLines = std::roundf(domain / step);
+
+    while (nLines < kMinGridLineCount || nLines > kMaxGridLineCount)
+    {
+        if (nLines > kMaxGridLineCount)
+        {
+            step *= 2.0f;
+        }
+        else if (nLines < kMinGridLineCount)
+        {
+            order -= 1.0f;
+            step = std::powf(10.0f, order);
+        }
+        nLines = std::roundf(domain / step);
+    }
+}
 
 }
 
@@ -38,58 +61,86 @@ void dvDrawerPlotBase::Draw_Internal(const dvViewModelPlotBase& plot, gfxDrawerP
 {
     const epiRect2f& box = plot.GetClipBox() * plot.GetZoom() + plot.GetOrigin();
 
-    const epiFloat domain = box.GetWidth();
-    const epiFloat range = box.GetHeight();
-
-    epiFloat order = std::floorf(std::log10f(domain));
-    epiFloat step = std::powf(10.0f, order);
-    epiU32 nLines = std::roundf(domain / step);
-
-    while (nLines < kMinGridLineCount || nLines > kMaxGridLineCount)
-    {
-        if (nLines > kMaxGridLineCount)
-        {
-            step *= 2.0f;
-        }
-        else if (nLines < kMinGridLineCount)
-        {
-            order -= 1.0f;
-            step = std::powf(10.0f, order);
-        }
-        nLines = std::roundf(domain / step);
-    }
+    const epiFloat domainX = box.GetWidth();
+    const epiFloat domainY = box.GetHeight();
 
     const gfxCameraUI* cameraUI = As<const gfxCameraUI>(&m_Camera);
     const epiRect2f& frame = cameraUI->GetFrameDimensionVirtual();
 
-    const epiString str1 = fmt::format("{:.4f}", box.Left);
-    const epiString str2 = fmt::format("{:.4f}", box.Right);
+    epiFloat stepX;
+    epiU32 nLinesX;
+    CalcGridMarkup(domainX, stepX, nLinesX);
 
-    const epiWString wstr1(str1.begin(), str1.end());
-    drawerText.DrawText(wstr1.c_str(), { frame.Left, 0.0f }, 24.0f);
+    epiFloat stepY;
+    epiU32 nLinesY;
+    CalcGridMarkup(domainY, stepY, nLinesY);
 
-    const epiWString wstr2(str2.begin(), str2.end());
-    drawerText.DrawText(wstr2.c_str(), { frame.Right - 100, 0.0f }, 24.0f);
-
-    epiFloat offset = std::fabsf(std::fmodf(box.Left, step));
+    epiFloat offsetX = std::fabsf(std::fmodf(box.Left, stepX));
     if (box.Left >= 0.0f)
     {
-        offset = step - offset;
+        offsetX = stepX - offsetX;
     }
 
-    epiFloat x = box.Left + offset;
-    for (epiU32 i = 0; i < nLines; ++i)
+    epiFloat offsetY = std::fabsf(std::fmodf(box.Bottom, stepY));
+    if (box.Bottom >= 0.0f)
     {
-        const epiFloat xx = ((x - box.Left) / domain) * frame.GetWidth();
+        offsetY = stepY - offsetY;
+    }
+
+    epiFloat x = box.Left + offsetX;
+    const epiU32 fpWidthX = std::ceilf(std::fabsf(std::min(0.0f, std::log10f(stepX))));
+    for (epiU32 i = 0; i < nLinesX; ++i)
+    {
+        const epiFloat xx = ((x - box.Left) / domainX) * frame.GetWidth();
         epiVec2f p(frame.Left + xx, frame.Bottom);
 
-        drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kDarkGray);
+        drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack);
 
-        const epiString str = fmt::format("{:.4f}", x);
+        const epiFloat secondaryStepX = stepX / 3.0f;
+        epiFloat x2 = x + secondaryStepX;
+        for (epiU32 j = 0; j < 3; ++j)
+        {
+            const epiFloat xx2 = ((x2 - box.Left) / domainX) * frame.GetWidth();
+            epiVec2f p(frame.Left + xx2, frame.Bottom);
+
+            drawerPrimitive.DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.5f));
+
+            x2 += secondaryStepX;
+        }
+
+        const epiString str = fmt::format("{:.{}f}", x, fpWidthX);
         const epiWString wstr(str.begin(), str.end());
         drawerText.DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
 
-        x += step;
+        x += stepX;
+    }
+
+    epiFloat y = box.Bottom + offsetY;
+    const epiU32 fpWidthY = std::ceilf(std::fabsf(std::min(0.0f, std::log10f(stepY))));
+    for (epiU32 i = 0; i < nLinesY; ++i)
+    {
+        const epiFloat yy = ((y - box.Bottom) / domainY) * frame.GetHeight();
+        epiVec2f p(frame.Left, frame.Bottom + yy);
+
+        drawerPrimitive.DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack);
+
+        const epiFloat secondaryStepY = stepY / 3.0f;
+        epiFloat y2 = y + secondaryStepY;
+        for (epiU32 j = 0; j < 3; ++j)
+        {
+            const epiFloat yy2 = ((y2 - box.Bottom) / domainY) * frame.GetHeight();
+            epiVec2f p(frame.Left, frame.Bottom + yy2);
+
+            drawerPrimitive.DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.5f));
+
+            y2 += secondaryStepY;
+        }
+
+        const epiString str = fmt::format("{:.{}f}", y, fpWidthY);
+        const epiWString wstr(str.begin(), str.end());
+        drawerText.DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
+
+        y += stepY;
     }
 }
 
