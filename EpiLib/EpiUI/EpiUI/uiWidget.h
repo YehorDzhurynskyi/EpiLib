@@ -39,7 +39,7 @@ protected:
 EPI_GENREGION_END(uiWidget)
 
 public:
-    virtual void OnMousePrimary(const epiVec2f& mouseNDCCoord) {}
+    virtual void OnMousePrimary(const epiVec2f& mouseLocalUICoord) {}
     virtual void OnMouseWheel(epiFloat dZoom) {}
 };
 

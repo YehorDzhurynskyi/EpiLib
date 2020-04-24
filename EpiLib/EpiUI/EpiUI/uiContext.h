@@ -55,7 +55,8 @@ public:
     void SceneEnd();
 
 protected:
-    uiWidget* WidgetMouseOver() const;
+    epiVec2f CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord);
+    uiWidget* WidgetOverMouse(const epiVec2f& mouseUICoord) const;
 
 private:
     epiVec2f m_MouseNDCCoord;

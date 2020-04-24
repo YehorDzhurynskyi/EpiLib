@@ -14,15 +14,20 @@ void uiContext::OnMouseMove(const epiVec2f& mouseNDCCoord)
 
 void uiContext::OnMousePrimary(const epiVec2f& mouseNDCCoord)
 {
-    if (uiWidget* widget = WidgetMouseOver())
+    const epiVec2f& mouseUICoord = CalcMouseUICoordFromNDC(mouseNDCCoord);
+
+    if (uiWidget* widget = WidgetOverMouse(mouseUICoord))
     {
-        widget->OnMousePrimary(mouseNDCCoord);
+        epiVec2f mouseLocalUICoord = mouseUICoord;
+        widget->OnMousePrimary(mouseLocalUICoord);
     }
 }
 
 void uiContext::OnMouseWheel(epiFloat dZoom)
 {
-    if (uiWidget* widget = WidgetMouseOver())
+    const epiVec2f& mouseUICoord = CalcMouseUICoordFromNDC(m_MouseNDCCoord);
+
+    if (uiWidget* widget = WidgetOverMouse(mouseUICoord))
     {
         widget->OnMouseWheel(dZoom);
     }
@@ -40,13 +45,16 @@ void uiContext::SceneEnd()
     m_DrawerText.SceneEnd(m_Camera);
 }
 
-uiWidget* uiContext::WidgetMouseOver() const
+epiVec2f uiContext::CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord)
 {
     const epiMat4x4f& projInverse = m_Camera.GetProjectionMatrixInverse();
     const epiMat4x4f& viewInverse = m_Camera.GetViewMatrixInverse();
 
-    const epiVec2f mouseUICoord = viewInverse * projInverse * (epiVec4f{ m_MouseNDCCoord.x, m_MouseNDCCoord.y, 0.0f, 1.0f });
+    return viewInverse * projInverse * (epiVec4f{ mouseNDCCoord.x, mouseNDCCoord.y, 0.0f, 1.0f });
+}
 
+uiWidget* uiContext::WidgetOverMouse(const epiVec2f& mouseUICoord) const
+{
     auto it = std::find_if(m_Children.begin(), m_Children.end(), [&](const uiWidget* widget)
     {
         return widget->GetBBox().IsIn(mouseUICoord);

@@ -125,7 +125,7 @@ public:
     {
         return
             vec.x >= Left &&
-            vec.x <= Left &&
+            vec.x <= Right &&
             vec.y >= Bottom &&
             vec.y <= Top;
     }
