@@ -1,19 +1,8 @@
 class dvViewModelPlot : uiViewModel
 {
-    [Virtual, ReadCallback("SuppressRef")]
+    [Virtual, ReadOnly, ReadCallback("SuppressRef")]
     {
-        epiFloat ClipLeft;
-        epiFloat ClipTop;
-        epiFloat ClipRight;
-        epiFloat ClipBottom;
-
-        epiFloat ZoomX;
-        epiFloat ZoomY;
-
-        [ReadOnly]
-        {
-            epiRect2f WorkingBox;
-        }
+        epiRect2f WorkingBox;
     }
 
     [ReadOnly]
@@ -22,6 +11,8 @@ class dvViewModelPlot : uiViewModel
     }
 
     epiRect2f ClipBox;
+    epiRect2f BBox;
+
     epiVec2f Origin;
     epiVec2f Zoom;
 };

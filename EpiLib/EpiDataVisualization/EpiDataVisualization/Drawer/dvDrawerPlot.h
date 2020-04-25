@@ -30,10 +30,13 @@ public:
 EPI_GENREGION_END(dvDrawerPlot)
 
 public:
-    void Draw(uiContext& uiContext, const dvViewModelPlot& plot);
+    void Draw(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame);
 
 protected:
-    virtual void Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot);
+    virtual void Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame);
+
+protected:
+    void GridMarkup(epiFloat domain, epiFloat& outStep, epiU32& outNLines);
 };
 
 EPI_NAMESPACE_END()

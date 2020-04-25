@@ -19,59 +19,33 @@ EPI_GENREGION_END(include)
 namespace
 {
 
-using namespace epi;
-
 const epiU32 kGridLineCountSecondary = 6;
 const epiU32 kGridLineCountMin = 6;
 const epiU32 kGridLineCountMax = 13;
-
-void CalcGridMarkup(epiFloat domain, epiFloat& step, epiU32& nLines)
-{
-    epiFloat order = std::floorf(std::log10f(domain));
-    step = std::powf(10.0f, order);
-    nLines = std::roundf(domain / step);
-
-    while (nLines < kGridLineCountMin || nLines > kGridLineCountMax)
-    {
-        if (nLines > kGridLineCountMax)
-        {
-            step *= 2.0f;
-        }
-        else if (nLines < kGridLineCountMin)
-        {
-            order -= 1.0f;
-            step = std::powf(10.0f, order);
-        }
-        nLines = std::roundf(domain / step);
-    }
-}
 
 }
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlot::Draw(uiContext& uiContext, const dvViewModelPlot& plot)
+void dvDrawerPlot::Draw(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame)
 {
-    Draw_Internal(uiContext, plot);
+    Draw_Internal(uiContext, plot, frame);
 }
 
-void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot)
+void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame)
 {
     const epiRect2f& box = plot.GetWorkingBox();
 
     const epiFloat domainX = box.GetWidth();
     const epiFloat domainY = box.GetHeight();
 
-    // TODO: use local ui coord
-    const epiRect2f& frame = uiContext.GetCamera().GetFrameDimensionVirtual();
-
     epiFloat stepX;
     epiU32 nLinesX;
-    CalcGridMarkup(domainX, stepX, nLinesX);
+    GridMarkup(domainX, stepX, nLinesX);
 
     epiFloat stepY;
     epiU32 nLinesY;
-    CalcGridMarkup(domainY, stepY, nLinesY);
+    GridMarkup(domainY, stepY, nLinesY);
 
     epiFloat offsetX = std::fabsf(std::fmodf(box.Left, stepX));
     if (box.Left >= 0.0f)
@@ -146,8 +120,29 @@ void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& pl
         dvDrawerSeriesY drawer;
 
         drawer.SceneBegin();
-        drawer.Draw(uiContext, plot, *series);
+        drawer.Draw(uiContext, plot, *series, frame);
         drawer.SceneEnd(uiContext.GetCamera());
+    }
+}
+
+void dvDrawerPlot::GridMarkup(epiFloat domain, epiFloat& outStep, epiU32& outNLines)
+{
+    epiFloat order = std::floorf(std::log10f(domain));
+    outStep = std::powf(10.0f, order);
+    outNLines = std::roundf(domain / outStep);
+
+    while (outNLines < kGridLineCountMin || outNLines > kGridLineCountMax)
+    {
+        if (outNLines > kGridLineCountMax)
+        {
+            outStep *= 2.0f;
+        }
+        else if (outNLines < kGridLineCountMin)
+        {
+            order -= 1.0f;
+            outStep = std::powf(10.0f, order);
+        }
+        outNLines = std::roundf(domain / outStep);
     }
 }
 

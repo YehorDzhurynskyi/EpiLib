@@ -36,13 +36,13 @@ public:
     // TODO: rule of 6
 
 public:
-    void Draw(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series);
+    void Draw(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series, const epiRect2f& frame);
 
     void SceneBegin();
     void SceneEnd(const gfxCamera& camera);
 
 protected:
-    virtual void Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series) = 0;
+    virtual void Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series, const epiRect2f& frame) = 0;
     void DrawLineStrip(const epiVec2f& p, const Color& color);
 
 private:

@@ -32,10 +32,16 @@ add_library(EpiDataVisualization
     EpiDataVisualization/View/dvViewPlot.epi
     EpiDataVisualization/View/dvViewPlot.h
     EpiDataVisualization/View/dvViewPlot.cpp
+    EpiDataVisualization/View/dvViewPlotRealtime.epi
+    EpiDataVisualization/View/dvViewPlotRealtime.h
+    EpiDataVisualization/View/dvViewPlotRealtime.cpp
 
     EpiDataVisualization/Drawer/dvDrawerPlot.epi
     EpiDataVisualization/Drawer/dvDrawerPlot.h
     EpiDataVisualization/Drawer/dvDrawerPlot.cpp
+    EpiDataVisualization/Drawer/dvDrawerPlotRealtime.epi
+    EpiDataVisualization/Drawer/dvDrawerPlotRealtime.h
+    EpiDataVisualization/Drawer/dvDrawerPlotRealtime.cpp
     EpiDataVisualization/Drawer/dvDrawerSeriesBase.epi
     EpiDataVisualization/Drawer/dvDrawerSeriesBase.h
     EpiDataVisualization/Drawer/dvDrawerSeriesBase.cpp

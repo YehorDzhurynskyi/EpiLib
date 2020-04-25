@@ -45,10 +45,10 @@ void dvViewPlot::OnMouseWheel(epiFloat dZoom)
     const epiFloat domain = box.GetWidth();
     const epiFloat scale = 0.05f * std::powf(10.0f, std::log10f(domain) - 1.0f);
 
-    epiFloat zoom = vm.GetZoomX() - scale * dZoom;
-    zoom = std::clamp(zoom, 0.0001f, 1000000.0f); // TODO: use epi attrs force min max
+    epiVec2f& zoom = vm.GetZoom();
 
-    vm.SetZoomX(zoom);
+    zoom.x -= scale * dZoom;
+    zoom.x = std::clamp(zoom.x, 0.0001f, 1000000.0f); // TODO: use epi attrs force min max
 }
 
 epiVec2f dvViewPlot::CalcMouseWorldCoord(const epiVec2f& origin) const
