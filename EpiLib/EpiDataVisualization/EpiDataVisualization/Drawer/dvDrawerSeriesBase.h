@@ -5,7 +5,6 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h"
-#include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
 
 #include "EpiUI/uiContext.h"
 
@@ -36,14 +35,14 @@ public:
     // TODO: rule of 6
 
 public:
-    void Draw(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series, const epiRect2f& frame);
+    void Draw(uiContext& uiContext, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z = -50.0f);
 
     void SceneBegin();
     void SceneEnd(const gfxCamera& camera);
 
 protected:
-    virtual void Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series, const epiRect2f& frame) = 0;
-    void DrawLineStrip(const epiVec2f& p, const Color& color);
+    virtual void Draw_Internal(uiContext& uiContext, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z) = 0;
+    void DrawLineStrip(const epiVec2f& p, const Color& color, epiFloat z);
 
 private:
     gfxVertexArray m_VertexArrayLineStrip;

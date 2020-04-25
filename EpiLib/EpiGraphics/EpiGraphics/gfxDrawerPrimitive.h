@@ -37,7 +37,8 @@ public:
     // TODO: rule of 6
 
 public:
-    void DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color = Color::kLightBlue);
+    void DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color = Color::kLightBlue, epiFloat z = -100.0f);
+    void DrawQuad(const epiRect2f& rect, const Color& color = Color::kLightBlue, epiFloat z = -100.0f);
 
     void SceneBegin();
     void SceneEnd(const gfxCamera& camera);
@@ -47,8 +48,13 @@ private:
     gfxVertexBuffer m_VertexBufferLines;
     gfxShaderProgram m_ShaderProgramLines;
 
+    gfxVertexArray m_VertexArrayQuads;
+    gfxVertexBuffer m_VertexBufferQuads;
+    gfxShaderProgram m_ShaderProgramQuads;
+
 private:
     gfxVertexBufferMapping m_VertexBufferMappingLines;
+    gfxVertexBufferMapping m_VertexBufferMappingQuads;
 };
 
 EPI_NAMESPACE_END()

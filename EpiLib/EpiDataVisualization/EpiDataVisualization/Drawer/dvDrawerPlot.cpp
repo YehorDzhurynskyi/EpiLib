@@ -82,7 +82,7 @@ void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& pl
 
         const epiString str = fmt::format("{:.{}f}", x, fpWidthX);
         const epiWString wstr(str.begin(), str.end());
-        uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
+        uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 24.0f);
 
         x += stepX;
     }
@@ -110,7 +110,7 @@ void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& pl
 
         const epiString str = fmt::format("{:.{}f}", y, fpWidthY);
         const epiWString wstr(str.begin(), str.end());
-        uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
+        uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 24.0f);
 
         y += stepY;
     }
@@ -120,7 +120,7 @@ void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& pl
         dvDrawerSeriesY drawer;
 
         drawer.SceneBegin();
-        drawer.Draw(uiContext, plot, *series, frame);
+        drawer.Draw(uiContext, *series, box, frame);
         drawer.SceneEnd(uiContext.GetCamera());
     }
 }

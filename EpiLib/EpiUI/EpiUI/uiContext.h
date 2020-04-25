@@ -54,7 +54,7 @@ public:
     void SceneEnd();
 
 protected:
-    epiVec2f CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord) const;
+    epiVec2f CalcMouseUICoordFromMouseNDCCoord(const epiVec2f& mouseNDCCoord) const;
 
 private:
     epiVec2f m_MouseNDCCoord;

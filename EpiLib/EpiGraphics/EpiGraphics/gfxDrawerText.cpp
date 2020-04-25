@@ -10,13 +10,12 @@ namespace
 
 using namespace epi;
 
-#if 1
 const epiChar kShaderSourceVertexText[] = R"(
 #version 400 core
 
 uniform mat4 u_view_projection;
 
-layout(location = 0) in vec2 a_position;
+layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec2 a_uv;
 layout(location = 2) in vec4 a_color;
 
@@ -27,7 +26,7 @@ void main()
 {
     color = a_color;
     uv = a_uv;
-    gl_Position = u_view_projection * vec4(a_position, 0.0, 1.0);
+    gl_Position = u_view_projection * vec4(a_position, 1.0);
 }
 )";
 
@@ -87,45 +86,9 @@ void main()
    fragcolor = vec4(col.rgb, color.a * col.a);
 }
 )";
-#else
-const epiChar kShaderSourceVertexText[] = R"(
-#version 400 core
 
-layout(location = 0) in vec2 a_position;
-layout(location = 1) in vec2 a_uv;
-layout(location = 2) in vec4 a_color;
 
-uniform mat4 u_view_projection;
-
-out vec2 uv;
-out vec4 color;
-
-void main(void)
-{
-    gl_Position = u_view_projection * vec4(a_position, 0.0, 1.0);
-    uv = a_uv;
-    color = a_color;
-}
-)";
-
-const epiChar kShaderSourceTextPixel[] = R"(
-#version 400 core
-
-in vec2 uv;
-in vec4 color;
-
-out vec4 fragcolor;
-
-uniform sampler2D u_texture;
-
-void main(void)
-{
-    fragcolor = color * vec4(1.0, 1.0, 1.0, texture(u_texture, uv).r);
-}
-)";
-#endif
-
-gfxShaderProgram CreateTextProgram()
+gfxShaderProgram CreateProgramText()
 {
     gfxShader vertex;
     gfxShader pixel;
@@ -146,7 +109,7 @@ gfxShaderProgram CreateTextProgram()
 const epiU32 kMaxTextCount = 512;
 struct VertexText
 {
-    epiVec2f Position;
+    epiVec3f Position;
     epiVec2f UV;
     epiVec4f ColorTint;
 };
@@ -164,14 +127,14 @@ gfxDrawerText::gfxDrawerText()
         gfxBindableScoped scope(m_VertexArrayText, m_VertexBufferText);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(VertexText), (void*)offsetof(VertexText, Position));
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexText), (void*)offsetof(VertexText, Position));
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(VertexText), (void*)offsetof(VertexText, UV));
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 4, GL_FLOAT, false, sizeof(VertexText), (void*)offsetof(VertexText, ColorTint));
     }
 
-    m_ShaderProgramText = CreateTextProgram();
+    m_ShaderProgramText = CreateProgramText();
 }
 
 void gfxDrawerText::CreateAtlas(const gfxTextFace& face, const epiWChar* abc, epiU32 fontSize)
@@ -179,7 +142,7 @@ void gfxDrawerText::CreateAtlas(const gfxTextFace& face, const epiWChar* abc, ep
     m_TextAtlas = face.CreateRenderedAtlas(abc, fontSize);
 }
 
-void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color)
+void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color, epiFloat z)
 {
     const epiFloat descender = m_TextAtlas.GetDescender() * textHeight;
 
@@ -207,42 +170,42 @@ void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epi
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pen.x, pen.y);
+            vertex.Position = epiVec3f(pen.x, pen.y, z);
             vertex.UV = epiVec2f(uv.Left, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pen.x + w, pen.y);
+            vertex.Position = epiVec3f(pen.x + w, pen.y, z);
             vertex.UV = epiVec2f(uv.Right, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pen.x + w, pen.y + h);
+            vertex.Position = epiVec3f(pen.x + w, pen.y + h, z);
             vertex.UV = epiVec2f(uv.Right, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pen.x + w, pen.y + h);
+            vertex.Position = epiVec3f(pen.x + w, pen.y + h, z);
             vertex.UV = epiVec2f(uv.Right, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pen.x, pen.y + h);
+            vertex.Position = epiVec3f(pen.x, pen.y + h, z);
             vertex.UV = epiVec2f(uv.Left, uv.Top);
             vertex.ColorTint = color.GetColor();
         }
 
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
-            vertex.Position = epiVec2f(pen.x, pen.y);
+            vertex.Position = epiVec3f(pen.x, pen.y, z);
             vertex.UV = epiVec2f(uv.Left, uv.Bottom);
             vertex.ColorTint = color.GetColor();
         }
@@ -267,7 +230,6 @@ void gfxDrawerText::SceneEnd(const gfxCamera& camera)
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(locationSampler, 0);
 
-#if 1
         const epiS32 locationShift = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_shift");
         glUniform1f(locationShift, 0.0f);
 
@@ -279,7 +241,6 @@ void gfxDrawerText::SceneEnd(const gfxCamera& camera)
         const epiSize_t atlasH = m_TextAtlas.GetTexture().GetHeight();
         const epiVec2f pixelSize(1.0f / atlasW, 1.0f / atlasH);
         glUniform2fv(locationPixelSize, 1, &pixelSize[0]);
-#endif
 
         const epiS32 locationVP = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_view_projection");
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();

@@ -38,7 +38,7 @@ public:
     // TODO: rule of 6
 
 public:
-    void DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color = Color::kDarkGray);
+    void DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color = Color::kDarkGray, epiFloat z = -99.0f);
 
     void SceneBegin();
     void SceneEnd(const gfxCamera& camera);

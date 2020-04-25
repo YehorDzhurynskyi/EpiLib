@@ -17,7 +17,7 @@ using namespace epi;
 const epiChar kShaderSourceLineStripVertex[] = R"(
 #version 400 core
 
-layout(location = 0) in vec2 a_position;
+layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec4 a_color_tint;
 
 out vec4 color_tint;
@@ -26,7 +26,7 @@ uniform mat4 u_view_projection;
 
 void main(void)
 {
-    gl_Position = u_view_projection * vec4(a_position, 0.0, 1.0);
+    gl_Position = u_view_projection * vec4(a_position, 1.0);
     color_tint = a_color_tint;
 }
 )";
@@ -44,7 +44,7 @@ void main(void)
 }
 )";
 
-gfxShaderProgram CreateLinesProgram()
+gfxShaderProgram CreateProgramLineStrip()
 {
     gfxShader vertex;
     gfxShader pixel;
@@ -65,7 +65,7 @@ gfxShaderProgram CreateLinesProgram()
 const epiU32 kMaxLineStripVerticesCount = 16 * 1024;
 struct VertexLineStip
 {
-    epiVec2f Position;
+    epiVec3f Position;
     epiVec4f ColorTint;
 };
 
@@ -82,23 +82,25 @@ dvDrawerSeriesBase::dvDrawerSeriesBase()
         gfxBindableScoped scope(m_VertexArrayLineStrip, m_VertexBufferLineStrip);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(VertexLineStip), (void*)offsetof(VertexLineStip, Position));
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexLineStip), (void*)offsetof(VertexLineStip, Position));
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(VertexLineStip), (void*)offsetof(VertexLineStip, ColorTint));
     }
 
-    m_ShaderProgramLineStrip = CreateLinesProgram();
+    m_ShaderProgramLineStrip = CreateProgramLineStrip();
 }
 
-void dvDrawerSeriesBase::Draw(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series, const epiRect2f& frame)
+void dvDrawerSeriesBase::Draw(uiContext& uiContext, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
 {
-    Draw_Internal(uiContext, plot, series, frame);
+    Draw_Internal(uiContext, series, worldFrame, uiFrame, z);
 }
 
-void dvDrawerSeriesBase::DrawLineStrip(const epiVec2f& p, const Color& color)
+void dvDrawerSeriesBase::DrawLineStrip(const epiVec2f& p, const Color& color, epiFloat z)
 {
     VertexLineStip& v = m_VertexBufferMappingLineStrip.PushBack<VertexLineStip>();
-    v.Position = p;
+    v.Position.x = p.x;
+    v.Position.y = p.y;
+    v.Position.z = z;
     v.ColorTint = color.GetColor();
 }
 

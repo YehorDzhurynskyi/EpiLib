@@ -43,7 +43,7 @@ void dvViewPlot::OnMouseWheel(epiFloat dZoom)
     epi::dvViewModelPlot& vm = GetViewModel();
     const epiRect2f& box = vm.GetWorkingBox();
     const epiFloat domain = box.GetWidth();
-    const epiFloat scale = 0.05f * std::powf(10.0f, std::log10f(domain) - 1.0f);
+    const epiFloat scale = 0.5f * std::powf(10.0f, std::log10f(domain) - 1.0f);
 
     epiVec2f& zoom = vm.GetZoom();
 

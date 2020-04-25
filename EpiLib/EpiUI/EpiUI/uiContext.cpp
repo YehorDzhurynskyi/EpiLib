@@ -35,11 +35,11 @@ void uiContext::SceneBegin()
 
 void uiContext::SceneEnd()
 {
-    m_DrawerPrimitive.SceneEnd(m_Camera);
     m_DrawerText.SceneEnd(m_Camera);
+    m_DrawerPrimitive.SceneEnd(m_Camera);
 }
 
-epiVec2f uiContext::CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord) const
+epiVec2f uiContext::CalcMouseUICoordFromMouseNDCCoord(const epiVec2f& mouseNDCCoord) const
 {
     // TODO: cache matrices
     const epiMat4x4f& projInverse = m_Camera.GetProjectionMatrixInverse();
@@ -50,7 +50,7 @@ epiVec2f uiContext::CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord) const
 
 epiVec2f uiContext::GetMouseUICoord_Callback() const
 {
-    return CalcMouseUICoordFromNDC(m_MouseNDCCoord);
+    return CalcMouseUICoordFromMouseNDCCoord(m_MouseNDCCoord);
 }
 
 
