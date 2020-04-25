@@ -404,7 +404,7 @@ void gfxDrawerPrimitive::SceneEnd(const gfxCamera& camera)
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
 
-        glDrawArrays(GL_LINES, 0, 2 * lineVerticesCount);
+        glDrawArrays(GL_LINES, 0, lineVerticesCount);
     }
 }
 
