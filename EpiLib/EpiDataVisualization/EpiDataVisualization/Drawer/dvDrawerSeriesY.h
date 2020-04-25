@@ -24,7 +24,7 @@ public:
 EPI_GENREGION_END(dvDrawerSeriesY)
 
 public:
-    void Draw_Internal(uiContext& uiContext, const dvViewModelPlotBase& plot, const dvViewModelSeriesBase& series);
+    void Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series);
 };
 
 EPI_NAMESPACE_END()

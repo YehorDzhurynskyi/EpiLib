@@ -8,12 +8,9 @@ add_library(EpiDataVisualization
     EpiDataVisualization/Data/dvDataCollection.h
     EpiDataVisualization/Data/dvDataCollection.cpp
 
-    EpiDataVisualization/Plot/dvPlotBase.epi
-    EpiDataVisualization/Plot/dvPlotBase.h
-    EpiDataVisualization/Plot/dvPlotBase.cpp
-    EpiDataVisualization/Plot/dvPlotLine.epi
-    EpiDataVisualization/Plot/dvPlotLine.h
-    EpiDataVisualization/Plot/dvPlotLine.cpp
+    EpiDataVisualization/Plot/dvPlot.epi
+    EpiDataVisualization/Plot/dvPlot.h
+    EpiDataVisualization/Plot/dvPlot.cpp
 
     EpiDataVisualization/Plot/Series/dvSeriesBase.epi
     EpiDataVisualization/Plot/Series/dvSeriesBase.h
@@ -25,23 +22,20 @@ add_library(EpiDataVisualization
     EpiDataVisualization/Plot/Series/dvSeriesXY.h
     EpiDataVisualization/Plot/Series/dvSeriesXY.cpp
 
-    EpiDataVisualization/ViewModel/dvViewModelPlotBase.epi
-    EpiDataVisualization/ViewModel/dvViewModelPlotBase.h
-    EpiDataVisualization/ViewModel/dvViewModelPlotBase.cpp
+    EpiDataVisualization/ViewModel/dvViewModelPlot.epi
+    EpiDataVisualization/ViewModel/dvViewModelPlot.h
+    EpiDataVisualization/ViewModel/dvViewModelPlot.cpp
     EpiDataVisualization/ViewModel/dvViewModelSeriesBase.epi
     EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h
     EpiDataVisualization/ViewModel/dvViewModelSeriesBase.cpp
 
-    EpiDataVisualization/View/dvViewPlotBase.epi
-    EpiDataVisualization/View/dvViewPlotBase.h
-    EpiDataVisualization/View/dvViewPlotBase.cpp
+    EpiDataVisualization/View/dvViewPlot.epi
+    EpiDataVisualization/View/dvViewPlot.h
+    EpiDataVisualization/View/dvViewPlot.cpp
 
-    EpiDataVisualization/Drawer/dvDrawerPlotBase.epi
-    EpiDataVisualization/Drawer/dvDrawerPlotBase.h
-    EpiDataVisualization/Drawer/dvDrawerPlotBase.cpp
-    EpiDataVisualization/Drawer/dvDrawerPlotLine.epi
-    EpiDataVisualization/Drawer/dvDrawerPlotLine.h
-    EpiDataVisualization/Drawer/dvDrawerPlotLine.cpp
+    EpiDataVisualization/Drawer/dvDrawerPlot.epi
+    EpiDataVisualization/Drawer/dvDrawerPlot.h
+    EpiDataVisualization/Drawer/dvDrawerPlot.cpp
     EpiDataVisualization/Drawer/dvDrawerSeriesBase.epi
     EpiDataVisualization/Drawer/dvDrawerSeriesBase.h
     EpiDataVisualization/Drawer/dvDrawerSeriesBase.cpp

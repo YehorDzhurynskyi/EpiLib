@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/ViewModel/dvViewModelPlotBase.hxx"
+#include "EpiDataVisualization/ViewModel/dvViewModelPlot.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiUI/uiViewModel.h"
@@ -9,15 +9,15 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 class dvViewModelSeriesBase;
-class dvViewModelPlotBase : public uiViewModel
+class dvViewModelPlot : public uiViewModel
 {
-EPI_GENREGION_BEGIN(dvViewModelPlotBase)
+EPI_GENREGION_BEGIN(dvViewModelPlot)
 public:
-    EPI_GENHIDDEN_dvViewModelPlotBase()
+    EPI_GENHIDDEN_dvViewModelPlot()
 
-    constexpr static MetaTypeID TypeID{0x80ba64f};
+    constexpr static MetaTypeID TypeID{0x46670485};
 
-    enum dvViewModelPlotBase_PIDs
+    enum dvViewModelPlot_PIDs
     {
         PID_ClipLeft = 0xa31e15e1,
         PID_ClipTop = 0xb1714a23,
@@ -54,7 +54,7 @@ protected:
     epiVec2f m_Origin;
     epiVec2f m_Zoom;
 
-EPI_GENREGION_END(dvViewModelPlotBase)
+EPI_GENREGION_END(dvViewModelPlot)
 
 public:
     template<typename T, typename ...Args>

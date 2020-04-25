@@ -1,6 +1,6 @@
-class dvViewPlotBase : uiWidget
+class dvViewPlot : uiWidget
 {
-    dvViewModelPlotBase ViewModel;
+    dvViewModelPlot ViewModel;
 
     [Virtual, ReadOnly, ReadCallback("SuppressRef")]
     {

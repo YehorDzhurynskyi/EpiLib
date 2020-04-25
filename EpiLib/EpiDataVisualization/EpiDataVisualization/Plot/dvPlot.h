@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Plot/dvPlotBase.hxx"
+#include "EpiDataVisualization/Plot/dvPlot.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/Plot/Series/dvSeriesBase.h"
@@ -11,15 +11,15 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-class dvPlotBase : public Object
+class dvPlot : public Object
 {
-EPI_GENREGION_BEGIN(dvPlotBase)
+EPI_GENREGION_BEGIN(dvPlot)
 public:
-    EPI_GENHIDDEN_dvPlotBase()
+    EPI_GENHIDDEN_dvPlot()
 
-    constexpr static MetaTypeID TypeID{0x153dd6b7};
+    constexpr static MetaTypeID TypeID{0x6bf8062b};
 
-    enum dvPlotBase_PIDs
+    enum dvPlot_PIDs
     {
         PID_Series = 0x3dbc041b,
         PID_COUNT = 1
@@ -28,7 +28,7 @@ public:
 protected:
     epiPtrArray<dvSeriesBase> m_Series;
 
-EPI_GENREGION_END(dvPlotBase)
+EPI_GENREGION_END(dvPlot)
 
 public:
     template<typename T, typename ...Args>

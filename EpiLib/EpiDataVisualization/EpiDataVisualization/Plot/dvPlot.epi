@@ -1,4 +1,4 @@
-class dvPlotBase
+class dvPlot
 {
     [ReadOnly]
     epiPtrArray<dvSeriesBase> Series;

@@ -9,7 +9,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerSeriesY::Draw_Internal(uiContext& uiContext, const dvViewModelPlotBase& plot, const dvViewModelSeriesBase& series)
+void dvDrawerSeriesY::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series)
 {
     epiAssert(series.GetModel()->Is(dvSeriesY::TypeID), "series should be instance of dvSeriesY");
 

@@ -90,7 +90,7 @@ dvDrawerSeriesBase::dvDrawerSeriesBase()
     m_ShaderProgramLineStrip = CreateLinesProgram();
 }
 
-void dvDrawerSeriesBase::Draw(uiContext& uiContext, const dvViewModelPlotBase& plot, const dvViewModelSeriesBase& series)
+void dvDrawerSeriesBase::Draw(uiContext& uiContext, const dvViewModelPlot& plot, const dvViewModelSeriesBase& series)
 {
     Draw_Internal(uiContext, plot, series);
 }

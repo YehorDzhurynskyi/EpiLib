@@ -1,8 +1,8 @@
 #include "EpiDataVisualization/pch.h"
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerPlotBase.h"
-#include "EpiDataVisualization/Drawer/dvDrawerPlotBase.cxx"
+#include "EpiDataVisualization/Drawer/dvDrawerPlot.h"
+#include "EpiDataVisualization/Drawer/dvDrawerPlot.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/Drawer/dvDrawerSeriesY.h"
@@ -50,12 +50,12 @@ void CalcGridMarkup(epiFloat domain, epiFloat& step, epiU32& nLines)
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlotBase::Draw(uiContext& uiContext, const dvViewModelPlotBase& plot)
+void dvDrawerPlot::Draw(uiContext& uiContext, const dvViewModelPlot& plot)
 {
     Draw_Internal(uiContext, plot);
 }
 
-void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewModelPlotBase& plot)
+void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot)
 {
     const epiRect2f& box = plot.GetWorkingBox();
 
