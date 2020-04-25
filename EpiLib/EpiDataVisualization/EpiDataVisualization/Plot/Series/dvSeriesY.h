@@ -26,7 +26,7 @@ public:
 
 protected:
     dvDataCollection m_DataY;
-    epiFloat m_StepX{0.0f};
+    epiFloat m_StepX{0.001};
 
 EPI_GENREGION_END(dvSeriesY)
 

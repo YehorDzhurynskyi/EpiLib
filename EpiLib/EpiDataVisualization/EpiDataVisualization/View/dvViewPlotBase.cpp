@@ -54,14 +54,9 @@ void dvViewPlotBase::OnMouseWheel(epiFloat dZoom)
 epiVec2f dvViewPlotBase::CalcMouseWorldCoord(const epiVec2f& origin) const
 {
     const dvViewModelPlotBase& vm = GetViewModel();
-
     const epiRect2f& workingBox = vm.GetWorkingBox();
-    const epiVec2f sizeWorld(workingBox.GetWidth(), workingBox.GetHeight());
 
-    const epiVec2f sizeLocalUI(m_BBox.GetWidth(), m_BBox.GetHeight());
-
-    const epiVec2f mouseLocalUICoord = GetMouseLocalUICoord();
-    const epiVec2f mouseWorldCoord = ((mouseLocalUICoord - m_BBox.BottomLeft()) / sizeLocalUI) * sizeWorld + origin;
+    const epiVec2f mouseWorldCoord = ((GetMouseLocalUICoord() - m_BBox.BottomLeft()) / m_BBox.GetSize()) * workingBox.GetSize() + origin;
 
     return mouseWorldCoord;
 }

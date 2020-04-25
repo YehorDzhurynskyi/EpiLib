@@ -9,11 +9,26 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerSeriesY::Draw_Internal(const dvPlotBase& plot, const dvSeriesBase& series)
+void dvDrawerSeriesY::Draw_Internal(uiContext& uiContext, const dvViewModelPlotBase& plot, const dvViewModelSeriesBase& series)
 {
-    epiAssert(series.Is(dvSeriesY::TypeID), "series should be instance of dvSeriesY");
+    epiAssert(series.GetModel()->Is(dvSeriesY::TypeID), "series should be instance of dvSeriesY");
 
-    const dvSeriesY& seriesY = static_cast<const dvSeriesY&>(series);
+    const epiRect2f& box = plot.GetWorkingBox();
+
+    // TODO: use local ui coord
+    const epiRect2f& frame = uiContext.GetCamera().GetFrameDimensionVirtual();
+
+    epiFloat x = 0.0f;
+    const dvSeriesY* seriesY = static_cast<const dvSeriesY*>(series.GetModel());
+    for (epiFloat y : seriesY->GetDataY())
+    {
+        const epiVec2f world(x, y);
+        const epiVec2f yy = ((world - box.BottomLeft()) / box.GetSize()) * frame.GetSize() + frame.BottomLeft();
+
+        DrawLineStrip(yy, series.GetColor());
+
+        x += seriesY->GetStepX();
+    }
 }
 
 EPI_NAMESPACE_END()

@@ -28,7 +28,20 @@ protected:
 EPI_GENREGION_END(dvDataCollection)
 
 public:
+    epiBool IsEmpty() const;
+    epiSize_t Size() const;
+
     void PushBack(epiFloat value);
+    void Clear();
+    void Reserve(epiSize_t size);
+
+    epiFloat operator[](const epiS32 index) const;
+
+public:
+    auto begin() -> typename decltype(m_Buffer)::iterator;
+    auto end() -> typename decltype(m_Buffer)::iterator;
+    auto begin() const -> typename decltype(m_Buffer)::const_iterator;
+    auto end() const -> typename decltype(m_Buffer)::const_iterator;
 };
 
 EPI_NAMESPACE_END()

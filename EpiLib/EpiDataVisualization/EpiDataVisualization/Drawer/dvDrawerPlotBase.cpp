@@ -5,6 +5,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/Drawer/dvDrawerPlotBase.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiDataVisualization/Drawer/dvDrawerSeriesY.h"
+
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
 
@@ -48,18 +50,19 @@ void CalcGridMarkup(epiFloat domain, epiFloat& step, epiU32& nLines)
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlotBase::Draw(uiContext& uiContext, const dvViewPlotBase& plot)
+void dvDrawerPlotBase::Draw(uiContext& uiContext, const dvViewModelPlotBase& plot)
 {
     Draw_Internal(uiContext, plot);
 }
 
-void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase& plot)
+void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewModelPlotBase& plot)
 {
-    const epiRect2f& box = plot.GetViewModel().GetWorkingBox();
+    const epiRect2f& box = plot.GetWorkingBox();
 
     const epiFloat domainX = box.GetWidth();
     const epiFloat domainY = box.GetHeight();
 
+    // TODO: use local ui coord
     const epiRect2f& frame = uiContext.GetCamera().GetFrameDimensionVirtual();
 
     epiFloat stepX;
@@ -89,7 +92,7 @@ void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase&
         const epiFloat xx = ((x - box.Left) / domainX) * frame.GetWidth();
         epiVec2f p(frame.Left + xx, frame.Bottom);
 
-        uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack);
+        uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack * Color(1.0f, 1.0f, 1.0f, 0.35f));
 
         const epiFloat secondaryStepX = stepX / static_cast<epiFloat>(kGridLineCountSecondary);
         epiFloat x2 = x - stepX + secondaryStepX;
@@ -98,7 +101,7 @@ void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase&
             const epiFloat xx2 = ((x2 - box.Left) / domainX) * frame.GetWidth();
             epiVec2f p(frame.Left + xx2, frame.Bottom);
 
-            uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.5f));
+            uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.15f));
 
             x2 += secondaryStepX;
         }
@@ -117,7 +120,7 @@ void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase&
         const epiFloat yy = ((y - box.Bottom) / domainY) * frame.GetHeight();
         epiVec2f p(frame.Left, frame.Bottom + yy);
 
-        uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack);
+        uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack * Color(1.0f, 1.0f, 1.0f, 0.35f));
 
         const epiFloat secondaryStepY = stepY / static_cast<epiFloat>(kGridLineCountSecondary);
         epiFloat y2 = y - stepY + secondaryStepY;
@@ -126,7 +129,7 @@ void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase&
             const epiFloat yy2 = ((y2 - box.Bottom) / domainY) * frame.GetHeight();
             epiVec2f p(frame.Left, frame.Bottom + yy2);
 
-            uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.5f));
+            uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.15f));
 
             y2 += secondaryStepY;
         }
@@ -136,6 +139,15 @@ void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase&
         uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 20.0f);
 
         y += stepY;
+    }
+
+    for (const auto& series : plot.GetSeries())
+    {
+        dvDrawerSeriesY drawer;
+
+        drawer.SceneBegin();
+        drawer.Draw(uiContext, plot, *series);
+        drawer.SceneEnd(uiContext.GetCamera());
     }
 }
 

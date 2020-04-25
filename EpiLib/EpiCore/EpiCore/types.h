@@ -121,6 +121,11 @@ public:
         return Top - Bottom;
     }
 
+    epiVec2<T> GetSize() const
+    {
+        return epiVec2<T>(GetWidth(), GetHeight());
+    }
+
     epiBool IsIn(const epiVec2<T>& vec) const
     {
         return

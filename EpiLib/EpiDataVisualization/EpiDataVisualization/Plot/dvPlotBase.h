@@ -29,6 +29,14 @@ protected:
     epiPtrArray<dvSeriesBase> m_Series;
 
 EPI_GENREGION_END(dvPlotBase)
+
+public:
+    template<typename T, typename ...Args>
+    T& Add(Args&& ...args)
+    {
+        static_assert(std::is_base_of_v<dvSeriesBase, T>);
+        return *static_cast<T*>(m_Series.PushBack(new T(std::forward<Args&&>(args)...)));
+    }
 };
 
 EPI_NAMESPACE_END()

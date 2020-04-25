@@ -4,6 +4,10 @@ add_library(EpiUI
     EpiUI/pch.h
     EpiUI/pch.cpp
 
+    EpiUI/uiViewModel.epi
+    EpiUI/uiViewModel.h
+    EpiUI/uiViewModel.cpp
+
     EpiUI/uiAction.epi
     EpiUI/uiAction.h
     EpiUI/uiAction.cpp

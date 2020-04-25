@@ -4,11 +4,12 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/ViewModel/dvViewModelPlotBase.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiCore/ObjectModel/Object.h"
+#include "EpiUI/uiViewModel.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class dvViewModelPlotBase : public Object
+class dvViewModelSeriesBase;
+class dvViewModelPlotBase : public uiViewModel
 {
 EPI_GENREGION_BEGIN(dvViewModelPlotBase)
 public:
@@ -25,10 +26,11 @@ public:
         PID_ZoomX = 0x21ac8713,
         PID_ZoomY = 0x56abb785,
         PID_WorkingBox = 0x3cf1ba0c,
+        PID_Series = 0x3dbc041b,
         PID_ClipBox = 0xa7011dd3,
         PID_Origin = 0xd95d5328,
         PID_Zoom = 0x1719d64a,
-        PID_COUNT = 10
+        PID_COUNT = 11
     };
 
 protected:
@@ -47,11 +49,20 @@ protected:
     epiRect2f GetWorkingBox_Callback() const;
 
 protected:
+    epiPtrArray<dvViewModelSeriesBase> m_Series;
     epiRect2f m_ClipBox;
     epiVec2f m_Origin;
     epiVec2f m_Zoom;
 
 EPI_GENREGION_END(dvViewModelPlotBase)
+
+public:
+    template<typename T, typename ...Args>
+    T& Add(Args&& ...args)
+    {
+        static_assert(std::is_base_of_v<dvViewModelSeriesBase, T>);
+        return *static_cast<T*>(m_Series.PushBack(new T(std::forward<Args&&>(args)...)));
+    }
 };
 
 EPI_NAMESPACE_END()

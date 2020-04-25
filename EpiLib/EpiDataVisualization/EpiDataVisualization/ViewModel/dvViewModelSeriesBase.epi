@@ -1,0 +1,5 @@
+class dvViewModelSeriesBase : uiViewModel
+{
+    dvSeriesBase* Model;
+    Color Color;
+};

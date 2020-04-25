@@ -28,6 +28,9 @@ add_library(EpiDataVisualization
     EpiDataVisualization/ViewModel/dvViewModelPlotBase.epi
     EpiDataVisualization/ViewModel/dvViewModelPlotBase.h
     EpiDataVisualization/ViewModel/dvViewModelPlotBase.cpp
+    EpiDataVisualization/ViewModel/dvViewModelSeriesBase.epi
+    EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h
+    EpiDataVisualization/ViewModel/dvViewModelSeriesBase.cpp
 
     EpiDataVisualization/View/dvViewPlotBase.epi
     EpiDataVisualization/View/dvViewPlotBase.h

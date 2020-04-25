@@ -285,7 +285,7 @@ void gfxDrawerText::SceneEnd(const gfxCamera& camera)
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
 
-        glDrawArrays(GL_TRIANGLES, 0, 2 * textVerticesCount);
+        glDrawArrays(GL_TRIANGLES, 0, textVerticesCount);
     }
 }
 
