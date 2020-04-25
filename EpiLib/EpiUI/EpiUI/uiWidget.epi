@@ -6,7 +6,18 @@ class uiWidget
 
         epiFloat Width;
         epiFloat Height;
+
+        [ReadOnly, ReadCallback("SuppressRef")]
+        {
+            epiVec2f MouseLocalUICoord;
+        }
     }
 
     epiRect2f BBox;
+
+    [ReadOnly]
+    {
+        uiWidget* Parent;
+        epiPtrArray<uiWidget> Children;
+    }
 };

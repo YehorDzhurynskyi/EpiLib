@@ -5,7 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiUI/uiCamera.h"
-#include "EpiUI/uiWidget.h"
+#include "EpiUI/uiPage.h"
 
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
@@ -27,36 +27,34 @@ public:
         PID_DrawerText = 0xfed690dc,
         PID_DrawerPrimitive = 0x897a35b8,
         PID_Camera = 0x3cb0eb33,
-        PID_Children = 0x58e1d3ec,
-        PID_COUNT = 4
+        PID_Page = 0xb438191e,
+        PID_MouseUICoord = 0x668167cc,
+        PID_COUNT = 5
     };
+
+protected:
+    epiVec2f GetMouseUICoord_Callback() const;
 
 protected:
     gfxDrawerText m_DrawerText;
     gfxDrawerPrimitive m_DrawerPrimitive;
     uiCamera m_Camera;
-    epiPtrArray<uiWidget> m_Children;
+    uiPage m_Page;
 
 EPI_GENREGION_END(uiContext)
 
 public:
-    template<typename T, typename ...Args>
-    T& Add(Args&& ...args)
-    {
-        static_assert(std::is_base_of_v<uiWidget, T>);
-        return *static_cast<T*>(m_Children.PushBack(new T(std::forward<Args&&>(args)...)));
-    }
+    void Update();
 
     void OnMouseMove(const epiVec2f& mouseNDCCoord);
-    void OnMousePrimary(const epiVec2f& mouseNDCCoord);
+    void OnMousePrimary(MouseAction action);
     void OnMouseWheel(epiFloat dZoom);
 
     void SceneBegin();
     void SceneEnd();
 
 protected:
-    epiVec2f CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord);
-    uiWidget* WidgetOverMouse(const epiVec2f& mouseUICoord) const;
+    epiVec2f CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord) const;
 
 private:
     epiVec2f m_MouseNDCCoord;

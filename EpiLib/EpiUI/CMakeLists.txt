@@ -4,6 +4,10 @@ add_library(EpiUI
     EpiUI/pch.h
     EpiUI/pch.cpp
 
+    EpiUI/uiAction.epi
+    EpiUI/uiAction.h
+    EpiUI/uiAction.cpp
+
     EpiUI/uiCamera.epi
     EpiUI/uiCamera.h
     EpiUI/uiCamera.cpp
@@ -15,6 +19,10 @@ add_library(EpiUI
     EpiUI/uiWidget.epi
     EpiUI/uiWidget.h
     EpiUI/uiWidget.cpp
+
+    EpiUI/uiPage.epi
+    EpiUI/uiPage.h
+    EpiUI/uiPage.cpp
 )
 get_target_property(EpiUI_SRCs EpiUI SOURCES) 
 epi_add_precompiled_header(EpiUI EpiUI/pch.h SOURCE_CXX EpiUI/pch.cpp)

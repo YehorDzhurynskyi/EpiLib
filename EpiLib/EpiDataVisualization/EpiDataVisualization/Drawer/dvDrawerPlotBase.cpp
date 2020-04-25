@@ -84,7 +84,7 @@ void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase&
 
     epiFloat x = box.Left + offsetX;
     const epiU32 fpWidthX = std::ceilf(std::fabsf(std::min(0.0f, std::log10f(stepX))));
-    for (epiU32 i = 0; i < nLinesX; ++i)
+    for (epiU32 i = 0; i < nLinesX + 1; ++i)
     {
         const epiFloat xx = ((x - box.Left) / domainX) * frame.GetWidth();
         epiVec2f p(frame.Left + xx, frame.Bottom);
@@ -112,7 +112,7 @@ void dvDrawerPlotBase::Draw_Internal(uiContext& uiContext, const dvViewPlotBase&
 
     epiFloat y = box.Bottom + offsetY;
     const epiU32 fpWidthY = std::ceilf(std::fabsf(std::min(0.0f, std::log10f(stepY))));
-    for (epiU32 i = 0; i < nLinesY; ++i)
+    for (epiU32 i = 0; i < nLinesY + 1; ++i)
     {
         const epiFloat yy = ((y - box.Bottom) / domainY) * frame.GetHeight();
         epiVec2f p(frame.Left, frame.Bottom + yy);

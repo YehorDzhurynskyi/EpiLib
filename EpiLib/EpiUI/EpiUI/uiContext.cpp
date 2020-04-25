@@ -7,30 +7,24 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+void uiContext::Update()
+{
+    m_Page.Update();
+}
+
 void uiContext::OnMouseMove(const epiVec2f& mouseNDCCoord)
 {
     m_MouseNDCCoord = mouseNDCCoord;
 }
 
-void uiContext::OnMousePrimary(const epiVec2f& mouseNDCCoord)
+void uiContext::OnMousePrimary(MouseAction action)
 {
-    const epiVec2f& mouseUICoord = CalcMouseUICoordFromNDC(mouseNDCCoord);
-
-    if (uiWidget* widget = WidgetOverMouse(mouseUICoord))
-    {
-        epiVec2f mouseLocalUICoord = mouseUICoord;
-        widget->OnMousePrimary(mouseLocalUICoord);
-    }
+    m_Page.OnMousePrimary(action);
 }
 
 void uiContext::OnMouseWheel(epiFloat dZoom)
 {
-    const epiVec2f& mouseUICoord = CalcMouseUICoordFromNDC(m_MouseNDCCoord);
-
-    if (uiWidget* widget = WidgetOverMouse(mouseUICoord))
-    {
-        widget->OnMouseWheel(dZoom);
-    }
+    m_Page.OnMouseWheel(dZoom);
 }
 
 void uiContext::SceneBegin()
@@ -45,21 +39,19 @@ void uiContext::SceneEnd()
     m_DrawerText.SceneEnd(m_Camera);
 }
 
-epiVec2f uiContext::CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord)
+epiVec2f uiContext::CalcMouseUICoordFromNDC(const epiVec2f& mouseNDCCoord) const
 {
+    // TODO: cache matrices
     const epiMat4x4f& projInverse = m_Camera.GetProjectionMatrixInverse();
     const epiMat4x4f& viewInverse = m_Camera.GetViewMatrixInverse();
 
     return viewInverse * projInverse * (epiVec4f{ mouseNDCCoord.x, mouseNDCCoord.y, 0.0f, 1.0f });
 }
 
-uiWidget* uiContext::WidgetOverMouse(const epiVec2f& mouseUICoord) const
+epiVec2f uiContext::GetMouseUICoord_Callback() const
 {
-    auto it = std::find_if(m_Children.begin(), m_Children.end(), [&](const uiWidget* widget)
-    {
-        return widget->GetBBox().IsIn(mouseUICoord);
-    });
-    return it != m_Children.end() ? *it : nullptr;
+    return CalcMouseUICoordFromNDC(m_MouseNDCCoord);
 }
+
 
 EPI_NAMESPACE_END()

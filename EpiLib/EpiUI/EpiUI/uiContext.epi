@@ -7,6 +7,9 @@ class uiContext
 
         uiCamera Camera;
 
-        epiPtrArray<uiWidget> Children;
+        uiPage Page;
+
+        [Virtual, ReadCallback("SuppressRef")]
+        epiVec2f MouseUICoord;
     }
 };

@@ -1,0 +1,4 @@
+class uiPage : uiWidget
+{
+    uiContext* UIContext;
+};

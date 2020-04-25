@@ -4,6 +4,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiUI/uiWidget.hxx"
 EPI_GENREGION_END(include)
 
+#include "EpiUI/uiAction.h"
+
 #include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -21,8 +23,11 @@ public:
         PID_Position = 0xbf5a86a3,
         PID_Width = 0x4ddb6a2b,
         PID_Height = 0xf2e1e039,
+        PID_MouseLocalUICoord = 0xb08d2bad,
         PID_BBox = 0xdffc9862,
-        PID_COUNT = 4
+        PID_Parent = 0x3a226579,
+        PID_Children = 0x58e1d3ec,
+        PID_COUNT = 7
     };
 
 protected:
@@ -32,15 +37,34 @@ protected:
     void SetWidth_Callback(epiFloat value);
     epiFloat GetHeight_Callback() const;
     void SetHeight_Callback(epiFloat value);
+    epiVec2f GetMouseLocalUICoord_Callback() const;
 
 protected:
     epiRect2f m_BBox;
+    uiWidget* m_Parent{nullptr};
+    epiPtrArray<uiWidget> m_Children;
 
 EPI_GENREGION_END(uiWidget)
 
 public:
-    virtual void OnMousePrimary(const epiVec2f& mouseLocalUICoord) {}
-    virtual void OnMouseWheel(epiFloat dZoom) {}
+    virtual void Update();
+
+    template<typename T, typename ...Args>
+    T& Add(Args&& ...args)
+    {
+        static_assert(std::is_base_of_v<uiWidget, T>);
+        T& widget = *static_cast<T*>(m_Children.PushBack(new T(std::forward<Args&&>(args)...)));
+        widget.m_Parent = this;
+        return widget;
+    }
+
+    virtual void OnMousePrimary(MouseAction action);
+    virtual void OnMouseWheel(epiFloat dZoom);
+
+protected:
+    virtual epiVec2f GetMouseLocalUICoord_Internal() const;
+
+    uiWidget* WidgetOverMouse(const epiVec2f& mouseUICoord) const;
 };
 
 EPI_NAMESPACE_END()
