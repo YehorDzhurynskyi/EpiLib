@@ -52,6 +52,16 @@ void dvViewPlot::OnMouseWheel(epiFloat dZoom)
     vm.SetZoom(zoom);
 }
 
+void dvViewPlot::OnMouseFocus(epiBool focused)
+{
+    super::OnMouseFocus(focused);
+
+    if (!focused)
+    {
+        m_MouseDragActive = false;
+    }
+}
+
 epiVec2f dvViewPlot::CalcMouseWorldCoord(const epiVec2f& origin) const
 {
     const dvViewModelPlot& vm = GetViewModel();

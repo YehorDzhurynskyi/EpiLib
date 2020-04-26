@@ -49,6 +49,7 @@ public:
     void OnMouseMove(const epiVec2f& mouseNDCCoord);
     void OnMousePrimary(MouseAction action);
     void OnMouseWheel(epiFloat dZoom);
+    void OnMouseFocus(epiBool focused);
 
     void SceneBegin();
     void SceneEnd();

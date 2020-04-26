@@ -62,6 +62,14 @@ void uiWidget::OnMouseWheel(epiFloat dZoom)
     }
 }
 
+void uiWidget::OnMouseFocus(epiBool focused)
+{
+    for (auto& w : m_Children)
+    {
+        w->OnMouseFocus(focused);
+    }
+}
+
 epiVec2f uiWidget::GetMouseLocalUICoord_Callback() const
 {
     return GetMouseLocalUICoord_Internal();

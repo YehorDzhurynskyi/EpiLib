@@ -38,6 +38,7 @@ public:
 
     void OnMousePrimary(MouseAction action) override;
     void OnMouseWheel(epiFloat dZoom) override;
+    void OnMouseFocus(epiBool focused) override;
 
 private:
     epiVec2f CalcMouseWorldCoord(const epiVec2f& origin) const;

@@ -27,6 +27,11 @@ void uiContext::OnMouseWheel(epiFloat dZoom)
     m_Page.OnMouseWheel(dZoom);
 }
 
+void uiContext::OnMouseFocus(epiBool focused)
+{
+    m_Page.OnMouseFocus(focused);
+}
+
 void uiContext::SceneBegin()
 {
     m_DrawerText.SceneBegin();

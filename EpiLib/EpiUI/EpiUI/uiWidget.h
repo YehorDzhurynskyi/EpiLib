@@ -60,6 +60,7 @@ public:
 
     virtual void OnMousePrimary(MouseAction action);
     virtual void OnMouseWheel(epiFloat dZoom);
+    virtual void OnMouseFocus(epiBool focused);
 
 protected:
     virtual epiVec2f GetMouseLocalUICoord_Internal() const;
