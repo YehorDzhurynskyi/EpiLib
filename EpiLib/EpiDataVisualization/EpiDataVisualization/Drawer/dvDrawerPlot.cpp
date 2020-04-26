@@ -34,7 +34,7 @@ void dvDrawerPlot::Draw(uiContext& uiContext, const dvViewModelPlot& plot, const
 
 void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame)
 {
-    const epiRect2f& box = plot.GetWorkingBox();
+    const epiRect2f& box = plot.GetClipBox();
 
     const epiFloat domainX = box.GetWidth();
     const epiFloat domainY = box.GetHeight();

@@ -70,8 +70,8 @@ void dvDrawerPlotRealtime::Draw_Internal(uiContext& uiContext, const dvViewModel
         drawer.SceneEnd(uiContext.GetCamera());
     }
 
-    const epiVec2f tl = ((plot.GetWorkingBox().TopLeft() - box.BottomLeft()) / box.GetSize()) * frameTimeLine.GetSize() + frameTimeLine.BottomLeft();
-    const epiVec2f br = ((plot.GetWorkingBox().BottomRight() - box.BottomLeft()) / box.GetSize()) * frameTimeLine.GetSize() + frameTimeLine.BottomLeft();
+    const epiVec2f tl = ((plot.GetClipBox().TopLeft() - box.BottomLeft()) / box.GetSize()) * frameTimeLine.GetSize() + frameTimeLine.BottomLeft();
+    const epiVec2f br = ((plot.GetClipBox().BottomRight() - box.BottomLeft()) / box.GetSize()) * frameTimeLine.GetSize() + frameTimeLine.BottomLeft();
 
     epiRect2f overlay(tl, br);
     uiContext.GetDrawerPrimitive().DrawQuad(overlay, Color(0x80, 0x80, 0x80, 0x60), -1.0f);

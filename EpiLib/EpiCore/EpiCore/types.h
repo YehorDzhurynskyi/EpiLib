@@ -183,6 +183,26 @@ public:
         return rect;
     }
 
+    epiRect2<T>& operator*=(const epiVec2<T>& rhs)
+    {
+        Left *=  rhs.x;
+        Top *= rhs.y;
+        Right *= rhs.x;
+        Bottom *= rhs.y;
+
+        return *this;
+    }
+
+    epiRect2<T>& operator/=(const epiVec2<T>& rhs)
+    {
+        Left /= rhs.x;
+        Top /= rhs.y;
+        Right /= rhs.x;
+        Bottom /= rhs.y;
+
+        return *this;
+    }
+
     friend epiRect2<T> operator*(const epiRect2<T>& lhs, const epiVec2<T>& rhs)
     {
         epiRect2<T> rect;
@@ -203,6 +223,30 @@ public:
         rect.Top = rhs.Top * lhs.y;
         rect.Right = rhs.Right * lhs.x;
         rect.Bottom = rhs.Bottom * lhs.y;
+
+        return rect;
+    }
+
+    friend epiRect2<T> operator/(const epiRect2<T>& lhs, const epiVec2<T>& rhs)
+    {
+        epiRect2<T> rect;
+
+        rect.Left = lhs.Left / rhs.x;
+        rect.Top = lhs.Top / rhs.y;
+        rect.Right = lhs.Right / rhs.x;
+        rect.Bottom = lhs.Bottom / rhs.y;
+
+        return rect;
+    }
+
+    friend epiRect2<T> operator/(const epiVec2<T>& lhs, const epiRect2<T>& rhs)
+    {
+        epiRect2<T> rect;
+
+        rect.Left = rhs.Left / lhs.x;
+        rect.Top = rhs.Top / lhs.y;
+        rect.Right = rhs.Right / lhs.x;
+        rect.Bottom = rhs.Bottom / lhs.y;
 
         return rect;
     }

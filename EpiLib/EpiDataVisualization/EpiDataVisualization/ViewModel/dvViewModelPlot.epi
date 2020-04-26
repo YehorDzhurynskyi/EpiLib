@@ -1,8 +1,8 @@
 class dvViewModelPlot : uiViewModel
 {
-    [Virtual, ReadOnly, ReadCallback("SuppressRef")]
+    [Virtual, ReadCallback("SuppressRef")]
     {
-        epiRect2f WorkingBox;
+        epiRect2f ClipBox;
     }
 
     [ReadOnly]
@@ -10,9 +10,11 @@ class dvViewModelPlot : uiViewModel
         epiPtrArray<dvViewModelSeriesBase> Series;
     }
 
-    epiRect2f ClipBox;
     epiRect2f BBox;
 
-    epiVec2f Origin;
-    epiVec2f Zoom;
+    [WriteCallback]
+    {
+        epiVec2f Origin;
+        epiVec2f Zoom;
+    }
 };
