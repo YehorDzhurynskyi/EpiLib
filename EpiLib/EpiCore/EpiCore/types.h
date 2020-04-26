@@ -72,8 +72,10 @@ public:
     {
         epiBool isValid = true;
 
-        epiValidate(GetWidth() > T{}, "Width should be greater than 0");
-        epiValidate(GetHeight() > T{}, "Height should be greater than 0");
+        epiValidate(Left <= Right, "Left should be <= Right");
+        epiValidate(Bottom <= Top, "Bottom should be <= Top");
+        epiValidate(GetWidth() >= T{}, "Width should be >= 0");
+        epiValidate(GetHeight() >= T{}, "Height should be >= 0");
 
         return isValid;
     }
@@ -83,6 +85,15 @@ public:
         , Top(tl.y)
         , Right(br.x)
         , Bottom(br.y)
+    {
+        Validate();
+    }
+
+    epiRect2(T left, T top, T right, T bottom)
+        : Left(left)
+        , Top(top)
+        , Right(right)
+        , Bottom(bottom)
     {
         Validate();
     }
@@ -124,6 +135,11 @@ public:
     epiVec2<T> GetSize() const
     {
         return epiVec2<T>(GetWidth(), GetHeight());
+    }
+
+    epiBool IsEmpty() const
+    {
+        return GetWidth() <= T{} || GetHeight() <= T{};
     }
 
     epiBool IsIn(const epiVec2<T>& vec) const
@@ -249,6 +265,60 @@ public:
         rect.Bottom = rhs.Bottom / lhs.y;
 
         return rect;
+    }
+
+    friend epiRect2<T>& operator&=(epiRect2<T>& a, const epiRect2<T>& b)
+    {
+        T left = std::max(a.Left, b.Left);
+        T bottom = std::max(a.Bottom, b.Bottom);
+        T right = std::min(a.Right, b.Right);
+        T top = std::min(a.Top, b.Top);
+
+        a.Left = left;
+        a.Bottom = bottom;
+        a.Right = right;
+        a.Top = top;
+
+        if (a.IsEmpty())
+        {
+            a = epiRect2<T>();
+        }
+
+        return a;
+    }
+
+    friend epiRect2<T>& operator|=(epiRect2<T>& a, const epiRect2<T>& b)
+    {
+        if (a.IsEmpty())
+        {
+            a = b;
+        }
+        else if (!b.IsEmpty())
+        {
+            T left = std::min(a.Left, b.Left);
+            T bottom = std::min(a.Bottom, b.Bottom);
+            T right = std::max(a.Right, b.Right);
+            T top = std::max(a.Top, b.Top);
+
+            a.Left = left;
+            a.Bottom = bottom;
+            a.Right = right;
+            a.Top = top;
+        }
+
+        return a;
+    }
+
+    friend epiRect2<T> operator&(const epiRect2<T>& a, const epiRect2<T>& b)
+    {
+        epiRect2<T> c = a;
+        return c &= b;
+    }
+
+    friend epiRect2<T> operator|(const epiRect2<T>& a, const epiRect2<T>& b)
+    {
+        epiRect2<T> c = a;
+        return c |= b;
     }
 
 public:

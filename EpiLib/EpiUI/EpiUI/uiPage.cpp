@@ -15,4 +15,14 @@ epiVec2f uiPage::GetMouseLocalUICoord_Internal() const
     return m_UIContext->GetMouseUICoord();
 }
 
+void uiPage::OnResize(const epiRect2f& parentBBox)
+{
+    SetBBox(parentBBox);
+
+    for (auto& w : m_Children)
+    {
+        w->OnResize(parentBBox);
+    }
+}
+
 EPI_NAMESPACE_END()

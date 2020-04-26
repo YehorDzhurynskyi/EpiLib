@@ -50,6 +50,7 @@ public:
     void OnMousePrimary(MouseAction action);
     void OnMouseWheel(epiFloat dZoom);
     void OnMouseFocus(epiBool focused);
+    void OnResize(const epiRect2f& frame);
 
     void SceneBegin();
     void SceneEnd();

@@ -32,6 +32,11 @@ void uiContext::OnMouseFocus(epiBool focused)
     m_Page.OnMouseFocus(focused);
 }
 
+void uiContext::OnResize(const epiRect2f& frame)
+{
+    m_Page.OnResize(frame);
+}
+
 void uiContext::SceneBegin()
 {
     m_DrawerText.SceneBegin();

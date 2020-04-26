@@ -10,6 +10,13 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+// TODO: move to epi
+enum class uiSizePolicy
+{
+    Fixed,
+    Expand
+};
+
 class uiWidget : public Object
 {
 EPI_GENREGION_BEGIN(uiWidget)
@@ -61,11 +68,32 @@ public:
     virtual void OnMousePrimary(MouseAction action);
     virtual void OnMouseWheel(epiFloat dZoom);
     virtual void OnMouseFocus(epiBool focused);
+    virtual void OnResize(const epiRect2f& parentBBox);
 
 protected:
     virtual epiVec2f GetMouseLocalUICoord_Internal() const;
 
     uiWidget* WidgetOverMouse(const epiVec2f& mouseUICoord) const;
+
+    using FindNeighborClosestComparator = std::function<epiBool(const uiWidget*, const uiWidget*)>;
+    uiWidget* FindNeighborClosest(FindNeighborClosestComparator&& comparator) const;
+
+    uiWidget* FindNeighborClosestLeft() const;
+    uiWidget* FindNeighborClosestRight() const;
+    uiWidget* FindNeighborClosestBottom() const;
+    uiWidget* FindNeighborClosestTop() const;
+
+protected:
+    // TODO: move to epi
+    uiSizePolicy m_SizePolicyX{uiSizePolicy::Expand};
+    uiSizePolicy m_SizePolicyY{uiSizePolicy::Expand};
+
+public:
+    // TODO: move to epi
+    void SetSizePolicyX(uiSizePolicy value) { m_SizePolicyX = value; }
+    void SetSizePolicyY(uiSizePolicy value) { m_SizePolicyY = value; }
+    uiSizePolicy GetSizePolicyX() { return m_SizePolicyX; }
+    uiSizePolicy GetSizePolicyY() { return m_SizePolicyY; }
 };
 
 EPI_NAMESPACE_END()

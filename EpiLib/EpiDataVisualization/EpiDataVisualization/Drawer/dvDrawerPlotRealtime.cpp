@@ -10,8 +10,8 @@ EPI_GENREGION_END(include)
 namespace
 {
 
-const epiU32 kTimeLineHeight = 200;
-const epiU32 kTimeLineGap = 20;
+const epiU32 kTimeLineHeight = 100;
+const epiU32 kTimeLineGap = 10;
 
 }
 
