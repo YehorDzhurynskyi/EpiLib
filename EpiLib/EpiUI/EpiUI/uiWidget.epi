@@ -2,7 +2,8 @@ class uiWidget
 {
     [Virtual]
     {
-        epiVec2f Position;
+        [ReadCallback("SuppressRef")]
+        epiRect2f BBox;
 
         epiFloat Width;
         epiFloat Height;
@@ -13,11 +14,14 @@ class uiWidget
         }
     }
 
-    epiRect2f BBox;
+    epiVec2f Position;
+    epiVec2f Size;
 
     [ReadOnly]
     {
         uiWidget* Parent;
         epiPtrArray<uiWidget> Children;
     }
+
+    uiLayout* Layout;
 };

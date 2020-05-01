@@ -1,10 +1,10 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerPlot.hxx"
+#include "EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/View/dvViewPlot.h"
+#include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
 
 #include "EpiUI/uiContext.h"
 
@@ -14,26 +14,23 @@ EPI_NAMESPACE_BEGIN()
 
 class gfxDrawerPrimitive;
 class gfxDrawerText;
-class dvDrawerPlot : public gfxDrawer
+class dvDrawerPlotDrawArea : public gfxDrawer
 {
-EPI_GENREGION_BEGIN(dvDrawerPlot)
+EPI_GENREGION_BEGIN(dvDrawerPlotDrawArea)
 public:
-    EPI_GENHIDDEN_dvDrawerPlot()
+    EPI_GENHIDDEN_dvDrawerPlotDrawArea()
 
-    constexpr static MetaTypeID TypeID{0xde7ad94c};
+    constexpr static MetaTypeID TypeID{0xb1af01bd};
 
-    enum dvDrawerPlot_PIDs
+    enum dvDrawerPlotDrawArea_PIDs
     {
         PID_COUNT = 0
     };
 
-EPI_GENREGION_END(dvDrawerPlot)
+EPI_GENREGION_END(dvDrawerPlotDrawArea)
 
 public:
     void Draw(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame);
-
-protected:
-    virtual void Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame);
 
 protected:
     void GridMarkup(epiFloat domain, epiFloat& outStep, epiU32& outNLines);

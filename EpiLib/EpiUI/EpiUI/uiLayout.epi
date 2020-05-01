@@ -1,0 +1,8 @@
+class uiLayout
+{
+};
+
+class uiLayoutBuilder
+{
+    epiRect2f BBox;
+};

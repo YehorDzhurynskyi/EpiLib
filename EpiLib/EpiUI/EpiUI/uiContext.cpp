@@ -12,6 +12,17 @@ void uiContext::Update()
     m_Page.Update();
 }
 
+void uiContext::Draw()
+{
+    m_DrawerText.SceneBegin();
+    m_DrawerPrimitive.SceneBegin();
+
+    m_Page.Draw(*this);
+
+    m_DrawerText.SceneEnd(m_Camera);
+    m_DrawerPrimitive.SceneEnd(m_Camera);
+}
+
 void uiContext::OnMouseMove(const epiVec2f& mouseNDCCoord)
 {
     m_MouseNDCCoord = mouseNDCCoord;
@@ -34,19 +45,8 @@ void uiContext::OnMouseFocus(epiBool focused)
 
 void uiContext::OnResize(const epiRect2f& frame)
 {
-    m_Page.OnResize(frame);
-}
-
-void uiContext::SceneBegin()
-{
-    m_DrawerText.SceneBegin();
-    m_DrawerPrimitive.SceneBegin();
-}
-
-void uiContext::SceneEnd()
-{
-    m_DrawerText.SceneEnd(m_Camera);
-    m_DrawerPrimitive.SceneEnd(m_Camera);
+    m_Page.SetBBox(frame);
+    m_Page.OnResize();
 }
 
 epiVec2f uiContext::CalcMouseUICoordFromMouseNDCCoord(const epiVec2f& mouseNDCCoord) const

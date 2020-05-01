@@ -5,45 +5,65 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiUI/uiWidget.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiUI/uiContext.h"
+#include "EpiUI/uiLayout.h"
+
 EPI_NAMESPACE_BEGIN()
 
 void uiWidget::Update()
 {
-    for (auto& w : m_Children)
+    for (auto& w : GetChildren())
     {
         w->Update();
     }
 }
 
-const epiVec2f& uiWidget::GetPosition_Callback() const
+void uiWidget::Draw(uiContext& uiContext)
 {
-    return m_BBox.BottomLeft();
+    for (auto& w : GetChildren())
+    {
+        w->Draw(uiContext);
+    }
 }
 
-void uiWidget::SetPosition_Callback(const epiVec2f& value)
+epiRect2f uiWidget::GetBBox_Callback() const
 {
-    m_BBox.Left = value.x;
-    m_BBox.Bottom = value.y;
+    epiRect2f bbox;
+    bbox.Left = m_Position.x;
+    bbox.Bottom = m_Position.y;
+    bbox.Right = m_Position.x + m_Size.x;
+    bbox.Top = m_Position.y + m_Size.y;
+
+    return bbox;
+}
+
+void uiWidget::SetBBox_Callback(const epiRect2f& value)
+{
+    epiRect2f bbox;
+    m_Position.x = bbox.Left;
+    m_Position.y = bbox.Bottom;
+    m_Size.x = bbox.Right - m_Position.x;
+    m_Size.y = bbox.Top - m_Position.y;
 }
 
 epiFloat uiWidget::GetWidth_Callback() const
 {
-    return m_BBox.GetWidth();
+    return m_Size.x;
 }
 
 void uiWidget::SetWidth_Callback(epiFloat value)
 {
-    m_BBox.Right = value + m_BBox.Left;
+    m_Size.x = value;
 }
 
 epiFloat uiWidget::GetHeight_Callback() const
 {
-    return m_BBox.GetHeight();
+    return m_Size.y;
 }
 
 void uiWidget::SetHeight_Callback(epiFloat value)
 {
-    m_BBox.Top = value + m_BBox.Bottom;
+    m_Size.y = value;
 }
 
 void uiWidget::OnMousePrimary(MouseAction action)
@@ -64,57 +84,17 @@ void uiWidget::OnMouseWheel(epiFloat dZoom)
 
 void uiWidget::OnMouseFocus(epiBool focused)
 {
-    for (auto& w : m_Children)
+    for (auto& w : GetChildren())
     {
         w->OnMouseFocus(focused);
     }
 }
 
-void uiWidget::OnResize(const epiRect2f& parentBBox)
+void uiWidget::OnResize()
 {
-    epiRect2f bbox = parentBBox;
-
-    if (m_SizePolicyX == uiSizePolicy::Expand)
-    {
-        if (uiWidget* neighbor = FindNeighborClosestLeft())
-        {
-            bbox.Left = neighbor->GetBBox().Right;
-        }
-        if (uiWidget* neighbor = FindNeighborClosestRight())
-        {
-            bbox.Right = neighbor->GetBBox().Left;
-        }
-    }
-    else if (m_SizePolicyX == uiSizePolicy::Fixed)
-    {
-        const epiRect2f& bboxCurr = GetBBox();
-        bbox.Left = bboxCurr.Left;
-        bbox.Right = bboxCurr.Right;
-    }
-
-    if (m_SizePolicyY == uiSizePolicy::Expand)
-    {
-        if (uiWidget* neighbor = FindNeighborClosestBottom())
-        {
-            bbox.Bottom = neighbor->GetBBox().Top;
-        }
-        if (uiWidget* neighbor = FindNeighborClosestTop())
-        {
-            bbox.Top = neighbor->GetBBox().Bottom;
-        }
-    }
-    else if (m_SizePolicyY == uiSizePolicy::Fixed)
-    {
-        const epiRect2f& bboxCurr = GetBBox();
-        bbox.Bottom = bboxCurr.Bottom;
-        bbox.Top = bboxCurr.Top;
-    }
-
-    SetBBox(bbox);
-
     for (auto& w : m_Children)
     {
-        w->OnResize(GetBBox());
+        w->OnResize();
     }
 }
 
@@ -131,148 +111,14 @@ epiVec2f uiWidget::GetMouseLocalUICoord_Internal() const
 
 uiWidget* uiWidget::WidgetOverMouse(const epiVec2f& mouseUICoord) const
 {
-    auto it = std::find_if(m_Children.begin(), m_Children.end(), [&](const uiWidget* widget)
+    auto it = std::find_if(GetChildren().begin(),
+                           GetChildren().end(),
+                           [&](const uiWidget* widget)
     {
         return widget->GetBBox().IsIn(mouseUICoord);
     });
-    return it != m_Children.end() ? *it : nullptr;
-}
 
-uiWidget* uiWidget::FindNeighborClosest(FindNeighborClosestComparator&& comparator) const
-{
-    epiAssert(m_Parent, "this widget should have a parent");
-
-    auto it = std::min_element(m_Parent->m_Children.begin(), m_Parent->m_Children.end(), comparator);
-    if (it == m_Parent->m_Children.end() || *it == this)
-    {
-        return nullptr;
-    }
-
-    return comparator(*it, this) ? *it : nullptr;
-}
-
-uiWidget* uiWidget::FindNeighborClosestLeft() const
-{
-    const epiRect2f& bboxThis = GetBBox();
-
-    auto comparator = [&](const uiWidget* lhs, const uiWidget* rhs) -> epiBool
-    {
-        const epiRect2f& bboxLhs = lhs->GetBBox();
-        const epiRect2f& bboxRhs = rhs->GetBBox();
-
-        epiAssert((bboxLhs & bboxRhs).IsEmpty(), "lhs and rhs bboxes shouldn't have an intersection");
-
-        if (lhs == this)
-        {
-            return !(bboxRhs.Right < bboxThis.Left);
-        }
-        else if (rhs == this)
-        {
-            return bboxLhs.Right < bboxThis.Left;
-        }
-
-        if (bboxRhs.Right < bboxThis.Left)
-        {
-            return bboxLhs.Right < bboxThis.Left ? bboxLhs.Right > bboxRhs.Right : false;
-        }
-
-        return true;
-    };
-
-    return FindNeighborClosest(comparator);
-}
-
-uiWidget* uiWidget::FindNeighborClosestRight() const
-{
-    const epiRect2f& bboxThis = GetBBox();
-
-    auto comparator = [&](const uiWidget* lhs, const uiWidget* rhs) -> epiBool
-    {
-        const epiRect2f& bboxLhs = lhs->GetBBox();
-        const epiRect2f& bboxRhs = rhs->GetBBox();
-
-        epiAssert((bboxLhs & bboxRhs).IsEmpty(), "lhs and rhs bboxes shouldn't have an intersection");
-
-        if (lhs == this)
-        {
-            return !(bboxRhs.Left > bboxThis.Right);
-        }
-        else if (rhs == this)
-        {
-            return bboxLhs.Left > bboxThis.Right;
-        }
-
-        if (bboxRhs.Left > bboxThis.Right)
-        {
-            return bboxLhs.Left > bboxThis.Right ? bboxLhs.Left < bboxRhs.Left : false;
-        }
-
-        return true;
-    };
-
-    return FindNeighborClosest(comparator);
-}
-
-uiWidget* uiWidget::FindNeighborClosestBottom() const
-{
-    const epiRect2f& bboxThis = GetBBox();
-
-    auto comparator = [&](const uiWidget* lhs, const uiWidget* rhs) -> epiBool
-    {
-        const epiRect2f& bboxLhs = lhs->GetBBox();
-        const epiRect2f& bboxRhs = rhs->GetBBox();
-
-        epiAssert((bboxLhs & bboxRhs).IsEmpty(), "lhs and rhs bboxes shouldn't have an intersection");
-
-        if (lhs == this)
-        {
-            return !(bboxRhs.Top < bboxThis.Bottom);
-        }
-        else if (rhs == this)
-        {
-            return bboxLhs.Top < bboxThis.Bottom;
-        }
-
-        if (bboxRhs.Top < bboxThis.Bottom)
-        {
-            return bboxLhs.Top < bboxThis.Bottom ? bboxLhs.Top > bboxRhs.Top : false;
-        }
-
-        return true;
-    };
-
-    return FindNeighborClosest(comparator);
-}
-
-uiWidget* uiWidget::FindNeighborClosestTop() const
-{
-    const epiRect2f& bboxThis = GetBBox();
-
-    auto comparator = [&](const uiWidget* lhs, const uiWidget* rhs) -> epiBool
-    {
-        const epiRect2f& bboxLhs = lhs->GetBBox();
-        const epiRect2f& bboxRhs = rhs->GetBBox();
-
-        epiAssert((bboxLhs & bboxRhs).IsEmpty(), "lhs and rhs bboxes shouldn't have an intersection");
-
-        if (lhs == this)
-        {
-            return !(bboxRhs.Bottom > bboxThis.Top);
-        }
-        else if (rhs == this)
-        {
-            return bboxLhs.Bottom > bboxThis.Top;
-        }
-
-        if (bboxRhs.Bottom > bboxThis.Top)
-        {
-            return bboxLhs.Bottom > bboxThis.Top ? bboxLhs.Bottom < bboxRhs.Bottom : false;
-        }
-
-        return true;
-    };
-
-    return FindNeighborClosest(comparator);
+    return it != GetChildren().end() ? *it : nullptr;
 }
 
 EPI_NAMESPACE_END()

@@ -1,9 +1,4 @@
 class dvViewPlot : uiWidget
 {
     dvViewModelPlot ViewModel;
-
-    [Virtual, ReadOnly, ReadCallback("SuppressRef")]
-    {
-        epiVec2f MouseWorldCoord;
-    }
 };

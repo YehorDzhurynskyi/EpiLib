@@ -21,32 +21,13 @@ public:
     enum dvViewPlot_PIDs
     {
         PID_ViewModel = 0x373a6339,
-        PID_MouseWorldCoord = 0x6fbc4e30,
-        PID_COUNT = 2
+        PID_COUNT = 1
     };
-
-protected:
-    epiVec2f GetMouseWorldCoord_Callback() const;
 
 protected:
     dvViewModelPlot m_ViewModel;
 
 EPI_GENREGION_END(dvViewPlot)
-
-public:
-    void Update() override;
-
-    void OnMousePrimary(MouseAction action) override;
-    void OnMouseWheel(epiFloat dZoom) override;
-    void OnMouseFocus(epiBool focused) override;
-
-private:
-    epiVec2f CalcMouseWorldCoord(const epiVec2f& origin) const;
-
-private:
-    epiBool m_MouseDragActive;
-    epiVec2f m_MouseDragPosition;
-    epiVec2f m_MouseDragOrigin;
 };
 
 EPI_NAMESPACE_END()

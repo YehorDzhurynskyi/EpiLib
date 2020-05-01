@@ -29,7 +29,7 @@ protected:
 EPI_GENREGION_END(uiPage)
 
 public:
-    void OnResize(const epiRect2f& parentBBox) override;
+    void OnResize() override;
 
 protected:
     epiVec2f GetMouseLocalUICoord_Internal() const override;

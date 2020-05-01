@@ -1,8 +1,8 @@
 #include "EpiDataVisualization/pch.h"
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerPlot.h"
-#include "EpiDataVisualization/Drawer/dvDrawerPlot.cxx"
+#include "EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.h"
+#include "EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/Drawer/dvDrawerSeriesY.h"
@@ -27,12 +27,7 @@ const epiU32 kGridLineCountMax = 13;
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlot::Draw(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame)
-{
-    Draw_Internal(uiContext, plot, frame);
-}
-
-void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame)
+void dvDrawerPlotDrawArea::Draw(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame)
 {
     const epiRect2f& box = plot.GetClipBox();
 
@@ -125,7 +120,7 @@ void dvDrawerPlot::Draw_Internal(uiContext& uiContext, const dvViewModelPlot& pl
     }
 }
 
-void dvDrawerPlot::GridMarkup(epiFloat domain, epiFloat& outStep, epiU32& outNLines)
+void dvDrawerPlotDrawArea::GridMarkup(epiFloat domain, epiFloat& outStep, epiU32& outNLines)
 {
     epiFloat order = std::floorf(std::log10f(domain));
     outStep = std::powf(10.0f, order);

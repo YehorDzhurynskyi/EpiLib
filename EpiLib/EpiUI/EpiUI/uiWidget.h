@@ -10,13 +10,8 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-// TODO: move to epi
-enum class uiSizePolicy
-{
-    Fixed,
-    Expand
-};
-
+class uiContext;
+class uiLayout;
 class uiWidget : public Object
 {
 EPI_GENREGION_BEGIN(uiWidget)
@@ -27,19 +22,21 @@ public:
 
     enum uiWidget_PIDs
     {
-        PID_Position = 0xbf5a86a3,
+        PID_BBox = 0xdffc9862,
         PID_Width = 0x4ddb6a2b,
         PID_Height = 0xf2e1e039,
         PID_MouseLocalUICoord = 0xb08d2bad,
-        PID_BBox = 0xdffc9862,
+        PID_Position = 0xbf5a86a3,
+        PID_Size = 0x57f28b54,
         PID_Parent = 0x3a226579,
         PID_Children = 0x58e1d3ec,
-        PID_COUNT = 7
+        PID_Layout = 0x3d966ed4,
+        PID_COUNT = 9
     };
 
 protected:
-    const epiVec2f& GetPosition_Callback() const;
-    void SetPosition_Callback(const epiVec2f& value);
+    epiRect2f GetBBox_Callback() const;
+    void SetBBox_Callback(const epiRect2f& value);
     epiFloat GetWidth_Callback() const;
     void SetWidth_Callback(epiFloat value);
     epiFloat GetHeight_Callback() const;
@@ -47,14 +44,17 @@ protected:
     epiVec2f GetMouseLocalUICoord_Callback() const;
 
 protected:
-    epiRect2f m_BBox;
+    epiVec2f m_Position;
+    epiVec2f m_Size;
     uiWidget* m_Parent{nullptr};
     epiPtrArray<uiWidget> m_Children;
+    uiLayout* m_Layout{nullptr};
 
 EPI_GENREGION_END(uiWidget)
 
 public:
     virtual void Update();
+    virtual void Draw(uiContext& uiContext); // TODO: refactor uiContext
 
     template<typename T, typename ...Args>
     T& Add(Args&& ...args)
@@ -68,32 +68,12 @@ public:
     virtual void OnMousePrimary(MouseAction action);
     virtual void OnMouseWheel(epiFloat dZoom);
     virtual void OnMouseFocus(epiBool focused);
-    virtual void OnResize(const epiRect2f& parentBBox);
+    virtual void OnResize();
 
 protected:
     virtual epiVec2f GetMouseLocalUICoord_Internal() const;
 
     uiWidget* WidgetOverMouse(const epiVec2f& mouseUICoord) const;
-
-    using FindNeighborClosestComparator = std::function<epiBool(const uiWidget*, const uiWidget*)>;
-    uiWidget* FindNeighborClosest(FindNeighborClosestComparator&& comparator) const;
-
-    uiWidget* FindNeighborClosestLeft() const;
-    uiWidget* FindNeighborClosestRight() const;
-    uiWidget* FindNeighborClosestBottom() const;
-    uiWidget* FindNeighborClosestTop() const;
-
-protected:
-    // TODO: move to epi
-    uiSizePolicy m_SizePolicyX{uiSizePolicy::Expand};
-    uiSizePolicy m_SizePolicyY{uiSizePolicy::Expand};
-
-public:
-    // TODO: move to epi
-    void SetSizePolicyX(uiSizePolicy value) { m_SizePolicyX = value; }
-    void SetSizePolicyY(uiSizePolicy value) { m_SizePolicyY = value; }
-    uiSizePolicy GetSizePolicyX() { return m_SizePolicyX; }
-    uiSizePolicy GetSizePolicyY() { return m_SizePolicyY; }
 };
 
 EPI_NAMESPACE_END()

@@ -45,15 +45,13 @@ EPI_GENREGION_END(uiContext)
 
 public:
     void Update();
+    void Draw();
 
     void OnMouseMove(const epiVec2f& mouseNDCCoord);
     void OnMousePrimary(MouseAction action);
     void OnMouseWheel(epiFloat dZoom);
     void OnMouseFocus(epiBool focused);
     void OnResize(const epiRect2f& frame);
-
-    void SceneBegin();
-    void SceneEnd();
 
 protected:
     epiVec2f CalcMouseUICoordFromMouseNDCCoord(const epiVec2f& mouseNDCCoord) const;
