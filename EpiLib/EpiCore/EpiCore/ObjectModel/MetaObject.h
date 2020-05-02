@@ -94,12 +94,14 @@ enum : MetaTypeID
     MetaTypeID_epiNone = 0,
 
     MetaTypeID_epiChar = epiHashCompileTime(epiChar),
+    MetaTypeID_epiWChar = epiHashCompileTime(epiWChar),
     MetaTypeID_epiBool = epiHashCompileTime(epiBool),
     MetaTypeID_epiByte = epiHashCompileTime(epiByte),
     MetaTypeID_epiFloat = epiHashCompileTime(epiFloat),
     MetaTypeID_epiDouble = epiHashCompileTime(epiDouble),
     MetaTypeID_epiSize_t = epiHashCompileTime(epiSize_t),
     MetaTypeID_epiString = epiHashCompileTime(epiString),
+    MetaTypeID_epiWString = epiHashCompileTime(epiWString),
     MetaTypeID_epiU8 = epiHashCompileTime(epiU8),
     MetaTypeID_epiU16 = epiHashCompileTime(epiU16),
     MetaTypeID_epiU32 = epiHashCompileTime(epiU32),
@@ -143,6 +145,18 @@ public:
     static epiBool IsMultiDimensionalInplace(MetaTypeID typeID);
     static epiBool IsCompound(MetaTypeID typeID);
 
+    template<typename T>
+    static constexpr MetaTypeID TypeOf();
+
+    template<typename T>
+    static constexpr epiBool IsFundamental();
+
+    template<typename T>
+    static constexpr epiBool IsMultiDimensional();
+
+    template<typename T>
+    static constexpr epiBool IsMultiDimensionalInplace();
+
 #if 0
     static epiByte* GetElementByIndex(const epiByte* container, const MetaProperty& meta, epiS32 index);
     static epiByte* GetElementByHash(const epiByte* container, const MetaProperty& meta, epiHash_t hash);
@@ -180,10 +194,15 @@ public:
 
     epiBool IsValid() const;
 
-    const MetaProperty* GetProperty_FromBase(MetaPropertyID pid) const;
-    const MetaProperty* GetProperty_FromDerived(MetaPropertyID pid) const;
-    const MetaProperty* GetProperty_FromCurrent(MetaPropertyID pid) const;
-    const MetaProperty* GetProperty(MetaPropertyID pid) const;
+    const MetaProperty* GetPropertyBy_FromBase(MetaPropertyID pid) const;
+    const MetaProperty* GetPropertyBy_FromDerived(MetaPropertyID pid) const;
+    const MetaProperty* GetPropertyBy_FromCurrent(MetaPropertyID pid) const;
+    const MetaProperty* GetPropertyBy(MetaPropertyID pid) const;
+
+    const MetaProperty* GetPropertyAt_FromBase(epiU32 pidx) const;
+    const MetaProperty* GetPropertyAt_FromDerived(epiU32 pidx) const;
+    const MetaProperty* GetPropertyAt_FromCurrent(epiU32 pidx) const;
+    const MetaProperty* GetPropertyAt(epiU32 pidx) const;
 
     const MetaClassData& GetClassData() const;
     MetaTypeID GetTypeID() const;
@@ -193,9 +212,9 @@ public:
 
 protected:
     MetaClassData m_ClassData;
-    MetaTypeID m_TypeID;
-    MetaTypeID m_SuperTypeID;
-    epiSize_t m_SizeOf;
+    MetaTypeID m_TypeID{MetaTypeID_epiNone};
+    MetaTypeID m_SuperTypeID{MetaTypeID_epiNone};
+    epiSize_t m_SizeOf{0};
     epiString m_Name;
 };
 
@@ -207,8 +226,8 @@ const MetaClass* ClassRegistry_Name_Lookup(const epiChar* typeName, epiSize_t le
 template<typename T>
 MetaClass& Register()
 {
-    auto& [it, exists] = g_ClassRegistry.try_emplace(T::TypeID, std::move(T::EmitMetaClass()));
-    assert(!exists);
+    auto& [it, inserted] = g_ClassRegistry.try_emplace(T::TypeID, std::move(T::EmitMetaClass()));
+    epiAssert(inserted);
     return it->second;
 }
 
@@ -217,6 +236,94 @@ const MetaClass& ClassRegistry_GetMetaClass()
 {
     static MetaClass t = Register<T>();
     return t;
+}
+
+template<typename T>
+constexpr MetaTypeID MetaType::TypeOf()
+{
+    if constexpr (std::is_same_v<epiChar, T>) return MetaTypeID_epiChar;
+    else if constexpr (std::is_same_v<epiWChar, T>) return MetaTypeID_epiWChar;
+    else if constexpr (std::is_same_v<epiBool, T>) return MetaTypeID_epiBool;
+    else if constexpr (std::is_same_v<epiByte, T>) return MetaTypeID_epiByte;
+    else if constexpr (std::is_same_v<epiFloat, T>) return MetaTypeID_epiFloat;
+    else if constexpr (std::is_same_v<epiDouble, T>) return MetaTypeID_epiDouble;
+    else if constexpr (std::is_same_v<epiSize_t, T>) return MetaTypeID_epiSize_t;
+    else if constexpr (std::is_same_v<epiString, T>) return MetaTypeID_epiString;
+    else if constexpr (std::is_same_v<epiWString, T>) return MetaTypeID_epiWString;
+    else if constexpr (std::is_same_v<epiU8, T>) return MetaTypeID_epiU8;
+    else if constexpr (std::is_same_v<epiU16, T>) return MetaTypeID_epiU16;
+    else if constexpr (std::is_same_v<epiU32, T>) return MetaTypeID_epiU32;
+    else if constexpr (std::is_same_v<epiU64, T>) return MetaTypeID_epiU64;
+    else if constexpr (std::is_same_v<epiS8, T>) return MetaTypeID_epiS8;
+    else if constexpr (std::is_same_v<epiS16, T>) return MetaTypeID_epiS16;
+    else if constexpr (std::is_same_v<epiS32, T>) return MetaTypeID_epiS32;
+    else if constexpr (std::is_same_v<epiS64, T>) return MetaTypeID_epiS64;
+    else if constexpr (std::is_same_v<epiVec2f, T>) return MetaTypeID_epiVec2f;
+    else if constexpr (std::is_same_v<epiVec2d, T>) return MetaTypeID_epiVec2d;
+    else if constexpr (std::is_same_v<epiVec2s, T>) return MetaTypeID_epiVec2s;
+    else if constexpr (std::is_same_v<epiVec2u, T>) return MetaTypeID_epiVec2u;
+    else if constexpr (std::is_same_v<epiVec3f, T>) return MetaTypeID_epiVec3f;
+    else if constexpr (std::is_same_v<epiVec3d, T>) return MetaTypeID_epiVec3d;
+    else if constexpr (std::is_same_v<epiVec3s, T>) return MetaTypeID_epiVec3s;
+    else if constexpr (std::is_same_v<epiVec3u, T>) return MetaTypeID_epiVec3u;
+    else if constexpr (std::is_same_v<epiVec4f, T>) return MetaTypeID_epiVec4f;
+    else if constexpr (std::is_same_v<epiVec4d, T>) return MetaTypeID_epiVec4d;
+    else if constexpr (std::is_same_v<epiVec4s, T>) return MetaTypeID_epiVec4s;
+    else if constexpr (std::is_same_v<epiVec4u, T>) return MetaTypeID_epiVec4u;
+    else if constexpr (std::is_same_v<epiMat2x2f, T>) return MetaTypeID_epiMat2x2f;
+    else if constexpr (std::is_same_v<epiMat3x3f, T>) return MetaTypeID_epiMat3x3f;
+    else if constexpr (std::is_same_v<epiMat4x4f, T>) return MetaTypeID_epiMat4x4f;
+    else static_assert(false, "Unhandled case");
+}
+
+template<typename T>
+constexpr epiBool MetaType::IsFundamental()
+{
+    if constexpr (std::is_same_v<epiChar, T>) return true;
+    else if constexpr (std::is_same_v<epiWChar, T>) return true;
+    else if constexpr (std::is_same_v<epiBool, T>) return true;
+    else if constexpr (std::is_same_v<epiByte, T>) return true;
+    else if constexpr (std::is_same_v<epiFloat, T>) return true;
+    else if constexpr (std::is_same_v<epiDouble, T>) return true;
+    else if constexpr (std::is_same_v<epiSize_t, T>) return true;
+    else if constexpr (std::is_same_v<epiString, T>) return true;
+    else if constexpr (std::is_same_v<epiWString, T>) return true;
+    else if constexpr (std::is_same_v<epiU8, T>) return true;
+    else if constexpr (std::is_same_v<epiU16, T>) return true;
+    else if constexpr (std::is_same_v<epiU32, T>) return true;
+    else if constexpr (std::is_same_v<epiU64, T>) return true;
+    else if constexpr (std::is_same_v<epiS8, T>) return true;
+    else if constexpr (std::is_same_v<epiS16, T>) return true;
+    else if constexpr (std::is_same_v<epiS32, T>) return true;
+    else if constexpr (std::is_same_v<epiS64, T>) return true;
+    else return false;
+}
+
+template<typename T>
+constexpr epiBool MetaType::IsMultiDimensional()
+{
+    return std::is_base_of_v<epiBaseArray, T> || IsMultiDimensionalInplace<T>();
+}
+
+template<typename T>
+constexpr epiBool MetaType::IsMultiDimensionalInplace()
+{
+    if constexpr (std::is_same_v<epiVec2f, T>) return true;
+    else if constexpr (std::is_same_v<epiVec2d, T>) return true;
+    else if constexpr (std::is_same_v<epiVec2s, T>) return true;
+    else if constexpr (std::is_same_v<epiVec2u, T>) return true;
+    else if constexpr (std::is_same_v<epiVec3f, T>) return true;
+    else if constexpr (std::is_same_v<epiVec3d, T>) return true;
+    else if constexpr (std::is_same_v<epiVec3s, T>) return true;
+    else if constexpr (std::is_same_v<epiVec3u, T>) return true;
+    else if constexpr (std::is_same_v<epiVec4f, T>) return true;
+    else if constexpr (std::is_same_v<epiVec4d, T>) return true;
+    else if constexpr (std::is_same_v<epiVec4s, T>) return true;
+    else if constexpr (std::is_same_v<epiVec4u, T>) return true;
+    else if constexpr (std::is_same_v<epiMat2x2f, T>) return true;
+    else if constexpr (std::is_same_v<epiMat3x3f, T>) return true;
+    else if constexpr (std::is_same_v<epiMat4x4f, T>) return true;
+    else return false;
 }
 
 }

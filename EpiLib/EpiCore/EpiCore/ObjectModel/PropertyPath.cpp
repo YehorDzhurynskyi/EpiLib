@@ -41,7 +41,7 @@ epiBool PropertyPath::Parse(const std::string& path)
             m_Nodes.push_back(node);
             node = PathNode();
 
-            const MetaProperty* metaProperty = meta->GetProperty(pid);
+            const MetaProperty* metaProperty = meta->GetPropertyBy(pid);
             if (metaProperty == nullptr) goto invalid_input;
 
             if (MetaType::IsMultiDimensional(metaProperty->GetTypeID()))
@@ -118,7 +118,7 @@ epiByte* PropertyPath::GetValue(const Object& object) const
     epiU32 index = 0;
     for (const auto& node : m_Nodes)
     {
-        const MetaProperty* property = current->GetMetaClass().GetProperty_FromCurrent(node.PropertyID);
+        const MetaProperty* property = current->GetMetaClass().GetPropertyBy_FromCurrent(node.PropertyID);
         if (property == nullptr)
         {
             return nullptr;

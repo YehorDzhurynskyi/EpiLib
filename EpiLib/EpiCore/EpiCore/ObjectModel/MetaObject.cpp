@@ -36,12 +36,14 @@ epiBool MetaType::IsFundamental(MetaTypeID typeID)
     switch (typeID)
     {
     case MetaTypeID_epiChar:
+    case MetaTypeID_epiWChar:
     case MetaTypeID_epiBool:
     case MetaTypeID_epiByte:
     case MetaTypeID_epiFloat:
     case MetaTypeID_epiDouble:
     case MetaTypeID_epiSize_t:
     case MetaTypeID_epiString:
+    case MetaTypeID_epiWString:
     case MetaTypeID_epiU8:
     case MetaTypeID_epiU16:
     case MetaTypeID_epiU32:
@@ -70,33 +72,26 @@ epiBool MetaType::IsMultiDimensional(MetaTypeID typeID)
 
 epiBool MetaType::IsMultiDimensionalInplace(MetaTypeID typeID)
 {
-    epiBool isMultiDimensionalInplace = false;
-
     switch (typeID)
     {
     case MetaTypeID_epiVec2f:
     case MetaTypeID_epiVec2d:
     case MetaTypeID_epiVec2s:
     case MetaTypeID_epiVec2u:
-
     case MetaTypeID_epiVec3f:
     case MetaTypeID_epiVec3d:
     case MetaTypeID_epiVec3s:
     case MetaTypeID_epiVec3u:
-
     case MetaTypeID_epiVec4f:
     case MetaTypeID_epiVec4d:
     case MetaTypeID_epiVec4s:
     case MetaTypeID_epiVec4u:
-
     case MetaTypeID_epiMat2x2f:
     case MetaTypeID_epiMat3x3f:
     case MetaTypeID_epiMat4x4f:
-
-    isMultiDimensionalInplace = true;
+        return true;
+    default: return false;
     }
-
-    return isMultiDimensionalInplace;
 }
 
 epiBool MetaType::IsCompound(MetaTypeID typeID)
@@ -208,26 +203,26 @@ MetaClass::MetaClass(MetaClassData&& classData, MetaTypeID typeID, MetaTypeID su
 
 epiBool MetaClass::IsValid() const
 {
-    return !MetaType::IsCompound(m_TypeID);
+    return m_TypeID != MetaTypeID_epiNone && m_SizeOf > 0;
 }
 
-const MetaProperty* MetaClass::GetProperty_FromBase(MetaPropertyID pid) const
+const MetaProperty* MetaClass::GetPropertyBy_FromBase(MetaPropertyID pid) const
 {
-    assert(IsValid());
+    epiAssert(IsValid());
 
     const MetaProperty* property = nullptr;
     const MetaClass* superMetaClass = this;
     do
     {
         superMetaClass = ClassRegistry_Type_Lookup(superMetaClass->m_SuperTypeID);
-        assert(superMetaClass != nullptr);
+        epiAssert(superMetaClass != nullptr);
 
         if (superMetaClass->m_TypeID == MetaTypeID_epiNone)
         {
             return nullptr;
         }
 
-        property = superMetaClass->GetProperty_FromCurrent(pid);
+        property = superMetaClass->GetPropertyBy_FromCurrent(pid);
         if (property != nullptr)
         {
             break;
@@ -237,7 +232,7 @@ const MetaProperty* MetaClass::GetProperty_FromBase(MetaPropertyID pid) const
     return property;
 }
 
-const MetaProperty* MetaClass::GetProperty_FromDerived(MetaPropertyID pid) const
+const MetaProperty* MetaClass::GetPropertyBy_FromDerived(MetaPropertyID pid) const
 {
     // TODO: FIXME
     // if both derived classes have same property name (and its ID)
@@ -265,26 +260,84 @@ const MetaProperty* MetaClass::GetProperty_FromDerived(MetaPropertyID pid) const
     return nullptr;
 }
 
-const MetaProperty* MetaClass::GetProperty_FromCurrent(MetaPropertyID pid) const
+const MetaProperty* MetaClass::GetPropertyBy_FromCurrent(MetaPropertyID pid) const
 {
     assert(IsValid());
 
     return m_ClassData.GetPropertyBy(pid);
 }
 
-const MetaProperty* MetaClass::GetProperty(MetaPropertyID pid) const
+const MetaProperty* MetaClass::GetPropertyBy(MetaPropertyID pid) const
 {
-    if (const MetaProperty* property = GetProperty_FromCurrent(pid))
+    if (const MetaProperty* property = GetPropertyBy_FromCurrent(pid))
     {
         return property;
     }
 
-    if (const MetaProperty* property = GetProperty_FromBase(pid))
+    if (const MetaProperty* property = GetPropertyBy_FromBase(pid))
     {
         return property;
     }
 
-    if (const MetaProperty* property = GetProperty_FromDerived(pid))
+    if (const MetaProperty* property = GetPropertyBy_FromDerived(pid))
+    {
+        return property;
+    }
+
+    return nullptr;
+}
+
+const MetaProperty* MetaClass::GetPropertyAt_FromBase(epiU32 pidx) const
+{
+    epiAssert(IsValid());
+
+    const MetaProperty* property = nullptr;
+    const MetaClass* superMetaClass = this;
+    do
+    {
+        superMetaClass = ClassRegistry_Type_Lookup(superMetaClass->m_SuperTypeID);
+        epiAssert(superMetaClass != nullptr);
+
+        if (superMetaClass->m_TypeID == MetaTypeID_epiNone)
+        {
+            return nullptr;
+        }
+
+        property = superMetaClass->GetPropertyAt_FromCurrent(pidx);
+        if (property != nullptr)
+        {
+            break;
+        }
+    } while (true);
+
+    return property;
+}
+
+const MetaProperty* MetaClass::GetPropertyAt_FromDerived(epiU32 pidx) const
+{
+    return nullptr;
+}
+
+const MetaProperty* MetaClass::GetPropertyAt_FromCurrent(epiU32 pidx) const
+{
+    assert(IsValid());
+
+    return m_ClassData.GetPropertyAt(pidx);
+}
+
+const MetaProperty* MetaClass::GetPropertyAt(epiU32 pidx) const
+{
+    if (const MetaProperty* property = GetPropertyAt_FromCurrent(pidx))
+    {
+        return property;
+    }
+
+    if (const MetaProperty* property = GetPropertyAt_FromBase(pidx))
+    {
+        return property;
+    }
+
+    if (const MetaProperty* property = GetPropertyAt_FromDerived(pidx))
     {
         return property;
     }
