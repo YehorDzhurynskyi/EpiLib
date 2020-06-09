@@ -36,13 +36,15 @@ void epiWXPropertyGrid::FillCompound(Object& object, wxPGProperty* prty)
     {
         const MetaClassData& metaClassData = m->GetClassData();
 
-        wxPGProperty* p = new wxStringProperty(m->GetName(), wxPG_LABEL, "");
-        p = prty != nullptr? prty->AppendChild(p) : Append(p);
+        if (metaClassData.GetPropertiesCount() > 0)
+        {
+            wxPGProperty* p = new wxStringProperty(m->GetName(), wxPG_LABEL, "");
+            p = prty != nullptr ? prty->InsertChild(0, p) : Append(p);
 
-        FillProperties(object, metaClassData, p);
+            FillProperties(object, metaClassData, p);
+        }
 
         epiAssert(MetaType::IsCompound(m->GetSuperTypeID()) || m->GetSuperTypeID() == MetaTypeID_epiNone);
-        break;
         if (m->GetSuperTypeID() == MetaTypeID_epiNone)
         {
             break;
@@ -87,7 +89,7 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
         epiAssert(property != nullptr);
 
         const epiChar* label = property->GetName();
-        PropertyPointer ptr = PropertyPointer::CreateFromPIDX(object, i);
+        PropertyPointer ptr = PropertyPointer::CreateFromProperty(object, property);
 
         if (MetaType::IsCompound(property->GetTypeID()))
         {
@@ -107,6 +109,10 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
         {
             FillFundamental(ptr, label, prty);
         }
+        else if (MetaType::IsString(property->GetTypeID()))
+        {
+            FillString(ptr, label, prty);
+        }
         else
         {
             epiAssert(false, "Unhandled case");
@@ -123,8 +129,6 @@ void epiWXPropertyGrid::FillFundamental(PropertyPointer& ptr, const epiChar* lab
     {
     case MetaTypeID_epiChar: p = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiChar>()); break;
     case MetaTypeID_epiWChar: p = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWChar>()); break;
-    case MetaTypeID_epiString: p = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWString>()); break;
-    case MetaTypeID_epiWString: p = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWString>()); break;
     case MetaTypeID_epiBool: p = new wxBoolProperty(label, wxPG_LABEL, ptr.Get<epiBool>()); break;
     case MetaTypeID_epiFloat: p = new wxFloatProperty(label, wxPG_LABEL, ptr.Get<epiFloat>()); break;
     case MetaTypeID_epiDouble: p = new wxFloatProperty(label, wxPG_LABEL, ptr.Get<epiDouble>()); break;
@@ -138,6 +142,21 @@ void epiWXPropertyGrid::FillFundamental(PropertyPointer& ptr, const epiChar* lab
     case MetaTypeID_epiU16: p = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU16>()); break;
     case MetaTypeID_epiU32: p = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU32>()); break;
     case MetaTypeID_epiU64: p = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU64>()); break;
+    default: epiAssert(false, "Unhanled case");
+    }
+
+    p = prty != nullptr ? prty->AppendChild(p) : Append(p);
+}
+
+void epiWXPropertyGrid::FillString(PropertyPointer& ptr, const epiChar* label, wxPGProperty* prty)
+{
+    epiAssert(MetaType::IsString(ptr.GetTypeID()));
+
+    wxPGProperty* p = nullptr;
+    switch (ptr.GetTypeID())
+    {
+    case MetaTypeID_epiString: p = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiString&>()); break;
+    case MetaTypeID_epiWString: p = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWString&>()); break;
     default: epiAssert(false, "Unhanled case");
     }
 

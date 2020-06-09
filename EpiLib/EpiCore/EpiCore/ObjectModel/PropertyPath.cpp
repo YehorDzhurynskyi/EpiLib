@@ -145,10 +145,10 @@ epiByte* PropertyPath::GetValue(const Object& object) const
                 return nullptr;
             }
 
-            if (MetaType::IsHandle(property->GetTypeID()))
-            {
-                value = ((BaseHandle*)value)->GetValue();
-            }
+            //if (MetaType::IsHandle(property->GetTypeID()))
+            //{
+            //    value = ((BaseHandle*)value)->GetValue();
+            //}
 
             if (value == nullptr)
             {

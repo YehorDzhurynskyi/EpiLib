@@ -140,7 +140,7 @@ class MetaType
 {
 public:
     static epiBool IsFundamental(MetaTypeID typeID);
-    static epiBool IsHandle(MetaTypeID typeID);
+    static epiBool IsString(MetaTypeID typeID);
     static epiBool IsMultiDimensional(MetaTypeID typeID);
     static epiBool IsMultiDimensionalInplace(MetaTypeID typeID);
     static epiBool IsCompound(MetaTypeID typeID);
@@ -150,6 +150,9 @@ public:
 
     template<typename T>
     static constexpr epiBool IsFundamental();
+
+    template<typename T>
+    static constexpr epiBool IsString();
 
     template<typename T>
     static constexpr epiBool IsMultiDimensional();
@@ -286,8 +289,6 @@ constexpr epiBool MetaType::IsFundamental()
     else if constexpr (std::is_same_v<epiFloat, T>) return true;
     else if constexpr (std::is_same_v<epiDouble, T>) return true;
     else if constexpr (std::is_same_v<epiSize_t, T>) return true;
-    else if constexpr (std::is_same_v<epiString, T>) return true;
-    else if constexpr (std::is_same_v<epiWString, T>) return true;
     else if constexpr (std::is_same_v<epiU8, T>) return true;
     else if constexpr (std::is_same_v<epiU16, T>) return true;
     else if constexpr (std::is_same_v<epiU32, T>) return true;
@@ -297,6 +298,12 @@ constexpr epiBool MetaType::IsFundamental()
     else if constexpr (std::is_same_v<epiS32, T>) return true;
     else if constexpr (std::is_same_v<epiS64, T>) return true;
     else return false;
+}
+
+template<typename T>
+constexpr epiBool MetaType::IsString()
+{
+    return std::is_same_v<epiString, T> || std::is_same_v<epiWString, T>;
 }
 
 template<typename T>

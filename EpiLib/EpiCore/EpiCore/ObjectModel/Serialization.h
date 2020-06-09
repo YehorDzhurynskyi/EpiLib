@@ -15,8 +15,7 @@ template<typename T>
 struct is_fundamental
     : std::integral_constant<
         bool,
-        std::is_fundamental_v<T> ||
-        std::is_same_v<epiString, T>
+        std::is_fundamental_v<T>
     >
 {};
 
@@ -61,7 +60,7 @@ constexpr bool is_integral_v = is_integral<T>::value;
 template<typename T>
 inline auto epiSerialize_Impl_Fetch(T& v)
 {
-    if constexpr (epi::is_fundamental_v<T>)
+    if constexpr (epi::is_fundamental_v<T> || std::is_same_v<epiString, T> || std::is_same_v<epiWString, T>)
     {
         return v;
     }
@@ -119,7 +118,7 @@ inline auto epiSerialize_Impl_Fetch(T& v)
 template<typename T>
 inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
 {
-    if constexpr (epi::is_fundamental_v<T>)
+    if constexpr (epi::is_fundamental_v<T> || std::is_same_v<epiString, T> || std::is_same_v<epiWString, T>)
     {
         if constexpr (std::is_same_v<epiBool, T>)
         {
@@ -140,7 +139,7 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
                 assert(json.is_number_unsigned());
             }
         }
-        else if constexpr (std::is_same_v<epiString, T>)
+        else if constexpr (std::is_same_v<epiString, T> || std::is_same_v<epiWString, T>)
         {
             assert(json.is_string());
         }

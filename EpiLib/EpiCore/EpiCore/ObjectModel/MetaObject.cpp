@@ -42,8 +42,6 @@ epiBool MetaType::IsFundamental(MetaTypeID typeID)
     case MetaTypeID_epiFloat:
     case MetaTypeID_epiDouble:
     case MetaTypeID_epiSize_t:
-    case MetaTypeID_epiString:
-    case MetaTypeID_epiWString:
     case MetaTypeID_epiU8:
     case MetaTypeID_epiU16:
     case MetaTypeID_epiU32:
@@ -57,9 +55,9 @@ epiBool MetaType::IsFundamental(MetaTypeID typeID)
     }
 }
 
-epiBool MetaType::IsHandle(MetaTypeID typeID)
+epiBool MetaType::IsString(MetaTypeID typeID)
 {
-    return typeID == MetaTypeID_epiHandle;
+    return typeID == MetaTypeID_epiString || typeID == MetaTypeID_epiWString;
 }
 
 epiBool MetaType::IsMultiDimensional(MetaTypeID typeID)
@@ -98,9 +96,9 @@ epiBool MetaType::IsCompound(MetaTypeID typeID)
 {
     return
         typeID != MetaTypeID_epiNone &&
+        !IsString(typeID) &&
         !IsFundamental(typeID) &&
-        !IsMultiDimensional(typeID) &&
-        !IsHandle(typeID);
+        !IsMultiDimensional(typeID);
 }
 
 #if 0
@@ -380,18 +378,23 @@ epiSize_t MetaClass::GetSizeOf() const
     return m_SizeOf;
 }
 
+using MetaClassEmitter = MetaClass (*)();
 std::map<MetaTypeID, MetaClass> g_ClassRegistry;
 
 const MetaClass* ClassRegistry_Type_Lookup(MetaTypeID typeID)
 {
-    const auto it = g_ClassRegistry.find(typeID);
-    if (it == g_ClassRegistry.end())
+    const MetaClass* meta = nullptr;
+
+    if (const auto classIt = g_ClassRegistry.find(typeID); classIt != g_ClassRegistry.end())
     {
-        assert(!"No such class has been registred");
-        return nullptr;
+        meta = &classIt->second;
+    }
+    else
+    {
+        epiAssert(!"No such class has been registred");
     }
 
-    return &it->second;
+    return meta;
 }
 
 const MetaClass* ClassRegistry_Name_Lookup(const epiChar* typeName, epiSize_t len)

@@ -19,8 +19,7 @@ public:
     ~PropertyPointer() = default;
 
 public:
-    static PropertyPointer CreateFromPID(Object& self, MetaPropertyID pid);
-    static PropertyPointer CreateFromPIDX(Object& self, epiU32 pidx);
+    static PropertyPointer CreateFromProperty(Object& self, const MetaProperty* property);
     static PropertyPointer CreateFromArray(epiBaseArray& self, MetaTypeID nestedTypeId, epiU32 idx);
 
     void* Get();
@@ -29,10 +28,14 @@ public:
     template<typename T, typename T_ = std::remove_reference_t<std::remove_cv_t<T>>>
     T Get()
     {
-        if constexpr (std::is_base_of_v<Object, T_> || MetaType::IsMultiDimensional<T_>())
+        if constexpr (std::is_base_of_v<Object, T_> ||
+                      MetaType::IsMultiDimensional<T_>() ||
+                      MetaType::IsString<T_>())
         {
             static_assert(std::is_reference_v<T>);
-            epiAssert(MetaType::IsCompound(m_TypeID) || MetaType::IsMultiDimensional(m_TypeID));
+            epiAssert(MetaType::IsCompound(m_TypeID) ||
+                      MetaType::IsMultiDimensional(m_TypeID) ||
+                      MetaType::IsString(m_TypeID));
 
             return *reinterpret_cast<T_*>(Get());
         }
@@ -63,7 +66,7 @@ protected:
 
         struct
         {
-            void* m_Value;
+            void* m_ValueAddr;
             size_t m_SizeOf;
         };
     };

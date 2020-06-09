@@ -365,6 +365,7 @@ static MetaClass EmitMetaClass();
 
 const MetaClass& GetMetaClass() const override
 {{
+    super::GetMetaClass();
     return ClassRegistry_GetMetaClass<{clss.name}>();
 }}
 
