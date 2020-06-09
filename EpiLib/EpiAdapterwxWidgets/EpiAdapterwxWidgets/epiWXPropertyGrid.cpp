@@ -63,8 +63,7 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, MetaTypeID nes
         if (MetaType::IsCompound(nestedTypeID))
         {
             Object& obj = ptr.Get<Object&>();
-
-            wxPGProperty* p = new wxStringProperty(label.c_str(), wxPG_LABEL, obj.GetMetaClass().GetName());
+            wxPGProperty* p = new wxStringProperty(label.c_str(), wxPG_LABEL, obj.ToString().c_str());
             p = prty != nullptr ? prty->AppendChild(p) : Append(p);
 
             FillCompound(obj, p);
@@ -99,7 +98,7 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
         }
         else if (MetaType::IsMultiDimensional(property->GetTypeID()))
         {
-            wxPGProperty* p = new wxStringProperty(property->GetName(), wxPG_LABEL, "<array>");
+            wxPGProperty* p = new wxStringProperty(property->GetName(), wxPG_LABEL, "<Array>");
             p = prty != nullptr ? prty->AppendChild(p) : Append(p);
 
             FillMultiDimensional(ptr.Get<epiBaseArray&>(), property->GetNestedTypeID(), p);
