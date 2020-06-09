@@ -36,7 +36,7 @@ void epiWXPropertyGrid::FillCompound(Object& object, wxPGProperty* prty)
     {
         const MetaClassData& metaClassData = m->GetClassData();
 
-        wxPGProperty* p = new wxStringProperty(m->GetName(), wxPG_LABEL, "<composed>");
+        wxPGProperty* p = new wxStringProperty(m->GetName(), wxPG_LABEL, "");
         p = prty != nullptr? prty->AppendChild(p) : Append(p);
 
         FillProperties(object, metaClassData, p);
@@ -62,10 +62,12 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, MetaTypeID nes
 
         if (MetaType::IsCompound(nestedTypeID))
         {
-            wxPGProperty* p = new wxStringProperty(label.c_str(), wxPG_LABEL, "<composed>");
+            Object& obj = ptr.Get<Object&>();
+
+            wxPGProperty* p = new wxStringProperty(label.c_str(), wxPG_LABEL, obj.GetMetaClass().GetName());
             p = prty != nullptr ? prty->AppendChild(p) : Append(p);
 
-            FillCompound(ptr.Get<Object&>(), p);
+            FillCompound(obj, p);
         }
         else if (MetaType::IsFundamental(nestedTypeID))
         {
@@ -90,16 +92,14 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
 
         if (MetaType::IsCompound(property->GetTypeID()))
         {
-            wxPGProperty* p = new wxStringProperty(label, wxPG_LABEL, "<composed>");
+            wxPGProperty* p = new wxStringProperty(label, wxPG_LABEL, "");
             p = prty != nullptr ? prty->AppendChild(p) : Append(p);
 
             FillCompound(ptr.Get<Object&>(), p);
         }
         else if (MetaType::IsMultiDimensional(property->GetTypeID()))
         {
-            const std::string l = fmt::format("{}: <Array>", property->GetName());
-
-            wxPGProperty* p = new wxStringProperty(l.c_str(), wxPG_LABEL, "<composed>");
+            wxPGProperty* p = new wxStringProperty(property->GetName(), wxPG_LABEL, "<array>");
             p = prty != nullptr ? prty->AppendChild(p) : Append(p);
 
             FillMultiDimensional(ptr.Get<epiBaseArray&>(), property->GetNestedTypeID(), p);
