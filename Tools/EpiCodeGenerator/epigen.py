@@ -220,7 +220,7 @@ if __name__ == "__main__":
         logger.error(str(e))
         exit(-1)
 
-    code_generator = CodeGenerator(output_dir, output_dir_cxx_hxx)
+    code_generator = CodeGenerator(args.input_dir, output_dir, output_dir_cxx_hxx)
     for sym in registry_global.values():
 
         logger.info(f'Generating code for: {sym.token.filepath}')
@@ -229,7 +229,7 @@ if __name__ == "__main__":
             code_generator.code_generate(sym, sym.token.filepath)
         except CodeGenerationError as e:
 
-            logging.error(str(e))
+            logger.error(str(e))
             exit(-1)
 
     # TODO: check crc32 collisions considering Private attribute

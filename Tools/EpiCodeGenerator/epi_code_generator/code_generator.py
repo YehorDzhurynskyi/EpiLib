@@ -1,6 +1,7 @@
 import os
 import zlib
 import pickle
+import hashlib
 from enum import Enum, auto
 
 from .tokenizer import Token
@@ -43,8 +44,9 @@ class CodeGenerationError(Exception):
 
 class CodeGenerator:
 
-    def __init__(self, output_dir: str, output_dir_cxx_hxx: str):
+    def __init__(self, input_dir: str, output_dir: str, output_dir_cxx_hxx: str):
 
+        self.input_dir = input_dir
         self.output_dir = output_dir
         self.output_dir_cxx_hxx = output_dir_cxx_hxx
         self.generated_files_cache = {}
@@ -56,8 +58,6 @@ class CodeGenerator:
                 self.generated_files_cache = pickle.load(f)
 
     def dump(self):
-
-        import hashlib
 
         for path, content in self.files_outbuff_cache.items():
 
@@ -85,8 +85,14 @@ class CodeGenerator:
 
         return content.find(needle)
 
+    def _should_be_regenerated(self, basename: str, ext: str):
 
-    def _should_be_regenerated(self, filename: str):
+        if ext == 'cxx' or ext == 'hxx':
+            filename = f'{os.path.join(self.output_dir_cxx_hxx, basename)}.{ext}'
+        elif ext == 'cpp' or ext == 'h':
+            filename = f'{os.path.join(self.output_dir, basename)}.{ext}'
+        else:
+            assert False, "Unexpected file extension"
 
         if not os.path.exists(filename):
             return True
@@ -95,14 +101,22 @@ class CodeGenerator:
             return True
 
         checksum = self.generated_files_cache[filename]
-        if self._calc_file_checksum(filename) == checksum:
-            return False
+        if self._calc_file_checksum(filename) != checksum:
+            return True
 
-        return True
+        epifilename = f'{os.path.join(self.input_dir, basename)}.epi'
+        assert os.path.exists(epifilename)
+
+        if epifilename not in self.generated_files_cache:
+            return True
+
+        epichecksum = self.generated_files_cache[epifilename]
+        if self._calc_file_checksum(epifilename) != epichecksum:
+            return True
+
+        return False
 
     def _calc_file_checksum(self, filename: str):
-
-        import hashlib
 
         with open(filename, 'r') as f:
 
@@ -601,18 +615,18 @@ void Deserialization(const json_t& json) override;
 
         assert isinstance(symbol, EpiClass)
 
-        filename = f'{os.path.join(self.output_dir_cxx_hxx, basename)}.hxx'
-        if self._should_be_regenerated(filename):
+        if self._should_be_regenerated(basename, 'hxx'):
 
+            filename = f'{os.path.join(self.output_dir_cxx_hxx, basename)}.hxx'
             with open(filename, 'w') as f:
                 f.write(emit_sekeleton_file(basename, 'hxx'))
 
             injection = f'\n{emit_class_declaration_hidden(symbol).build()}'
             self._code_generate_inject(injection, basename, 'hxx')
 
-        filename = f'{os.path.join(self.output_dir_cxx_hxx, basename)}.cxx'
-        if self._should_be_regenerated(filename):
+        if self._should_be_regenerated(basename, 'cxx'):
 
+            filename = f'{os.path.join(self.output_dir_cxx_hxx, basename)}.cxx'
             with open(filename, 'w') as f:
                 f.write(emit_sekeleton_file(basename, 'cxx'))
 
@@ -622,9 +636,9 @@ void Deserialization(const json_t& json) override;
             injection = f'{emit_class_meta(symbol).build()}\n'
             self._code_generate_inject(injection, basename, 'cxx', before='EPI_NAMESPACE_END()')
 
-        filename = f'{os.path.join(self.output_dir, basename)}.cpp'
-        if self._should_be_regenerated(filename):
+        if self._should_be_regenerated(basename, 'cpp'):
 
+            filename = f'{os.path.join(self.output_dir, basename)}.cpp'
             if not os.path.exists(filename):
                 with open(filename, 'w') as f:
                     f.write(emit_sekeleton_file(basename, 'cpp'))
@@ -632,9 +646,9 @@ void Deserialization(const json_t& json) override;
             # NOTE: fake injection to force cache its content
             self._code_generate_inject('', basename, 'cpp', before='EPI_NAMESPACE_END()')
 
-        filename = f'{os.path.join(self.output_dir, basename)}.h'
-        if self._should_be_regenerated(filename):
+        if self._should_be_regenerated(basename, 'h'):
 
+            filename = f'{os.path.join(self.output_dir, basename)}.h'
             if not os.path.exists(filename):
                 with open(filename, 'w') as f:
                     f.write(emit_sekeleton_file(basename, 'h'))
@@ -646,6 +660,7 @@ void Deserialization(const json_t& json) override;
                     tip = f'`EPI_GENREGION_END({symbol.name})` is absent while corresponding anchor `EPI_GENREGION_BEGIN({symbol.name})` is present'
                     raise CodeGenerationError(f'{basename}.h', CodeGenerationErrorCode.CorruptedAnchor, tip)
 
+                # NOTE: symbol isn't present add it to the end
                 injection = f'{emit_skeleton_class(symbol).build()}\n'
                 self._code_generate_inject(
                     injection,
@@ -661,6 +676,7 @@ void Deserialization(const json_t& json) override;
                     tip = f'`EPI_GENREGION_BEGIN({symbol.name})` is absent while corresponding anchor `EPI_GENREGION_END({symbol.name})` is present'
                     raise CodeGenerationError(f'{basename}.h', CodeGenerationErrorCode.CorruptedAnchor, tip)
 
+                # NOTE: symbol is present add it to the corresponding region
                 injection = f'\n{emit_class_declaration(symbol).build()}\n'
                 self._code_generate_inject(
                     injection,
@@ -669,3 +685,10 @@ void Deserialization(const json_t& json) override;
                     before=f'EPI_GENREGION_END({symbol.name})',
                     after=f'EPI_GENREGION_BEGIN({symbol.name})'
                 )
+
+        epifilename = f'{os.path.join(self.input_dir, basename)}.epi'
+        with open(epifilename, 'r') as f:
+            epicontent = f.read()
+
+        self.generated_files_cache[epifilename] = hashlib.md5(epicontent.encode()).hexdigest()
+
