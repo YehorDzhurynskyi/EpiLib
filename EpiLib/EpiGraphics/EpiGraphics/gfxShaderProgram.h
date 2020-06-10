@@ -21,9 +21,10 @@ enum class gfxShaderType
 class gfxShader final : public Object
 {
 EPI_GENREGION_BEGIN(gfxShader)
-public:
-    EPI_GENHIDDEN_gfxShader()
 
+EPI_GENHIDDEN_gfxShader()
+
+public:
     constexpr static MetaTypeID TypeID{0x5e95f50e};
 
     enum gfxShader_PIDs
@@ -62,9 +63,10 @@ protected:
 class gfxShaderProgram final : public gfxBindable
 {
 EPI_GENREGION_BEGIN(gfxShaderProgram)
-public:
-    EPI_GENHIDDEN_gfxShaderProgram()
 
+EPI_GENHIDDEN_gfxShaderProgram()
+
+public:
     constexpr static MetaTypeID TypeID{0x7a046d1e};
 
     enum gfxShaderProgram_PIDs

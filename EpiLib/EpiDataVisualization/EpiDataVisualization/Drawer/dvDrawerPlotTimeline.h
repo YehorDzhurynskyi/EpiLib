@@ -13,9 +13,10 @@ class uiContext;
 class dvDrawerPlotTimeline : public dvDrawerPlotDrawArea
 {
 EPI_GENREGION_BEGIN(dvDrawerPlotTimeline)
-public:
-    EPI_GENHIDDEN_dvDrawerPlotTimeline()
 
+EPI_GENHIDDEN_dvDrawerPlotTimeline()
+
+public:
     constexpr static MetaTypeID TypeID{0x639dda9b};
 
     enum dvDrawerPlotTimeline_PIDs

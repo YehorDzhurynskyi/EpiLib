@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class dvSeriesBase : public Object
 {
 EPI_GENREGION_BEGIN(dvSeriesBase)
-public:
-    EPI_GENHIDDEN_dvSeriesBase()
 
+EPI_GENHIDDEN_dvSeriesBase()
+
+public:
     constexpr static MetaTypeID TypeID{0x5513e566};
 
     enum dvSeriesBase_PIDs

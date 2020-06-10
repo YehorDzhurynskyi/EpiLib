@@ -17,9 +17,10 @@ EPI_NAMESPACE_BEGIN()
 class uiContext : public Object
 {
 EPI_GENREGION_BEGIN(uiContext)
-public:
-    EPI_GENHIDDEN_uiContext()
 
+EPI_GENHIDDEN_uiContext()
+
+public:
     constexpr static MetaTypeID TypeID{0x23154a38};
 
     enum uiContext_PIDs

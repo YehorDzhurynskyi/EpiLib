@@ -23,11 +23,19 @@ public:
 
     union Flags
     {
+        static constexpr epiU64 MaskReadCallback  = (1ull << 63);
+        static constexpr epiU64 MaskWriteCallback = (1ull << 62);
+        static constexpr epiU64 MaskReadOnly      = (1ull << 61);
+        static constexpr epiU64 MaskWriteOnly     = (1ull << 60);
+
         struct
         {
-            epiU64 HasCallbackRead  : 1;
-            epiU64 HasCallbackWrite : 1;
-            epiU64 _                : 62;
+
+            epiU64 ReadCallback  : 1;
+            epiU64 WriteCallback : 1;
+            epiU64 ReadOnly: 1;
+            epiU64 WriteOnly : 1;
+            epiU64 _                : 60;
         };
         epiU64 Mask;
     };

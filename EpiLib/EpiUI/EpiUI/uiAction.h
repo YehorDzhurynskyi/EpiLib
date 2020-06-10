@@ -19,9 +19,10 @@ enum class MouseAction
 class uiAction : public Object
 {
 EPI_GENREGION_BEGIN(uiAction)
-public:
-    EPI_GENHIDDEN_uiAction()
 
+EPI_GENHIDDEN_uiAction()
+
+public:
     constexpr static MetaTypeID TypeID{0x6e1e61ac};
 
     enum uiAction_PIDs

@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class uiLayoutVBox : public uiLayout
 {
 EPI_GENREGION_BEGIN(uiLayoutVBox)
-public:
-    EPI_GENHIDDEN_uiLayoutVBox()
 
+EPI_GENHIDDEN_uiLayoutVBox()
+
+public:
     constexpr static MetaTypeID TypeID{0x9ba40183};
 
     enum uiLayoutVBox_PIDs

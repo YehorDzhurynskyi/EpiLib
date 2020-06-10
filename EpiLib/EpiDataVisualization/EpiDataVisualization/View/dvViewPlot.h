@@ -13,9 +13,10 @@ EPI_NAMESPACE_BEGIN()
 class dvViewPlot : public uiWidget
 {
 EPI_GENREGION_BEGIN(dvViewPlot)
-public:
-    EPI_GENHIDDEN_dvViewPlot()
 
+EPI_GENHIDDEN_dvViewPlot()
+
+public:
     constexpr static MetaTypeID TypeID{0x195ed8c9};
 
     enum dvViewPlot_PIDs

@@ -12,9 +12,10 @@ EPI_NAMESPACE_BEGIN()
 class uiLayout : public Object
 {
 EPI_GENREGION_BEGIN(uiLayout)
-public:
-    EPI_GENHIDDEN_uiLayout()
 
+EPI_GENHIDDEN_uiLayout()
+
+public:
     constexpr static MetaTypeID TypeID{0x13e886dc};
 
     enum uiLayout_PIDs
@@ -28,9 +29,10 @@ EPI_GENREGION_END(uiLayout)
 class uiLayoutBuilder final : public Object
 {
 EPI_GENREGION_BEGIN(uiLayoutBuilder)
-public:
-    EPI_GENHIDDEN_uiLayoutBuilder()
 
+EPI_GENHIDDEN_uiLayoutBuilder()
+
+public:
     constexpr static MetaTypeID TypeID{0xe7187c4e};
 
     enum uiLayoutBuilder_PIDs

@@ -12,9 +12,10 @@ class uiContext;
 class uiPage : public uiWidget
 {
 EPI_GENREGION_BEGIN(uiPage)
-public:
-    EPI_GENHIDDEN_uiPage()
 
+EPI_GENHIDDEN_uiPage()
+
+public:
     constexpr static MetaTypeID TypeID{0xeb73eeef};
 
     enum uiPage_PIDs

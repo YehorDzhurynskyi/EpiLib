@@ -13,9 +13,10 @@ EPI_NAMESPACE_BEGIN()
 class gfxContext : public Object
 {
 EPI_GENREGION_BEGIN(gfxContext)
-public:
-    EPI_GENHIDDEN_gfxContext()
 
+EPI_GENHIDDEN_gfxContext()
+
+public:
     constexpr static MetaTypeID TypeID{0x30f166e8};
 
     enum gfxContext_PIDs

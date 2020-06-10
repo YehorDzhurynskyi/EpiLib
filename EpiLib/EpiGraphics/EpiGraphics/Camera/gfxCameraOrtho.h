@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class gfxCameraOrtho : public gfxCamera
 {
 EPI_GENREGION_BEGIN(gfxCameraOrtho)
-public:
-    EPI_GENHIDDEN_gfxCameraOrtho()
 
+EPI_GENHIDDEN_gfxCameraOrtho()
+
+public:
     constexpr static MetaTypeID TypeID{0x704891b3};
 
     enum gfxCameraOrtho_PIDs

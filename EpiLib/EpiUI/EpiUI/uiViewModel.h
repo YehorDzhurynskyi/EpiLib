@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class uiViewModel : public Object
 {
 EPI_GENREGION_BEGIN(uiViewModel)
-public:
-    EPI_GENHIDDEN_uiViewModel()
 
+EPI_GENHIDDEN_uiViewModel()
+
+public:
     constexpr static MetaTypeID TypeID{0x18331770};
 
     enum uiViewModel_PIDs

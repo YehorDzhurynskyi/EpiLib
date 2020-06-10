@@ -12,9 +12,10 @@ EPI_NAMESPACE_BEGIN()
 class gfxBindable : public Object
 {
 EPI_GENREGION_BEGIN(gfxBindable)
-public:
-    EPI_GENHIDDEN_gfxBindable()
 
+EPI_GENHIDDEN_gfxBindable()
+
+public:
     constexpr static MetaTypeID TypeID{0x92696af8};
 
     enum gfxBindable_PIDs

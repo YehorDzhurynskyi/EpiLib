@@ -14,9 +14,10 @@ class dvSeriesBase;
 class dvViewModelSeriesBase : public uiViewModel
 {
 EPI_GENREGION_BEGIN(dvViewModelSeriesBase)
-public:
-    EPI_GENHIDDEN_dvViewModelSeriesBase()
 
+EPI_GENHIDDEN_dvViewModelSeriesBase()
+
+public:
     constexpr static MetaTypeID TypeID{0xd973e2d9};
 
     enum dvViewModelSeriesBase_PIDs

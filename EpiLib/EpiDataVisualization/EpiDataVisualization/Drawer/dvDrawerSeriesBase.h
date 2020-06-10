@@ -18,9 +18,10 @@ EPI_NAMESPACE_BEGIN()
 class dvDrawerSeriesBase : public gfxDrawer
 {
 EPI_GENREGION_BEGIN(dvDrawerSeriesBase)
-public:
-    EPI_GENHIDDEN_dvDrawerSeriesBase()
 
+EPI_GENHIDDEN_dvDrawerSeriesBase()
+
+public:
     constexpr static MetaTypeID TypeID{0xcf827047};
 
     enum dvDrawerSeriesBase_PIDs

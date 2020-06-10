@@ -12,9 +12,10 @@ class gfxTextRendered : public gfxBindable
 {
     friend class gfxTextFace;
 EPI_GENREGION_BEGIN(gfxTextRendered)
-public:
-    EPI_GENHIDDEN_gfxTextRendered()
 
+EPI_GENHIDDEN_gfxTextRendered()
+
+public:
     constexpr static MetaTypeID TypeID{0x55328726};
 
     enum gfxTextRendered_PIDs

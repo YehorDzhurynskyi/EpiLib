@@ -21,9 +21,10 @@ class gfxTextFace;
 class gfxDrawerText : public gfxDrawer
 {
 EPI_GENREGION_BEGIN(gfxDrawerText)
-public:
-    EPI_GENHIDDEN_gfxDrawerText()
 
+EPI_GENHIDDEN_gfxDrawerText()
+
+public:
     constexpr static MetaTypeID TypeID{0xe2261870};
 
     enum gfxDrawerText_PIDs

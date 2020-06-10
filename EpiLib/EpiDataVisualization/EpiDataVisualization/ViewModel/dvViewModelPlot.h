@@ -12,9 +12,10 @@ class dvViewModelSeriesBase;
 class dvViewModelPlot : public uiViewModel
 {
 EPI_GENREGION_BEGIN(dvViewModelPlot)
-public:
-    EPI_GENHIDDEN_dvViewModelPlot()
 
+EPI_GENHIDDEN_dvViewModelPlot()
+
+public:
     constexpr static MetaTypeID TypeID{0x46670485};
 
     enum dvViewModelPlot_PIDs

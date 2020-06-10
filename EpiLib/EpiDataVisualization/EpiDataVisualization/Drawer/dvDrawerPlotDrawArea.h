@@ -17,9 +17,10 @@ class gfxDrawerText;
 class dvDrawerPlotDrawArea : public gfxDrawer
 {
 EPI_GENREGION_BEGIN(dvDrawerPlotDrawArea)
-public:
-    EPI_GENHIDDEN_dvDrawerPlotDrawArea()
 
+EPI_GENHIDDEN_dvDrawerPlotDrawArea()
+
+public:
     constexpr static MetaTypeID TypeID{0xb1af01bd};
 
     enum dvDrawerPlotDrawArea_PIDs

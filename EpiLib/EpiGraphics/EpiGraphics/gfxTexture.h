@@ -43,9 +43,10 @@ enum class gfxTexturePixelType
 class gfxTexture : public gfxBindable
 {
 EPI_GENREGION_BEGIN(gfxTexture)
-public:
-    EPI_GENHIDDEN_gfxTexture()
 
+EPI_GENHIDDEN_gfxTexture()
+
+public:
     constexpr static MetaTypeID TypeID{0x50caeee4};
 
     enum gfxTexture_PIDs

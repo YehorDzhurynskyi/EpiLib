@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class gfxTextRenderedAtlasGlyph : public Object
 {
 EPI_GENREGION_BEGIN(gfxTextRenderedAtlasGlyph)
-public:
-    EPI_GENHIDDEN_gfxTextRenderedAtlasGlyph()
 
+EPI_GENHIDDEN_gfxTextRenderedAtlasGlyph()
+
+public:
     constexpr static MetaTypeID TypeID{0x42a9985b};
 
     enum gfxTextRenderedAtlasGlyph_PIDs
@@ -40,9 +41,10 @@ class gfxTextRenderedAtlas : public gfxTextRendered
 {
     friend class gfxTextFace;
 EPI_GENREGION_BEGIN(gfxTextRenderedAtlas)
-public:
-    EPI_GENHIDDEN_gfxTextRenderedAtlas()
 
+EPI_GENHIDDEN_gfxTextRenderedAtlas()
+
+public:
     constexpr static MetaTypeID TypeID{0x6de735c2};
 
     enum gfxTextRenderedAtlas_PIDs

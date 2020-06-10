@@ -14,9 +14,10 @@ EPI_NAMESPACE_BEGIN()
 class dvViewPlotTimeline : public uiWidget
 {
 EPI_GENREGION_BEGIN(dvViewPlotTimeline)
-public:
-    EPI_GENHIDDEN_dvViewPlotTimeline()
 
+EPI_GENHIDDEN_dvViewPlotTimeline()
+
+public:
     constexpr static MetaTypeID TypeID{0x1939297a};
 
     enum dvViewPlotTimeline_PIDs

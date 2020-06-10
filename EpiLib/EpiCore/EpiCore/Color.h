@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class Color final : public Object
 {
 EPI_GENREGION_BEGIN(Color)
-public:
-    EPI_GENHIDDEN_Color()
 
+EPI_GENHIDDEN_Color()
+
+public:
     constexpr static MetaTypeID TypeID{0xa79767ed};
 
     enum Color_PIDs

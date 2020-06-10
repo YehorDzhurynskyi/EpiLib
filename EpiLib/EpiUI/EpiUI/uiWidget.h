@@ -15,9 +15,10 @@ class uiLayout;
 class uiWidget : public Object
 {
 EPI_GENREGION_BEGIN(uiWidget)
-public:
-    EPI_GENHIDDEN_uiWidget()
 
+EPI_GENHIDDEN_uiWidget()
+
+public:
     constexpr static MetaTypeID TypeID{0xac2bf3ee};
 
     enum uiWidget_PIDs

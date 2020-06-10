@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class gfxVertexArray : public gfxBindable
 {
 EPI_GENREGION_BEGIN(gfxVertexArray)
-public:
-    EPI_GENHIDDEN_gfxVertexArray()
 
+EPI_GENHIDDEN_gfxVertexArray()
+
+public:
     constexpr static MetaTypeID TypeID{0x7d61d88d};
 
     enum gfxVertexArray_PIDs

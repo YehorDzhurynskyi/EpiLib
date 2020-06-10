@@ -12,9 +12,10 @@ class gfxTextRenderedGlyph : public gfxTextRendered
 {
     friend class gfxTextFace;
 EPI_GENREGION_BEGIN(gfxTextRenderedGlyph)
-public:
-    EPI_GENHIDDEN_gfxTextRenderedGlyph()
 
+EPI_GENHIDDEN_gfxTextRenderedGlyph()
+
+public:
     constexpr static MetaTypeID TypeID{0xb45b3475};
 
     enum gfxTextRenderedGlyph_PIDs
@@ -37,9 +38,10 @@ class gfxTextRenderedABC : public Object
 {
     friend class gfxTextFace;
 EPI_GENREGION_BEGIN(gfxTextRenderedABC)
-public:
-    EPI_GENHIDDEN_gfxTextRenderedABC()
 
+EPI_GENHIDDEN_gfxTextRenderedABC()
+
+public:
     constexpr static MetaTypeID TypeID{0x23566643};
 
     enum gfxTextRenderedABC_PIDs

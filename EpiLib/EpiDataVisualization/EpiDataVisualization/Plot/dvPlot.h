@@ -14,9 +14,10 @@ EPI_NAMESPACE_BEGIN()
 class dvPlot : public Object
 {
 EPI_GENREGION_BEGIN(dvPlot)
-public:
-    EPI_GENHIDDEN_dvPlot()
 
+EPI_GENHIDDEN_dvPlot()
+
+public:
     constexpr static MetaTypeID TypeID{0x6bf8062b};
 
     enum dvPlot_PIDs

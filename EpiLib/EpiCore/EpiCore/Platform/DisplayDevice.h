@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class DisplayDevice : public Object
 {
 EPI_GENREGION_BEGIN(DisplayDevice)
-public:
-    EPI_GENHIDDEN_DisplayDevice()
 
+EPI_GENHIDDEN_DisplayDevice()
+
+public:
     constexpr static MetaTypeID TypeID{0x36950f3a};
 
     enum DisplayDevice_PIDs

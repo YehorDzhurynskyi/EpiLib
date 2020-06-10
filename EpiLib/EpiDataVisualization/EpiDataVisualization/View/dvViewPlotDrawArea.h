@@ -13,9 +13,10 @@ EPI_NAMESPACE_BEGIN()
 class dvViewPlotDrawArea : public uiWidget
 {
 EPI_GENREGION_BEGIN(dvViewPlotDrawArea)
-public:
-    EPI_GENHIDDEN_dvViewPlotDrawArea()
 
+EPI_GENHIDDEN_dvViewPlotDrawArea()
+
+public:
     constexpr static MetaTypeID TypeID{0xcb0bf25c};
 
     enum dvViewPlotDrawArea_PIDs

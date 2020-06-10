@@ -314,21 +314,51 @@ class CodeGenerator:
                 if p.form == EpiVariable.Form.Array:
                     hash_typenested = f'epiHashCompileTime({p.nestedtokentype.text})'
 
-                # TODO: handle properly
-                if any(a.tokentype == TokenType.Virtual for a in p.attrs):
-                    continue
-
                 # TODO: remove rstrip
                 hash_type = f'epiHashCompileTime({p.tokentype.text.rstrip("*")})'
+
+                flags = []
+
+                attr_readcallback = p.find_attr(TokenType.ReadCallback)
+                attr_writecallback = p.find_attr(TokenType.WriteCallback)
+                attr_readonly = p.find_attr(TokenType.ReadOnly)
+                attr_writeonly = p.find_attr(TokenType.WriteOnly)
+
+                if attr_readcallback is not None:
+                    flags.append('ReadCallback')
+                if attr_writecallback is not None:
+                    flags.append('WriteCallback')
+                if attr_readonly is not None:
+                    flags.append('ReadOnly')
+                if attr_writeonly is not None:
+                    flags.append('WriteOnly')
 
                 builder.line('{')
                 builder.tab()
                 builder.line('MetaProperty m = epiMetaProperty(')
                 builder.tab()
                 builder.line(f'/* Name */ "{p.name}",')
-                builder.line(f'/* PtrRead */ (void*)offsetof({clss.name}, m_{p.name}),')
-                builder.line(f'/* PtrWrite */ (void*)offsetof({clss.name}, m_{p.name}),')
-                builder.line('/* Flags */ {},')
+
+                ptrread = '/* PtrRead */ nullptr,'
+                if attr_writeonly is None:
+                    if attr_readcallback is None:
+                        ptrread = f'/* PtrRead */ (void*)offsetof({clss.name}, m_{p.name}),'
+                    elif attr_writeonly is None:
+                        ptrread = f'/* PtrRead */ (void*)offsetof({clss.name}, Get{p.name}_FuncPtr),'
+
+                builder.line(ptrread)
+
+                ptrwrite = '/* PtrWrite */ nullptr,'
+                if attr_readonly is None:
+                    if attr_writecallback is None:
+                        ptrwrite = f'/* PtrWrite */ (void*)offsetof({clss.name}, m_{p.name}),'
+                    else:
+                        ptrwrite = f'/* PtrWrite */ (void*)offsetof({clss.name}, Set{p.name}_FuncPtr),'
+
+                builder.line(ptrwrite)
+
+                flags = [f'MetaProperty::Flags::Mask{f}' for f in flags]
+                builder.line(f'/* Flags */ {{{ " | ".join(flags) }}},')
                 builder.line(f'/* typeID */ {hash_type},')
                 builder.line(f'/* nestedTypeID */ {hash_typenested}')
                 builder.tab(-1)
@@ -354,7 +384,7 @@ class CodeGenerator:
 
             clss_parent = clss.parent if clss.parent is not None else 'Object'
             builder.line(f'#define EPI_GENHIDDEN_{clss.name}() \\')
-            builder.line(' \\')
+            builder.line('public: \\')
 
             content = \
 f'''
@@ -376,7 +406,7 @@ epiBool Is(MetaTypeID rhs) const override
 
 void Serialization(json_t& json) override;
 void Deserialization(const json_t& json) override;
-
+ 
 '''
             builder.line(' \\\n'.join(content.strip().split('\n')) + ' \\')
             builder.line('\\')
@@ -434,11 +464,11 @@ void Deserialization(const json_t& json) override;
                         if not attr_readcallback or attr_readcallback.find_param('"SuppressRef"') is None:
 
                             if not attr_readcallback:
-                                builder.line(f'inline {pptype}& Get{p.name}() {{ {body_get} }} \\')
+                                builder.line(f'{pptype}& Get{p.name}() {{ {body_get} }} \\')
 
                             pptype = f'const {pptype}&'
 
-                    builder.line(f'inline {pptype} Get{p.name}() const {{ {body_get} }} \\')
+                    builder.line(f'{pptype} Get{p.name}() const {{ {body_get} }} \\')
 
                 if not any(a.tokentype == TokenType.ReadOnly for a in p.attrs):
 
@@ -449,7 +479,7 @@ void Deserialization(const json_t& json) override;
                         if not attr_writecallback or attr_writecallback.find_param('"SuppressRef"') is None:
                             pptype = f'const {pptype}&'
 
-                    builder.line(f'inline void Set{p.name}({pptype} value) {{ {body_set} }} \\')
+                    builder.line(f'void Set{p.name}({pptype} value) {{ {body_set} }} \\')
 
             builder.line('\\')
 
@@ -464,7 +494,37 @@ void Deserialization(const json_t& json) override;
             builder.line(f'PIDX_COUNT = {len(clss.properties)} \\')
 
             builder.tab(-1)
-            builder.line('};')
+            builder.line('}; \\')
+
+            builder.line(' \\')
+            builder.line('private: \\')
+
+            # getters/setters function pointers
+            for p in clss.properties:
+
+                ptype = p.tokentype.text
+
+                if p.form == EpiVariable.Form.Array:
+                    ptype = f'{ptype}<{p.nestedtokentype.text}>'
+
+                attr_readcallback = p.find_attr(TokenType.ReadCallback)
+                attr_writecallback = p.find_attr(TokenType.WriteCallback)
+                attr_readonly = p.find_attr(TokenType.ReadOnly)
+                attr_writeonly = p.find_attr(TokenType.WriteOnly)
+
+                if attr_readcallback is not None and attr_writeonly is None:
+
+                    if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer and attr_readcallback.find_param('"SuppressRef"') is None:
+                        builder.line(f'const {ptype}& ({clss.name}::*Get{p.name}_FuncPtr)() const {{ &{clss.name}::Get{p.name} }}; \\')
+                    else:
+                        builder.line(f'{ptype} ({clss.name}::*Get{p.name}_FuncPtr)() const {{ &{clss.name}::Get{p.name} }}; \\')
+
+                if attr_writecallback is not None and attr_readonly is None:
+
+                    if ptype not in Tokenizer.BUILTIN_PRIMITIVE_TYPES and p.form != EpiVariable.Form.Pointer and attr_writecallback.find_param('"SuppressRef"') is None:
+                        builder.line(f'void ({clss.name}::*Set{p.name}_FuncPtr)(const {ptype}&) {{ &{clss.name}::Set{p.name} }}; \\')
+                    else:
+                        builder.line(f'void ({clss.name}::*Set{p.name}_FuncPtr)({ptype}) {{ &{clss.name}::Set{p.name} }}; \\')
 
             builder.line_empty()
 
@@ -552,10 +612,11 @@ void Deserialization(const json_t& json) override;
 
         def emit_class_declaration(clss: EpiClass, builder: Builder = Builder()) -> Builder:
 
-            builder.line('public:')
-            builder.tab()
+            builder.line_empty()
             builder.line(f'EPI_GENHIDDEN_{clss.name}()')
             builder.line_empty()
+            builder.line('public:')
+            builder.tab()
 
             crc = hex(zlib.crc32(clss.name.encode()) & 0xffffffff)
             builder.line(f'constexpr static MetaTypeID TypeID{{{crc}}};')

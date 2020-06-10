@@ -44,7 +44,7 @@ void* PropertyPointer::Get()
     }
     else if (m_Form == Form::Property)
     {
-        if (m_Meta->m_Flags.HasCallbackRead)
+        if (m_Meta->m_Flags.ReadCallback)
         {
             if (MetaType::IsCompound(m_Meta->m_TypeID))
             {
@@ -124,7 +124,7 @@ void PropertyPointer::Set(void* value)
     }
     else if (m_Form == Form::Property)
     {
-        if (m_Meta->m_Flags.HasCallbackWrite)
+        if (m_Meta->m_Flags.WriteCallback)
         {
             switch (m_Meta->m_TypeID)
             {

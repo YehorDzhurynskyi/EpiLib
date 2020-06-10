@@ -11,9 +11,10 @@ EPI_NAMESPACE_BEGIN()
 class uiCamera : public gfxCamera
 {
 EPI_GENREGION_BEGIN(uiCamera)
-public:
-    EPI_GENHIDDEN_uiCamera()
 
+EPI_GENHIDDEN_uiCamera()
+
+public:
     constexpr static MetaTypeID TypeID{0x12ce033b};
 
     enum uiCamera_PIDs

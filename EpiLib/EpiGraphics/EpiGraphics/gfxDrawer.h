@@ -13,9 +13,10 @@ EPI_NAMESPACE_BEGIN()
 class gfxDrawer : public Object
 {
 EPI_GENREGION_BEGIN(gfxDrawer)
-public:
-    EPI_GENHIDDEN_gfxDrawer()
 
+EPI_GENHIDDEN_gfxDrawer()
+
+public:
     constexpr static MetaTypeID TypeID{0x74765527};
 
     enum gfxDrawer_PIDs

@@ -32,9 +32,10 @@ enum class gfxVertexBufferMapAccess
 class gfxVertexBuffer : public gfxBindable
 {
 EPI_GENREGION_BEGIN(gfxVertexBuffer)
-public:
-    EPI_GENHIDDEN_gfxVertexBuffer()
 
+EPI_GENHIDDEN_gfxVertexBuffer()
+
+public:
     constexpr static MetaTypeID TypeID{0xf78a4476};
 
     enum gfxVertexBuffer_PIDs

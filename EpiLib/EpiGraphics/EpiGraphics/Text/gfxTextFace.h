@@ -19,9 +19,10 @@ class gfxTextFace : public Object
 {
     friend class gfxTextManager;
 EPI_GENREGION_BEGIN(gfxTextFace)
-public:
-    EPI_GENHIDDEN_gfxTextFace()
 
+EPI_GENHIDDEN_gfxTextFace()
+
+public:
     constexpr static MetaTypeID TypeID{0xe2497b35};
 
     enum gfxTextFace_PIDs
