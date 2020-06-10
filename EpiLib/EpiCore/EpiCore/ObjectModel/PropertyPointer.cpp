@@ -6,11 +6,11 @@
 namespace epi
 {
 
-#define SetCallback(_x) ((void (*)(Object*, _x))m_Meta->m_PtrWrite)(m_Self, *((_x*)&value))
-#define SetCallback_Ref(_x) ((void (*)(Object*, const _x&))m_Meta->m_PtrWrite)(m_Self, (const _x&)value)
+#define SetCallback(_x) (*((void (**)(Object*, _x))addr))(m_Self, *((_x*)&value))
+#define SetCallback_Ref(_x) (*((void (**)(Object*, const _x&))addr))(m_Self, (const _x&)value)
 
-#define GetCallback(_x) { _x v = ((_x (*)(Object*))m_Meta->m_PtrRead)(m_Self); value = (void*)*((epiSize_t*)&v); }
-#define GetCallback_Ref(_x) { const _x& v = ((const _x& (*)(Object*))m_Meta->m_PtrRead)(m_Self); value = (void*)&v; }
+#define GetCallback(_x) { _x v = (*((_x (**)(Object*))addr))(m_Self); value = (void*)*((epiSize_t*)&v); }
+#define GetCallback_Ref(_x) { const _x& v = (*((const _x& (**)(Object*))addr))(m_Self); value = (void*)&v; }
 
 PropertyPointer PropertyPointer::CreateFromProperty(Object& self, const MetaProperty* property)
 {
@@ -44,6 +44,7 @@ void* PropertyPointer::Get()
     }
     else if (m_Form == Form::Property)
     {
+        void* addr = (epiByte*)m_Self + (size_t)m_Meta->m_PtrRead;
         if (m_Meta->m_Flags.ReadCallback)
         {
             if (MetaType::IsCompound(m_Meta->m_TypeID))
@@ -79,7 +80,6 @@ void* PropertyPointer::Get()
         }
         else
         {
-            void* addr = (epiByte*)m_Self + (size_t)m_Meta->m_PtrRead;
             if (MetaType::IsCompound(m_Meta->m_TypeID))
             {
                 value = addr;
@@ -124,6 +124,7 @@ void PropertyPointer::Set(void* value)
     }
     else if (m_Form == Form::Property)
     {
+        void* addr = (epiByte*)m_Self + (size_t)m_Meta->m_PtrWrite;
         if (m_Meta->m_Flags.WriteCallback)
         {
             switch (m_Meta->m_TypeID)
@@ -152,7 +153,6 @@ void PropertyPointer::Set(void* value)
         }
         else
         {
-            void* addr = (epiByte*)m_Self + (size_t)m_Meta->m_PtrWrite;
             switch (m_Meta->m_TypeID)
             {
             case MetaTypeID_epiChar: *((epiChar*)addr) = *((epiChar*)&value); break;
