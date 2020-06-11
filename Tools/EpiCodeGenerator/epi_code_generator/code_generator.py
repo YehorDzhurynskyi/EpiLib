@@ -455,6 +455,8 @@ void Deserialization(const json_t& json) override;
                 body_get = f'{body_prologue_get}{body_epilogue_get}'
                 body_set = f'{body_prologue_set}{body_epilogue_set}'
 
+                # TODO: add `inline` if no read/write callback attribute present
+
                 if not any(a.tokentype == TokenType.WriteOnly for a in p.attrs):
 
                     pptype = ptype
