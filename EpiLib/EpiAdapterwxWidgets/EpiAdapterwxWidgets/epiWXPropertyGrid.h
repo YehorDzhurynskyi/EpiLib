@@ -19,11 +19,13 @@ public:
     void SetObject(epi::Object& object);
 
 protected:
-    void FillCompound(epi::Object& object, wxPGProperty* prty);
-    void FillMultiDimensional(epi::epiBaseArray& array, epi::MetaTypeID nestedTypeID, wxPGProperty* prty);
-    void FillFundamental(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* prty);
-    void FillString(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* prty);
-    void FillProperties(epi::Object& object, const epi::MetaClassData& meta, wxPGProperty* prty);
+    void FillCompound(epi::Object& object, wxPGProperty* parentPrty);
+    void FillMultiDimensional(epi::epiBaseArray& array, epi::MetaTypeID nestedTypeID, wxPGProperty* parentPrty);
+    void FillProperties(epi::Object& object, const epi::MetaClassData& meta, wxPGProperty* parentPrty);
+
+    void AddFundamental(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);
+    void AddString(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);
+    void AddProperty(wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable);
 
     void OnPropertyGridChanged(wxPropertyGridEvent& event);
 };

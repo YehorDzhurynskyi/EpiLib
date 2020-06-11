@@ -46,6 +46,7 @@ public:
 
     MetaTypeID GetTypeID() const;
     MetaTypeID GetNestedTypeID() const;
+    Flags GetFlags() const;
 
 protected:
     Flags m_Flags;
@@ -73,13 +74,13 @@ protected:
 
 public:
     friend class PropertyPointer;
-    friend MetaProperty epiMetaProperty(const epiChar*, void*, void*, MetaProperty::Flags, MetaTypeID, MetaTypeID);
+    friend MetaProperty epiMetaProperty(const epiChar*, void*, void*, epiU64, MetaTypeID, MetaTypeID);
 };
 
 inline MetaProperty epiMetaProperty(const epiChar* name,
                                     void* ptrRead,
                                     void* ptrWrite,
-                                    MetaProperty::Flags flags,
+                                    epiU64 flags,
                                     MetaTypeID typeID,
                                     MetaTypeID nestedTypeID)
 {
@@ -88,7 +89,7 @@ inline MetaProperty epiMetaProperty(const epiChar* name,
     prty.SetName(name);
     prty.m_PtrRead = ptrRead;
     prty.m_PtrWrite = ptrWrite;
-    prty.m_Flags = flags;
+    prty.m_Flags.Mask = flags;
     prty.m_TypeID = typeID;
     prty.m_NestedTypeID = nestedTypeID;
 

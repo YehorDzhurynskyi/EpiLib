@@ -31,6 +31,11 @@ MetaTypeID MetaProperty::GetNestedTypeID() const
     return m_NestedTypeID;
 }
 
+MetaProperty::Flags MetaProperty::GetFlags() const
+{
+    return m_Flags;
+}
+
 epiBool MetaType::IsFundamental(MetaTypeID typeID)
 {
     switch (typeID)
