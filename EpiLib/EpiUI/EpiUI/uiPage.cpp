@@ -17,8 +17,11 @@ epiVec2f uiPage::GetMouseLocalUICoord_Internal() const
 
 void uiPage::OnResize()
 {
-    for (auto& w : m_Children)
+    for (auto& w : GetChildren())
     {
+        // TODO: fix
+        w->SetSize(GetSize());
+        w->SetPosition(GetPosition());
         w->OnResize();
     }
 }

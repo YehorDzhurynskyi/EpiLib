@@ -52,6 +52,16 @@ auto dvDataCollection::end() const -> typename decltype(m_Buffer)::const_iterato
     return m_Buffer.end();
 }
 
+auto dvDataCollection::cbegin() const -> typename decltype(m_Buffer)::const_iterator
+{
+    return m_Buffer.cbegin();
+}
+
+auto dvDataCollection::cend() const -> typename decltype(m_Buffer)::const_iterator
+{
+    return m_Buffer.cend();
+}
+
 epiFloat dvDataCollection::operator[](const epiS32 index) const
 {
     return m_Buffer[index];

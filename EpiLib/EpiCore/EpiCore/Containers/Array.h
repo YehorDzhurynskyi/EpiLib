@@ -75,24 +75,54 @@ public:
     }
 
 public:
-    auto begin() -> typename std::vector<T>::iterator
+    auto begin() -> typename iterator
     {
         return m_Vector.begin();
     }
 
-    auto end() -> typename std::vector<T>::iterator
+    auto end() -> typename iterator
     {
         return m_Vector.end();
     }
 
-    auto begin() const -> typename std::vector<T>::const_iterator
+    auto begin() const -> typename const_iterator
     {
         return m_Vector.cbegin();
     }
 
-    auto end() const -> typename std::vector<T>::const_iterator
+    auto end() const -> typename const_iterator
     {
         return m_Vector.cend();
+    }
+
+    auto cbegin() const -> typename const_iterator
+    {
+        return m_Vector.cbegin();
+    }
+
+    auto cend() const -> typename const_iterator
+    {
+        return m_Vector.cend();
+    }
+
+    auto rbegin() -> typename reverse_iterator
+    {
+        return m_Vector.rbegin();
+    }
+
+    auto rend() -> typename reverse_iterator
+    {
+        return m_Vector.rend();
+    }
+
+    auto crbegin() -> typename const_reverse_iterator
+    {
+        return m_Vector.crbegin();
+    }
+
+    auto crend() -> typename const_reverse_iterator
+    {
+        return m_Vector.crend();
     }
 
     T& operator[](const epiS32 index)

@@ -1,5 +1,0 @@
-class uiLayoutVBox : uiLayout
-{
-    epiFloat Spacing;
-    epiArray<epiFloat> Stretches;
-};

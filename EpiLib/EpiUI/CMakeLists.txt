@@ -28,12 +28,12 @@ add_library(EpiUI
     EpiUI/uiPage.h
     EpiUI/uiPage.cpp
 
-    EpiUI/uiLayout.epi
-    EpiUI/uiLayout.h
-    EpiUI/uiLayout.cpp
-    EpiUI/uiLayoutVBox.epi
-    EpiUI/uiLayoutVBox.h
-    EpiUI/uiLayoutVBox.cpp
+    EpiUI/Layout/uiLayout.epi
+    EpiUI/Layout/uiLayout.h
+    EpiUI/Layout/uiLayout.cpp
+    EpiUI/Layout/uiLayoutBox.epi
+    EpiUI/Layout/uiLayoutBox.h
+    EpiUI/Layout/uiLayoutBox.cpp
 )
 get_target_property(EpiUI_SRCs EpiUI SOURCES) 
 epi_add_precompiled_header(EpiUI EpiUI/pch.h SOURCE_CXX EpiUI/pch.cpp)

@@ -1,0 +1,13 @@
+class uiLayoutItem
+{
+    uiWidget* Widget;
+};
+
+class uiLayout
+{
+    [ReadOnly]
+    epiArray<uiLayoutItem> Items;
+
+    epiVec2f Position;
+    epiVec2f Size;
+};

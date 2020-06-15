@@ -43,6 +43,8 @@ public:
     auto end() -> typename decltype(m_Buffer)::iterator;
     auto begin() const -> typename decltype(m_Buffer)::const_iterator;
     auto end() const -> typename decltype(m_Buffer)::const_iterator;
+    auto cbegin() const -> typename decltype(m_Buffer)::const_iterator;
+    auto cend() const -> typename decltype(m_Buffer)::const_iterator;
 };
 
 EPI_NAMESPACE_END()

@@ -1,3 +1,20 @@
+class uiSizePolicyInfo
+{
+    [Virtual, ReadOnly]
+    {
+        epiBool CanExpandVertically;
+        epiBool CanExpandHorizontally;
+    }
+
+    epiBool RetainSizeWhenHidden;
+
+    epiBool WidthDependsOnHeight;
+    epiBool HeightDependsOnWidth;
+
+    epiU8 StretchFactorVertical;
+    epiU8 StretchFactorHorizontal;
+};
+
 class uiWidget
 {
     [Virtual]
@@ -15,7 +32,12 @@ class uiWidget
     }
 
     epiVec2f Position;
+
+    uiSizePolicyInfo SizePolicyInfo;
     epiVec2f Size;
+    epiVec2f SizeMinimum;
+    epiVec2f SizeMaximum;
+    epiVec2f SizeHint;
 
     [ReadOnly]
     {
@@ -23,5 +45,6 @@ class uiWidget
         epiPtrArray<uiWidget> Children;
     }
 
+    [WriteCallback]
     uiLayout* Layout;
 };

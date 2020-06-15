@@ -529,6 +529,7 @@ void Deserialization(const json_t& json) override;
                         builder.line(f'void ({clss.name}::*Set{p.name}_FuncPtr)({ptype}) {{ &{clss.name}::Set{p.name} }}; \\')
 
             builder.line_empty()
+            builder.line_empty()
 
             return builder
 
