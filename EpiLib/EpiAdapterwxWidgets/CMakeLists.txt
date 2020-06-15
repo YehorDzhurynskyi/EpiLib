@@ -6,6 +6,8 @@ add_library(EpiAdapterwxWidgets
 
     EpiAdapterwxWidgets/epiWXPropertyGrid.h
     EpiAdapterwxWidgets/epiWXPropertyGrid.cpp
+    EpiAdapterwxWidgets/epiWXPlot.h
+    EpiAdapterwxWidgets/epiWXPlot.cpp
 )
 get_target_property(EpiAdapterwxWidgets_SRCs EpiAdapterwxWidgets SOURCES) 
 epi_add_precompiled_header(EpiAdapterwxWidgets EpiAdapterwxWidgets/pch.h SOURCE_CXX EpiAdapterwxWidgets/pch.cpp)
@@ -28,6 +30,7 @@ target_include_directories(EpiAdapterwxWidgets
 target_link_libraries(EpiAdapterwxWidgets
     PUBLIC
         EpiCore
+        EpiDataVisualization
         net
         core
         gl
