@@ -1,8 +1,11 @@
 #pragma once
 
 #include <wx/propgrid/propgrid.h>
-#include <EpiCore/ObjectModel/Object.h>
 
+#include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/ObjectModel/PropertyPointer.h"
+
+class epiWXPlot;
 class epiWXPropertyGrid : public wxPropertyGrid
 {
 public:
@@ -17,6 +20,7 @@ public:
                       const wxString& name = wxPropertyGridNameStr);
 
     void SetObject(epi::Object& object);
+    void Clear() override;
 
 protected:
     void FillCompound(epi::Object& object, wxPGProperty* parentPrty);
@@ -25,7 +29,15 @@ protected:
 
     void AddFundamental(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);
     void AddString(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);
-    void AddProperty(wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable);
+    void AddProperty(epi::PropertyPointer& ptr, wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable);
 
     void OnPropertyGridChanged(wxPropertyGridEvent& event);
+    void OnPropertyGridRightClick(wxPropertyGridEvent& event);
+
+protected:
+    std::vector<epi::PropertyPointer*> m_PropertyPointers;
+
+public:
+    // TODO: refactor
+    epiWXPlot* m_Plot;
 };

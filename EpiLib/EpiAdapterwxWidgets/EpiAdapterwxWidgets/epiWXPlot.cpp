@@ -12,6 +12,8 @@
 
 #include "EpiUI/Layout/uiLayoutBox.h"
 
+#include "EpiCore/ObjectModel/PropertyPointer.h"
+
 #include <glad/glad.h>
 #include <wx/wx.h>
 
@@ -64,20 +66,6 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    dvSeriesY& cos = m_Plot.Add<dvSeriesY>();
-    cos.SetStepX(0.01f);
-    for (epiFloat v = 0.0f; v < 10.0f; v += cos.GetStepX())
-    {
-        cos.Add(std::cosf(v));
-    }
-
-    dvSeriesY& sin = m_Plot.Add<dvSeriesY>();
-    sin.SetStepX(0.01f);
-    for (epiFloat v = 0.0f; v < 10.0f; v += sin.GetStepX())
-    {
-        sin.Add(std::sinf(v));
-    }
-
     m_ViewPlot = &m_UIContext->GetPage().Add<dvViewPlot>();
     m_UIContext->GetPage().SetUIContext(m_UIContext); // TODO: fix
     uiLayoutBox* layout = new uiLayoutBox();
@@ -100,18 +88,6 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     vm.SetClipBox(clipbox);
 
     {
-        dvViewModelSeriesBase& seriesVM = vm.Add<dvViewModelSeriesBase>();
-        seriesVM.SetModel(&cos);
-        seriesVM.SetColor(Color::kLightBlue);
-    }
-
-    {
-        dvViewModelSeriesBase& seriesVM = vm.Add<dvViewModelSeriesBase>();
-        seriesVM.SetModel(&sin);
-        seriesVM.SetColor(Color::kLightRed);
-    }
-
-    {
         dvViewPlotDrawArea& drawArea = m_ViewPlot->Add<dvViewPlotDrawArea>();
         drawArea.SetViewModel(&vm);
         uiSizePolicyInfo& policy = drawArea.GetSizePolicyInfo();
@@ -127,6 +103,15 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     }
 
     m_UIContext->GetDrawerText().CreateAtlas(m_TextManager.GetDefaultFace(), L"0123456789-+eE,.", 18);
+}
+
+void epiWXPlot::Update()
+{
+    for (auto& bind : m_PropertyBinds)
+    {
+        const epiFloat value = bind.PrtyPtr->Get<epiFloat>();
+        bind.Series->Add(value);
+    }
 }
 
 void epiWXPlot::OnResize(wxSizeEvent& event)
@@ -219,4 +204,25 @@ void epiWXPlot::OnMouse(wxMouseEvent& event)
     {
         m_UIContext->OnMouseFocus(event.Entering());
     }
+}
+
+void epiWXPlot::AddPropertyBind(const epi::PropertyPointer* ptr)
+{
+    dvSeriesY& series = m_Plot.Add<dvSeriesY>();
+    series.SetStepX(0.0001f); // TODO: set in other place
+
+    dvViewModelPlot& vm = m_ViewPlot->GetViewModel();
+    dvViewModelSeriesBase& seriesVM = vm.Add<dvViewModelSeriesBase>();
+    seriesVM.SetModel(&series);
+
+    Color colors[] {
+        Color::kLightBlue,
+        Color::kLightRed
+    };
+
+    seriesVM.SetColor(colors[m_Plot.Size() % epiArrLen(colors)]);
+
+    PropertyBind& bind = m_PropertyBinds.emplace_back();
+    bind.Series = &series;
+    bind.PrtyPtr = ptr;
 }

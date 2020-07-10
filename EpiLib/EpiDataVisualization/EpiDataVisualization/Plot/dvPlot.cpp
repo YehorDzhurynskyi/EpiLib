@@ -7,4 +7,9 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+epiSize_t dvPlot::Size() const
+{
+    return m_Series.Size();
+}
+
 EPI_NAMESPACE_END()

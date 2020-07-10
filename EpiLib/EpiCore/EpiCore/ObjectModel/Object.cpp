@@ -8,7 +8,7 @@ MetaClass Object::EmitMetaClass()
 {
     MetaClassData data;
 
-    return MetaClass(std::move(data), epiHashCompileTime(Object), MetaTypeID_epiNone, sizeof(Object), "Object");
+    return MetaClass(std::move(data), epiHashCompileTime(Object), MetaTypeID_None, sizeof(Object), "Object");
 }
 
 const MetaClass& Object::GetMetaClass() const

@@ -38,6 +38,8 @@ public:
         static_assert(std::is_base_of_v<dvSeriesBase, T>);
         return *static_cast<T*>(m_Series.PushBack(new T(std::forward<Args&&>(args)...)));
     }
+
+    epiSize_t Size() const;
 };
 
 EPI_NAMESPACE_END()

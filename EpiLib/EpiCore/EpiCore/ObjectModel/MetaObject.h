@@ -100,7 +100,7 @@ inline MetaProperty epiMetaProperty(const epiChar* name,
 
 enum : MetaTypeID
 {
-    MetaTypeID_epiNone = 0,
+    MetaTypeID_None = 0,
 
     MetaTypeID_epiChar = epiHashCompileTime(epiChar),
     MetaTypeID_epiWChar = epiHashCompileTime(epiWChar),
@@ -224,8 +224,8 @@ public:
 
 protected:
     MetaClassData m_ClassData;
-    MetaTypeID m_TypeID{MetaTypeID_epiNone};
-    MetaTypeID m_SuperTypeID{MetaTypeID_epiNone};
+    MetaTypeID m_TypeID{MetaTypeID_None};
+    MetaTypeID m_SuperTypeID{MetaTypeID_None};
     epiSize_t m_SizeOf{0};
     epiString m_Name;
 };

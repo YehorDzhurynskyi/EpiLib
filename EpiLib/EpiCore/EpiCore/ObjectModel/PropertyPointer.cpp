@@ -34,7 +34,7 @@ PropertyPointer PropertyPointer::CreateFromArray(epiBaseArray& self, MetaTypeID 
     return ptr;
 }
 
-void* PropertyPointer::Get()
+void* PropertyPointer::Get() const
 {
     void* value = nullptr;
 

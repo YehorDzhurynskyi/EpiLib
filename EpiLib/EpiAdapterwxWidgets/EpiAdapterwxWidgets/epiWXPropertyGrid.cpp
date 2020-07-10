@@ -1,12 +1,15 @@
 #include "EpiAdapterwxWidgets/pch.h"
-#include "epiWXPropertyGrid.h"
+#include "EpiAdapterwxWidgets/epiWXPropertyGrid.h"
 
-#include "EpiCore/ObjectModel/PropertyPointer.h"
+#include "EpiAdapterwxWidgets/epiWXPlot.h"
+
+#include <wx/wx.h>
 
 using namespace epi;
 
 wxBEGIN_EVENT_TABLE(epiWXPropertyGrid, wxPropertyGrid)
     EVT_PG_CHANGED(-1, epiWXPropertyGrid::OnPropertyGridChanged)
+    EVT_PG_RIGHT_CLICK(-1, epiWXPropertyGrid::OnPropertyGridRightClick)
 wxEND_EVENT_TABLE()
 
 epiWXPropertyGrid::epiWXPropertyGrid(wxWindow* parent,
@@ -17,6 +20,13 @@ epiWXPropertyGrid::epiWXPropertyGrid(wxWindow* parent,
                                      const wxString& name)
     : wxPropertyGrid(parent, id, pos, size, style, name)
 {
+}
+
+void epiWXPropertyGrid::Clear()
+{
+    wxPropertyGrid::Clear();
+
+    m_PropertyPointers.clear();
 }
 
 void epiWXPropertyGrid::SetObject(Object& object)
@@ -40,12 +50,13 @@ void epiWXPropertyGrid::FillCompound(Object& object, wxPGProperty* prty)
         {
             wxPGProperty* p = new wxStringProperty(m->GetName(), wxPG_LABEL, "");
             p = prty != nullptr ? prty->InsertChild(0, p) : Append(p);
+            p->ChangeFlag(wxPGPropertyFlags::wxPG_PROP_NOEDITOR, true);
 
             FillProperties(object, metaClassData, p);
         }
 
-        epiAssert(MetaType::IsCompound(m->GetSuperTypeID()) || m->GetSuperTypeID() == MetaTypeID_epiNone);
-        if (m->GetSuperTypeID() == MetaTypeID_epiNone)
+        epiAssert(MetaType::IsCompound(m->GetSuperTypeID()) || m->GetSuperTypeID() == MetaTypeID_None);
+        if (m->GetSuperTypeID() == MetaTypeID_None)
         {
             break;
         }
@@ -60,28 +71,34 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, MetaTypeID nes
     for (epiU32 i = 0; i < arraySz; ++i)
     {
         const std::string label = fmt::format("[{:d}]", i);
-        PropertyPointer ptr = PropertyPointer::CreateFromArray(array, nestedTypeID, i);
+
+        auto ptr = new PropertyPointer();
+        *ptr = PropertyPointer::CreateFromArray(array, nestedTypeID, i);
 
         if (MetaType::IsCompound(nestedTypeID))
         {
-            Object& obj = ptr.Get<Object&>();
+            Object& obj = ptr->Get<Object&>();
             wxPGProperty* prty = new wxStringProperty(label.c_str(), wxPG_LABEL, obj.ToString().c_str());
-            AddProperty(prty, parentPrty, true);
+            AddProperty(*ptr, prty, parentPrty, true);
 
             FillCompound(obj, prty);
         }
         else if (MetaType::IsString(nestedTypeID))
         {
-            AddString(ptr, label.c_str(), parentPrty, true);
+            AddString(*ptr, label.c_str(), parentPrty, true);
         }
         else if (MetaType::IsFundamental(nestedTypeID))
         {
-            AddFundamental(ptr, label.c_str(), parentPrty, true);
+            AddFundamental(*ptr, label.c_str(), parentPrty, true);
         }
         else
         {
             epiAssert(false, "Unhandled case");
         }
+
+        // TODO: replace unique_ptr with plain type
+        // PROBLEM: property's client data dangling pointer
+        m_PropertyPointers.push_back(ptr);
     }
 }
 
@@ -94,34 +111,40 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
 
         const epiBool editable = !property->GetFlags().ReadOnly;
         const epiChar* label = property->GetName();
-        PropertyPointer ptr = PropertyPointer::CreateFromProperty(object, property);
+
+        auto ptr = new PropertyPointer();
+        *ptr = PropertyPointer::CreateFromProperty(object, property);
 
         if (MetaType::IsCompound(property->GetTypeID()))
         {
             wxPGProperty* prty = new wxStringProperty(label, wxPG_LABEL, "");
-            AddProperty(prty, parentPrty, editable);
+            AddProperty(*ptr, prty, parentPrty, editable);
 
-            FillCompound(ptr.Get<Object&>(), prty);
+            FillCompound(ptr->Get<Object&>(), prty);
         }
         else if (MetaType::IsMultiDimensional(property->GetTypeID()))
         {
             wxPGProperty* prty = new wxStringProperty(property->GetName(), wxPG_LABEL, "<Array>");
-            AddProperty(prty, parentPrty, editable);
+            AddProperty(*ptr, prty, parentPrty, editable);
 
-            FillMultiDimensional(ptr.Get<epiBaseArray&>(), property->GetNestedTypeID(), prty);
+            FillMultiDimensional(ptr->Get<epiBaseArray&>(), property->GetNestedTypeID(), prty);
         }
         else if (MetaType::IsFundamental(property->GetTypeID()))
         {
-            AddFundamental(ptr, label, parentPrty, editable);
+            AddFundamental(*ptr, label, parentPrty, editable);
         }
         else if (MetaType::IsString(property->GetTypeID()))
         {
-            AddString(ptr, label, parentPrty, editable);
+            AddString(*ptr, label, parentPrty, editable);
         }
         else
         {
             epiAssert(false, "Unhandled case");
         }
+
+        // TODO: replace unique_ptr with plain type
+        // PROBLEM: property's client data dangling pointer
+        m_PropertyPointers.push_back(ptr);
     }
 }
 
@@ -147,10 +170,10 @@ void epiWXPropertyGrid::AddFundamental(PropertyPointer& ptr, const epiChar* labe
     case MetaTypeID_epiU16: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU16>()); break;
     case MetaTypeID_epiU32: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU32>()); break;
     case MetaTypeID_epiU64: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU64>()); break;
-    default: epiAssert(false, "Unhanled case");
+    default: epiAssert(false, "Unhandled case");
     }
 
-    AddProperty(prty, parentPrty, editable);
+    AddProperty(ptr, prty, parentPrty, editable);
 }
 
 void epiWXPropertyGrid::AddString(PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable)
@@ -162,10 +185,17 @@ void epiWXPropertyGrid::AddString(PropertyPointer& ptr, const epiChar* label, wx
     {
     case MetaTypeID_epiString: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiString&>()); break;
     case MetaTypeID_epiWString: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWString&>()); break;
-    default: epiAssert(false, "Unhanled case");
+    default: epiAssert(false, "Unhandled case");
     }
 
-    AddProperty(prty, parentPrty, editable);
+    AddProperty(ptr, prty, parentPrty, editable);
+}
+
+void epiWXPropertyGrid::AddProperty(PropertyPointer& ptr, wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable)
+{
+    prty = parentPrty != nullptr ? parentPrty->AppendChild(prty) : Append(prty);
+    prty->Enable(editable ? parentPrty->IsEnabled() : false);
+    prty->SetClientData(&ptr);
 }
 
 void epiWXPropertyGrid::OnPropertyGridChanged(wxPropertyGridEvent& event)
@@ -176,15 +206,53 @@ void epiWXPropertyGrid::OnPropertyGridChanged(wxPropertyGridEvent& event)
         return;
     }
 
-    wxVariant value = property->GetValue();
-    if (value.IsNull())
+    void* clientData = property->GetClientData();
+    PropertyPointer* ptr = reinterpret_cast<PropertyPointer*>(clientData);
+
+    if (MetaType::IsFundamental(ptr->GetTypeID()))
     {
-        return;
+        const wxVariant value = property->GetValue();
+        switch (ptr->GetTypeID())
+        {
+        case MetaTypeID_epiChar: ptr->Set(static_cast<epiChar>(value.GetChar())); break;
+        case MetaTypeID_epiWChar: ptr->Set(static_cast<epiWChar>(value.GetChar())); break;
+        case MetaTypeID_epiBool: ptr->Set(static_cast<epiBool>(value.GetBool())); break;
+        case MetaTypeID_epiFloat: ptr->Set(static_cast<epiFloat>(value.GetDouble())); break;
+        case MetaTypeID_epiDouble: ptr->Set(static_cast<epiDouble>(value.GetDouble())); break;
+        case MetaTypeID_epiByte: ptr->Set(static_cast<epiByte>(value.GetLongLong().GetValue())); break;
+        case MetaTypeID_epiS8: ptr->Set(static_cast<epiS8>(value.GetLongLong().GetValue())); break;
+        case MetaTypeID_epiS16: ptr->Set(static_cast<epiS16>(value.GetLongLong().GetValue())); break;
+        case MetaTypeID_epiS32: ptr->Set(static_cast<epiS32>(value.GetLongLong().GetValue())); break;
+        case MetaTypeID_epiS64: ptr->Set(static_cast<epiS64>(value.GetLongLong().GetValue())); break;
+        case MetaTypeID_epiSize_t: ptr->Set(static_cast<epiSize_t>(value.GetULongLong().GetValue())); break;
+        case MetaTypeID_epiU8: ptr->Set(static_cast<epiU8>(value.GetULongLong().GetValue())); break;
+        case MetaTypeID_epiU16: ptr->Set(static_cast<epiU16>(value.GetULongLong().GetValue())); break;
+        case MetaTypeID_epiU32: ptr->Set(static_cast<epiU32>(value.GetULongLong().GetValue())); break;
+        case MetaTypeID_epiU64: ptr->Set(static_cast<epiU64>(value.GetULongLong().GetValue())); break;
+        default: epiAssert(false, "Unhandled case");
+        }
+    }
+    else
+    {
+        epiAssert(false, "Unhandled case");
     }
 }
 
-void epiWXPropertyGrid::AddProperty(wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable)
+void epiWXPropertyGrid::OnPropertyGridRightClick(wxPropertyGridEvent& event)
 {
-    prty = parentPrty != nullptr ? parentPrty->AppendChild(prty) : Append(prty);
-    prty->Enable(editable ? parentPrty->IsEnabled() : false);
+    wxPGProperty* property = event.GetProperty();
+    if (property == nullptr)
+    {
+        return;
+    }
+
+    void* clientData = property->GetClientData();
+    PropertyPointer* ptr = reinterpret_cast<PropertyPointer*>(clientData);
+    if (ptr->GetTypeID() != MetaTypeID_epiFloat)
+    {
+        wxMessageBox(wxT("Only real number property could be chosen!"), wxT("Error"));
+        return;
+    }
+
+    m_Plot->AddPropertyBind(ptr);
 }

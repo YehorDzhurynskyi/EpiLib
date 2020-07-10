@@ -11,12 +11,12 @@ namespace epi
 
 epiBool MetaProperty::IsValid() const
 {
-    return m_TypeID != MetaTypeID_epiNone;
+    return m_TypeID != MetaTypeID_None;
 }
 
 epiBool MetaProperty::HasNested() const
 {
-    return m_NestedTypeID != MetaTypeID_epiNone;
+    return m_NestedTypeID != MetaTypeID_None;
 }
 
 MetaTypeID MetaProperty::GetTypeID() const
@@ -100,7 +100,7 @@ epiBool MetaType::IsMultiDimensionalInplace(MetaTypeID typeID)
 epiBool MetaType::IsCompound(MetaTypeID typeID)
 {
     return
-        typeID != MetaTypeID_epiNone &&
+        typeID != MetaTypeID_None &&
         !IsString(typeID) &&
         !IsFundamental(typeID) &&
         !IsMultiDimensional(typeID);
@@ -206,7 +206,7 @@ MetaClass::MetaClass(MetaClassData&& classData, MetaTypeID typeID, MetaTypeID su
 
 epiBool MetaClass::IsValid() const
 {
-    return m_TypeID != MetaTypeID_epiNone && m_SizeOf > 0;
+    return m_TypeID != MetaTypeID_None && m_SizeOf > 0;
 }
 
 const MetaProperty* MetaClass::GetPropertyBy_FromBase(MetaPropertyID pid) const
@@ -220,7 +220,7 @@ const MetaProperty* MetaClass::GetPropertyBy_FromBase(MetaPropertyID pid) const
         superMetaClass = ClassRegistry_Type_Lookup(superMetaClass->m_SuperTypeID);
         epiAssert(superMetaClass != nullptr);
 
-        if (superMetaClass->m_TypeID == MetaTypeID_epiNone)
+        if (superMetaClass->m_TypeID == MetaTypeID_None)
         {
             return nullptr;
         }
@@ -301,7 +301,7 @@ const MetaProperty* MetaClass::GetPropertyAt_FromBase(epiU32 pidx) const
         superMetaClass = ClassRegistry_Type_Lookup(superMetaClass->m_SuperTypeID);
         epiAssert(superMetaClass != nullptr);
 
-        if (superMetaClass->m_TypeID == MetaTypeID_epiNone)
+        if (superMetaClass->m_TypeID == MetaTypeID_None)
         {
             return nullptr;
         }
