@@ -8,8 +8,8 @@ from epi_code_generator.tokenizer import Tokenizer
 from epi_code_generator.inheritance_tree import InheritanceTree
 from epi_code_generator.inheritance_tree import InheritanceError
 from epi_code_generator.idlparser.idlparser import IDLParser
-from epi_code_generator.code_generator import CodeGenerator
-from epi_code_generator.code_generator import CodeGenerationError
+from epi_code_generator.code_generator.code_generator import CodeGenerator
+from epi_code_generator.code_generator.code_generator import CodeGenerationError
 
 
 logger = logging.getLogger()
@@ -214,7 +214,7 @@ if __name__ == "__main__":
                 exit(-1)
 
     try:
-        inherited_tree = InheritanceTree(registry_global)
+        inheritance_tree = InheritanceTree(registry_global)
     except InheritanceError as e:
 
         logger.error(str(e))

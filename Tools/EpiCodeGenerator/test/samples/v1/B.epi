@@ -1,9 +1,0 @@
-class DClass : BClass
-{
-    epiU32 HIHI;
-
-    epiBool IsA;
-    epiBool IsB;
-
-    epiArray<AClass> yArray;
-};
