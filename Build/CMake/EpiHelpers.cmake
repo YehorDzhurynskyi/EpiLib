@@ -37,6 +37,10 @@ function(epi_add_precompiled_header)
 endfunction()
 
 function(epi_module_register _module)
+
+    get_target_property(_module_source_dir ${_module} SOURCE_DIR)
+    set_property(GLOBAL APPEND PROPERTY EPIGEN_MANIFEST_MODULES ${_module_source_dir})
+
     set_target_properties(${_module}
         PROPERTIES
             CXX_STANDARD 17
@@ -44,6 +48,7 @@ function(epi_module_register _module)
             CXX_EXTENSIONS NO
             FOLDER EpiLib
     )
+
 endfunction()
 
 macro(epi_win_to_unix_path winpath unixpath)

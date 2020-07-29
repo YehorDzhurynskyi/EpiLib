@@ -96,5 +96,4 @@ target_link_libraries(EpiMultiMedia
         EpiCore
 )
 
-epi_set_common_target_properties(EpiMultiMedia)
-
+epi_module_register(EpiMultiMedia)
