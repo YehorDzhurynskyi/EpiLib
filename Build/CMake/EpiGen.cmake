@@ -11,29 +11,41 @@ function(epi_run_epigen)
     list(APPEND IGNORE_LIST "*.git*")
 
     if (NOT Python3_EXECUTABLE)
-        message(FATAL_ERROR "[EPIGEN] Python3 interpreter not found")
+        message(FATAL_ERROR "[EPIGEN] Python3 interpreter hasn't found")
+        return()
+    endif()
+
+    message(STATUS "[EPIGEN] Python version is ${Python3_VERSION}")
+
+    execute_process(
+        COMMAND ${Python3_EXECUTABLE} -m pip install ${EPI_DIR}/Tools/EpiCodeGenerator
+        RESULT_VARIABLE RETURN_VALUE
+    )
+
+    if (NOT RETURN_VALUE EQUAL 0)
+        message(FATAL_ERROR "[EPIGEN] Failed to setup EpiCodeGenerator")
         return()
     endif()
 
     execute_process(
-        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigen.py -i ${CMAKE_SOURCE_DIR}/BloodSystem --print-dependencies --ignore ${IGNORE_LIST}
+        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${CMAKE_SOURCE_DIR}/BloodSystem --print-dependencies --ignore-list ${IGNORE_LIST}
         OUTPUT_VARIABLE DEPENDENCIES
         RESULT_VARIABLE RETURN_VALUE
     )
 
     if (NOT RETURN_VALUE EQUAL 0)
-        message(FATAL_ERROR "[EPIGEN] Failed to get the dependencies on: ${CMD}")
+        message(FATAL_ERROR "[EPIGEN] Failed to get dependencies")
         return()
     endif()
 
 #    execute_process(
-#        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigen.py -i ${CMAKE_SOURCE_DIR}/BloodSystem --print-outputs --ignore ${IGNORE_LIST}
+#        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${CMAKE_SOURCE_DIR}/BloodSystem --print-outputs --ignore-list ${IGNORE_LIST}
 #        OUTPUT_VARIABLE OUTPUTS
 #        RESULT_VARIABLE RETURN_VALUE
 #    )
 
 #    if (NOT RETURN_VALUE EQUAL 0)
-#        message(FATAL_ERROR "[EPIGEN] Failed to get the outputs on: ${CMD}")
+#        message(FATAL_ERROR "[EPIGEN] Failed to get outputs")
 #        return()
 #    endif()
 
@@ -46,7 +58,7 @@ function(epi_run_epigen)
 
     add_custom_command(TARGET epigen
         PRE_BUILD
-        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigen.py -i ${CMAKE_SOURCE_DIR}/BloodSystem --output-dir-cxx-hxx ${CMAKE_BINARY_DIR}/BloodSystem --debug --nobackup --ignore ${IGNORE_LIST}
+        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${CMAKE_SOURCE_DIR}/BloodSystem -m ${CMAKE_SOURCE_DIR}/manifest.json --dir-output-build ${CMAKE_BINARY_DIR}/BloodSystem --debug --ignore-list ${IGNORE_LIST}
     )
 
 endfunction()

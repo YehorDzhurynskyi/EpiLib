@@ -100,4 +100,5 @@ public:
     friend Color operator*(const Color& lhs, epiFloat rhs);
     friend Color operator*(epiFloat lhs, const Color& rhs);
 };
+
 EPI_NAMESPACE_END()
