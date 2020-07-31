@@ -1,6 +1,6 @@
 class dvViewModelPlot : uiViewModel
 {
-    [Virtual, ReadCallback("SuppressRef")]
+    [Virtual, ReadCallback(SuppressRef=true)]
     {
         epiRect2f ClipBox;
     }

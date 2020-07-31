@@ -19,13 +19,13 @@ class uiWidget
 {
     [Virtual]
     {
-        [ReadCallback("SuppressRef")]
+        [ReadCallback(SuppressRef=true)]
         epiRect2f BBox;
 
         epiFloat Width;
         epiFloat Height;
 
-        [ReadOnly, ReadCallback("SuppressRef")]
+        [ReadOnly, ReadCallback(SuppressRef=true)]
         {
             epiVec2f MouseLocalUICoord;
         }

@@ -101,6 +101,7 @@ inline MetaProperty epiMetaProperty(const epiChar* name,
 enum : MetaTypeID
 {
     MetaTypeID_None = 0,
+    MetaTypeID_Ptr = epiHashCompileTime(Ptr),
 
     MetaTypeID_epiChar = epiHashCompileTime(epiChar),
     MetaTypeID_epiWChar = epiHashCompileTime(epiWChar),

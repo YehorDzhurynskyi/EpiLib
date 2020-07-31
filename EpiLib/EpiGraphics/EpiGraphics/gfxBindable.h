@@ -24,7 +24,7 @@ public:
         PID_COUNT = 1
     };
 
-private:
+protected:
     epiBool m_IsBounded{false};
 
 EPI_GENREGION_END(gfxBindable)

@@ -9,7 +9,7 @@ class uiContext
 
         uiPage Page;
 
-        [Virtual, ReadCallback("SuppressRef")]
+        [Virtual, ReadCallback(SuppressRef=true)]
         epiVec2f MouseUICoord;
     }
 };

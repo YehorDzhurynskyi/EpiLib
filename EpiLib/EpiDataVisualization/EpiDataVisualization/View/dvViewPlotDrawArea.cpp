@@ -82,7 +82,7 @@ void dvViewPlotDrawArea::OnMouseFocus(epiBool focused)
 
 epiVec2f dvViewPlotDrawArea::CalcMouseWorldCoord(const epiVec2f& origin) const
 {
-    if (dvViewModelPlot* vm = GetViewModel())
+    if (const dvViewModelPlot* vm = GetViewModel())
     {
         const epiRect2f& box = vm->GetClipBox();
 
@@ -96,7 +96,7 @@ epiVec2f dvViewPlotDrawArea::CalcMouseWorldCoord(const epiVec2f& origin) const
 
 epiVec2f dvViewPlotDrawArea::GetMouseWorldCoord_Callback() const
 {
-    if (dvViewModelPlot* vm = GetViewModel())
+    if (const dvViewModelPlot* vm = GetViewModel())
     {
         return CalcMouseWorldCoord(vm->GetOrigin());
     }

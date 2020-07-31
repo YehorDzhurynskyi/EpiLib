@@ -10,12 +10,14 @@ EPI_NAMESPACE_BEGIN()
 void gfxTextRendered::Bind()
 {
     super::Bind();
+
     m_Texture.Bind();
 }
 
 void gfxTextRendered::UnBind()
 {
     super::UnBind();
+
     m_Texture.UnBind();
 }
 

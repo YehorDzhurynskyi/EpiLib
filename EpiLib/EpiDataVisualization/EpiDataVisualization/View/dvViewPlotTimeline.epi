@@ -2,7 +2,7 @@ class dvViewPlotTimeline : uiWidget
 {
     dvViewModelPlot* ViewModel;
 
-    [Virtual, ReadOnly, ReadCallback("SuppressRef")]
+    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
     {
         epiVec2f MouseWorldCoord;
     }

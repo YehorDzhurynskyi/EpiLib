@@ -100,7 +100,8 @@ void uiLayoutBox::OnResize()
         epiFloat offsetY = 0.0f;
         for (auto it = items.rbegin(); it != items.rend(); ++it)
         {
-            const uiLayoutItem& item = *it;
+            uiLayoutItem& item = *it;
+
             uiWidget* widget = item.GetWidget();
             widget->SetPosition((sizeTotal / -2.0f) + epiVec2f{ 0.0f, offsetY });
 
