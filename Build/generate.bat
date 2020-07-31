@@ -18,13 +18,11 @@
 
   call :get-ini %1 cmake toolchain toolchain
 
-  call :get-ini %1 thirdparty qtdir qtdir
-
   set solution=%generator% %arch% %toolchain%
   set solution=%solution%
   set solution=!solution: =_!
 
-  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_DIR="%epidir%" -DQt5_DIR="%qtdir%" -C "%initial_cache%"
+  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_DIR="%epidir%" -C "%initial_cache%"
 
   goto :eof
 
