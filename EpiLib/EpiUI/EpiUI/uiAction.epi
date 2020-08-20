@@ -1,3 +1,10 @@
+enum uiMouseAction
+{
+    Release,
+    Click,
+    DClick
+};
+
 class uiAction
 {
 };

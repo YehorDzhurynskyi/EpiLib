@@ -100,8 +100,8 @@ void* gfxVertexBuffer::Map(gfxVertexBufferMapAccess access)
     GLenum glAccess;
     switch (access)
     {
-    case gfxVertexBufferMapAccess::ReadOnly: glAccess = GL_READ_ONLY; break;
-    case gfxVertexBufferMapAccess::WriteOnly: glAccess = GL_WRITE_ONLY; break;
+    case gfxVertexBufferMapAccess::Read: glAccess = GL_READ_ONLY; break;
+    case gfxVertexBufferMapAccess::Write: glAccess = GL_WRITE_ONLY; break;
     case gfxVertexBufferMapAccess::ReadWrite: glAccess = GL_READ_WRITE; break;
     default: epiAssert(false, "Unhandled case"); return nullptr;
     }

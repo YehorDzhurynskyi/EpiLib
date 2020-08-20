@@ -36,7 +36,6 @@ EPI_GENREGION_END(gfxDrawerText)
 
 public:
     gfxDrawerText();
-    // TODO: rule of 6
 
 public:
     void DrawText(const epiWChar* text, const epiVec2f& position, epiFloat textHeight, const Color& color = Color::kDarkGray, epiFloat z = -99.0f);

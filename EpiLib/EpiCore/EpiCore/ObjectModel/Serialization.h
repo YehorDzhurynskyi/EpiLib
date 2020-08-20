@@ -8,60 +8,15 @@ using json_t = nlohmann::json;
 #define epiSerialize(_Key, _Json) epiSerialize_Impl(#_Key, m_##_Key, _Json)
 #define epiDeserialize(_Key, _Json) epiDeserialize_Impl(#_Key, m_##_Key, _Json)
 
-namespace epi
-{
-
-template<typename T>
-struct is_fundamental
-    : std::integral_constant<
-        bool,
-        std::is_fundamental_v<T>
-    >
-{};
-
-template<typename T>
-struct is_arithmetic
-    : std::integral_constant<
-        bool,
-        std::is_arithmetic_v<T>
-    >
-{};
-
-template<typename T>
-struct is_floating_point
-    : std::integral_constant<
-        bool,
-        std::is_floating_point_v<T>
-    >
-{};
-
-template<typename T>
-struct is_integral
-    : std::integral_constant<
-        bool,
-        std::is_integral_v<T>
-    >
-{};
-
-template<typename T>
-constexpr bool is_fundamental_v = is_fundamental<T>::value;
-
-template<typename T>
-constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
-
-template<typename T>
-constexpr bool is_floating_point_v = is_floating_point<T>::value;
-
-template<typename T>
-constexpr bool is_integral_v = is_integral<T>::value;
-
-}
-
 template<typename T>
 inline auto epiSerialize_Impl_Fetch(T& v)
 {
-    if constexpr (epi::is_fundamental_v<T> || std::is_same_v<epiString, T> || std::is_same_v<epiWString, T>)
+    if constexpr (std::is_fundamental_v<T> ||
+                  std::is_enum_v<T> ||
+                  std::is_same_v<epiString, T> ||
+                  std::is_same_v<epiWString, T>)
     {
+        // TODO: maybe replace enum serialization with a string to preserve restoreability after enum order modifying
         return v;
     }
     else if constexpr (std::is_base_of_v<epi::Object, T>)
@@ -118,17 +73,25 @@ inline auto epiSerialize_Impl_Fetch(T& v)
 template<typename T>
 inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
 {
-    if constexpr (epi::is_fundamental_v<T> || std::is_same_v<epiString, T> || std::is_same_v<epiWString, T>)
+    if constexpr (std::is_fundamental_v<T> ||
+                  std::is_enum_v<T> ||
+                  std::is_same_v<epiString, T> ||
+                  std::is_same_v<epiWString, T>)
     {
         if constexpr (std::is_same_v<epiBool, T>)
         {
             assert(json.is_boolean());
         }
-        else if constexpr (epi::is_floating_point_v<T>)
+        else if constexpr (std::is_floating_point_v<T>)
         {
             assert(json.is_number_float());
         }
-        else if constexpr (epi::is_integral_v<T>)
+        else if constexpr (std::is_enum_v<T>)
+        {
+            // TODO: maybe replace enum serialization with a string to preserve restoreability after enum order modifying
+            assert(json.is_number_integer());
+        }
+        else if constexpr (std::is_integral_v<T>)
         {
             if constexpr (std::is_signed_v<T>)
             {

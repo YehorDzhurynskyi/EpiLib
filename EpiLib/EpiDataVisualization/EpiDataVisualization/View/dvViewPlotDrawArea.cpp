@@ -32,15 +32,15 @@ void dvViewPlotDrawArea::Draw(uiContext& uiContext)
     }
 }
 
-void dvViewPlotDrawArea::OnMousePrimary(MouseAction action)
+void dvViewPlotDrawArea::OnMousePrimary(uiMouseAction action)
 {
     super::OnMousePrimary(action);
 
-    if (action == MouseAction::Release)
+    if (action == uiMouseAction::Release)
     {
         m_MouseDragActive = false;
     }
-    else if (action == MouseAction::Click)
+    else if (action == uiMouseAction::Click)
     {
         if (dvViewModelPlot* vm = GetViewModel())
         {

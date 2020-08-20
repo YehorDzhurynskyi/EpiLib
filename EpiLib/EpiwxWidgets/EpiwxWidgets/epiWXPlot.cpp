@@ -183,18 +183,18 @@ void epiWXPlot::OnMouse(wxMouseEvent& event)
 
     if (event.LeftUp() || event.LeftDown() || event.LeftDClick())
     {
-        MouseAction action;
+        uiMouseAction action;
         if (event.LeftDClick())
         {
-            action = MouseAction::DClick;
+            action = uiMouseAction::DClick;
         }
         else if (event.LeftUp())
         {
-            action = MouseAction::Release;
+            action = uiMouseAction::Release;
         }
         else if (event.LeftDown())
         {
-            action = MouseAction::Click;
+            action = uiMouseAction::Click;
         }
 
         m_UIContext->OnMousePrimary(action);

@@ -216,7 +216,7 @@ void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epi
 
 void gfxDrawerText::SceneBegin()
 {
-    m_VertexBufferMappingText.Map(gfxVertexBufferMapAccess::WriteOnly);
+    m_VertexBufferMappingText.Map(gfxVertexBufferMapAccess::Write);
 }
 
 void gfxDrawerText::SceneEnd(const gfxCamera& camera)

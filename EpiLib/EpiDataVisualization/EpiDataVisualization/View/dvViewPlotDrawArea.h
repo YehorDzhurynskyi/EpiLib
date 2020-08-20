@@ -38,7 +38,7 @@ public:
     void Update() override;
     void Draw(uiContext& uiContext) override;
 
-    void OnMousePrimary(MouseAction action) override;
+    void OnMousePrimary(uiMouseAction action) override;
     void OnMouseWheel(epiFloat dZoom) override;
     void OnMouseFocus(epiBool focused) override;
 

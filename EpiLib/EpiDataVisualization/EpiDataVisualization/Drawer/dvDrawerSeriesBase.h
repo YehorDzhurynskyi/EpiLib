@@ -33,7 +33,6 @@ EPI_GENREGION_END(dvDrawerSeriesBase)
 
 public:
     dvDrawerSeriesBase();
-    // TODO: rule of 6
 
 public:
     void Draw(uiContext& uiContext, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z = -50.0f);

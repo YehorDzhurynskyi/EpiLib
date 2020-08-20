@@ -8,14 +8,14 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-// TODO: move to epi
 enum class gfxShaderType
 {
-    None,
-    Vertex,
-    Geometry,
-    Pixel,
-    COUNT
+EPI_GENREGION_BEGIN(gfxShaderType)
+    None = 0,
+    Vertex = 1,
+    Geometry = 2,
+    Pixel = 3
+EPI_GENREGION_END(gfxShaderType)
 };
 
 class gfxShader final : public Object

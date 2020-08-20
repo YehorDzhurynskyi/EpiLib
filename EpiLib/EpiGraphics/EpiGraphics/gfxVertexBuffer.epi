@@ -1,3 +1,20 @@
+enum gfxVertexBufferUsage
+{
+    StaticRead,
+    StaticDraw,
+    DynamicRead,
+    DynamicDraw,
+    StreamRead,
+    StreamDraw
+};
+
+enum gfxVertexBufferMapAccess
+{
+    Read,
+    Write,
+    ReadWrite
+};
+
 class gfxVertexBuffer : gfxBindable
 {
     [Virtual, ReadOnly]

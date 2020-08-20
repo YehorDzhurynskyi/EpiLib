@@ -32,15 +32,15 @@ void dvViewPlotTimeline::Draw(uiContext& uiContext)
     }
 }
 
-void dvViewPlotTimeline::OnMousePrimary(MouseAction action)
+void dvViewPlotTimeline::OnMousePrimary(uiMouseAction action)
 {
     super::OnMousePrimary(action);
 
-    if (action == MouseAction::Release)
+    if (action == uiMouseAction::Release)
     {
         m_MouseDragActive = false;
     }
-    else if (action == MouseAction::Click)
+    else if (action == uiMouseAction::Click)
     {
         if (dvViewModelPlot* vm = GetViewModel())
         {

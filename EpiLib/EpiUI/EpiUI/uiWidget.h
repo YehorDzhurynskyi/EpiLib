@@ -168,7 +168,7 @@ public:
         return widget;
     }
 
-    virtual void OnMousePrimary(MouseAction action);
+    virtual void OnMousePrimary(uiMouseAction action);
     virtual void OnMouseWheel(epiFloat dZoom);
     virtual void OnMouseFocus(epiBool focused);
     virtual void OnResize();

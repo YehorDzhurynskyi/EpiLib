@@ -8,13 +8,14 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-// TODO: move to epi
 enum class uiDirection
 {
-    LeftToRight,
-    RightToLeft,
-    TopToBottom,
-    BottomToTop
+EPI_GENREGION_BEGIN(uiDirection)
+    LeftToRight = 0,
+    RightToLeft = 1,
+    TopToBottom = 2,
+    BottomToTop = 3
+EPI_GENREGION_END(uiDirection)
 };
 
 class uiLayoutBox : public uiLayout
@@ -28,21 +29,17 @@ public:
 
     enum uiLayoutBox_PIDs
     {
-        PID_COUNT = 0
+        PID_Direction = 0xbcbb5310,
+        PID_COUNT = 1
     };
+
+protected:
+    uiDirection m_Direction{uiDirection::TopToBottom};
 
 EPI_GENREGION_END(uiLayoutBox)
 
 public:
     void OnResize() override;
-
-// TODO: move to epi
-protected:
-    uiDirection m_Direction{uiDirection::TopToBottom};
-
-public:
-    uiDirection GetDirection() const { return m_Direction; }
-    void SetDirection(uiDirection value) { m_Direction = value; }
 };
 
 EPI_NAMESPACE_END()

@@ -214,8 +214,8 @@ void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color, epi
 
 void gfxDrawerPrimitive::SceneBegin()
 {
-    m_VertexBufferMappingLines.Map(gfxVertexBufferMapAccess::WriteOnly);
-    m_VertexBufferMappingQuads.Map(gfxVertexBufferMapAccess::WriteOnly);
+    m_VertexBufferMappingLines.Map(gfxVertexBufferMapAccess::Write);
+    m_VertexBufferMappingQuads.Map(gfxVertexBufferMapAccess::Write);
 }
 
 void gfxDrawerPrimitive::SceneEnd(const gfxCamera& camera)

@@ -84,7 +84,7 @@ void uiWidget::SetLayout_Callback(uiLayout* value)
     }
 }
 
-void uiWidget::OnMousePrimary(MouseAction action)
+void uiWidget::OnMousePrimary(uiMouseAction action)
 {
     if (uiWidget* widget = WidgetOverMouse(GetMouseLocalUICoord()))
     {

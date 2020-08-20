@@ -8,36 +8,36 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-// TODO: move to epi
 enum class gfxTextureType
 {
-    None,
-    Texture2D,
-    COUNT
+EPI_GENREGION_BEGIN(gfxTextureType)
+    None = 0,
+    Texture2D = 1
+EPI_GENREGION_END(gfxTextureType)
 };
 
-// TODO: move to epi
 enum class gfxTextureFormat
 {
-    R,
-    RG,
-    RGB,
-    BGR,
-    RGBA,
-    BGRA,
-    COUNT
+EPI_GENREGION_BEGIN(gfxTextureFormat)
+    R = 0,
+    RG = 1,
+    RGB = 2,
+    BGR = 3,
+    RGBA = 4,
+    BGRA = 5
+EPI_GENREGION_END(gfxTextureFormat)
 };
 
-// TODO: move to epi
 enum class gfxTexturePixelType
 {
-    BYTE,
-    UBYTE,
-    SHORT,
-    USHORT,
-    INT,
-    UINT,
-    COUNT
+EPI_GENREGION_BEGIN(gfxTexturePixelType)
+    BYTE = 0,
+    UBYTE = 1,
+    SHORT = 2,
+    USHORT = 3,
+    INT = 4,
+    UINT = 5
+EPI_GENREGION_END(gfxTexturePixelType)
 };
 
 class gfxTexture : public gfxBindable

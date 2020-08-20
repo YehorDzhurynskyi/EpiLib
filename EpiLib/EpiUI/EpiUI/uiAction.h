@@ -8,12 +8,13 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-// TODO: move to epi
-enum class MouseAction
+enum class uiMouseAction
 {
-    Release,
-    Click,
-    DClick
+EPI_GENREGION_BEGIN(uiMouseAction)
+    Release = 0,
+    Click = 1,
+    DClick = 2
+EPI_GENREGION_END(uiMouseAction)
 };
 
 class uiAction : public Object

@@ -106,7 +106,7 @@ void dvDrawerSeriesBase::DrawLineStrip(const epiVec2f& p, const Color& color, ep
 
 void dvDrawerSeriesBase::SceneBegin()
 {
-    m_VertexBufferMappingLineStrip.Map(gfxVertexBufferMapAccess::WriteOnly);
+    m_VertexBufferMappingLineStrip.Map(gfxVertexBufferMapAccess::Write);
 }
 
 void dvDrawerSeriesBase::SceneEnd(const gfxCamera& camera)

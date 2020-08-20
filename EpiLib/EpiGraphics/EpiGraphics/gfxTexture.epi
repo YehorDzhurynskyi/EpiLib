@@ -1,3 +1,29 @@
+enum gfxTextureType
+{
+    None,
+    Texture2D
+};
+
+enum gfxTextureFormat
+{
+    R,
+    RG,
+    RGB,
+    BGR,
+    RGBA,
+    BGRA
+};
+
+enum gfxTexturePixelType
+{
+    BYTE,
+    UBYTE,
+    SHORT,
+    USHORT,
+    INT,
+    UINT
+};
+
 class gfxTexture : gfxBindable
 {
     [ReadOnly]

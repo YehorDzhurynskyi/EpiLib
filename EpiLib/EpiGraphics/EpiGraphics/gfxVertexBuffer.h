@@ -8,25 +8,25 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-// TODO: move to epi
 enum class gfxVertexBufferUsage
 {
-    StaticRead,
-    StaticDraw,
-    DynamicRead,
-    DynamicDraw,
-    StreamRead,
-    StreamDraw,
-    COUNT
+EPI_GENREGION_BEGIN(gfxVertexBufferUsage)
+    StaticRead = 0,
+    StaticDraw = 1,
+    DynamicRead = 2,
+    DynamicDraw = 3,
+    StreamRead = 4,
+    StreamDraw = 5
+EPI_GENREGION_END(gfxVertexBufferUsage)
 };
 
-// TODO: move to epi
 enum class gfxVertexBufferMapAccess
 {
-    ReadOnly,
-    WriteOnly,
-    ReadWrite,
-    COUNT
+EPI_GENREGION_BEGIN(gfxVertexBufferMapAccess)
+    Read = 0,
+    Write = 1,
+    ReadWrite = 2
+EPI_GENREGION_END(gfxVertexBufferMapAccess)
 };
 
 class gfxVertexBuffer : public gfxBindable

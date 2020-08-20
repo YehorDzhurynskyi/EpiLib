@@ -28,7 +28,7 @@ void uiContext::OnMouseMove(const epiVec2f& mouseNDCCoord)
     m_MouseNDCCoord = mouseNDCCoord;
 }
 
-void uiContext::OnMousePrimary(MouseAction action)
+void uiContext::OnMousePrimary(uiMouseAction action)
 {
     m_Page.OnMousePrimary(action);
 }

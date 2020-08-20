@@ -35,7 +35,6 @@ EPI_GENREGION_END(gfxDrawerPrimitive)
 
 public:
     gfxDrawerPrimitive();
-    // TODO: rule of 6
 
 public:
     void DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color = Color::kLightBlue, epiFloat z = -100.0f);

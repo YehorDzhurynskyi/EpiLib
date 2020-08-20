@@ -1,3 +1,11 @@
+enum gfxShaderType
+{
+    None,
+    Vertex,
+    Geometry,
+    Pixel
+};
+
 class gfxShader
 {
     [Virtual, ReadOnly]
