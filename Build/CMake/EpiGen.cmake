@@ -26,10 +26,15 @@ function(epi_run_epigen)
         message(FATAL_ERROR "[EPIGEN] Failed to setup EpiCodeGenerator")
         return()
     endif()
+    
+    set(EPIGEN_INPUT_DIR "${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}")
+    set(EPIGEN_OUTPUT_DIR "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}")
+    set(EPIGEN_MANIFEST_NAME "epigen-manifest.json")
+    get_property(EPIGEN_MANIFEST_MODULES GLOBAL PROPERTY EPIGEN_MANIFEST_MODULES)
 
     execute_process(
-        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${CMAKE_SOURCE_DIR}/BloodSystem --print-dependencies --ignore-list ${EPIGEN_IGNORE_LIST}
-        OUTPUT_VARIABLE DEPENDENCIES
+        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${EPIGEN_INPUT_DIR} --print-dependencies --ignore-list ${EPIGEN_IGNORE_LIST}
+        OUTPUT_VARIABLE EPIGEN_DEPENDENCIES
         RESULT_VARIABLE RETURN_VALUE
     )
 
@@ -39,7 +44,7 @@ function(epi_run_epigen)
     endif()
 
 #    execute_process(
-#        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${CMAKE_SOURCE_DIR}/BloodSystem --print-outputs --ignore-list ${EPIGEN_IGNORE_LIST}
+#        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${EPIGEN_INPUT_DIR} --print-outputs --ignore-list ${EPIGEN_IGNORE_LIST}
 #        OUTPUT_VARIABLE OUTPUTS
 #        RESULT_VARIABLE RETURN_VALUE
 #    )
@@ -49,11 +54,8 @@ function(epi_run_epigen)
 #        return()
 #    endif()
 
-    set(EPIGEN_MANIFEST_NAME "epigen-manifest.json")
-    get_property(EPIGEN_MANIFEST_MODULES GLOBAL PROPERTY EPIGEN_MANIFEST_MODULES)
-
     execute_process(
-        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun-generate-manifest.py -o ${CMAKE_BINARY_DIR}/BloodSystem --modules ${EPIGEN_MANIFEST_MODULES} --name ${EPIGEN_MANIFEST_NAME}
+        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun-generate-manifest.py -o ${EPIGEN_OUTPUT_DIR} --modules ${EPIGEN_MANIFEST_MODULES} --name ${EPIGEN_MANIFEST_NAME}
         RESULT_VARIABLE RETURN_VALUE
     )
 
@@ -64,14 +66,14 @@ function(epi_run_epigen)
 
     add_custom_target(epigen
         ALL
-        DEPENDS ${DEPENDENCIES}
+        DEPENDS ${EPIGEN_DEPENDENCIES}
         COMMENT "[EPIGEN] Generation done"
-        #SOURCES ${OUTPUTS} ${DEPENDENCIES}
+        #SOURCES ${OUTPUTS} ${EPIGEN_DEPENDENCIES}
     )
 
     add_custom_command(TARGET epigen
         PRE_BUILD
-        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${CMAKE_SOURCE_DIR}/BloodSystem -m ${CMAKE_BINARY_DIR}/BloodSystem/${EPIGEN_MANIFEST_NAME} --dir-output-build ${CMAKE_BINARY_DIR}/BloodSystem --debug --ignore-list ${EPIGEN_IGNORE_LIST}
+        COMMAND ${Python3_EXECUTABLE} ${EPI_DIR}/Tools/EpiCodeGenerator/epigenrun.py -i ${EPIGEN_INPUT_DIR} -m ${EPIGEN_OUTPUT_DIR}/${EPIGEN_MANIFEST_NAME} --dir-output-build ${EPIGEN_OUTPUT_DIR} --debug --ignore-list ${EPIGEN_IGNORE_LIST}
     )
 
 endfunction()
