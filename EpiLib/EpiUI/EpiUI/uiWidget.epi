@@ -1,3 +1,51 @@
+[FlagMask]
+enum uiSizePolicy
+{
+    # TODO: move to docstring
+    # Description: The `SizeHint` is the only acceptable alternative,
+    # so the widget can never grow or shrink
+    # (e.g. the vertical direction of a push button).
+    Fixed,
+
+    # TODO: move to docstring
+    # Description: The `SizeHint` is minimal, and sufficient. The widget can be expanded,
+    # but there is no advantage to it being larger (e.g. the horizontal
+    # direction of a push button). It cannot be smaller than the size provided by `SizeHint`.
+    Minimum,
+
+    # TODO: move to docstring
+    # Description: The `SizeHint` is a maximum.The widget can be shrunk any amount
+    # without detriment if other widgets need the space(e.g.a separator line).
+    # It cannot be larger than the size provided by `SizeHint`.
+    Maximum,
+
+    # TODO: move to docstring
+    # Description: The `SizeHint` is best, but the widget can be shrunk and
+    # still be useful. The widget can be expanded, but there is no advantage
+    # to it being larger than `SizeHint` (the default uiWidget policy).
+    Preferred,
+
+    # TODO: move to docstring
+    # Description: The `SizeHint` is a sensible size, but the widget can be
+    # shrunkand still be useful.The widget can make use of extra space, so
+    # it should get as much space as possible(e.g.the horizontal direction of a horizontal slider).
+    Expanding,
+
+    # TODO: move to docstring
+    # Description: The `SizeHint` is minimal, and sufficient.The widget can make use
+    # of extra space, so it should get as much space
+    # as possible(e.g.the horizontal direction of a horizontal slider).
+    MinimumExpanding,
+
+    # TODO: move to docstring
+    # Description: The `SizeHint` is ignored. The widget will get as much space as possible.
+    Ignored,
+
+    Grow_Mask = Minimum | Preferred | Expanding | MinimumExpanding | Ignored,
+    Shrink_Mask = Maximum | Preferred | Expanding | Ignored,
+    Expand_Mask = Expanding | MinimumExpanding
+};
+
 class uiSizePolicyInfo
 {
     [Virtual, ReadOnly]
@@ -13,6 +61,9 @@ class uiSizePolicyInfo
 
     epiU8 StretchFactorVertical;
     epiU8 StretchFactorHorizontal;
+
+    uiSizePolicy SizePolicyVertical = uiSizePolicy::Preferred;
+    uiSizePolicy SizePolicyHorizontal = uiSizePolicy::Preferred;
 };
 
 class uiWidget

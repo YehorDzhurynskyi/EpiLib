@@ -1,3 +1,52 @@
+enum uiSizeContraint
+{
+    # TODO: move to docstring
+    # Description: The main widget's minimum size is set to `SizeMinimum`,
+    # unless the widget already has a minimum size.
+    Default,
+
+    # TODO: move to docstring
+    # Description: The main widget's size is set to `SizeHint`;
+    # it cannot be resized at all.
+    Fixed,
+
+    # TODO: move to docstring
+    # Description: The main widget's minimum size is set to `SizeMinimum`;
+    # it cannot be smaller.
+    Minimum,
+
+    # TODO: move to docstring
+    # Description: The main widget's maximum size is set to maximumSize();
+    # it cannot be larger.
+    Maximum,
+
+    # TODO: move to docstring
+    # Description: The main widget's minimum size is set to `SizeMinimum`
+    # and its maximum size is set to maximumSize().
+    MinMax,
+
+    NoContraint
+};
+
+[FlagMask]
+enum uiAlignment
+{
+    Left,
+    Right,
+    HCenter,
+    Justify,
+
+    Top,
+    Bottom,
+    VCenter,
+    Baseline,
+
+    Center = HCenter | VCenter,
+
+    Horizontal_Mask = Left | Right | HCenter | Justify,
+    Vertical_Mask = Top | Bottom | VCenter | Baseline
+};
+
 class uiLayoutItem
 {
     uiWidget* Widget;
@@ -10,4 +59,6 @@ class uiLayout
 
     epiVec2f Position;
     epiVec2f Size;
+
+    uiAlignment Alignment = uiAlignment::Center;
 };

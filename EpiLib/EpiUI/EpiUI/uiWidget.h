@@ -10,45 +10,20 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-// TODO: move to epi
 enum uiSizePolicy
 {
-    // Description: The `SizeHint` is the only acceptable alternative,
-    // so the widget can never grow or shrink
-    // (e.g. the vertical direction of a push button).
-    uiSizePolicy_Fixed = 0x1,
-
-    // Description: The `SizeHint` is minimal, and sufficient. The widget can be expanded,
-    // but there is no advantage to it being larger (e.g. the horizontal
-    // direction of a push button). It cannot be smaller than the size provided by `SizeHint`.
-    uiSizePolicy_Minimum = 0x2,
-
-    // Description: The `SizeHint` is a maximum.The widget can be shrunk any amount
-    // without detriment if other widgets need the space(e.g.a separator line).
-    // It cannot be larger than the size provided by `SizeHint`.
-    uiSizePolicy_Maximum = 0x4,
-
-    // Description: The `SizeHint` is best, but the widget can be shrunk and
-    // still be useful. The widget can be expanded, but there is no advantage
-    // to it being larger than `SizeHint` (the default uiWidget policy).
-    uiSizePolicy_Preferred = 0x8,
-
-    // Description: The `SizeHint` is a sensible size, but the widget can be
-    // shrunkand still be useful.The widget can make use of extra space, so
-    // it should get as much space as possible(e.g.the horizontal direction of a horizontal slider).
-    uiSizePolicy_Expanding = 0x10,
-
-    // Description: The `SizeHint` is minimal, and sufficient.The widget can make use
-    // of extra space, so it should get as much space
-    // as possible(e.g.the horizontal direction of a horizontal slider).
-    uiSizePolicy_MinimumExpanding = 0x20,
-
-    // Description: The `SizeHint` is ignored. The widget will get as much space as possible.
-    uiSizePolicy_Ignored = 0x40,
-
+EPI_GENREGION_BEGIN(uiSizePolicy)
+    uiSizePolicy_Fixed = (1 << 1),
+    uiSizePolicy_Minimum = (1 << 2),
+    uiSizePolicy_Maximum = (1 << 3),
+    uiSizePolicy_Preferred = (1 << 4),
+    uiSizePolicy_Expanding = (1 << 5),
+    uiSizePolicy_MinimumExpanding = (1 << 6),
+    uiSizePolicy_Ignored = (1 << 7),
     uiSizePolicy_Grow_Mask = uiSizePolicy_Minimum | uiSizePolicy_Preferred | uiSizePolicy_Expanding | uiSizePolicy_MinimumExpanding | uiSizePolicy_Ignored,
     uiSizePolicy_Shrink_Mask = uiSizePolicy_Maximum | uiSizePolicy_Preferred | uiSizePolicy_Expanding | uiSizePolicy_Ignored,
     uiSizePolicy_Expand_Mask = uiSizePolicy_Expanding | uiSizePolicy_MinimumExpanding
+EPI_GENREGION_END(uiSizePolicy)
 };
 
 class uiSizePolicyInfo : public Object
@@ -69,7 +44,9 @@ public:
         PID_HeightDependsOnWidth = 0xd10782ed,
         PID_StretchFactorVertical = 0x304ba2d1,
         PID_StretchFactorHorizontal = 0x7964dada,
-        PID_COUNT = 7
+        PID_SizePolicyVertical = 0xb375145,
+        PID_SizePolicyHorizontal = 0x48fd0d1e,
+        PID_COUNT = 9
     };
 
 protected:
@@ -82,19 +59,10 @@ protected:
     epiBool m_HeightDependsOnWidth{false};
     epiU8 m_StretchFactorVertical{0};
     epiU8 m_StretchFactorHorizontal{0};
-
-EPI_GENREGION_END(uiSizePolicyInfo)
-
-// TODO: move to epi
-protected:
     uiSizePolicy m_SizePolicyVertical{uiSizePolicy_Preferred};
     uiSizePolicy m_SizePolicyHorizontal{uiSizePolicy_Preferred};
 
-public:
-    uiSizePolicy GetSizePolicyVertical() const { return m_SizePolicyVertical; }
-    void SetSizePolicyVertical(uiSizePolicy value) { m_SizePolicyVertical = value; }
-    uiSizePolicy GetSizePolicyHorizontal() const { return m_SizePolicyHorizontal; }
-    void SetSizePolicyHorizontal(uiSizePolicy value) { m_SizePolicyHorizontal = value; }
+EPI_GENREGION_END(uiSizePolicyInfo)
 };
 
 class uiContext;

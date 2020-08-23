@@ -9,49 +9,33 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-#if 0
-// TODO: move to epi
 enum class uiSizeContraint
 {
-    // Description: The main widget's minimum size is set to `SizeMinimum`,
-    // unless the widget already has a minimum size.
-    Default,
-
-    // Description: The main widget's size is set to `SizeHint`;
-    // it cannot be resized at all.
-    Fixed,
-
-    // Description: The main widget's minimum size is set to `SizeMinimum`;
-    // it cannot be smaller.
-    Minimum,
-
-    // Description: The main widget's maximum size is set to maximumSize();
-    // it cannot be larger.
-    Maximum,
-
-    // Description: The main widget's minimum size is set to `SizeMinimum`
-    // and its maximum size is set to maximumSize().
-    MinMax
+EPI_GENREGION_BEGIN(uiSizeContraint)
+    Default = 0,
+    Fixed = 1,
+    Minimum = 2,
+    Maximum = 3,
+    MinMax = 4,
+    NoContraint = 5
+EPI_GENREGION_END(uiSizeContraint)
 };
-#endif
 
-// TODO: move to epi
 enum uiAlignment
 {
-    uiAlignment_Left = 0x1,
-    uiAlignment_Right = 0x2,
-    uiAlignment_HCenter = 0x4,
-    uiAlignment_Justify = 0x8,
-
-    uiAlignment_Top = 0x10,
-    uiAlignment_Bottom = 0x20,
-    uiAlignment_VCenter = 0x40,
-    uiAlignment_Baseline = 0x80,
-
+EPI_GENREGION_BEGIN(uiAlignment)
+    uiAlignment_Left = (1 << 1),
+    uiAlignment_Right = (1 << 2),
+    uiAlignment_HCenter = (1 << 3),
+    uiAlignment_Justify = (1 << 4),
+    uiAlignment_Top = (1 << 5),
+    uiAlignment_Bottom = (1 << 6),
+    uiAlignment_VCenter = (1 << 7),
+    uiAlignment_Baseline = (1 << 8),
     uiAlignment_Center = uiAlignment_HCenter | uiAlignment_VCenter,
-
     uiAlignment_Horizontal_Mask = uiAlignment_Left | uiAlignment_Right | uiAlignment_HCenter | uiAlignment_Justify,
     uiAlignment_Vertical_Mask = uiAlignment_Top | uiAlignment_Bottom | uiAlignment_VCenter | uiAlignment_Baseline
+EPI_GENREGION_END(uiAlignment)
 };
 
 class uiLayoutItem : public Object
@@ -73,14 +57,6 @@ protected:
     uiWidget* m_Widget{nullptr};
 
 EPI_GENREGION_END(uiLayoutItem)
-
-// TODO: move to epi
-protected:
-    uiAlignment m_Alignment{uiAlignment_Center};
-
-public:
-    uiAlignment GetAlignment() const { return m_Alignment; }
-    void SetAlignment(uiAlignment value) { m_Alignment = value; }
 };
 
 class uiLayout : public Object
@@ -97,13 +73,15 @@ public:
         PID_Items = 0x20dfc649,
         PID_Position = 0xbf5a86a3,
         PID_Size = 0x57f28b54,
-        PID_COUNT = 3
+        PID_Alignment = 0xae3f9cff,
+        PID_COUNT = 4
     };
 
 protected:
     epiArray<uiLayoutItem> m_Items;
     epiVec2f m_Position;
     epiVec2f m_Size;
+    uiAlignment m_Alignment{uiAlignment_Center};
 
 EPI_GENREGION_END(uiLayout)
 
