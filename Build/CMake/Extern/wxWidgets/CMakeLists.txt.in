@@ -5,12 +5,13 @@ project(wxWidgets-extern NONE)
 include(ExternalProject)
 ExternalProject_Add(wxWidgets
     GIT_REPOSITORY      https://github.com/wxWidgets/wxWidgets.git
-    GIT_TAG             v3.1.3
-    SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/wxWidgets-extern/src"
-    BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/wxWidgets-extern/build"
+    GIT_TAG             v3.1.4
+    SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/wxWidgets/src"
+    BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/wxWidgets/build"
 
     GIT_SHALLOW         1
     GIT_PROGRESS        1
+    GIT_SUBMODULES      src/expat src/jpeg src/png src/tiff src/zlib
 
     CONFIGURE_COMMAND   ""
     BUILD_COMMAND       ""

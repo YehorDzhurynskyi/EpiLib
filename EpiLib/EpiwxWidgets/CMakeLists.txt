@@ -13,13 +13,20 @@ get_target_property(EpiwxWidgets_SRCs EpiwxWidgets SOURCES)
 epi_add_precompiled_header(EpiwxWidgets EpiwxWidgets/pch.h SOURCE_CXX EpiwxWidgets/pch.cpp)
 epi_pack_sources(${EpiwxWidgets_SRCs})
 
-epi_extern_add(wxWidgets net core gl base aui propgrid)
-
-epi_extern_register(wxjpeg)
-epi_extern_register(wxpng)
-epi_extern_register(wxregex)
-epi_extern_register(wxtiff)
-epi_extern_register(wxzlib)
+epi_extern_add(wxWidgets
+    COMPONENTS
+        wx::net
+        wx::core
+        wx::gl
+        wx::base
+        wx::aui
+        wx::propgrid
+        wx::jpeg
+        wx::png
+        wx::regex
+        wx::tiff
+        wx::zlib
+)
 
 target_include_directories(EpiwxWidgets
     PUBLIC
@@ -31,12 +38,7 @@ target_link_libraries(EpiwxWidgets
     PUBLIC
         EpiCore
         EpiDataVisualization
-        net
-        core
-        gl
-        base
-        aui
-        propgrid
+        wxWidgets
 )
 
 epi_module_register(EpiwxWidgets)

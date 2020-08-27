@@ -1,56 +1,87 @@
 include(ExternalProject)
 
-# if (NOT GIT_EXECUTABLE)
-#     find_program(GIT_EXECUTABLE
-#         NAMES "bash-git.bat"
-#         PATHS "${EPI_BUILD_DIR}/"
-#     )
-# endif()
+function(epi_extern_register EXTERN)
+    get_target_property(EXTERN_ALIASED_TARGET ${EXTERN} ALIASED_TARGET)
+    if (EXTERN_ALIASED_TARGET)
+        set(EXTERN ${EXTERN_ALIASED_TARGET})
+    endif ()
 
-function(epi_extern_register _extern)
+    get_target_property(EXTERN_TYPE ${EXTERN} TYPE)
 
-    get_target_property(TargetType ${_extern} TYPE)
-    
-    if (NOT ${TargetType} STREQUAL "INTERFACE_LIBRARY")
-        set_target_properties(${_extern}
+    if (NOT ${EXTERN_TYPE} STREQUAL "INTERFACE_LIBRARY")
+        set_target_properties(${EXTERN}
             PROPERTIES
                 FOLDER Extern
         )
     endif()
-
 endfunction()
 
-function(epi_extern_add _extern)
-
-    configure_file("${EPI_DIR}/Build/CMake/Extern/${_extern}_Extern.txt.in" "${_extern}-extern/CMakeLists.txt")
-
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern"
+function(epi_extern_add EXTERN)
+    cmake_parse_arguments(EXTERN
+        ""
+        ""
+        "COMPONENTS"
+        ${ARGN}
     )
 
-    if(result)
-      message(FATAL_ERROR "CMake step for ${_extern} failed: ${result}")
+    set(EXTERN_DIR "${EPI_DIR}/Build/CMake/Extern/${EXTERN}")
+
+    if (NOT EXISTS ${EXTERN_DIR})
+        message(FATAL_ERROR "No directory exists for `${EXTERN}` target! `${EXTERN_DIR}` path is expected!")
+    endif ()
+
+    if (NOT EXISTS "${EXTERN_DIR}/CMakeLists.txt.in")
+        message(FATAL_ERROR "No `CMakeLists.txt.in` file exists for `${EXTERN}` target! `${EXTERN_DIR}/CMakeLists.txt.in` path is expected!")
+    endif ()
+
+    configure_file("${EXTERN_DIR}/CMakeLists.txt.in" "${EXTERN}/CMakeLists.txt")
+
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+        RESULT_VARIABLE COMMAND_STATUS
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}"
+    )
+
+    if(COMMAND_STATUS)
+        message(FATAL_ERROR "CMake step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
     endif()
 
     execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern
+        RESULT_VARIABLE COMMAND_STATUS
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}"
     )
 
-    if(result)
-      message(FATAL_ERROR "Build step for ${_extern} failed: ${result}")
+    if(COMMAND_STATUS)
+        message(FATAL_ERROR "Build step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
     endif()
 
-    add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern/src"
-                     "${CMAKE_CURRENT_BINARY_DIR}/${_extern}-extern/build"
+    if (EXISTS "${EXTERN_DIR}/config.cmake")
+        include("${EXTERN_DIR}/config.cmake")
+    endif ()
+
+    add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/src"
+                     "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/build"
                      EXCLUDE_FROM_ALL)
+ 
+    list(LENGTH EXTERN_COMPONENTS EXTERN_COMPONENTS_LENGTH)
+    if (NOT EXTERN_COMPONENTS_LENGTH EQUAL 0)
+        if (TARGET ${EXTERN})
+            message(FATAL_ERROR "`${EXTERN}` is already defined, but it's implied to be an interface library!")
+        endif ()
 
-    if (${ARGC} EQUAL 1)
-        epi_extern_register(${_extern})
-    else()
-        foreach(ARG IN LISTS ARGN)
-            epi_extern_register(${ARG})
-        endforeach()
-    endif()
+        foreach (COMPONENT ${EXTERN_COMPONENTS})
+            if (NOT TARGET ${COMPONENT})
+                message(FATAL_ERROR "`${COMPONENT}` such component of `${EXTERN}` doesn't exists!")
+            endif ()
+
+            epi_extern_register(${COMPONENT})
+        endforeach ()
+
+        add_library(${EXTERN} INTERFACE)
+        target_link_libraries(${EXTERN}
+            INTERFACE
+                ${EXTERN_COMPONENTS}
+        )
+    endif ()
+
+    epi_extern_register(${EXTERN})
 endfunction()
