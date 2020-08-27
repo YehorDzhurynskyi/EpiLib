@@ -70,7 +70,9 @@ epi_pack_sources(${EpiGraphics_SRCs})
 epi_extern_add(freetype)
 
 add_subdirectory(Extern/glad)
-epi_extern_register(glad)
+epi_module_register(glad
+    FOLDER "EpiLib-Extern"
+)
 
 target_include_directories(EpiGraphics
     PUBLIC
@@ -85,4 +87,7 @@ target_link_libraries(EpiGraphics
         freetype
 )
 
-epi_module_register(EpiGraphics)
+epi_module_register(EpiGraphics
+    FOLDER "EpiLib"
+)
+

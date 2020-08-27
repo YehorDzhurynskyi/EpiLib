@@ -36,19 +36,39 @@ function(epi_add_precompiled_header)
     add_precompiled_header(${ARGV})
 endfunction()
 
-function(epi_module_register _module)
-
-    get_target_property(_module_source_dir ${_module} SOURCE_DIR)
-    set_property(GLOBAL APPEND PROPERTY EPIGEN_MANIFEST_MODULES "${_module_source_dir}/${_module}")
-
-    set_target_properties(${_module}
-        PROPERTIES
-            CXX_STANDARD 17
-            CXX_STANDARD_REQUIRED YES
-            CXX_EXTENSIONS NO
-            FOLDER EpiLib
+function(epi_module_register EPIMODULE)
+    cmake_parse_arguments(EPIMODULE
+        ""
+        "FOLDER"
+        ""
+        ${ARGN}
     )
 
+    get_target_property(EPIMODULE_ALIASED_TARGET ${EPIMODULE} ALIASED_TARGET)
+    if (EPIMODULE_ALIASED_TARGET)
+        set(EPIMODULE ${EPIMODULE_ALIASED_TARGET})
+    endif ()
+
+    get_target_property(EPIMODULE_TYPE ${EPIMODULE} TYPE)
+
+    if (NOT ${EPIMODULE_TYPE} STREQUAL "INTERFACE_LIBRARY")
+        get_target_property(EPIMODULE_SOURCE_DIR ${EPIMODULE} SOURCE_DIR)
+        set_property(GLOBAL APPEND PROPERTY EPIGEN_MANIFEST_MODULES "${EPIMODULE_SOURCE_DIR}/${EPIMODULE}")
+
+        set_target_properties(${EPIMODULE}
+            PROPERTIES
+                CXX_STANDARD 17
+                CXX_STANDARD_REQUIRED YES
+                CXX_EXTENSIONS NO
+        )
+
+        if (EPIMODULE_FOLDER)
+            set_target_properties(${EPIMODULE}
+                PROPERTIES
+                    FOLDER ${EPIMODULE_FOLDER}
+            )
+        endif ()
+    endif()
 endfunction()
 
 macro(epi_win_to_unix_path winpath unixpath)

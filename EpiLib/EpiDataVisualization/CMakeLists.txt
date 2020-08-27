@@ -69,4 +69,6 @@ target_link_libraries(EpiDataVisualization
         EpiGraphics
 )
 
-epi_module_register(EpiDataVisualization)
+epi_module_register(EpiDataVisualization
+    FOLDER "EpiLib"
+)

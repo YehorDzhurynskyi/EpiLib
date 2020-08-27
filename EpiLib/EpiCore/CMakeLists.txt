@@ -51,7 +51,9 @@ epi_add_precompiled_header(EpiCore EpiCore/pch.h SOURCE_CXX EpiCore/pch.cpp)
 epi_pack_sources(${EpiCore_SRCs})
 
 add_subdirectory(Extern/exprtk)
-epi_extern_register(exprtk)
+epi_module_register(exprtk
+    FOLDER "EpiLib-Extern"
+)
 
 epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
@@ -91,4 +93,6 @@ target_compile_definitions(EpiCore
         _USE_MATH_DEFINES 
 )
 
-epi_module_register(EpiCore)
+epi_module_register(EpiCore
+    FOLDER "EpiLib"
+)

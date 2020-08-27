@@ -1,21 +1,5 @@
 include(ExternalProject)
 
-function(epi_extern_register EXTERN)
-    get_target_property(EXTERN_ALIASED_TARGET ${EXTERN} ALIASED_TARGET)
-    if (EXTERN_ALIASED_TARGET)
-        set(EXTERN ${EXTERN_ALIASED_TARGET})
-    endif ()
-
-    get_target_property(EXTERN_TYPE ${EXTERN} TYPE)
-
-    if (NOT ${EXTERN_TYPE} STREQUAL "INTERFACE_LIBRARY")
-        set_target_properties(${EXTERN}
-            PROPERTIES
-                FOLDER Extern
-        )
-    endif()
-endfunction()
-
 function(epi_extern_add EXTERN)
     cmake_parse_arguments(EXTERN
         ""
@@ -73,7 +57,9 @@ function(epi_extern_add EXTERN)
                 message(FATAL_ERROR "`${COMPONENT}` such component of `${EXTERN}` doesn't exists!")
             endif ()
 
-            epi_extern_register(${COMPONENT})
+            epi_module_register(${COMPONENT}
+                FOLDER "EpiLib-Extern"
+            )
         endforeach ()
 
         add_library(${EXTERN} INTERFACE)
@@ -83,5 +69,7 @@ function(epi_extern_add EXTERN)
         )
     endif ()
 
-    epi_extern_register(${EXTERN})
+    epi_module_register(${EXTERN}
+        FOLDER "EpiLib-Extern"
+    )
 endfunction()

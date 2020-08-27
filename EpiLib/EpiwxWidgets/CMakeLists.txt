@@ -41,4 +41,6 @@ target_link_libraries(EpiwxWidgets
         wxWidgets
 )
 
-epi_module_register(EpiwxWidgets)
+epi_module_register(EpiwxWidgets
+    FOLDER "EpiLib"
+)

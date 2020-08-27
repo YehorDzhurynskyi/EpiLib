@@ -96,4 +96,7 @@ target_link_libraries(EpiMultiMedia
         EpiCore
 )
 
-epi_module_register(EpiMultiMedia)
+epi_module_register(EpiMultiMedia
+    FOLDER "EpiLib"
+)
+

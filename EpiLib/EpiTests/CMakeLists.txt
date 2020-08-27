@@ -7,7 +7,7 @@ if (EPI_BUILD_TESTS)
             gtest_main
     )
 
-    add_library(EpiTests INTERFACE IMPORTED GLOBAL)
+    add_library(EpiTests INTERFACE)
     set_target_properties(EpiTests
         PROPERTIES
             INTERFACE_LINK_LIBRARIES googletest

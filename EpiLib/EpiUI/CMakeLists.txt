@@ -51,4 +51,7 @@ target_link_libraries(EpiUI
         EpiGraphics
 )
 
-epi_module_register(EpiUI)
+epi_module_register(EpiUI
+    FOLDER "EpiLib"
+)
+
