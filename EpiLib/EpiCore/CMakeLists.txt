@@ -52,7 +52,7 @@ epi_pack_sources(${EpiCore_SRCs})
 
 add_subdirectory(Extern/exprtk)
 epi_module_register(exprtk
-    FOLDER "EpiLib-Extern"
+    FOLDER "EpiLib/Extern"
 )
 
 epi_extern_add(nlohmann_json)

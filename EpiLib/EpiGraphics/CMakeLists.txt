@@ -71,7 +71,7 @@ epi_extern_add(freetype)
 
 add_subdirectory(Extern/glad)
 epi_module_register(glad
-    FOLDER "EpiLib-Extern"
+    FOLDER "EpiLib/Extern"
 )
 
 target_include_directories(EpiGraphics

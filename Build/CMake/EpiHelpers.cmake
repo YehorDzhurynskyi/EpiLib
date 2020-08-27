@@ -68,6 +68,41 @@ function(epi_module_register EPIMODULE)
                     FOLDER ${EPIMODULE_FOLDER}
             )
         endif ()
+
+        if (EPI_BUILD_TESTS)
+            set(EPIMODULE_TEST_DIR "${EPIMODULE_SOURCE_DIR}/Tests")
+
+            file(GLOB EPIMODULE_TESTS_GLOB
+                RELATIVE ${EPIMODULE_TEST_DIR}
+                "${EPIMODULE_TEST_DIR}/*-tests.cpp"
+            )
+
+            foreach (EPIMODULE_TEST_FILE ${EPIMODULE_TESTS_GLOB})
+                string(REPLACE ".cpp" "" EPIMODULE_TEST ${EPIMODULE_TEST_FILE})
+                set(EPIMODULE_TEST "${EPIMODULE}-${EPIMODULE_TEST}")
+
+                add_executable(${EPIMODULE_TEST} "${EPIMODULE_TEST_DIR}/${EPIMODULE_TEST_FILE}")
+
+                target_link_libraries(${EPIMODULE_TEST}
+                    PRIVATE
+                        ${EPIMODULE}
+                        EpiTests
+                )
+
+                add_test(NAME ${EPIMODULE_TEST} COMMAND ${EPIMODULE_TEST})
+
+                if (EPIMODULE_FOLDER)
+                    set(EPIMODULE_TESTS_FOLDER "${EPIMODULE_FOLDER}/Tests")
+                else ()
+                    set(EPIMODULE_TESTS_FOLDER "Tests")
+                endif ()
+
+                set_target_properties(${EPIMODULE_TEST}
+                    PROPERTIES
+                        FOLDER ${EPIMODULE_TESTS_FOLDER}
+                )
+            endforeach ()
+        endif ()
     endif()
 endfunction()
 

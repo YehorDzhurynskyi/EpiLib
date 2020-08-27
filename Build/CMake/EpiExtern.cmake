@@ -58,7 +58,7 @@ function(epi_extern_add EXTERN)
             endif ()
 
             epi_module_register(${COMPONENT}
-                FOLDER "EpiLib-Extern"
+                FOLDER "EpiLib/Extern"
             )
         endforeach ()
 
@@ -70,6 +70,6 @@ function(epi_extern_add EXTERN)
     endif ()
 
     epi_module_register(${EXTERN}
-        FOLDER "EpiLib-Extern"
+        FOLDER "EpiLib/Extern"
     )
 endfunction()
