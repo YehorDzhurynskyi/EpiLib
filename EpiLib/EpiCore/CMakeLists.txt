@@ -3,55 +3,52 @@ project(EpiCore)
 set(Epi_USE_METAPROPERTY_NAME ON CACHE BOOL "")
 
 add_library(EpiCore
-    EpiCore/epi_config.h.in
+    Sources/EpiCore/epi_config.h.in
 
-    EpiCore/pch.h
-    EpiCore/pch.cpp
+    Sources/EpiCore/types.h
+    Sources/EpiCore/common.h
 
-    EpiCore/types.h
-    EpiCore/common.h
+    Sources/EpiCore/Clock.h
+    Sources/EpiCore/Clock.cpp
 
-    EpiCore/Clock.h
-    EpiCore/Clock.cpp
+    Sources/EpiCore/Color.epi
+    Sources/EpiCore/Color.h
+    Sources/EpiCore/Color.cpp
 
-    EpiCore/Color.epi
-    EpiCore/Color.h
-    EpiCore/Color.cpp
+    Sources/EpiCore/Hash.h
+    Sources/EpiCore/Hash.cpp
 
-    EpiCore/Hash.h
-    EpiCore/Hash.cpp
+    Sources/EpiCore/Platform/DisplayDevice.epi
+    Sources/EpiCore/Platform/DisplayDevice.h
+    Sources/EpiCore/Platform/DisplayDevice.cpp
 
-    EpiCore/Platform/DisplayDevice.epi
-    EpiCore/Platform/DisplayDevice.h
-    EpiCore/Platform/DisplayDevice.cpp
+    Sources/EpiCore/Expression.h
+    Sources/EpiCore/Expression.cpp
 
-    EpiCore/Expression.h
-    EpiCore/Expression.cpp
+    Sources/EpiCore/Singleton.h
+    Sources/EpiCore/Pool.h
+    Sources/EpiCore/RotatingBuffer.h
 
-    EpiCore/Singleton.h
-    EpiCore/Pool.h
-    EpiCore/RotatingBuffer.h
+    Sources/EpiCore/Containers/Array.h
+    Sources/EpiCore/Containers/HashMap.h
 
-    EpiCore/Containers/Array.h
-    EpiCore/Containers/HashMap.h
-
-    EpiCore/ObjectModel/Serialization.h
-    EpiCore/ObjectModel/Object.h
-    EpiCore/ObjectModel/Object.cpp
-    EpiCore/ObjectModel/MetaObject.h
-    EpiCore/ObjectModel/MetaObject.cpp
-    EpiCore/ObjectModel/PropertyPath.h
-    EpiCore/ObjectModel/PropertyPath.cpp
-    EpiCore/ObjectModel/PropertyPointer.h
-    EpiCore/ObjectModel/PropertyPointer.cpp
-    EpiCore/ObjectModel/Handle.h
+    Sources/EpiCore/ObjectModel/Serialization.h
+    Sources/EpiCore/ObjectModel/Object.h
+    Sources/EpiCore/ObjectModel/Object.cpp
+    Sources/EpiCore/ObjectModel/MetaObject.h
+    Sources/EpiCore/ObjectModel/MetaObject.cpp
+    Sources/EpiCore/ObjectModel/PropertyPath.h
+    Sources/EpiCore/ObjectModel/PropertyPath.cpp
+    Sources/EpiCore/ObjectModel/PropertyPointer.h
+    Sources/EpiCore/ObjectModel/PropertyPointer.cpp
+    Sources/EpiCore/ObjectModel/Handle.h
 )
-get_target_property(EpiCore_SRCs EpiCore SOURCES)
-epi_add_precompiled_header(EpiCore EpiCore/pch.h SOURCE_CXX EpiCore/pch.cpp)
-epi_pack_sources(${EpiCore_SRCs})
+
+get_target_property(EpiCore_SOURCES EpiCore SOURCES)
+epi_pack_sources(${EpiCore_SOURCES})
 
 add_subdirectory(Extern/exprtk)
-epi_module_register(exprtk
+epi_module_register(exprtk EXTERN
     FOLDER "EpiLib/Extern"
 )
 
@@ -59,7 +56,7 @@ epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
 epi_extern_add(fmt)
 
-configure_file(EpiCore/epi_config.h.in EpiCore/epi_config.h)
+configure_file(Sources/EpiCore/epi_config.h.in Sources/EpiCore/epi_config.h)
 
 if(MSVC)
     # needed for exprtk.hpp (probably?)
@@ -67,10 +64,33 @@ if(MSVC)
     set_target_properties(EpiCore PROPERTIES COMPILE_FLAGS "/bigobj" )
 endif()
 
+target_precompile_headers(EpiCore
+    PUBLIC
+        <vector>
+        <algorithm>
+        <map>
+        <memory>
+        <set>
+        <array>
+        <cmath>
+        <cassert>
+        <cstdint>
+        <functional>
+        <type_traits>
+
+        [["EpiCore/epi_config.h"]]
+        [["EpiCore/types.h"]]
+        [["EpiCore/common.h"]]
+        [["EpiCore/Hash.h"]]
+        [["EpiCore/ObjectModel/Serialization.h"]]
+        [["EpiCore/ObjectModel/MetaObject.h"]]
+        [["EpiCore/Containers/Array.h"]]
+)
+
 target_include_directories(EpiCore
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
 )
 
 target_link_libraries(EpiCore

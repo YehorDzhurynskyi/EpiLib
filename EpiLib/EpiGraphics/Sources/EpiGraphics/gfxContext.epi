@@ -1,0 +1,8 @@
+class gfxContext
+{
+    [ReadOnly]
+    {
+        gfxVertexArray NullVertexArray;
+        gfxCameraOrtho Camera;
+    }
+};

@@ -1,4 +1,0 @@
-class gfxCameraOrtho : gfxCamera
-{
-    epiRect2f FrameDimension;
-};

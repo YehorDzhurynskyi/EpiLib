@@ -1,0 +1,4 @@
+class gfxBindable
+{
+    epiBool IsBounded;
+};

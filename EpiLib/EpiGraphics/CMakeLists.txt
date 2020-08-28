@@ -1,83 +1,81 @@
 project(EpiGraphics)
 
 add_library(EpiGraphics
-    EpiGraphics/pch.h
-    EpiGraphics/pch.cpp
+    Sources/EpiGraphics/gfxContext.epi
+    Sources/EpiGraphics/gfxContext.h
+    Sources/EpiGraphics/gfxContext.cpp
 
-    EpiGraphics/gfxContext.epi
-    EpiGraphics/gfxContext.h
-    EpiGraphics/gfxContext.cpp
+    Sources/EpiGraphics/gfxBindable.epi
+    Sources/EpiGraphics/gfxBindable.h
+    Sources/EpiGraphics/gfxBindable.cpp
 
-    EpiGraphics/gfxBindable.epi
-    EpiGraphics/gfxBindable.h
-    EpiGraphics/gfxBindable.cpp
+    Sources/EpiGraphics/gfxVertexArray.epi
+    Sources/EpiGraphics/gfxVertexArray.h
+    Sources/EpiGraphics/gfxVertexArray.cpp
+    Sources/EpiGraphics/gfxVertexBuffer.epi
+    Sources/EpiGraphics/gfxVertexBuffer.h
+    Sources/EpiGraphics/gfxVertexBuffer.cpp
 
-    EpiGraphics/gfxVertexArray.epi
-    EpiGraphics/gfxVertexArray.h
-    EpiGraphics/gfxVertexArray.cpp
-    EpiGraphics/gfxVertexBuffer.epi
-    EpiGraphics/gfxVertexBuffer.h
-    EpiGraphics/gfxVertexBuffer.cpp
+    Sources/EpiGraphics/gfxTexture.epi
+    Sources/EpiGraphics/gfxTexture.h
+    Sources/EpiGraphics/gfxTexture.cpp
 
-    EpiGraphics/gfxTexture.epi
-    EpiGraphics/gfxTexture.h
-    EpiGraphics/gfxTexture.cpp
+    Sources/EpiGraphics/gfxShaderProgram.epi
+    Sources/EpiGraphics/gfxShaderProgram.h
+    Sources/EpiGraphics/gfxShaderProgram.cpp
 
-    EpiGraphics/gfxShaderProgram.epi
-    EpiGraphics/gfxShaderProgram.h
-    EpiGraphics/gfxShaderProgram.cpp
+    Sources/EpiGraphics/gfxDrawer.epi
+    Sources/EpiGraphics/gfxDrawer.h
+    Sources/EpiGraphics/gfxDrawer.cpp
+    Sources/EpiGraphics/gfxDrawerPrimitive.epi
+    Sources/EpiGraphics/gfxDrawerPrimitive.h
+    Sources/EpiGraphics/gfxDrawerPrimitive.cpp
+    Sources/EpiGraphics/gfxDrawerText.epi
+    Sources/EpiGraphics/gfxDrawerText.h
+    Sources/EpiGraphics/gfxDrawerText.cpp
 
-    EpiGraphics/gfxDrawer.epi
-    EpiGraphics/gfxDrawer.h
-    EpiGraphics/gfxDrawer.cpp
-    EpiGraphics/gfxDrawerPrimitive.epi
-    EpiGraphics/gfxDrawerPrimitive.h
-    EpiGraphics/gfxDrawerPrimitive.cpp
-    EpiGraphics/gfxDrawerText.epi
-    EpiGraphics/gfxDrawerText.h
-    EpiGraphics/gfxDrawerText.cpp
+    Sources/EpiGraphics/Camera/gfxCamera.epi
+    Sources/EpiGraphics/Camera/gfxCamera.h
+    Sources/EpiGraphics/Camera/gfxCamera.cpp
+    Sources/EpiGraphics/Camera/gfxCameraOrtho.epi
+    Sources/EpiGraphics/Camera/gfxCameraOrtho.h
+    Sources/EpiGraphics/Camera/gfxCameraOrtho.cpp
+    Sources/EpiGraphics/Camera/gfxCameraPersp.epi
+    Sources/EpiGraphics/Camera/gfxCameraPersp.h
+    Sources/EpiGraphics/Camera/gfxCameraPersp.cpp
 
-    EpiGraphics/Camera/gfxCamera.epi
-    EpiGraphics/Camera/gfxCamera.h
-    EpiGraphics/Camera/gfxCamera.cpp
-    EpiGraphics/Camera/gfxCameraOrtho.epi
-    EpiGraphics/Camera/gfxCameraOrtho.h
-    EpiGraphics/Camera/gfxCameraOrtho.cpp
-    EpiGraphics/Camera/gfxCameraPersp.epi
-    EpiGraphics/Camera/gfxCameraPersp.h
-    EpiGraphics/Camera/gfxCameraPersp.cpp
-
-    EpiGraphics/Text/gfxTextManager.epi
-    EpiGraphics/Text/gfxTextManager.h
-    EpiGraphics/Text/gfxTextManager.cpp
-    EpiGraphics/Text/gfxTextFace.epi
-    EpiGraphics/Text/gfxTextFace.h
-    EpiGraphics/Text/gfxTextFace.cpp
-    EpiGraphics/Text/gfxTextRendered.epi
-    EpiGraphics/Text/gfxTextRendered.h
-    EpiGraphics/Text/gfxTextRendered.cpp
-    EpiGraphics/Text/gfxTextRenderedAtlas.epi
-    EpiGraphics/Text/gfxTextRenderedAtlas.h
-    EpiGraphics/Text/gfxTextRenderedAtlas.cpp
-    EpiGraphics/Text/gfxTextRenderedGlyph.epi
-    EpiGraphics/Text/gfxTextRenderedGlyph.h
-    EpiGraphics/Text/gfxTextRenderedGlyph.cpp
+    Sources/EpiGraphics/Text/gfxTextManager.epi
+    Sources/EpiGraphics/Text/gfxTextManager.h
+    Sources/EpiGraphics/Text/gfxTextManager.cpp
+    Sources/EpiGraphics/Text/gfxTextFace.epi
+    Sources/EpiGraphics/Text/gfxTextFace.h
+    Sources/EpiGraphics/Text/gfxTextFace.cpp
+    Sources/EpiGraphics/Text/gfxTextRendered.epi
+    Sources/EpiGraphics/Text/gfxTextRendered.h
+    Sources/EpiGraphics/Text/gfxTextRendered.cpp
+    Sources/EpiGraphics/Text/gfxTextRenderedAtlas.epi
+    Sources/EpiGraphics/Text/gfxTextRenderedAtlas.h
+    Sources/EpiGraphics/Text/gfxTextRenderedAtlas.cpp
+    Sources/EpiGraphics/Text/gfxTextRenderedGlyph.epi
+    Sources/EpiGraphics/Text/gfxTextRenderedGlyph.h
+    Sources/EpiGraphics/Text/gfxTextRenderedGlyph.cpp
 )
-get_target_property(EpiGraphics_SRCs EpiGraphics SOURCES) 
-epi_add_precompiled_header(EpiGraphics EpiGraphics/pch.h SOURCE_CXX EpiGraphics/pch.cpp)
-epi_pack_sources(${EpiGraphics_SRCs})
+get_target_property(EpiGraphics_SOURCES EpiGraphics SOURCES)
+epi_pack_sources(${EpiGraphics_SOURCES})
 
 epi_extern_add(freetype)
 
 add_subdirectory(Extern/glad)
-epi_module_register(glad
+epi_module_register(glad EXTERN
     FOLDER "EpiLib/Extern"
 )
 
+target_precompile_headers(EpiGraphics REUSE_FROM EpiCore)
+
 target_include_directories(EpiGraphics
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
 )
 
 target_link_libraries(EpiGraphics

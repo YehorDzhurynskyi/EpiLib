@@ -1,0 +1,4 @@
+class gfxCameraPersp : gfxCamera
+{
+    epiFloat FOV;
+};

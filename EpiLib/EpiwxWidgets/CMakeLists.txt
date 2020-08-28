@@ -1,17 +1,13 @@
 project(EpiwxWidgets)
 
 add_library(EpiwxWidgets
-    EpiwxWidgets/pch.h
-    EpiwxWidgets/pch.cpp
-
-    EpiwxWidgets/epiWXPropertyGrid.h
-    EpiwxWidgets/epiWXPropertyGrid.cpp
-    EpiwxWidgets/epiWXPlot.h
-    EpiwxWidgets/epiWXPlot.cpp
+    Sources/EpiwxWidgets/epiWXPropertyGrid.h
+    Sources/EpiwxWidgets/epiWXPropertyGrid.cpp
+    Sources/EpiwxWidgets/epiWXPlot.h
+    Sources/EpiwxWidgets/epiWXPlot.cpp
 )
-get_target_property(EpiwxWidgets_SRCs EpiwxWidgets SOURCES) 
-epi_add_precompiled_header(EpiwxWidgets EpiwxWidgets/pch.h SOURCE_CXX EpiwxWidgets/pch.cpp)
-epi_pack_sources(${EpiwxWidgets_SRCs})
+get_target_property(EpiwxWidgets_SOURCES EpiwxWidgets SOURCES)
+epi_pack_sources(${EpiwxWidgets_SOURCES})
 
 epi_extern_add(wxWidgets
     COMPONENTS
@@ -28,10 +24,12 @@ epi_extern_add(wxWidgets
         wx::zlib
 )
 
+target_precompile_headers(EpiwxWidgets REUSE_FROM EpiCore)
+
 target_include_directories(EpiwxWidgets
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
 )
 
 target_link_libraries(EpiwxWidgets

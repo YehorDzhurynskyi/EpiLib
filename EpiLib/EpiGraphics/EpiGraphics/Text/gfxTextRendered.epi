@@ -1,5 +1,0 @@
-class gfxTextRendered : gfxBindable
-{
-    [ReadOnly]
-    gfxTexture Texture;
-};

@@ -1,14 +1,10 @@
 project(EpiMultiMedia)
 
 add_library(EpiMultiMedia
-    EpiMultiMedia/pch.h
-    EpiMultiMedia/pch.cpp
-
-    EpiMultiMedia/test.cpp
+    Sources/EpiMultiMedia/test.cpp
 )
-get_target_property(EpiMultiMedia_SRCs EpiMultiMedia SOURCES)
-epi_add_precompiled_header(EpiMultiMedia EpiMultiMedia/pch.h SOURCE_CXX EpiMultiMedia/pch.cpp)
-epi_pack_sources(${EpiMultiMedia_SRCs})
+get_target_property(EpiMultiMedia_SOURCES EpiMultiMedia SOURCES)
+epi_pack_sources(${EpiMultiMedia_SOURCES})
 
 set(FFMPEG_ARGS
     --arch=x86_64
@@ -60,13 +56,6 @@ epi_register_extern_target(FFmpeg)
 
 ExternalProject_Get_Property(FFmpeg INSTALL_DIR)
 
-target_include_directories(EpiMultiMedia
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-        ${INSTALL_DIR}/include
-)
-
 macro(add_ffmpeglib lib libversion)
     epi_get_libname(${lib} staticlibname dynamiclibname ${libversion})
 
@@ -91,6 +80,16 @@ add_ffmpeglib("swresample" "3")
 add_ffmpeglib("swscale" "5")
 
 add_dependencies(EpiMultiMedia FFmpeg)
+
+target_precompile_headers(EpiMultiMedia REUSE_FROM EpiCore)
+
+target_include_directories(EpiMultiMedia
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
+        ${INSTALL_DIR}/include
+)
+
 target_link_libraries(EpiMultiMedia
     PUBLIC
         EpiCore

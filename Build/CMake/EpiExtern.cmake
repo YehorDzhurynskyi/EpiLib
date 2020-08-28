@@ -57,7 +57,7 @@ function(epi_extern_add EXTERN)
                 message(FATAL_ERROR "`${COMPONENT}` such component of `${EXTERN}` doesn't exists!")
             endif ()
 
-            epi_module_register(${COMPONENT}
+            epi_module_register(${COMPONENT} EXTERN
                 FOLDER "EpiLib/Extern"
             )
         endforeach ()
@@ -69,7 +69,7 @@ function(epi_extern_add EXTERN)
         )
     endif ()
 
-    epi_module_register(${EXTERN}
+    epi_module_register(${EXTERN} EXTERN
         FOLDER "EpiLib/Extern"
     )
 endfunction()
