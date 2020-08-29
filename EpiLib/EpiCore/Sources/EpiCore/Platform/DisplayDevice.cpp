@@ -4,7 +4,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include <Windows.h>
-#include <shellscalingapi.h>
+#include <ShellScalingApi.h>
 
 #pragma comment(lib, "shcore.lib")
 
@@ -47,6 +47,16 @@ epiVec2u DisplayDevice::DPI()
 
     EnumDisplayMonitors(NULL, NULL, &MonitorEnumProc, (LPARAM)&dpi);
     return dpi;
+}
+
+void DisplayDevice::SetDPIAwareness(DPIAwareness awareness)
+{
+    switch (awareness)
+    {
+    case DPIAwareness::UnAware: SetProcessDpiAwareness(PROCESS_DPI_UNAWARE); break;
+    case DPIAwareness::SystemAware: SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE); break;
+    case DPIAwareness::PerMonitorAware: SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE); break;
+    }
 }
 
 EPI_NAMESPACE_END()

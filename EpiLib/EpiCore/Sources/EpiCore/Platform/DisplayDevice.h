@@ -8,6 +8,15 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+enum class DPIAwareness
+{
+EPI_GENREGION_BEGIN(DPIAwareness)
+    UnAware = 0,
+    SystemAware = 1,
+    PerMonitorAware = 2
+EPI_GENREGION_END(DPIAwareness)
+};
+
 class DisplayDevice : public Object
 {
 EPI_GENREGION_BEGIN(DisplayDevice)
@@ -27,6 +36,7 @@ EPI_GENREGION_END(DisplayDevice)
 public:
     // TODO: refactor
     static epiVec2u DPI();
+    static void SetDPIAwareness(DPIAwareness awareness);
 };
 
 EPI_NAMESPACE_END()

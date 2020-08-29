@@ -1,3 +1,10 @@
+enum DPIAwareness
+{
+    UnAware,
+    SystemAware,
+    PerMonitorAware
+};
+
 class DisplayDevice
 {
 };
