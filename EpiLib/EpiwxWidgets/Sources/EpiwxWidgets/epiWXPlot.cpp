@@ -1,7 +1,6 @@
 #include "EpiwxWidgets/epiWXPlot.h"
 
 #include "EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h"
-#include "EpiDataVisualization/Plot/Series/dvSeriesY.h"
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
 
@@ -103,15 +102,6 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     }
 }
 
-void epiWXPlot::Update()
-{
-    for (auto& bind : m_PropertyBinds)
-    {
-        const epiFloat value = bind.PrtyPtr->Get<epiFloat>();
-        bind.Series->Add(value);
-    }
-}
-
 void epiWXPlot::OnResize(wxSizeEvent& event)
 {
     const wxSize& size = event.GetSize();
@@ -204,25 +194,4 @@ void epiWXPlot::OnMouse(wxMouseEvent& event)
     {
         m_UIContext->OnMouseFocus(event.Entering());
     }
-}
-
-void epiWXPlot::AddPropertyBind(const epi::PropertyPointer* ptr)
-{
-    dvSeriesY& series = m_PlotModel.Add<dvSeriesY>();
-    series.SetStepX(0.0001f); // TODO: set in other place
-
-    dvViewModelPlot& vm = m_PlotView->GetViewModel();
-    dvViewModelSeriesBase& seriesVM = vm.Add<dvViewModelSeriesBase>();
-    seriesVM.SetModel(&series);
-
-    Color colors[] {
-        Color::kLightBlue,
-        Color::kLightRed
-    };
-
-    seriesVM.SetColor(colors[m_PlotModel.Size() % epiArrLen(colors)]);
-
-    PropertyBind& bind = m_PropertyBinds.emplace_back();
-    bind.Series = &series;
-    bind.PrtyPtr = ptr;
 }

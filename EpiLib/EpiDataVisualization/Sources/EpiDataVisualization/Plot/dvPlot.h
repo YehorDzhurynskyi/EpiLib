@@ -4,7 +4,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/Plot/dvPlot.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/Plot/Series/dvSeriesBase.h"
+#include "EpiData/Series/dSeriesBase.h"
 
 #include "EpiCore/ObjectModel/Object.h"
 #include "EpiCore/Containers/Array.h"
@@ -27,7 +27,7 @@ public:
     };
 
 protected:
-    epiPtrArray<dvSeriesBase> m_Series;
+    epiPtrArray<dSeriesBase> m_Series;
 
 EPI_GENREGION_END(dvPlot)
 

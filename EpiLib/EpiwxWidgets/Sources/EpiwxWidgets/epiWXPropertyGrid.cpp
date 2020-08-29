@@ -254,6 +254,4 @@ void epiWXPropertyGrid::OnPropertyGridRightClick(wxPropertyGridEvent& event)
         wxMessageBox(wxT("Only real number property could be chosen!"), wxT("Error"));
         return;
     }
-
-    m_Plot->AddPropertyBind(ptr);
 }

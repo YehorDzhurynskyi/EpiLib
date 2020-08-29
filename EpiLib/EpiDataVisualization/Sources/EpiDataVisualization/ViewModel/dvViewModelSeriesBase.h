@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-class dvSeriesBase;
+class dSeriesBase;
 class dvViewModelSeriesBase : public Object
 {
 EPI_GENREGION_BEGIN(dvViewModelSeriesBase)
@@ -26,7 +26,7 @@ public:
     };
 
 protected:
-    dvSeriesBase* m_Model{nullptr};
+    dSeriesBase* m_Model{nullptr};
     Color m_Color;
 
 EPI_GENREGION_END(dvViewModelSeriesBase)

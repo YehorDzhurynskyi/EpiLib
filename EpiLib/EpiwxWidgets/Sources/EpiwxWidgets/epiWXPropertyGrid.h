@@ -36,8 +36,4 @@ protected:
 
 protected:
     std::vector<epi::PropertyPointer*> m_PropertyPointers;
-
-public:
-    // TODO: refactor
-    epiWXPlot* m_Plot;
 };

@@ -5,16 +5,6 @@ add_library(EpiDataVisualization
     Sources/EpiDataVisualization/Plot/dvPlot.h
     Sources/EpiDataVisualization/Plot/dvPlot.cpp
 
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesBase.epi
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesBase.h
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesBase.cpp
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesY.epi
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesY.h
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesY.cpp
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesXY.epi
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesXY.h
-    Sources/EpiDataVisualization/Plot/Series/dvSeriesXY.cpp
-
     Sources/EpiDataVisualization/ViewModel/dvViewModelPlot.epi
     Sources/EpiDataVisualization/ViewModel/dvViewModelPlot.h
     Sources/EpiDataVisualization/ViewModel/dvViewModelPlot.cpp

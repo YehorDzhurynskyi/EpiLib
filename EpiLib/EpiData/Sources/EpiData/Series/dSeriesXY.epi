@@ -1,0 +1,5 @@
+class dSeriesXY : dSeriesBase
+{
+    epiArray<epiFloat> X;
+    epiArray<epiFloat> Y;
+};

@@ -1,4 +1,0 @@
-class dCollection
-{
-    epiArray<epiFloat> Buffer;
-};

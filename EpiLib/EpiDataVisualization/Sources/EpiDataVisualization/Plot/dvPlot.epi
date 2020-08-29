@@ -1,5 +1,5 @@
 class dvPlot
 {
     [ReadOnly]
-    epiPtrArray<dvSeriesBase> Series;
+    epiPtrArray<dSeriesBase> Series;
 };

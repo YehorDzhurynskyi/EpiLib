@@ -1,5 +1,5 @@
 class dvViewModelSeriesBase
 {
-    dvSeriesBase* Model;
+    dSeriesBase* Model;
     Color Color;
 };
