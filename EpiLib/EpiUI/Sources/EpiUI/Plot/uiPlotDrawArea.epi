@@ -1,4 +1,4 @@
-class dvViewPlotDrawArea : uiWidget
+class uiPlotDrawArea : uiWidget
 {
     dvViewModelPlot* ViewModel;
 

@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/View/dvViewPlotTimeline.hxx"
+#include "EpiUI/Plot/uiPlotTimeline.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
@@ -11,16 +11,16 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-class dvViewPlotTimeline : public uiWidget
+class uiPlotTimeline : public uiWidget
 {
-EPI_GENREGION_BEGIN(dvViewPlotTimeline)
+EPI_GENREGION_BEGIN(uiPlotTimeline)
 
-EPI_GENHIDDEN_dvViewPlotTimeline()
+EPI_GENHIDDEN_uiPlotTimeline()
 
 public:
-    constexpr static MetaTypeID TypeID{0x1939297a};
+    constexpr static MetaTypeID TypeID{0x7ad9cd7};
 
-    enum dvViewPlotTimeline_PIDs
+    enum uiPlotTimeline_PIDs
     {
         PID_ViewModel = 0x373a6339,
         PID_MouseWorldCoord = 0x6fbc4e30,
@@ -33,7 +33,7 @@ protected:
 protected:
     dvViewModelPlot* m_ViewModel{nullptr};
 
-EPI_GENREGION_END(dvViewPlotTimeline)
+EPI_GENREGION_END(uiPlotTimeline)
 
 public:
     void Update() override;

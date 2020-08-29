@@ -1,4 +1,4 @@
-class dvViewModelPlot : uiViewModel
+class dvViewModelPlot
 {
     [Virtual, ReadCallback(SuppressRef=true)]
     {

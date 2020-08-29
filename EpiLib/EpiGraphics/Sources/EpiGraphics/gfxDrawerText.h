@@ -44,7 +44,8 @@ public:
     void SceneEnd(const gfxCamera& camera);
 
     // TODO: move to proper place
-    void CreateAtlas(const gfxTextFace& face, const epiWChar* abc, epiU32 fontSize);
+    void CreateAtlas(const gfxTextFace& face, epiU32 fontSize);
+    void CreateAtlas(const gfxTextFace& face, epiU32 fontSize, const epiWChar* abc);
 
 protected:
     // TODO: move to proper place

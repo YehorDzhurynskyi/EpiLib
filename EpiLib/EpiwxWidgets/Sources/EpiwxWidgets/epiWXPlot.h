@@ -3,9 +3,6 @@
 #include "EpiUI/uiContext.h"
 
 #include "EpiGraphics/gfxContext.h"
-#include "EpiGraphics/gfxShaderProgram.h"
-#include "EpiGraphics/Text/gfxTextManager.h"
-#include "EpiGraphics/Text/gfxTextRenderedAtlas.h"
 
 #include "EpiDataVisualization/Plot/dvPlot.h"
 #include "EpiDataVisualization/Plot/Series/dvSeriesY.h"
@@ -14,7 +11,7 @@
 
 namespace epi
 {
-class dvViewPlot;
+class uiPlot;
 }
 
 class epiWXPlot : public wxGLCanvas
@@ -38,10 +35,8 @@ protected:
     wxGLContext* m_GLContext;
     epi::uiContext* m_UIContext;
 
-    epi::gfxTextManager m_TextManager;
-
-    epi::dvViewPlot* m_ViewPlot;
-    epi::dvPlot m_Plot;
+    epi::uiPlot* m_PlotView;
+    epi::dvPlot m_PlotModel;
 
 protected:
     struct PropertyBind

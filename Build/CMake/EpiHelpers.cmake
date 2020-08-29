@@ -55,8 +55,6 @@ function(epi_module_register EPIMODULE)
         get_target_property(EPIMODULE_SOURCE_DIR ${EPIMODULE} SOURCE_DIR)
         get_target_property(EPIMODULE_BINARY_DIR ${EPIMODULE} BINARY_DIR)
 
-        set_property(GLOBAL APPEND PROPERTY EPIGEN_MANIFEST_MODULES "${EPIMODULE_SOURCE_DIR}/Sources/${EPIMODULE}")
-
         set_target_properties(${EPIMODULE}
             PROPERTIES
                 CXX_STANDARD 17
@@ -70,6 +68,11 @@ function(epi_module_register EPIMODULE)
                     FOLDER ${EPIMODULE_FOLDER}
             )
         endif ()
+
+        if (NOT EPIMODULE_EXTERN)
+            set_property(GLOBAL APPEND PROPERTY EPIGEN_MANIFEST_MODULES "${EPIMODULE_SOURCE_DIR}/Sources/${EPIMODULE}")
+        endif ()
+
 
         set(EPIMODULE_TEST_DIR "${EPIMODULE_SOURCE_DIR}/Tests")
         if (EPI_BUILD_TESTS AND NOT EPIMODULE_EXTERN AND IS_DIRECTORY ${EPIMODULE_TEST_DIR})

@@ -36,6 +36,7 @@ target_link_libraries(EpiwxWidgets
     PUBLIC
         EpiCore
         EpiDataVisualization
+        EpiUI
         wxWidgets
 )
 

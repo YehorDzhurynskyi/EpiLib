@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/View/dvViewPlotDrawArea.hxx"
+#include "EpiUI/Plot/uiPlotDrawArea.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.h"
@@ -10,16 +10,16 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-class dvViewPlotDrawArea : public uiWidget
+class uiPlotDrawArea : public uiWidget
 {
-EPI_GENREGION_BEGIN(dvViewPlotDrawArea)
+EPI_GENREGION_BEGIN(uiPlotDrawArea)
 
-EPI_GENHIDDEN_dvViewPlotDrawArea()
+EPI_GENHIDDEN_uiPlotDrawArea()
 
 public:
-    constexpr static MetaTypeID TypeID{0xcb0bf25c};
+    constexpr static MetaTypeID TypeID{0xd59f47f1};
 
-    enum dvViewPlotDrawArea_PIDs
+    enum uiPlotDrawArea_PIDs
     {
         PID_ViewModel = 0x373a6339,
         PID_MouseWorldCoord = 0x6fbc4e30,
@@ -32,7 +32,7 @@ protected:
 protected:
     dvViewModelPlot* m_ViewModel{nullptr};
 
-EPI_GENREGION_END(dvViewPlotDrawArea)
+EPI_GENREGION_END(uiPlotDrawArea)
 
 public:
     void Update() override;

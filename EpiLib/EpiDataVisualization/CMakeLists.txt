@@ -1,10 +1,6 @@
 project(EpiDataVisualization)
 
 add_library(EpiDataVisualization
-    Sources/EpiDataVisualization/Data/dvDataCollection.epi
-    Sources/EpiDataVisualization/Data/dvDataCollection.h
-    Sources/EpiDataVisualization/Data/dvDataCollection.cpp
-
     Sources/EpiDataVisualization/Plot/dvPlot.epi
     Sources/EpiDataVisualization/Plot/dvPlot.h
     Sources/EpiDataVisualization/Plot/dvPlot.cpp
@@ -25,16 +21,6 @@ add_library(EpiDataVisualization
     Sources/EpiDataVisualization/ViewModel/dvViewModelSeriesBase.epi
     Sources/EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h
     Sources/EpiDataVisualization/ViewModel/dvViewModelSeriesBase.cpp
-
-    Sources/EpiDataVisualization/View/dvViewPlot.epi
-    Sources/EpiDataVisualization/View/dvViewPlot.h
-    Sources/EpiDataVisualization/View/dvViewPlot.cpp
-    Sources/EpiDataVisualization/View/dvViewPlotTimeline.epi
-    Sources/EpiDataVisualization/View/dvViewPlotTimeline.h
-    Sources/EpiDataVisualization/View/dvViewPlotTimeline.cpp
-    Sources/EpiDataVisualization/View/dvViewPlotDrawArea.epi
-    Sources/EpiDataVisualization/View/dvViewPlotDrawArea.h
-    Sources/EpiDataVisualization/View/dvViewPlotDrawArea.cpp
 
     Sources/EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.epi
     Sources/EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.h
@@ -63,7 +49,7 @@ target_include_directories(EpiDataVisualization
 target_link_libraries(EpiDataVisualization
     PUBLIC
         EpiCore
-        EpiUI
+        EpiData
         EpiGraphics
 )
 

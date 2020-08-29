@@ -4,12 +4,12 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/ViewModel/dvViewModelPlot.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiUI/uiViewModel.h"
+#include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
 
 class dvViewModelSeriesBase;
-class dvViewModelPlot : public uiViewModel
+class dvViewModelPlot : public Object
 {
 EPI_GENREGION_BEGIN(dvViewModelPlot)
 

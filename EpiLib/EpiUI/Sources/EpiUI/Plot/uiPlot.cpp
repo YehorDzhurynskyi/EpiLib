@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiUI/uiViewModel.h"
-#include "EpiUI/uiViewModel.cxx"
+#include "EpiUI/Plot/uiPlot.h"
+#include "EpiUI/Plot/uiPlot.cxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()

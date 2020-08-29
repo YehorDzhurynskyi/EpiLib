@@ -5,7 +5,8 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/Plot/Series/dvSeriesBase.h"
-#include "EpiDataVisualization/Data/dvDataCollection.h"
+
+#include "EpiData/dCollection.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -26,7 +27,7 @@ public:
     };
 
 protected:
-    dvDataCollection m_DataY;
+    dCollection m_DataY;
     epiFloat m_StepX{0.001f};
 
 EPI_GENREGION_END(dvSeriesY)

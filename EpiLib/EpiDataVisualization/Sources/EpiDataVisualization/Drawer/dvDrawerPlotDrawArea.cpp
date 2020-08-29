@@ -8,10 +8,6 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
 
-#include "EpiUI/uiCamera.h"
-
-#include <glad/glad.h> // TODO: remove (should be available only from gfx)
-
 #include "EpiCore/Color.h"
 
 #include <fmt/core.h>
@@ -27,7 +23,7 @@ const epiU32 kGridLineCountMax = 13;
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlotDrawArea::Draw(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame)
+void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvViewModelPlot& plot, const epiRect2f& frame)
 {
     const epiRect2f& box = plot.GetClipBox();
 
@@ -61,7 +57,7 @@ void dvDrawerPlotDrawArea::Draw(uiContext& uiContext, const dvViewModelPlot& plo
         const epiFloat xx = ((x - box.Left) / domainX) * frame.GetWidth();
         epiVec2f p(frame.Left + xx, frame.Bottom);
 
-        uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack * Color(1.0f, 1.0f, 1.0f, 0.35f));
+        ctx.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack * Color(1.0f, 1.0f, 1.0f, 0.35f));
 
         const epiFloat secondaryStepX = stepX / static_cast<epiFloat>(kGridLineCountSecondary);
         epiFloat x2 = x - stepX + secondaryStepX;
@@ -70,14 +66,14 @@ void dvDrawerPlotDrawArea::Draw(uiContext& uiContext, const dvViewModelPlot& plo
             const epiFloat xx2 = ((x2 - box.Left) / domainX) * frame.GetWidth();
             epiVec2f p(frame.Left + xx2, frame.Bottom);
 
-            uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.15f));
+            ctx.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.15f));
 
             x2 += secondaryStepX;
         }
 
         const epiString str = fmt::format("{:.{}f}", x, fpWidthX);
         const epiWString wstr(str.begin(), str.end());
-        uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 24.0f);
+        ctx.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 24.0f);
 
         x += stepX;
     }
@@ -89,7 +85,7 @@ void dvDrawerPlotDrawArea::Draw(uiContext& uiContext, const dvViewModelPlot& plo
         const epiFloat yy = ((y - box.Bottom) / domainY) * frame.GetHeight();
         epiVec2f p(frame.Left, frame.Bottom + yy);
 
-        uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack * Color(1.0f, 1.0f, 1.0f, 0.35f));
+        ctx.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack * Color(1.0f, 1.0f, 1.0f, 0.35f));
 
         const epiFloat secondaryStepY = stepY / static_cast<epiFloat>(kGridLineCountSecondary);
         epiFloat y2 = y - stepY + secondaryStepY;
@@ -98,25 +94,28 @@ void dvDrawerPlotDrawArea::Draw(uiContext& uiContext, const dvViewModelPlot& plo
             const epiFloat yy2 = ((y2 - box.Bottom) / domainY) * frame.GetHeight();
             epiVec2f p(frame.Left, frame.Bottom + yy2);
 
-            uiContext.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.15f));
+            ctx.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.15f));
 
             y2 += secondaryStepY;
         }
 
         const epiString str = fmt::format("{:.{}f}", y, fpWidthY);
         const epiWString wstr(str.begin(), str.end());
-        uiContext.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 24.0f);
+        ctx.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 24.0f);
 
         y += stepY;
     }
 
-    for (const auto& series : plot.GetSeries())
+    if (gfxCamera* camera = ctx.GetCamera())
     {
-        dvDrawerSeriesY drawer;
+        for (const auto& series : plot.GetSeries())
+        {
+            dvDrawerSeriesY drawer;
 
-        drawer.SceneBegin();
-        drawer.Draw(uiContext, *series, box, frame);
-        drawer.SceneEnd(uiContext.GetCamera());
+            drawer.SceneBegin();
+            drawer.Draw(ctx, *series, box, frame);
+            drawer.SceneEnd(*camera);
+        }
     }
 }
 

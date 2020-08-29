@@ -7,8 +7,7 @@ EPI_GENREGION_END(include)
 #include "EpiUI/uiCamera.h"
 #include "EpiUI/uiPage.h"
 
-#include "EpiGraphics/gfxDrawerPrimitive.h"
-#include "EpiGraphics/gfxDrawerText.h"
+#include "EpiGraphics/gfxContext.h"
 
 #include "EpiCore/ObjectModel/Object.h"
 
@@ -25,21 +24,17 @@ public:
 
     enum uiContext_PIDs
     {
-        PID_DrawerText = 0xfed690dc,
-        PID_DrawerPrimitive = 0x897a35b8,
-        PID_Camera = 0x3cb0eb33,
+        PID_GFXContext = 0x42b85cd,
         PID_Page = 0xb438191e,
         PID_MouseUICoord = 0x668167cc,
-        PID_COUNT = 5
+        PID_COUNT = 3
     };
 
 protected:
     epiVec2f GetMouseUICoord_Callback() const;
 
 protected:
-    gfxDrawerText m_DrawerText;
-    gfxDrawerPrimitive m_DrawerPrimitive;
-    uiCamera m_Camera;
+    gfxContext m_GFXContext;
     uiPage m_Page;
 
 EPI_GENREGION_END(uiContext)

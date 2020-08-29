@@ -12,13 +12,11 @@ void uiContext::Update()
 
 void uiContext::Draw()
 {
-    m_DrawerText.SceneBegin();
-    m_DrawerPrimitive.SceneBegin();
+    GetGFXContext().SceneBegin();
 
     m_Page.Draw(*this);
 
-    m_DrawerText.SceneEnd(m_Camera);
-    m_DrawerPrimitive.SceneEnd(m_Camera);
+    GetGFXContext().SceneEnd();
 }
 
 void uiContext::OnMouseMove(const epiVec2f& mouseNDCCoord)
@@ -49,11 +47,15 @@ void uiContext::OnResize(const epiRect2f& frame)
 
 epiVec2f uiContext::CalcMouseUICoordFromMouseNDCCoord(const epiVec2f& mouseNDCCoord) const
 {
-    // TODO: cache matrices
-    const epiMat4x4f& projInverse = m_Camera.GetProjectionMatrixInverse();
-    const epiMat4x4f& viewInverse = m_Camera.GetViewMatrixInverse();
+    if (const gfxCamera* camera = GetGFXContext().GetCamera())
+    {
+        const epiMat4x4f& projInverse = camera->GetProjectionMatrixInverse();
+        const epiMat4x4f& viewInverse = camera->GetViewMatrixInverse();
 
-    return viewInverse * projInverse * (epiVec4f{ mouseNDCCoord.x, mouseNDCCoord.y, 0.0f, 1.0f });
+        return viewInverse * projInverse * (epiVec4f{ mouseNDCCoord.x, mouseNDCCoord.y, 0.0f, 1.0f });
+    }
+
+    return epiVec2f{ FLT_MAX, FLT_MAX };
 }
 
 epiVec2f uiContext::GetMouseUICoord_Callback() const

@@ -2,13 +2,12 @@
 
 #include "EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h"
 #include "EpiDataVisualization/Plot/Series/dvSeriesY.h"
-#include "EpiDataVisualization/View/dvViewPlot.h"
-#include "EpiDataVisualization/View/dvViewPlotDrawArea.h"
-#include "EpiDataVisualization/View/dvViewPlotTimeline.h"
-
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
 
+#include "EpiUI/Plot/uiPlot.h"
+#include "EpiUI/Plot/uiPlotDrawArea.h"
+#include "EpiUI/Plot/uiPlotTimeline.h"
 #include "EpiUI/Layout/uiLayoutBox.h"
 
 #include "EpiCore/ObjectModel/PropertyPointer.h"
@@ -49,14 +48,16 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     }
 
     m_UIContext = new uiContext();
-    gfxCamera& camera = m_UIContext->GetCamera();
-    camera.SetPosition({ 0.0f, 0.0f, 1.0f });
-    camera.SetLookAtPosition({ 0.0f, 0.0f, 0.0f });
-    camera.SetUpDirection({ 0.0f, 1.0f, 0.0f });
-    camera.SetPlaneNear(0.1f);
-    camera.SetPlaneFar(1000.0f);
+    m_UIContext->GetGFXContext().SetCamera(new uiCamera());
+    if (gfxCamera* camera = m_UIContext->GetGFXContext().GetCamera())
+    {
+        camera->SetPosition({ 0.0f, 0.0f, 1.0f });
+        camera->SetLookAtPosition({ 0.0f, 0.0f, 0.0f });
+        camera->SetUpDirection({ 0.0f, 1.0f, 0.0f });
+        camera->SetPlaneNear(0.1f);
+        camera->SetPlaneFar(1000.0f);
+    }
 
-    m_TextManager.GetDefaultFace();
     glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
 
     glEnable(GL_BLEND);
@@ -65,12 +66,12 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    m_ViewPlot = &m_UIContext->GetPage().Add<dvViewPlot>();
+    m_PlotView = &m_UIContext->GetPage().Add<uiPlot>();
     m_UIContext->GetPage().SetUIContext(m_UIContext); // TODO: fix
     uiLayoutBox* layout = new uiLayoutBox();
-    m_ViewPlot->SetLayout(layout); // TODO: fix
+    m_PlotView->SetLayout(layout); // TODO: fix
 
-    dvViewModelPlot& vm = m_ViewPlot->GetViewModel();
+    dvViewModelPlot& vm = m_PlotView->GetViewModel();
 
     epiRect2f bbox;
     bbox.Left = 0.0f;
@@ -87,21 +88,19 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     vm.SetClipBox(clipbox);
 
     {
-        dvViewPlotDrawArea& drawArea = m_ViewPlot->Add<dvViewPlotDrawArea>();
+        uiPlotDrawArea& drawArea = m_PlotView->Add<uiPlotDrawArea>();
         drawArea.SetViewModel(&vm);
         uiSizePolicyInfo& policy = drawArea.GetSizePolicyInfo();
         policy.SetSizePolicyVertical(uiSizePolicy_Expanding);
     }
 
     {
-        dvViewPlotTimeline& timeline = m_ViewPlot->Add<dvViewPlotTimeline>();
+        uiPlotTimeline& timeline = m_PlotView->Add<uiPlotTimeline>();
         timeline.SetViewModel(&vm);
         uiSizePolicyInfo& policy = timeline.GetSizePolicyInfo();
         policy.SetSizePolicyVertical(uiSizePolicy_Fixed);
         timeline.SetSizeHint(epiVec2f{ 0.0f, 100.0f });
     }
-
-    m_UIContext->GetDrawerText().CreateAtlas(m_TextManager.GetDefaultFace(), L"0123456789-+eE,.", 18);
 }
 
 void epiWXPlot::Update()
@@ -117,26 +116,28 @@ void epiWXPlot::OnResize(wxSizeEvent& event)
 {
     const wxSize& size = event.GetSize();
 
-    uiCamera& camera = m_UIContext->GetCamera();
-    camera.SetAspectRatio(size.x / static_cast<epiFloat>(size.y));
+    if (uiCamera* camera = As<uiCamera>(m_UIContext->GetGFXContext().GetCamera()))
+    {
+        camera->SetAspectRatio(size.x / static_cast<epiFloat>(size.y));
 
-    epiRect2f rectPhysical;
-    rectPhysical.Left = 0.0f;
-    rectPhysical.Bottom = 0.0f;
-    rectPhysical.Top = size.y;
-    rectPhysical.Right = size.x;
+        epiRect2f rectPhysical;
+        rectPhysical.Left = 0.0f;
+        rectPhysical.Bottom = 0.0f;
+        rectPhysical.Top = size.y;
+        rectPhysical.Right = size.x;
 
-    m_UIContext->GetCamera().SetFrameDimensionPhysical(rectPhysical);
+        camera->SetFrameDimensionPhysical(rectPhysical);
 
-    epiRect2f rectVirtual;
-    rectVirtual.Left = -(1920 / 2);
-    rectVirtual.Top = +((1920 / camera.GetAspectRatio()) / 2);
-    rectVirtual.Right = +(1920 / 2);
-    rectVirtual.Bottom = -((1920 / camera.GetAspectRatio()) / 2);
+        epiRect2f rectVirtual;
+        rectVirtual.Left = -(1920 / 2);
+        rectVirtual.Top = +((1920 / camera->GetAspectRatio()) / 2);
+        rectVirtual.Right = +(1920 / 2);
+        rectVirtual.Bottom = -((1920 / camera->GetAspectRatio()) / 2);
 
-    camera.SetFrameDimensionVirtual(rectVirtual);
+        camera->SetFrameDimensionVirtual(rectVirtual);
 
-    m_UIContext->OnResize(rectVirtual);
+        m_UIContext->OnResize(rectVirtual);
+    }
 
     glViewport(0, 0, size.x, size.y);
 }
@@ -207,10 +208,10 @@ void epiWXPlot::OnMouse(wxMouseEvent& event)
 
 void epiWXPlot::AddPropertyBind(const epi::PropertyPointer* ptr)
 {
-    dvSeriesY& series = m_Plot.Add<dvSeriesY>();
+    dvSeriesY& series = m_PlotModel.Add<dvSeriesY>();
     series.SetStepX(0.0001f); // TODO: set in other place
 
-    dvViewModelPlot& vm = m_ViewPlot->GetViewModel();
+    dvViewModelPlot& vm = m_PlotView->GetViewModel();
     dvViewModelSeriesBase& seriesVM = vm.Add<dvViewModelSeriesBase>();
     seriesVM.SetModel(&series);
 
@@ -219,7 +220,7 @@ void epiWXPlot::AddPropertyBind(const epi::PropertyPointer* ptr)
         Color::kLightRed
     };
 
-    seriesVM.SetColor(colors[m_Plot.Size() % epiArrLen(colors)]);
+    seriesVM.SetColor(colors[m_PlotModel.Size() % epiArrLen(colors)]);
 
     PropertyBind& bind = m_PropertyBinds.emplace_back();
     bind.Series = &series;

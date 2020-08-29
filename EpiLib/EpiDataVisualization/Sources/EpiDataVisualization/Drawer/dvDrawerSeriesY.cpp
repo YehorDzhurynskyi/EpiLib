@@ -7,9 +7,9 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerSeriesY::Draw_Internal(uiContext& uiContext, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
+void dvDrawerSeriesY::Draw_Internal(gfxContext& ctx, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
 {
-    epiAssert(series.GetModel()->Is(dvSeriesY::TypeID), "series should be instance of dvSeriesY");
+    epiAssert(series.GetModel()->Is(dvSeriesY::TypeID), "The series should be instance of dvSeriesY");
 
     epiFloat x = 0.0f;
     const dvSeriesY* seriesY = static_cast<const dvSeriesY*>(series.GetModel());

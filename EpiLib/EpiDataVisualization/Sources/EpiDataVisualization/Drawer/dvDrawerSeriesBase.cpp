@@ -88,9 +88,9 @@ dvDrawerSeriesBase::dvDrawerSeriesBase()
     m_ShaderProgramLineStrip = CreateProgramLineStrip();
 }
 
-void dvDrawerSeriesBase::Draw(uiContext& uiContext, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
+void dvDrawerSeriesBase::Draw(gfxContext& ctx, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
 {
-    Draw_Internal(uiContext, series, worldFrame, uiFrame, z);
+    Draw_Internal(ctx, series, worldFrame, uiFrame, z);
 }
 
 void dvDrawerSeriesBase::DrawLineStrip(const epiVec2f& p, const Color& color, epiFloat z)

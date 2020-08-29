@@ -1,23 +1,23 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Data/dvDataCollection.hxx"
+#include "EpiData/dCollection.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class dvDataCollection : public Object
+class dCollection : public Object
 {
-EPI_GENREGION_BEGIN(dvDataCollection)
+EPI_GENREGION_BEGIN(dCollection)
 
-EPI_GENHIDDEN_dvDataCollection()
+EPI_GENHIDDEN_dCollection()
 
 public:
-    constexpr static MetaTypeID TypeID{0x489102dd};
+    constexpr static MetaTypeID TypeID{0xdb105ac2};
 
-    enum dvDataCollection_PIDs
+    enum dCollection_PIDs
     {
         PID_Buffer = 0x36f6f5c4,
         PID_COUNT = 1
@@ -26,7 +26,7 @@ public:
 protected:
     epiArray<epiFloat> m_Buffer;
 
-EPI_GENREGION_END(dvDataCollection)
+EPI_GENREGION_END(dCollection)
 
 public:
     epiBool IsEmpty() const;

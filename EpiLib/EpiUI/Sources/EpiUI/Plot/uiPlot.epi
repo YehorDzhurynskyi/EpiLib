@@ -1,4 +1,4 @@
-class dvViewPlot : uiWidget
+class uiPlot
 {
     dvViewModelPlot ViewModel;
 };

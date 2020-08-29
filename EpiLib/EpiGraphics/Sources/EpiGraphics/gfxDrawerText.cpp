@@ -136,7 +136,25 @@ gfxDrawerText::gfxDrawerText()
     m_ShaderProgramText = CreateProgramText();
 }
 
-void gfxDrawerText::CreateAtlas(const gfxTextFace& face, const epiWChar* abc, epiU32 fontSize)
+void gfxDrawerText::CreateAtlas(const gfxTextFace& face, epiU32 fontSize)
+{
+    constexpr epiU32 abcLen = 256;
+
+    epiWString abc;
+
+    abc.reserve(abcLen);
+    for (epiU32 i = 0; i < abcLen; ++i)
+    {
+        if (epiWChar ch = static_cast<epiWChar>(i); isprint(ch))
+        {
+            abc.push_back(ch);
+        }
+    }
+
+    CreateAtlas(face, fontSize, abc.c_str());
+}
+
+void gfxDrawerText::CreateAtlas(const gfxTextFace& face, epiU32 fontSize, const epiWChar* abc)
 {
     m_TextAtlas = face.CreateRenderedAtlas(abc, fontSize);
 }

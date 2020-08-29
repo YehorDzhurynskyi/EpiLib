@@ -1,4 +1,4 @@
-class dvViewPlotTimeline : uiWidget
+class uiPlotTimeline : uiWidget
 {
     dvViewModelPlot* ViewModel;
 

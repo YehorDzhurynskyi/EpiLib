@@ -1,5 +1,5 @@
 class dvSeriesY : dvSeriesBase
 {
-    dvDataCollection DataY;
+    dCollection DataY;
     epiFloat StepX = 0.001f;
 };

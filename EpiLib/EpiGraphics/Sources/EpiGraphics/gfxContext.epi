@@ -2,7 +2,10 @@ class gfxContext
 {
     [ReadOnly]
     {
+        gfxDrawerText DrawerText;
+        gfxDrawerPrimitive DrawerPrimitive;
         gfxVertexArray NullVertexArray;
-        gfxCameraOrtho Camera;
     }
+
+    gfxCamera* Camera;
 };

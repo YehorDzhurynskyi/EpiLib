@@ -1,0 +1,24 @@
+project(EpiSignalProcessing)
+
+add_library(EpiSignalProcessing
+)
+get_target_property(EpiSignalProcessing_SOURCES EpiSignalProcessing SOURCES)
+epi_pack_sources(${EpiSignalProcessing_SOURCES})
+
+target_precompile_headers(EpiSignalProcessing REUSE_FROM EpiCore)
+
+target_include_directories(EpiSignalProcessing
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
+)
+
+target_link_libraries(EpiSignalProcessing
+    PUBLIC
+        EpiCore
+        EpiData
+)
+
+epi_module_register(EpiSignalProcessing
+    FOLDER "EpiLib"
+)

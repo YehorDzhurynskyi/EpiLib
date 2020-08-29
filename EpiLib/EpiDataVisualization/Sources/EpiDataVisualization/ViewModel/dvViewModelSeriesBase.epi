@@ -1,4 +1,4 @@
-class dvViewModelSeriesBase : uiViewModel
+class dvViewModelSeriesBase
 {
     dvSeriesBase* Model;
     Color Color;

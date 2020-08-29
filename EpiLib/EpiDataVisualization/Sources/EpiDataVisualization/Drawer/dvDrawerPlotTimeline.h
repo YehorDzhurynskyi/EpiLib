@@ -27,7 +27,7 @@ public:
 EPI_GENREGION_END(dvDrawerPlotTimeline)
 
 public:
-    void Draw(uiContext& uiContext, const dvViewModelPlot& viewmodel, const epiRect2f& frame);
+    void Draw(gfxContext& ctx, const dvViewModelPlot& viewmodel, const epiRect2f& frame);
 };
 
 EPI_NAMESPACE_END()

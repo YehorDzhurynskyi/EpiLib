@@ -1,13 +1,14 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/View/dvViewPlotDrawArea.h"
-#include "EpiDataVisualization/View/dvViewPlotDrawArea.cxx"
+#include "EpiUI/Plot/uiPlotTimeline.h"
+#include "EpiUI/Plot/uiPlotTimeline.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/View/dvViewPlot.h"
+#include "EpiUI/uiContext.h"
+#include "EpiUI/Plot/uiPlot.h"
 
 EPI_NAMESPACE_BEGIN()
 
-void dvViewPlotDrawArea::Update()
+void uiPlotTimeline::Update()
 {
     super::Update();
 
@@ -20,17 +21,17 @@ void dvViewPlotDrawArea::Update()
     }
 }
 
-void dvViewPlotDrawArea::Draw(uiContext& uiContext)
+void uiPlotTimeline::Draw(uiContext& uiContext)
 {
     super::Draw(uiContext);
 
     if (dvViewModelPlot* vm = GetViewModel())
     {
-        m_Drawer.Draw(uiContext, *vm, GetBBox());
+        m_Drawer.Draw(uiContext.GetGFXContext(), *vm, GetBBox());
     }
 }
 
-void dvViewPlotDrawArea::OnMousePrimary(uiMouseAction action)
+void uiPlotTimeline::OnMousePrimary(uiMouseAction action)
 {
     super::OnMousePrimary(action);
 
@@ -42,7 +43,6 @@ void dvViewPlotDrawArea::OnMousePrimary(uiMouseAction action)
     {
         if (dvViewModelPlot* vm = GetViewModel())
         {
-            dvViewPlot* parent = As<dvViewPlot, uiWidget>(GetParent());
             m_MouseDragOrigin = vm->GetOrigin();
             m_MouseDragPosition = GetMouseWorldCoord();
             m_MouseDragActive = true;
@@ -50,13 +50,13 @@ void dvViewPlotDrawArea::OnMousePrimary(uiMouseAction action)
     }
 }
 
-void dvViewPlotDrawArea::OnMouseWheel(epiFloat dZoom)
+void uiPlotTimeline::OnMouseWheel(epiFloat dZoom)
 {
     super::OnMouseWheel(dZoom);
 
     if (dvViewModelPlot* vm = GetViewModel())
     {
-        const epiRect2f& box = vm->GetClipBox();
+        const epiRect2f& box = vm->GetBBox();
         const epiFloat domain = box.GetWidth();
         const epiFloat scale = 0.5f * std::powf(10.0f, std::log10f(domain) - 1.0f);
 
@@ -68,7 +68,7 @@ void dvViewPlotDrawArea::OnMouseWheel(epiFloat dZoom)
     }
 }
 
-void dvViewPlotDrawArea::OnMouseFocus(epiBool focused)
+void uiPlotTimeline::OnMouseFocus(epiBool focused)
 {
     super::OnMouseFocus(focused);
 
@@ -78,11 +78,11 @@ void dvViewPlotDrawArea::OnMouseFocus(epiBool focused)
     }
 }
 
-epiVec2f dvViewPlotDrawArea::CalcMouseWorldCoord(const epiVec2f& origin) const
+epiVec2f uiPlotTimeline::CalcMouseWorldCoord(const epiVec2f& origin) const
 {
     if (const dvViewModelPlot* vm = GetViewModel())
     {
-        const epiRect2f& box = vm->GetClipBox();
+        const epiRect2f& box = vm->GetBBox();
 
         const epiVec2f mouseWorldCoord = ((GetMouseLocalUICoord() - GetPosition()) / GetSize()) * box.GetSize() + origin;
 
@@ -92,7 +92,7 @@ epiVec2f dvViewPlotDrawArea::CalcMouseWorldCoord(const epiVec2f& origin) const
     return epiVec2f();
 }
 
-epiVec2f dvViewPlotDrawArea::GetMouseWorldCoord_Callback() const
+epiVec2f uiPlotTimeline::GetMouseWorldCoord_Callback() const
 {
     if (const dvViewModelPlot* vm = GetViewModel())
     {

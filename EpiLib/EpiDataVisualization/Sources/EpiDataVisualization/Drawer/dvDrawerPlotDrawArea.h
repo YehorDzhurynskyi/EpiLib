@@ -6,14 +6,11 @@ EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
 
-#include "EpiUI/uiContext.h"
-
+#include "EpiGraphics/gfxContext.h"
 #include "EpiGraphics/gfxDrawer.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDrawerPrimitive;
-class gfxDrawerText;
 class dvDrawerPlotDrawArea : public gfxDrawer
 {
 EPI_GENREGION_BEGIN(dvDrawerPlotDrawArea)
@@ -31,7 +28,7 @@ public:
 EPI_GENREGION_END(dvDrawerPlotDrawArea)
 
 public:
-    void Draw(uiContext& uiContext, const dvViewModelPlot& plot, const epiRect2f& frame);
+    void Draw(gfxContext& ctx, const dvViewModelPlot& plot, const epiRect2f& frame);
 
 protected:
     void GridMarkup(epiFloat domain, epiFloat& outStep, epiU32& outNLines);
