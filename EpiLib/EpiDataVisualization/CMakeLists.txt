@@ -38,8 +38,6 @@ add_library(EpiDataVisualization
 get_target_property(EpiDataVisualization_SOURCES EpiDataVisualization SOURCES)
 epi_pack_sources(${EpiDataVisualization_SOURCES})
 
-target_precompile_headers(EpiDataVisualization REUSE_FROM EpiCore)
-
 target_include_directories(EpiDataVisualization
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>

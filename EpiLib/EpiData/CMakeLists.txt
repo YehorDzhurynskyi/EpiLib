@@ -8,8 +8,6 @@ add_library(EpiData
 get_target_property(EpiData_SOURCES EpiData SOURCES)
 epi_pack_sources(${EpiData_SOURCES})
 
-target_precompile_headers(EpiData REUSE_FROM EpiCore)
-
 target_include_directories(EpiData
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>

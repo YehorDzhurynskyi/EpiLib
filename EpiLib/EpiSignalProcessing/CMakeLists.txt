@@ -5,8 +5,6 @@ add_library(EpiSignalProcessing
 get_target_property(EpiSignalProcessing_SOURCES EpiSignalProcessing SOURCES)
 epi_pack_sources(${EpiSignalProcessing_SOURCES})
 
-target_precompile_headers(EpiSignalProcessing REUSE_FROM EpiCore)
-
 target_include_directories(EpiSignalProcessing
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>

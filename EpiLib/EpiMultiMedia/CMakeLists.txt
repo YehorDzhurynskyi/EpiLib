@@ -81,8 +81,6 @@ add_ffmpeglib("swscale" "5")
 
 add_dependencies(EpiMultiMedia FFmpeg)
 
-target_precompile_headers(EpiMultiMedia REUSE_FROM EpiCore)
-
 target_include_directories(EpiMultiMedia
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>

@@ -41,8 +41,6 @@ add_library(EpiUI
 get_target_property(EpiUI_SOURCES EpiUI SOURCES)
 epi_pack_sources(${EpiUI_SOURCES})
 
-target_precompile_headers(EpiUI REUSE_FROM EpiCore)
-
 target_include_directories(EpiUI
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>

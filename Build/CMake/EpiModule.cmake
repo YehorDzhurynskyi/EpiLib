@@ -83,8 +83,6 @@ function(epi_module_register EPIMODULE)
                 get_target_property(EPIMODULE_TEST_SOURCES ${EPIMODULE_TEST} SOURCES)
                 epi_pack_sources(${EPIMODULE_TEST_SOURCES})
 
-                target_precompile_headers(${EPIMODULE_TEST} REUSE_FROM EpiCore)
-
                 target_include_directories(${EPIMODULE_TEST}
                     PRIVATE
                         $<BUILD_INTERFACE:${EPIMODULE_SOURCE_DIR}/Tests>

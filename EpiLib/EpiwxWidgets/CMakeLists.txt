@@ -24,8 +24,6 @@ epi_extern_add(wxWidgets
         wx::zlib
 )
 
-target_precompile_headers(EpiwxWidgets REUSE_FROM EpiCore)
-
 target_include_directories(EpiwxWidgets
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>

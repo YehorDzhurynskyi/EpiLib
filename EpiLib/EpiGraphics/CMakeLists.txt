@@ -70,8 +70,6 @@ epi_module_register(glad EXTERN
     FOLDER "EpiLib/Extern"
 )
 
-target_precompile_headers(EpiGraphics REUSE_FROM EpiCore)
-
 target_include_directories(EpiGraphics
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
