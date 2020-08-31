@@ -21,14 +21,32 @@ public:
     {
         PID_XStep = 0xc8efd09,
         PID_Y = 0xc0b506dd,
-        PID_COUNT = 2
+        PID_IsEmpty = 0xae6d7566,
+        PID_Size = 0x57f28b54,
+        PID_COUNT = 4
     };
+
+protected:
+    epiBool GetIsEmpty_Callback() const;
+    epiSize_t GetSize_Callback() const;
 
 protected:
     epiFloat m_XStep{0.0f};
     epiArray<epiFloat> m_Y;
 
 EPI_GENREGION_END(dSeriesY)
+
+public:
+    void Reserve(epiSize_t capacity);
+    void Clear();
+
+    epiFloat AtX(epiS32 index) const;
+
+    const epiFloat& At(epiS32 index) const;
+    epiFloat& At(epiS32 index);
+
+    const epiFloat& operator[](epiS32 index) const;
+    epiFloat& operator[](epiS32 index);
 };
 
 EPI_NAMESPACE_END()

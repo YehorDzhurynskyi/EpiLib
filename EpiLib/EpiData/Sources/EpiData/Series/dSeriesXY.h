@@ -19,16 +19,30 @@ public:
 
     enum dSeriesXY_PIDs
     {
-        PID_X = 0xb7b2364b,
-        PID_Y = 0xc0b506dd,
-        PID_COUNT = 2
+        PID_XY = 0x210c2cf3,
+        PID_IsEmpty = 0xae6d7566,
+        PID_Size = 0x57f28b54,
+        PID_COUNT = 3
     };
 
 protected:
-    epiArray<epiFloat> m_X;
-    epiArray<epiFloat> m_Y;
+    epiBool GetIsEmpty_Callback() const;
+    epiSize_t GetSize_Callback() const;
+
+protected:
+    epiArray<epiVec2f> m_XY;
 
 EPI_GENREGION_END(dSeriesXY)
+
+public:
+    void Reserve(epiSize_t capacity);
+    void Clear();
+
+    const epiVec2f& At(epiS32 index) const;
+    epiVec2f& At(epiS32 index);
+
+    const epiVec2f& operator[](epiS32 index) const;
+    epiVec2f& operator[](epiS32 index);
 };
 
 EPI_NAMESPACE_END()

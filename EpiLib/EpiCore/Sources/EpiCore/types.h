@@ -3,6 +3,7 @@
 #include "common.h"
 #include <string>
 #include <wchar.h>
+#include <complex.h>
 #include <glm/glm.hpp>
 
 using epiChar = char;
@@ -56,6 +57,9 @@ using epiVec4u = epiVec2<epiU32>;
 using epiMat2x2f = glm::mat2x2;
 using epiMat3x3f = glm::mat3x3;
 using epiMat4x4f = glm::mat4x4;
+
+using epiComplexf = std::complex<epiFloat>;
+using epiComplexd = std::complex<epiDouble>;
 
 template<typename T>
 class epiRect2

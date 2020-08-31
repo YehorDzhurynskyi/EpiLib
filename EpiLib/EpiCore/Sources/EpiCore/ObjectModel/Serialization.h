@@ -54,6 +54,15 @@ inline auto epiSerialize_Impl_Fetch(T& v)
         }
         return arr;
     }
+    else if constexpr (std::is_same_v<epiComplexf, T> || std::is_same_v<epiComplexd, T>)
+    {
+        auto arr = json_t::array();
+        decltype(v.real()) real = v.real();
+        decltype(v.imag()) imag = v.imag();
+        arr.push_back(epiSerialize_Impl_Fetch(real));
+        arr.push_back(epiSerialize_Impl_Fetch(imag));
+        return arr;
+    }
     else if constexpr (std::is_same_v<epiRect2f, T> || std::is_same_v<epiRect2d, T> ||
                        std::is_same_v<epiRect2s, T> || std::is_same_v<epiRect2u, T>)
     {
@@ -140,6 +149,16 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
         {
             epiDeserialize_Impl_Fetch(v[i], json[i]);
         }
+    }
+    else if constexpr (std::is_same_v<epiComplexf, T> || std::is_same_v<epiComplexd, T>)
+    {
+        assert(json.size() == 2);
+        decltype(v.real()) real;
+        decltype(v.imag()) imag;
+        epiDeserialize_Impl_Fetch(real, json[0]);
+        epiDeserialize_Impl_Fetch(imag, json[1]);
+        v.real(real);
+        v.imag(imag);
     }
     else if constexpr (std::is_same_v<epiRect2f, T> || std::is_same_v<epiRect2d, T> ||
                        std::is_same_v<epiRect2s, T> || std::is_same_v<epiRect2u, T>)

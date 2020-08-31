@@ -1,6 +1,9 @@
 project(EpiSignalProcessing)
 
 add_library(EpiSignalProcessing
+    Sources/EpiSignalProcessing/spMath.epi
+    Sources/EpiSignalProcessing/spMath.h
+    Sources/EpiSignalProcessing/spMath.cpp
 )
 get_target_property(EpiSignalProcessing_SOURCES EpiSignalProcessing SOURCES)
 epi_pack_sources(${EpiSignalProcessing_SOURCES})

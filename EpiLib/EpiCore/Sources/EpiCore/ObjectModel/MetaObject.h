@@ -141,9 +141,7 @@ enum : MetaTypeID
 
     MetaTypeID_epiMat2x2f = epiHashCompileTime(epiMat2x2f),
     MetaTypeID_epiMat3x3f = epiHashCompileTime(epiMat3x3f),
-    MetaTypeID_epiMat4x4f = epiHashCompileTime(epiMat4x4f),
-
-    MetaTypeID_epiHandle = epiHashCompileTime(epiHandle)
+    MetaTypeID_epiMat4x4f = epiHashCompileTime(epiMat4x4f)
 };
 
 class MetaType

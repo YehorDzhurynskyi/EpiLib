@@ -2,4 +2,10 @@ class dSeriesY : dSeriesBase
 {
     epiFloat XStep;
     epiArray<epiFloat> Y;
+
+    [Virtual, ReadOnly]
+    {
+        epiBool IsEmpty;
+        epiSize_t Size;
+    }
 };
