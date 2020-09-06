@@ -38,7 +38,7 @@ dSeriesYComplex spMath::DFT_Real(const dSeriesY& series)
 dSeriesY spMath::IDFT_Real(const dSeriesYComplex& series)
 {
     const epiSize_t N = series.GetSize();
-    if (N <= 1)
+    if (N == 0)
     {
         return dSeriesY{};
     }
@@ -51,7 +51,7 @@ dSeriesY spMath::IDFT_Real(const dSeriesYComplex& series, epiSize_t N)
     dSeriesY y;
 
     const epiSize_t N2 = series.GetSize();
-    if (N2 <= 1)
+    if (N2 == 0)
     {
         return y;
     }

@@ -170,6 +170,48 @@ TEST(IDFT_Real, DCComponent)
     }
 }
 
+TEST(IDFT_Real, NElements1)
+{
+    const epiFloat expectedValue[] { 1.0f };
+
+    const dSeriesY y = spMath::IDFT_Real({ { 1.0f, 0.0f } }, 1);
+
+    ASSERT_EQ(y.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < y.GetSize(); ++i)
+    {
+        EXPECT_NEAR(y.AtY(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(IDFT_Real, NElements2)
+{
+    const epiFloat expectedValue[] { 1.0f, 2.0f };
+
+    const dSeriesY y = spMath::IDFT_Real({ { 3.0f, 0.0f }, { -1.0f, 0.0f } });
+
+    ASSERT_EQ(y.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < y.GetSize(); ++i)
+    {
+        EXPECT_NEAR(y.AtY(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(IDFT_Real, NElements3)
+{
+    const epiFloat expectedValue[] { 1.0f, 2.0f, 3.0f };
+
+    const dSeriesY y = spMath::IDFT_Real({ { 6.0f, 0.0f }, { -1.5f, 0.8660254f } }, 3);
+
+    ASSERT_EQ(y.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < y.GetSize(); ++i)
+    {
+        EXPECT_NEAR(y.AtY(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
 TEST(IDFT_Real, SequencePositive)
 {
     const epiFloat expectedValue[] { 1.0f, 2.0f, 3.0f, 4.0f };
