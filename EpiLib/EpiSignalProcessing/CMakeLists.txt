@@ -1,7 +1,6 @@
 project(EpiSignalProcessing)
 
 add_library(EpiSignalProcessing
-    Sources/EpiSignalProcessing/spMath.epi
     Sources/EpiSignalProcessing/spMath.h
     Sources/EpiSignalProcessing/spMath.cpp
 )

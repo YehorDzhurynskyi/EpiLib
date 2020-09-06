@@ -1,37 +1,18 @@
 #pragma once
 
-EPI_GENREGION_BEGIN(include)
-#include "EpiSignalProcessing/spMath.hxx"
-EPI_GENREGION_END(include)
-
-#include "EpiCore/ObjectModel/Object.h"
-
 #include "EpiData/Series/dSeriesY.h"
 #include "EpiData/Series/dSeriesXY.h"
-#include "EpiData/Series/dSeriesXYComplex.h"
+#include "EpiData/Series/dSeriesYComplex.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class spMath : public Object
+class spMath final
 {
-EPI_GENREGION_BEGIN(spMath)
-
-EPI_GENHIDDEN_spMath()
-
 public:
-    constexpr static MetaTypeID TypeID{0xedf74a6c};
+    static dSeriesYComplex DFT_Real(const dSeriesY& series);
 
-    enum spMath_PIDs
-    {
-        PID_COUNT = 0
-    };
-
-EPI_GENREGION_END(spMath)
-
-public:
-    static dSeriesXYComplex DFT(const dSeriesY& series);
-    static dSeriesXYComplex DFT(const dSeriesXY& series);
-    static dSeriesXYComplex IDFT(const dSeriesXY& series);
+    static dSeriesY IDFT_Real(const dSeriesYComplex& series);
+    static dSeriesY IDFT_Real(const dSeriesYComplex& series, epiSize_t N);
 };
 
 EPI_NAMESPACE_END()

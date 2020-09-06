@@ -31,6 +31,13 @@ public:
     using const_reverse_iterator = typename std::vector<T>::const_reverse_iterator;
 
 public:
+    epiArray() = default;
+
+    epiArray(std::initializer_list<T> list)
+        : m_Vector{list}
+    {
+    }
+
     epiByte* GetData() override
     {
         return reinterpret_cast<epiByte*>(m_Vector.data());

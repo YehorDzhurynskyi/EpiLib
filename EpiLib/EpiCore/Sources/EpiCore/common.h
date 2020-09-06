@@ -19,6 +19,10 @@
 #define epiAs(_T, _V) static_cast<_T>(_V)
 #define epiArrLen(_V) (sizeof(_V) / sizeof(_V[0]))
 
+#define epiFloatingEqTolerance() 1.0e-5f
+#define epiFloatingEqEx(_a, _b, _t) (std::abs((_a) - (_b)) < (_t))
+#define epiFloatingEq(_a, _b) epiFloatingEqEx(_a, _b, epiFloatingEqTolerance())
+
 #define epiRand01() ((epiFloat)rand() / RAND_MAX)
 #define epiToRadians(_degree) ((epiFloat)(_degree) * (M_PI / 180.0f))
 #define epiToDegree(_radians) ((epiFloat)(_radians) * (180.0f / M_PI))

@@ -13,9 +13,9 @@ add_library(EpiData
     Sources/EpiData/Series/dSeriesXY.h
     Sources/EpiData/Series/dSeriesXY.cpp
 
-    Sources/EpiData/Series/dSeriesXYComplex.epi
-    Sources/EpiData/Series/dSeriesXYComplex.h
-    Sources/EpiData/Series/dSeriesXYComplex.cpp
+    Sources/EpiData/Series/dSeriesYComplex.epi
+    Sources/EpiData/Series/dSeriesYComplex.h
+    Sources/EpiData/Series/dSeriesYComplex.cpp
 )
 get_target_property(EpiData_SOURCES EpiData SOURCES)
 epi_pack_sources(${EpiData_SOURCES})

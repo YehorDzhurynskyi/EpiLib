@@ -5,6 +5,11 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+dSeriesY::dSeriesY(std::initializer_list<epiFloat> list)
+    : m_Y{list}
+{
+}
+
 epiBool dSeriesY::GetIsEmpty_Callback() const
 {
     return GetY().IsEmpty();
@@ -25,19 +30,24 @@ void dSeriesY::Clear()
     GetY().Clear();
 }
 
+epiFloat& dSeriesY::PushBack(epiFloat&& value)
+{
+    return GetY().PushBack(std::move(value));
+}
+
 epiFloat dSeriesY::AtX(epiS32 index) const
 {
     epiAssert(index >= 0 && index < GetSize());
     return GetXStep() * index;
 }
 
-const epiFloat& dSeriesY::At(epiS32 index) const
+const epiFloat& dSeriesY::AtY(epiS32 index) const
 {
     epiAssert(index >= 0 && index < GetSize());
     return GetY()[index];
 }
 
-epiFloat& dSeriesY::At(epiS32 index)
+epiFloat& dSeriesY::AtY(epiS32 index)
 {
     epiAssert(index >= 0 && index < GetSize());
     return GetY()[index];
@@ -45,12 +55,12 @@ epiFloat& dSeriesY::At(epiS32 index)
 
 const epiFloat& dSeriesY::operator[](epiS32 index) const
 {
-    return At(index);
+    return AtY(index);
 }
 
 epiFloat& dSeriesY::operator[](epiS32 index)
 {
-    return At(index);
+    return AtY(index);
 }
 
 EPI_NAMESPACE_END()

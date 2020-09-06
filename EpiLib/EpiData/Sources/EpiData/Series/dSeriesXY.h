@@ -35,8 +35,13 @@ protected:
 EPI_GENREGION_END(dSeriesXY)
 
 public:
+    dSeriesXY() = default;
+    dSeriesXY(std::initializer_list<epiVec2f> list);
+
     void Reserve(epiSize_t capacity);
     void Clear();
+
+    epiVec2f& PushBack(epiVec2f&& value = epiVec2f());
 
     const epiVec2f& At(epiS32 index) const;
     epiVec2f& At(epiS32 index);

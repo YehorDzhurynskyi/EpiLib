@@ -1,25 +1,25 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiData/Series/dSeriesXYComplex.hxx"
+#include "EpiData/Series/dSeriesYComplex.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiData/Series/dSeriesBase.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class dSeriesXYComplex : public dSeriesBase
+class dSeriesYComplex : public dSeriesBase
 {
-EPI_GENREGION_BEGIN(dSeriesXYComplex)
+EPI_GENREGION_BEGIN(dSeriesYComplex)
 
-EPI_GENHIDDEN_dSeriesXYComplex()
+EPI_GENHIDDEN_dSeriesYComplex()
 
 public:
-    constexpr static MetaTypeID TypeID{0xc759e0cd};
+    constexpr static MetaTypeID TypeID{0x81035ed0};
 
-    enum dSeriesXYComplex_PIDs
+    enum dSeriesYComplex_PIDs
     {
-        PID_XY = 0x210c2cf3,
+        PID_Y = 0xc0b506dd,
         PID_IsEmpty = 0xae6d7566,
         PID_Size = 0x57f28b54,
         PID_COUNT = 3
@@ -30,19 +30,25 @@ protected:
     epiSize_t GetSize_Callback() const;
 
 protected:
-    epiArray<epiComplexf> m_XY;
+    epiArray<epiComplexf> m_Y;
 
-EPI_GENREGION_END(dSeriesXYComplex)
+EPI_GENREGION_END(dSeriesYComplex)
 
 public:
+    dSeriesYComplex() = default;
+    dSeriesYComplex(std::initializer_list<epiComplexf> list);
+
     void Reserve(epiSize_t capacity);
     void Clear();
+
+    epiComplexf& PushBack(epiComplexf&& value = epiComplexf());
 
     epiFloat AtAbs(epiS32 index) const;
     epiFloat AtTheta(epiS32 index) const;
 
-    const epiComplexf& At(epiS32 index) const;
-    epiComplexf& At(epiS32 index);
+    epiFloat AtX(epiS32 index) const;
+    const epiComplexf& AtY(epiS32 index) const;
+    epiComplexf& AtY(epiS32 index);
 
     const epiComplexf& operator[](epiS32 index) const;
     epiComplexf& operator[](epiS32 index);

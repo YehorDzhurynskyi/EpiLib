@@ -5,6 +5,11 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+dSeriesXY::dSeriesXY(std::initializer_list<epiVec2f> list)
+    : m_XY{list}
+{
+}
+
 epiBool dSeriesXY::GetIsEmpty_Callback() const
 {
     return GetXY().IsEmpty();
@@ -23,6 +28,11 @@ void dSeriesXY::Reserve(epiSize_t capacity)
 void dSeriesXY::Clear()
 {
     GetXY().Clear();
+}
+
+epiVec2f& dSeriesXY::PushBack(epiVec2f&& value)
+{
+    return GetXY().PushBack(std::move(value));
 }
 
 const epiVec2f& dSeriesXY::At(epiS32 index) const

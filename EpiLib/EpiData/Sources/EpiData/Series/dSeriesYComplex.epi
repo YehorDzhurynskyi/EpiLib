@@ -1,6 +1,6 @@
-class dSeriesXYComplex : dSeriesBase
+class dSeriesYComplex : dSeriesBase
 {
-    epiArray<epiComplexf> XY;
+    epiArray<epiComplexf> Y;
 
     [Virtual, ReadOnly]
     {

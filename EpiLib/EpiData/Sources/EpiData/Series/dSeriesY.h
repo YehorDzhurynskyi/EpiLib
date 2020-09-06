@@ -31,19 +31,23 @@ protected:
     epiSize_t GetSize_Callback() const;
 
 protected:
-    epiFloat m_XStep{0.0f};
+    epiFloat m_XStep{1.0f};
     epiArray<epiFloat> m_Y;
 
 EPI_GENREGION_END(dSeriesY)
 
 public:
+    dSeriesY() = default;
+    dSeriesY(std::initializer_list<epiFloat> list);
+
     void Reserve(epiSize_t capacity);
     void Clear();
 
-    epiFloat AtX(epiS32 index) const;
+    epiFloat& PushBack(epiFloat&& value = epiFloat());
 
-    const epiFloat& At(epiS32 index) const;
-    epiFloat& At(epiS32 index);
+    epiFloat AtX(epiS32 index) const;
+    const epiFloat& AtY(epiS32 index) const;
+    epiFloat& AtY(epiS32 index);
 
     const epiFloat& operator[](epiS32 index) const;
     epiFloat& operator[](epiS32 index);

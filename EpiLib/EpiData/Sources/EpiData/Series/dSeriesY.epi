@@ -1,6 +1,6 @@
 class dSeriesY : dSeriesBase
 {
-    epiFloat XStep;
+    epiFloat XStep = 1.0f;
     epiArray<epiFloat> Y;
 
     [Virtual, ReadOnly]
