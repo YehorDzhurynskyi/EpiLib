@@ -51,6 +51,9 @@ public:
 
     const epiFloat& operator[](epiS32 index) const;
     epiFloat& operator[](epiS32 index);
+
+    friend epiBool operator==(const dSeriesY& lhs, const dSeriesY& rhs);
+    friend epiBool operator!=(const dSeriesY& lhs, const dSeriesY& rhs);
 };
 
 EPI_NAMESPACE_END()

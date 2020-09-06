@@ -30,11 +30,71 @@ TEST(DFT_Real, DCComponent)
     }
 }
 
+TEST(DFT_Real, NElements1)
+{
+    const epiComplexf expectedValue[] { { 1.0f, 0.0f } };
+    const epiFloat expectedAbs[] { 1.0f };
+    const epiFloat expectedTheta[] { 0.0f };
+
+    const dSeriesYComplex X = spMath::DFT_Real({ 1.0f });
+
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedValue));
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedAbs));
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedTheta));
+
+    for (epiU32 i = 0; i < X.GetSize(); ++i)
+    {
+        EXPECT_TRUE(epiFloatingEq(X.AtY(i), expectedValue[i]));
+        EXPECT_NEAR(X.AtAbs(i), expectedAbs[i], epiFloatingEqTolerance());
+        EXPECT_NEAR(X.AtTheta(i), expectedTheta[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(DFT_Real, NElements2)
+{
+    const epiComplexf expectedValue[] { { 3.0f, 0.0f }, { -1.0f, 0.0f } };
+    const epiFloat expectedAbs[] { 3.0f, 1.0f };
+    const epiFloat expectedTheta[] { 0.0f, M_PI };
+
+    const dSeriesYComplex X = spMath::DFT_Real({ 1.0f, 2.0f });
+
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedValue));
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedAbs));
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedTheta));
+
+    for (epiU32 i = 0; i < X.GetSize(); ++i)
+    {
+        EXPECT_TRUE(epiFloatingEq(X.AtY(i), expectedValue[i]));
+        EXPECT_NEAR(X.AtAbs(i), expectedAbs[i], epiFloatingEqTolerance());
+        EXPECT_NEAR(X.AtTheta(i), expectedTheta[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(DFT_Real, NElements3)
+{
+    const epiComplexf expectedValue[] { { 6.0f, 0.0f }, { -1.5f, 0.8660254f } };
+    const epiFloat expectedAbs[] { 6.0f, 1.73205081f };
+    const epiFloat expectedTheta[] { 0.0f, 2.61799388 };
+
+    const dSeriesYComplex X = spMath::DFT_Real({ 1.0f, 2.0f, 3.0f });
+
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedValue));
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedAbs));
+    ASSERT_EQ(X.GetSize(), epiArrLen(expectedTheta));
+
+    for (epiU32 i = 0; i < X.GetSize(); ++i)
+    {
+        EXPECT_TRUE(epiFloatingEq(X.AtY(i), expectedValue[i]));
+        EXPECT_NEAR(X.AtAbs(i), expectedAbs[i], epiFloatingEqTolerance());
+        EXPECT_NEAR(X.AtTheta(i), expectedTheta[i], epiFloatingEqTolerance());
+    }
+}
+
 TEST(DFT_Real, SequencePositive)
 {
     const epiComplexf expectedValue[] { { 10.0f, 0.0f }, { -2.0f, 2.0f }, { -2.0f, 0.0f } };
     const epiFloat expectedAbs[] { 10.0f, 2.0f * std::sqrt(2.0f), 2.0f };
-    const epiFloat expectedTheta[] { 0.0f, -M_PI_4 + M_PI, -M_PI };
+    const epiFloat expectedTheta[] { 0.0f, -M_PI_4 + M_PI, M_PI };
 
     const dSeriesYComplex X = spMath::DFT_Real({ 1.0f, 2.0f, 3.0f, 4.0f });
 
@@ -150,6 +210,38 @@ TEST(IDFT_Real, SequencePositiveNegative)
     {
         EXPECT_NEAR(y.AtY(i), expectedValue[i], epiFloatingEqTolerance());
     }
+}
+
+TEST(DFT_Real_to_IDFT_Real, NElements100)
+{
+    constexpr epiSize_t kN = 100;
+
+    dSeriesY series;
+    for (epiU32 i = 0; i < kN; ++i)
+    {
+        epiFloat& x = series.PushBack();
+        x = epiRand01();
+    }
+
+    const dSeriesY resultSeries = spMath::IDFT_Real(spMath::DFT_Real(series), kN);
+
+    ASSERT_EQ(series, resultSeries);
+}
+
+TEST(DFT_Real_to_IDFT_Real, NElements101)
+{
+    constexpr epiSize_t kN = 101;
+
+    dSeriesY series;
+    for (epiU32 i = 0; i < kN; ++i)
+    {
+        epiFloat& x = series.PushBack();
+        x = epiRand01();
+    }
+
+    const dSeriesY resultSeries = spMath::IDFT_Real(spMath::DFT_Real(series), kN);
+
+    ASSERT_EQ(series, resultSeries);
 }
 
 EPI_NAMESPACE_END()

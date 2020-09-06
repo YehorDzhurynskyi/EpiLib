@@ -42,10 +42,15 @@ epiFloat dSeriesYComplex::AtAbs(epiS32 index) const
 
 epiFloat dSeriesYComplex::AtTheta(epiS32 index) const
 {
-    const auto c = AtY(index);
-    if (epiFloatingEq(c.real(), 0.0f) && epiFloatingEq(c.imag(), 0.0f))
+    epiComplexf c = AtY(index);
+    if (epiFloatingEq(c.real(), 0.0f))
     {
-        return 0.0f;
+        c.real(0.0f);
+    }
+
+    if (epiFloatingEq(c.imag(), 0.0f))
+    {
+        c.imag(0.0f);
     }
 
     return std::arg(c);

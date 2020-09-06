@@ -63,4 +63,32 @@ epiFloat& dSeriesY::operator[](epiS32 index)
     return AtY(index);
 }
 
+epiBool operator==(const dSeriesY& lhs, const dSeriesY& rhs)
+{
+    if (lhs.GetSize() != rhs.GetSize())
+    {
+        return false;
+    }
+
+    if (!epiFloatingEq(lhs.GetXStep(), rhs.GetXStep()))
+    {
+        return false;
+    }
+
+    for (epiU32 i = 0; i < lhs.GetSize(); ++i)
+    {
+        if (!epiFloatingEq(lhs.AtY(i), rhs.AtY(i)))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+epiBool operator!=(const dSeriesY& lhs, const dSeriesY& rhs)
+{
+    return !(operator==(lhs, rhs));
+}
+
 EPI_NAMESPACE_END()
