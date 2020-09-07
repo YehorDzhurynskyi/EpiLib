@@ -24,7 +24,7 @@ public:
 
 protected:
     void FillCompound(epi::Object& object, wxPGProperty* parentPrty);
-    void FillMultiDimensional(epi::epiBaseArray& array, epi::MetaTypeID nestedTypeID, wxPGProperty* parentPrty);
+    void FillMultiDimensional(epi::epiBaseArray& array, epi::epiMetaTypeID nestedTypeID, wxPGProperty* parentPrty);
     void FillProperties(epi::Object& object, const epi::MetaClassData& meta, wxPGProperty* parentPrty);
 
     void AddFundamental(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);

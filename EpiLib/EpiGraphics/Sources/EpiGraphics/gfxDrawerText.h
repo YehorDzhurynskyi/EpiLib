@@ -25,7 +25,7 @@ EPI_GENREGION_BEGIN(gfxDrawerText)
 EPI_GENHIDDEN_gfxDrawerText()
 
 public:
-    constexpr static MetaTypeID TypeID{0xe2261870};
+    constexpr static epiMetaTypeID TypeID{0xe2261870};
 
     enum gfxDrawerText_PIDs
     {

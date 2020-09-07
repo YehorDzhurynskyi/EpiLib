@@ -18,7 +18,7 @@ EPI_GENREGION_BEGIN(dvDrawerPlotDrawArea)
 EPI_GENHIDDEN_dvDrawerPlotDrawArea()
 
 public:
-    constexpr static MetaTypeID TypeID{0xb1af01bd};
+    constexpr static epiMetaTypeID TypeID{0xb1af01bd};
 
     enum dvDrawerPlotDrawArea_PIDs
     {

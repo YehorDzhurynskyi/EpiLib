@@ -15,7 +15,7 @@ EPI_GENREGION_BEGIN(gfxCameraPersp)
 EPI_GENHIDDEN_gfxCameraPersp()
 
 public:
-    constexpr static MetaTypeID TypeID{0x7f85441b};
+    constexpr static epiMetaTypeID TypeID{0x7f85441b};
 
     enum gfxCameraPersp_PIDs
     {

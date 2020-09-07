@@ -17,7 +17,7 @@ EPI_GENREGION_BEGIN(TestClassD)
 EPI_GENHIDDEN_TestClassD()
 
 public:
-    constexpr static MetaTypeID TypeID{0xaf9e3b9};
+    constexpr static epiMetaTypeID TypeID{0xaf9e3b9};
 
     enum TestClassD_PIDs
     {

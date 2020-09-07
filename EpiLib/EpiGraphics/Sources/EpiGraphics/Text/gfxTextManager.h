@@ -20,7 +20,7 @@ EPI_GENREGION_BEGIN(gfxTextManager)
 EPI_GENHIDDEN_gfxTextManager()
 
 public:
-    constexpr static MetaTypeID TypeID{0x80c6f2c9};
+    constexpr static epiMetaTypeID TypeID{0x80c6f2c9};
 
     enum gfxTextManager_PIDs
     {

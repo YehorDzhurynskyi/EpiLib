@@ -24,7 +24,7 @@ EPI_GENREGION_BEGIN(DisplayDevice)
 EPI_GENHIDDEN_DisplayDevice()
 
 public:
-    constexpr static MetaTypeID TypeID{0x36950f3a};
+    constexpr static epiMetaTypeID TypeID{0x36950f3a};
 
     enum DisplayDevice_PIDs
     {

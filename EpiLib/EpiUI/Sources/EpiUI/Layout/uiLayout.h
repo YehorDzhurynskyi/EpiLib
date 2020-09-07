@@ -45,7 +45,7 @@ class uiLayoutItem : public Object
 EPI_GENHIDDEN_uiLayoutItem()
 
 public:
-    constexpr static MetaTypeID TypeID{0x240ad309};
+    constexpr static epiMetaTypeID TypeID{0x240ad309};
 
     enum uiLayoutItem_PIDs
     {
@@ -66,7 +66,7 @@ EPI_GENREGION_BEGIN(uiLayout)
 EPI_GENHIDDEN_uiLayout()
 
 public:
-    constexpr static MetaTypeID TypeID{0x13e886dc};
+    constexpr static epiMetaTypeID TypeID{0x13e886dc};
 
     enum uiLayout_PIDs
     {

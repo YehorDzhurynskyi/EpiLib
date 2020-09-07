@@ -15,7 +15,7 @@ EPI_GENREGION_BEGIN(gfxVertexArray)
 EPI_GENHIDDEN_gfxVertexArray()
 
 public:
-    constexpr static MetaTypeID TypeID{0x7d61d88d};
+    constexpr static epiMetaTypeID TypeID{0x7d61d88d};
 
     enum gfxVertexArray_PIDs
     {

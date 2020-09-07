@@ -20,7 +20,7 @@ EPI_GENREGION_BEGIN(uiContext)
 EPI_GENHIDDEN_uiContext()
 
 public:
-    constexpr static MetaTypeID TypeID{0x23154a38};
+    constexpr static epiMetaTypeID TypeID{0x23154a38};
 
     enum uiContext_PIDs
     {

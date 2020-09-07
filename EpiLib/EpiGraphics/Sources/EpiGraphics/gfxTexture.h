@@ -47,7 +47,7 @@ EPI_GENREGION_BEGIN(gfxTexture)
 EPI_GENHIDDEN_gfxTexture()
 
 public:
-    constexpr static MetaTypeID TypeID{0x50caeee4};
+    constexpr static epiMetaTypeID TypeID{0x50caeee4};
 
     enum gfxTexture_PIDs
     {

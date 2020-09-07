@@ -16,7 +16,7 @@ EPI_GENREGION_BEGIN(uiPage)
 EPI_GENHIDDEN_uiPage()
 
 public:
-    constexpr static MetaTypeID TypeID{0xeb73eeef};
+    constexpr static epiMetaTypeID TypeID{0xeb73eeef};
 
     enum uiPage_PIDs
     {

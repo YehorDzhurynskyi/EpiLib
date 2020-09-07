@@ -18,7 +18,7 @@ EPI_GENREGION_BEGIN(uiPlotTimeline)
 EPI_GENHIDDEN_uiPlotTimeline()
 
 public:
-    constexpr static MetaTypeID TypeID{0x7ad9cd7};
+    constexpr static epiMetaTypeID TypeID{0x7ad9cd7};
 
     enum uiPlotTimeline_PIDs
     {

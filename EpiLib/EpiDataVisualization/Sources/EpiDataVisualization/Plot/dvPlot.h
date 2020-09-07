@@ -18,7 +18,7 @@ EPI_GENREGION_BEGIN(dvPlot)
 EPI_GENHIDDEN_dvPlot()
 
 public:
-    constexpr static MetaTypeID TypeID{0x6bf8062b};
+    constexpr static epiMetaTypeID TypeID{0x6bf8062b};
 
     enum dvPlot_PIDs
     {

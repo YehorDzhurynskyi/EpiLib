@@ -12,7 +12,7 @@ class Object
 {
 public:
     static MetaClass EmitMetaClass();
-    constexpr static MetaTypeID TypeID{epiHashCompileTime(Object)};
+    constexpr static epiMetaTypeID TypeID{epiHashCompileTime(Object)};
 
 public:
     Object() = default;
@@ -23,7 +23,7 @@ public:
     virtual ~Object() = default;
 
     virtual const MetaClass& GetMetaClass() const;
-    virtual epiBool Is(MetaTypeID rhs) const;
+    virtual epiBool Is(epiMetaTypeID rhs) const;
 
 public:
     void Serialize(json_t& json);

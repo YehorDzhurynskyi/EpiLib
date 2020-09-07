@@ -10,7 +10,7 @@ class PropertyPointer final
 {
 public:
     static PropertyPointer CreateFromProperty(Object& self, const MetaProperty* property);
-    static PropertyPointer CreateFromArray(epiBaseArray& self, MetaTypeID nestedTypeId, epiU32 idx);
+    static PropertyPointer CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx);
 
     template<typename T, typename T_ = std::remove_reference_t<std::remove_cv_t<T>>>
     T Get() const
@@ -69,7 +69,7 @@ public:
         }
     }
 
-    MetaTypeID GetTypeID() const { return m_TypeID; }
+    epiMetaTypeID GetTypeID() const { return m_TypeID; }
 
 protected:
     void* Get() const;
@@ -99,7 +99,7 @@ protected:
     };
 
     Form m_Form{Form::None};
-    MetaTypeID m_TypeID{MetaTypeID_None};
+    epiMetaTypeID m_TypeID{epiMetaTypeID_None};
 };
 
 }

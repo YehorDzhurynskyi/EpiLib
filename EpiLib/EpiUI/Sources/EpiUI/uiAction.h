@@ -24,7 +24,7 @@ EPI_GENREGION_BEGIN(uiAction)
 EPI_GENHIDDEN_uiAction()
 
 public:
-    constexpr static MetaTypeID TypeID{0x6e1e61ac};
+    constexpr static epiMetaTypeID TypeID{0x6e1e61ac};
 
     enum uiAction_PIDs
     {

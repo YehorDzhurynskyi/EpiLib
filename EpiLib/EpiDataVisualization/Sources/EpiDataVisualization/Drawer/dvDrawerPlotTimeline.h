@@ -17,7 +17,7 @@ EPI_GENREGION_BEGIN(dvDrawerPlotTimeline)
 EPI_GENHIDDEN_dvDrawerPlotTimeline()
 
 public:
-    constexpr static MetaTypeID TypeID{0x639dda9b};
+    constexpr static epiMetaTypeID TypeID{0x639dda9b};
 
     enum dvDrawerPlotTimeline_PIDs
     {

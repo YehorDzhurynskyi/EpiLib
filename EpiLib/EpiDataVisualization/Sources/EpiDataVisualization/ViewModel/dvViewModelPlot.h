@@ -16,7 +16,7 @@ EPI_GENREGION_BEGIN(dvViewModelPlot)
 EPI_GENHIDDEN_dvViewModelPlot()
 
 public:
-    constexpr static MetaTypeID TypeID{0x46670485};
+    constexpr static epiMetaTypeID TypeID{0x46670485};
 
     enum dvViewModelPlot_PIDs
     {

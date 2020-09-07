@@ -16,7 +16,7 @@ EPI_GENREGION_BEGIN(gfxBindable)
 EPI_GENHIDDEN_gfxBindable()
 
 public:
-    constexpr static MetaTypeID TypeID{0x92696af8};
+    constexpr static epiMetaTypeID TypeID{0x92696af8};
 
     enum gfxBindable_PIDs
     {

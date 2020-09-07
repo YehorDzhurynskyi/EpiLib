@@ -16,7 +16,7 @@ EPI_GENREGION_BEGIN(gfxTextRenderedGlyph)
 EPI_GENHIDDEN_gfxTextRenderedGlyph()
 
 public:
-    constexpr static MetaTypeID TypeID{0xb45b3475};
+    constexpr static epiMetaTypeID TypeID{0xb45b3475};
 
     enum gfxTextRenderedGlyph_PIDs
     {
@@ -42,7 +42,7 @@ EPI_GENREGION_BEGIN(gfxTextRenderedABC)
 EPI_GENHIDDEN_gfxTextRenderedABC()
 
 public:
-    constexpr static MetaTypeID TypeID{0x23566643};
+    constexpr static epiMetaTypeID TypeID{0x23566643};
 
     enum gfxTextRenderedABC_PIDs
     {

@@ -10,21 +10,21 @@ namespace epi
 
 epiBool MetaProperty::IsValid() const
 {
-    return m_TypeID != MetaTypeID_None;
+    return m_TypeID != epiMetaTypeID_None;
 }
 
 epiBool MetaProperty::HasNested() const
 {
-    return m_NestedTypeID != MetaTypeID_None;
+    return m_NestedTypeID != epiMetaTypeID_None;
 }
 
-MetaTypeID MetaProperty::GetTypeID() const
+epiMetaTypeID MetaProperty::GetTypeID() const
 {
     assert(IsValid());
     return m_TypeID;
 }
 
-MetaTypeID MetaProperty::GetNestedTypeID() const
+epiMetaTypeID MetaProperty::GetNestedTypeID() const
 {
     assert(IsValid());
     return m_NestedTypeID;
@@ -35,71 +35,71 @@ MetaProperty::Flags MetaProperty::GetFlags() const
     return m_Flags;
 }
 
-epiBool MetaType::IsFundamental(MetaTypeID typeID)
+epiBool MetaType::IsFundamental(epiMetaTypeID typeID)
 {
     switch (typeID)
     {
-    case MetaTypeID_epiChar:
-    case MetaTypeID_epiWChar:
-    case MetaTypeID_epiBool:
-    case MetaTypeID_epiByte:
-    case MetaTypeID_epiFloat:
-    case MetaTypeID_epiDouble:
-    case MetaTypeID_epiSize_t:
-    case MetaTypeID_epiU8:
-    case MetaTypeID_epiU16:
-    case MetaTypeID_epiU32:
-    case MetaTypeID_epiU64:
-    case MetaTypeID_epiS8:
-    case MetaTypeID_epiS16:
-    case MetaTypeID_epiS32:
-    case MetaTypeID_epiS64:
+    case epiMetaTypeID_epiChar:
+    case epiMetaTypeID_epiWChar:
+    case epiMetaTypeID_epiBool:
+    case epiMetaTypeID_epiByte:
+    case epiMetaTypeID_epiFloat:
+    case epiMetaTypeID_epiDouble:
+    case epiMetaTypeID_epiSize_t:
+    case epiMetaTypeID_epiU8:
+    case epiMetaTypeID_epiU16:
+    case epiMetaTypeID_epiU32:
+    case epiMetaTypeID_epiU64:
+    case epiMetaTypeID_epiS8:
+    case epiMetaTypeID_epiS16:
+    case epiMetaTypeID_epiS32:
+    case epiMetaTypeID_epiS64:
         return true;
     default: return false;
     }
 }
 
-epiBool MetaType::IsString(MetaTypeID typeID)
+epiBool MetaType::IsString(epiMetaTypeID typeID)
 {
-    return typeID == MetaTypeID_epiString || typeID == MetaTypeID_epiWString;
+    return typeID == epiMetaTypeID_epiString || typeID == epiMetaTypeID_epiWString;
 }
 
-epiBool MetaType::IsMultiDimensional(MetaTypeID typeID)
+epiBool MetaType::IsMultiDimensional(epiMetaTypeID typeID)
 {
     return
-        typeID == MetaTypeID_epiArray ||
-        typeID == MetaTypeID_epiPtrArray ||
+        typeID == epiMetaTypeID_epiArray ||
+        typeID == epiMetaTypeID_epiPtrArray ||
         IsMultiDimensionalInplace(typeID);
 }
 
-epiBool MetaType::IsMultiDimensionalInplace(MetaTypeID typeID)
+epiBool MetaType::IsMultiDimensionalInplace(epiMetaTypeID typeID)
 {
     switch (typeID)
     {
-    case MetaTypeID_epiVec2f:
-    case MetaTypeID_epiVec2d:
-    case MetaTypeID_epiVec2s:
-    case MetaTypeID_epiVec2u:
-    case MetaTypeID_epiVec3f:
-    case MetaTypeID_epiVec3d:
-    case MetaTypeID_epiVec3s:
-    case MetaTypeID_epiVec3u:
-    case MetaTypeID_epiVec4f:
-    case MetaTypeID_epiVec4d:
-    case MetaTypeID_epiVec4s:
-    case MetaTypeID_epiVec4u:
-    case MetaTypeID_epiMat2x2f:
-    case MetaTypeID_epiMat3x3f:
-    case MetaTypeID_epiMat4x4f:
+    case epiMetaTypeID_epiVec2f:
+    case epiMetaTypeID_epiVec2d:
+    case epiMetaTypeID_epiVec2s:
+    case epiMetaTypeID_epiVec2u:
+    case epiMetaTypeID_epiVec3f:
+    case epiMetaTypeID_epiVec3d:
+    case epiMetaTypeID_epiVec3s:
+    case epiMetaTypeID_epiVec3u:
+    case epiMetaTypeID_epiVec4f:
+    case epiMetaTypeID_epiVec4d:
+    case epiMetaTypeID_epiVec4s:
+    case epiMetaTypeID_epiVec4u:
+    case epiMetaTypeID_epiMat2x2f:
+    case epiMetaTypeID_epiMat3x3f:
+    case epiMetaTypeID_epiMat4x4f:
         return true;
     default: return false;
     }
 }
 
-epiBool MetaType::IsCompound(MetaTypeID typeID)
+epiBool MetaType::IsCompound(epiMetaTypeID typeID)
 {
     return
-        typeID != MetaTypeID_None &&
+        typeID != epiMetaTypeID_None &&
         !IsString(typeID) &&
         !IsFundamental(typeID) &&
         !IsMultiDimensional(typeID);
@@ -118,14 +118,14 @@ epiByte* MetaType::GetElementByIndex(const epiByte* container, const MetaPropert
     {
         switch (meta.GetTypeID())
         {
-        case MetaTypeID::Vec2: if (index < 0 || index >= 2) goto invalid_input; break;
-        case MetaTypeID::Vec3: if (index < 0 || index >= 3) goto invalid_input; break;
-        case MetaTypeID::Vec4: if (index < 0 || index >= 4) goto invalid_input; break;
+        case epiMetaTypeID::Vec2: if (index < 0 || index >= 2) goto invalid_input; break;
+        case epiMetaTypeID::Vec3: if (index < 0 || index >= 3) goto invalid_input; break;
+        case epiMetaTypeID::Vec4: if (index < 0 || index >= 4) goto invalid_input; break;
         default: assert(!"Unrecognized type"); break;
         }
         element = container + index * elemMeta->GetSizeOf();
     }
-    else if (meta.GetTypeID() == MetaTypeID::epiArray)
+    else if (meta.GetTypeID() == epiMetaTypeID::epiArray)
     {
         epiBaseArray* array = (epiBaseArray*)container;
         if (index < 0 || index >= array->GetSize()) goto invalid_input;
@@ -147,7 +147,7 @@ invalid_input:
 
 epiByte* MetaType::GetElementByHash(const epiByte* container, const MetaProperty& meta, epiHash_t hash)
 {
-    if (meta.GetTypeID() != MetaTypeID::HashMap || !meta.HasNested()) goto invalid_input;
+    if (meta.GetTypeID() != epiMetaTypeID::HashMap || !meta.HasNested()) goto invalid_input;
 
     const MetaClass* elemMeta = ClassRegistry_Type_Lookup(meta.GetNestedTypeID());
     if (elemMeta == nullptr) goto invalid_input;
@@ -160,7 +160,7 @@ invalid_input:
 }
 #endif
 
-void MetaClassData::AddProperty(MetaPropertyID propertyID, MetaProperty&& metaProperty)
+void MetaClassData::AddProperty(epiMetaPropertyID propertyID, MetaProperty&& metaProperty)
 {
     const epiS32 index = m_Properties.size();
     m_Properties.push_back(std::move(metaProperty));
@@ -184,7 +184,7 @@ const MetaProperty* MetaClassData::GetPropertyAt(epiS32 index) const
     return &m_Properties[index];
 }
 
-const MetaProperty* MetaClassData::GetPropertyBy(MetaPropertyID pid) const
+const MetaProperty* MetaClassData::GetPropertyBy(epiMetaPropertyID pid) const
 {
     const auto it = m_ToIndexTable.find(pid);
     if (it == m_ToIndexTable.end())
@@ -195,7 +195,7 @@ const MetaProperty* MetaClassData::GetPropertyBy(MetaPropertyID pid) const
     return GetPropertyAt(it->second);
 }
 
-MetaClass::MetaClass(MetaClassData&& classData, MetaTypeID typeID, MetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name)
+MetaClass::MetaClass(MetaClassData&& classData, epiMetaTypeID typeID, epiMetaTypeID superTypeID, epiSize_t sizeOf, const epiChar* name)
     : m_ClassData(std::move(classData))
     , m_TypeID(typeID)
     , m_SuperTypeID(superTypeID)
@@ -205,10 +205,10 @@ MetaClass::MetaClass(MetaClassData&& classData, MetaTypeID typeID, MetaTypeID su
 
 epiBool MetaClass::IsValid() const
 {
-    return m_TypeID != MetaTypeID_None && m_SizeOf > 0;
+    return m_TypeID != epiMetaTypeID_None && m_SizeOf > 0;
 }
 
-const MetaProperty* MetaClass::GetPropertyBy_FromBase(MetaPropertyID pid) const
+const MetaProperty* MetaClass::GetPropertyBy_FromBase(epiMetaPropertyID pid) const
 {
     epiAssert(IsValid());
 
@@ -219,7 +219,7 @@ const MetaProperty* MetaClass::GetPropertyBy_FromBase(MetaPropertyID pid) const
         superMetaClass = ClassRegistry_Type_Lookup(superMetaClass->m_SuperTypeID);
         epiAssert(superMetaClass != nullptr);
 
-        if (superMetaClass->m_TypeID == MetaTypeID_None)
+        if (superMetaClass->m_TypeID == epiMetaTypeID_None)
         {
             return nullptr;
         }
@@ -234,7 +234,7 @@ const MetaProperty* MetaClass::GetPropertyBy_FromBase(MetaPropertyID pid) const
     return property;
 }
 
-const MetaProperty* MetaClass::GetPropertyBy_FromDerived(MetaPropertyID pid) const
+const MetaProperty* MetaClass::GetPropertyBy_FromDerived(epiMetaPropertyID pid) const
 {
     // TODO: FIXME
     // if both derived classes have same property name (and its ID)
@@ -262,14 +262,14 @@ const MetaProperty* MetaClass::GetPropertyBy_FromDerived(MetaPropertyID pid) con
     return nullptr;
 }
 
-const MetaProperty* MetaClass::GetPropertyBy_FromCurrent(MetaPropertyID pid) const
+const MetaProperty* MetaClass::GetPropertyBy_FromCurrent(epiMetaPropertyID pid) const
 {
     assert(IsValid());
 
     return m_ClassData.GetPropertyBy(pid);
 }
 
-const MetaProperty* MetaClass::GetPropertyBy(MetaPropertyID pid) const
+const MetaProperty* MetaClass::GetPropertyBy(epiMetaPropertyID pid) const
 {
     if (const MetaProperty* property = GetPropertyBy_FromCurrent(pid))
     {
@@ -300,7 +300,7 @@ const MetaProperty* MetaClass::GetPropertyAt_FromBase(epiU32 pidx) const
         superMetaClass = ClassRegistry_Type_Lookup(superMetaClass->m_SuperTypeID);
         epiAssert(superMetaClass != nullptr);
 
-        if (superMetaClass->m_TypeID == MetaTypeID_None)
+        if (superMetaClass->m_TypeID == epiMetaTypeID_None)
         {
             return nullptr;
         }
@@ -354,14 +354,14 @@ const MetaClassData& MetaClass::GetClassData() const
     return m_ClassData;
 }
 
-MetaTypeID MetaClass::GetTypeID() const
+epiMetaTypeID MetaClass::GetTypeID() const
 {
     assert(IsValid());
 
     return m_TypeID;
 }
 
-MetaTypeID MetaClass::GetSuperTypeID() const
+epiMetaTypeID MetaClass::GetSuperTypeID() const
 {
     assert(IsValid());
 
@@ -383,9 +383,9 @@ epiSize_t MetaClass::GetSizeOf() const
 }
 
 using MetaClassEmitter = MetaClass (*)();
-std::map<MetaTypeID, MetaClass> g_ClassRegistry;
+std::map<epiMetaTypeID, MetaClass> g_ClassRegistry;
 
-const MetaClass* ClassRegistry_Type_Lookup(MetaTypeID typeID)
+const MetaClass* ClassRegistry_Type_Lookup(epiMetaTypeID typeID)
 {
     const MetaClass* meta = nullptr;
 

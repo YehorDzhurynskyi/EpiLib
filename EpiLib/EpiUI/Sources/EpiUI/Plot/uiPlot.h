@@ -17,7 +17,7 @@ EPI_GENREGION_BEGIN(uiPlot)
 EPI_GENHIDDEN_uiPlot()
 
 public:
-    constexpr static MetaTypeID TypeID{0x41c2d746};
+    constexpr static epiMetaTypeID TypeID{0x41c2d746};
 
     enum uiPlot_PIDs
     {

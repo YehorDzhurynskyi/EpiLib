@@ -15,7 +15,7 @@ EPI_GENREGION_BEGIN(uiCamera)
 EPI_GENHIDDEN_uiCamera()
 
 public:
-    constexpr static MetaTypeID TypeID{0x12ce033b};
+    constexpr static epiMetaTypeID TypeID{0x12ce033b};
 
     enum uiCamera_PIDs
     {

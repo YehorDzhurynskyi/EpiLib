@@ -15,7 +15,7 @@ EPI_GENREGION_BEGIN(dSeriesYComplex)
 EPI_GENHIDDEN_dSeriesYComplex()
 
 public:
-    constexpr static MetaTypeID TypeID{0x81035ed0};
+    constexpr static epiMetaTypeID TypeID{0x81035ed0};
 
     enum dSeriesYComplex_PIDs
     {

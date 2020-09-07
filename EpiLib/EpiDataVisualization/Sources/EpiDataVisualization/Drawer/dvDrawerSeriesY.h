@@ -15,7 +15,7 @@ EPI_GENREGION_BEGIN(dvDrawerSeriesY)
 EPI_GENHIDDEN_dvDrawerSeriesY()
 
 public:
-    constexpr static MetaTypeID TypeID{0x12b61696};
+    constexpr static epiMetaTypeID TypeID{0x12b61696};
 
     enum dvDrawerSeriesY_PIDs
     {

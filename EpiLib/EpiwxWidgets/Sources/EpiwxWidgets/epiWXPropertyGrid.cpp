@@ -56,8 +56,8 @@ void epiWXPropertyGrid::FillCompound(Object& object, wxPGProperty* prty)
             FillProperties(object, metaClassData, p);
         }
 
-        epiAssert(MetaType::IsCompound(m->GetSuperTypeID()) || m->GetSuperTypeID() == MetaTypeID_None);
-        if (m->GetSuperTypeID() == MetaTypeID_None)
+        epiAssert(MetaType::IsCompound(m->GetSuperTypeID()) || m->GetSuperTypeID() == epiMetaTypeID_None);
+        if (m->GetSuperTypeID() == epiMetaTypeID_None)
         {
             break;
         }
@@ -66,7 +66,7 @@ void epiWXPropertyGrid::FillCompound(Object& object, wxPGProperty* prty)
     } while (true);
 }
 
-void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, MetaTypeID nestedTypeID, wxPGProperty* parentPrty)
+void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, epiMetaTypeID nestedTypeID, wxPGProperty* parentPrty)
 {
     const epiSize_t arraySz = array.GetSize();
     for (epiU32 i = 0; i < arraySz; ++i)
@@ -156,21 +156,21 @@ void epiWXPropertyGrid::AddFundamental(PropertyPointer& ptr, const epiChar* labe
     wxPGProperty* prty = nullptr;
     switch (ptr.GetTypeID())
     {
-    case MetaTypeID_epiChar: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiChar>()); break;
-    case MetaTypeID_epiWChar: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWChar>()); break;
-    case MetaTypeID_epiBool: prty = new wxBoolProperty(label, wxPG_LABEL, ptr.Get<epiBool>()); break;
-    case MetaTypeID_epiFloat: prty = new wxFloatProperty(label, wxPG_LABEL, ptr.Get<epiFloat>()); break;
-    case MetaTypeID_epiDouble: prty = new wxFloatProperty(label, wxPG_LABEL, ptr.Get<epiDouble>()); break;
-    case MetaTypeID_epiByte: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiByte>()); break;
-    case MetaTypeID_epiS8: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiS8>()); break;
-    case MetaTypeID_epiS16: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiS16>()); break;
-    case MetaTypeID_epiS32: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiS32>()); break;
-    case MetaTypeID_epiS64: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiS64>()); break;
-    case MetaTypeID_epiSize_t: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiSize_t>()); break;
-    case MetaTypeID_epiU8: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU8>()); break;
-    case MetaTypeID_epiU16: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU16>()); break;
-    case MetaTypeID_epiU32: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU32>()); break;
-    case MetaTypeID_epiU64: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU64>()); break;
+    case epiMetaTypeID_epiChar: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiChar>()); break;
+    case epiMetaTypeID_epiWChar: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWChar>()); break;
+    case epiMetaTypeID_epiBool: prty = new wxBoolProperty(label, wxPG_LABEL, ptr.Get<epiBool>()); break;
+    case epiMetaTypeID_epiFloat: prty = new wxFloatProperty(label, wxPG_LABEL, ptr.Get<epiFloat>()); break;
+    case epiMetaTypeID_epiDouble: prty = new wxFloatProperty(label, wxPG_LABEL, ptr.Get<epiDouble>()); break;
+    case epiMetaTypeID_epiByte: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiByte>()); break;
+    case epiMetaTypeID_epiS8: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiS8>()); break;
+    case epiMetaTypeID_epiS16: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiS16>()); break;
+    case epiMetaTypeID_epiS32: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiS32>()); break;
+    case epiMetaTypeID_epiS64: prty = new wxIntProperty(label, wxPG_LABEL, ptr.Get<epiS64>()); break;
+    case epiMetaTypeID_epiSize_t: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiSize_t>()); break;
+    case epiMetaTypeID_epiU8: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU8>()); break;
+    case epiMetaTypeID_epiU16: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU16>()); break;
+    case epiMetaTypeID_epiU32: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU32>()); break;
+    case epiMetaTypeID_epiU64: prty = new wxUIntProperty(label, wxPG_LABEL, ptr.Get<epiU64>()); break;
     default: epiAssert(false, "Unhandled case");
     }
 
@@ -184,8 +184,8 @@ void epiWXPropertyGrid::AddString(PropertyPointer& ptr, const epiChar* label, wx
     wxPGProperty* prty = nullptr;
     switch (ptr.GetTypeID())
     {
-    case MetaTypeID_epiString: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiString&>()); break;
-    case MetaTypeID_epiWString: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWString&>()); break;
+    case epiMetaTypeID_epiString: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiString&>()); break;
+    case epiMetaTypeID_epiWString: prty = new wxStringProperty(label, wxPG_LABEL, ptr.Get<epiWString&>()); break;
     default: epiAssert(false, "Unhandled case");
     }
 
@@ -215,21 +215,21 @@ void epiWXPropertyGrid::OnPropertyGridChanged(wxPropertyGridEvent& event)
         const wxVariant value = property->GetValue();
         switch (ptr->GetTypeID())
         {
-        case MetaTypeID_epiChar: ptr->Set(static_cast<epiChar>(value.GetChar())); break;
-        case MetaTypeID_epiWChar: ptr->Set(static_cast<epiWChar>(value.GetChar())); break;
-        case MetaTypeID_epiBool: ptr->Set(static_cast<epiBool>(value.GetBool())); break;
-        case MetaTypeID_epiFloat: ptr->Set(static_cast<epiFloat>(value.GetDouble())); break;
-        case MetaTypeID_epiDouble: ptr->Set(static_cast<epiDouble>(value.GetDouble())); break;
-        case MetaTypeID_epiByte: ptr->Set(static_cast<epiByte>(value.GetLongLong().GetValue())); break;
-        case MetaTypeID_epiS8: ptr->Set(static_cast<epiS8>(value.GetLongLong().GetValue())); break;
-        case MetaTypeID_epiS16: ptr->Set(static_cast<epiS16>(value.GetLongLong().GetValue())); break;
-        case MetaTypeID_epiS32: ptr->Set(static_cast<epiS32>(value.GetLongLong().GetValue())); break;
-        case MetaTypeID_epiS64: ptr->Set(static_cast<epiS64>(value.GetLongLong().GetValue())); break;
-        case MetaTypeID_epiSize_t: ptr->Set(static_cast<epiSize_t>(value.GetULongLong().GetValue())); break;
-        case MetaTypeID_epiU8: ptr->Set(static_cast<epiU8>(value.GetULongLong().GetValue())); break;
-        case MetaTypeID_epiU16: ptr->Set(static_cast<epiU16>(value.GetULongLong().GetValue())); break;
-        case MetaTypeID_epiU32: ptr->Set(static_cast<epiU32>(value.GetULongLong().GetValue())); break;
-        case MetaTypeID_epiU64: ptr->Set(static_cast<epiU64>(value.GetULongLong().GetValue())); break;
+        case epiMetaTypeID_epiChar: ptr->Set(static_cast<epiChar>(value.GetChar())); break;
+        case epiMetaTypeID_epiWChar: ptr->Set(static_cast<epiWChar>(value.GetChar())); break;
+        case epiMetaTypeID_epiBool: ptr->Set(static_cast<epiBool>(value.GetBool())); break;
+        case epiMetaTypeID_epiFloat: ptr->Set(static_cast<epiFloat>(value.GetDouble())); break;
+        case epiMetaTypeID_epiDouble: ptr->Set(static_cast<epiDouble>(value.GetDouble())); break;
+        case epiMetaTypeID_epiByte: ptr->Set(static_cast<epiByte>(value.GetLongLong().GetValue())); break;
+        case epiMetaTypeID_epiS8: ptr->Set(static_cast<epiS8>(value.GetLongLong().GetValue())); break;
+        case epiMetaTypeID_epiS16: ptr->Set(static_cast<epiS16>(value.GetLongLong().GetValue())); break;
+        case epiMetaTypeID_epiS32: ptr->Set(static_cast<epiS32>(value.GetLongLong().GetValue())); break;
+        case epiMetaTypeID_epiS64: ptr->Set(static_cast<epiS64>(value.GetLongLong().GetValue())); break;
+        case epiMetaTypeID_epiSize_t: ptr->Set(static_cast<epiSize_t>(value.GetULongLong().GetValue())); break;
+        case epiMetaTypeID_epiU8: ptr->Set(static_cast<epiU8>(value.GetULongLong().GetValue())); break;
+        case epiMetaTypeID_epiU16: ptr->Set(static_cast<epiU16>(value.GetULongLong().GetValue())); break;
+        case epiMetaTypeID_epiU32: ptr->Set(static_cast<epiU32>(value.GetULongLong().GetValue())); break;
+        case epiMetaTypeID_epiU64: ptr->Set(static_cast<epiU64>(value.GetULongLong().GetValue())); break;
         default: epiAssert(false, "Unhandled case");
         }
     }
@@ -249,7 +249,7 @@ void epiWXPropertyGrid::OnPropertyGridRightClick(wxPropertyGridEvent& event)
 
     void* clientData = property->GetClientData();
     PropertyPointer* ptr = reinterpret_cast<PropertyPointer*>(clientData);
-    if (ptr->GetTypeID() != MetaTypeID_epiFloat)
+    if (ptr->GetTypeID() != epiMetaTypeID_epiFloat)
     {
         wxMessageBox(wxT("Only real number property could be chosen!"), wxT("Error"));
         return;

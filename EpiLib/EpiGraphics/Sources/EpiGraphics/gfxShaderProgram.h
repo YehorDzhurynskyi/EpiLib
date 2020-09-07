@@ -25,7 +25,7 @@ EPI_GENREGION_BEGIN(gfxShader)
 EPI_GENHIDDEN_gfxShader()
 
 public:
-    constexpr static MetaTypeID TypeID{0x5e95f50e};
+    constexpr static epiMetaTypeID TypeID{0x5e95f50e};
 
     enum gfxShader_PIDs
     {
@@ -67,7 +67,7 @@ EPI_GENREGION_BEGIN(gfxShaderProgram)
 EPI_GENHIDDEN_gfxShaderProgram()
 
 public:
-    constexpr static MetaTypeID TypeID{0x7a046d1e};
+    constexpr static epiMetaTypeID TypeID{0x7a046d1e};
 
     enum gfxShaderProgram_PIDs
     {

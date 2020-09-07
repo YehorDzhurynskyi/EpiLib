@@ -15,7 +15,7 @@ EPI_GENREGION_BEGIN(dSeriesXY)
 EPI_GENHIDDEN_dSeriesXY()
 
 public:
-    constexpr static MetaTypeID TypeID{0xdf305a3};
+    constexpr static epiMetaTypeID TypeID{0xdf305a3};
 
     enum dSeriesXY_PIDs
     {

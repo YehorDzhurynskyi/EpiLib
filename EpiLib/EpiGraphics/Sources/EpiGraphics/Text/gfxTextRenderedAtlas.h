@@ -15,7 +15,7 @@ EPI_GENREGION_BEGIN(gfxTextRenderedAtlasGlyph)
 EPI_GENHIDDEN_gfxTextRenderedAtlasGlyph()
 
 public:
-    constexpr static MetaTypeID TypeID{0x42a9985b};
+    constexpr static epiMetaTypeID TypeID{0x42a9985b};
 
     enum gfxTextRenderedAtlasGlyph_PIDs
     {
@@ -45,7 +45,7 @@ EPI_GENREGION_BEGIN(gfxTextRenderedAtlas)
 EPI_GENHIDDEN_gfxTextRenderedAtlas()
 
 public:
-    constexpr static MetaTypeID TypeID{0x6de735c2};
+    constexpr static epiMetaTypeID TypeID{0x6de735c2};
 
     enum gfxTextRenderedAtlas_PIDs
     {

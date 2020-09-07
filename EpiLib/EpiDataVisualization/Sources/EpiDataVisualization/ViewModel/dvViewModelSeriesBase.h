@@ -16,7 +16,7 @@ EPI_GENREGION_BEGIN(dvViewModelSeriesBase)
 EPI_GENHIDDEN_dvViewModelSeriesBase()
 
 public:
-    constexpr static MetaTypeID TypeID{0xd973e2d9};
+    constexpr static epiMetaTypeID TypeID{0xd973e2d9};
 
     enum dvViewModelSeriesBase_PIDs
     {

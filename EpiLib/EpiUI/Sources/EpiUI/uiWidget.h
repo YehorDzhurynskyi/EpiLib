@@ -33,7 +33,7 @@ EPI_GENREGION_BEGIN(uiSizePolicyInfo)
 EPI_GENHIDDEN_uiSizePolicyInfo()
 
 public:
-    constexpr static MetaTypeID TypeID{0xd3c3d009};
+    constexpr static epiMetaTypeID TypeID{0xd3c3d009};
 
     enum uiSizePolicyInfo_PIDs
     {
@@ -74,7 +74,7 @@ EPI_GENREGION_BEGIN(uiWidget)
 EPI_GENHIDDEN_uiWidget()
 
 public:
-    constexpr static MetaTypeID TypeID{0xac2bf3ee};
+    constexpr static epiMetaTypeID TypeID{0xac2bf3ee};
 
     enum uiWidget_PIDs
     {

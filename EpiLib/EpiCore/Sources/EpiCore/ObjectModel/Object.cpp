@@ -7,7 +7,7 @@ MetaClass Object::EmitMetaClass()
 {
     MetaClassData data;
 
-    return MetaClass(std::move(data), epiHashCompileTime(Object), MetaTypeID_None, sizeof(Object), "Object");
+    return MetaClass(std::move(data), epiHashCompileTime(Object), epiMetaTypeID_None, sizeof(Object), "Object");
 }
 
 const MetaClass& Object::GetMetaClass() const
@@ -15,7 +15,7 @@ const MetaClass& Object::GetMetaClass() const
     return ClassRegistry_GetMetaClass<Object>();
 }
 
-epiBool Object::Is(MetaTypeID rhs) const
+epiBool Object::Is(epiMetaTypeID rhs) const
 {
     return rhs == Object::TypeID;
 }

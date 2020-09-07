@@ -17,7 +17,7 @@ EPI_GENREGION_BEGIN(uiPlotDrawArea)
 EPI_GENHIDDEN_uiPlotDrawArea()
 
 public:
-    constexpr static MetaTypeID TypeID{0xd59f47f1};
+    constexpr static epiMetaTypeID TypeID{0xd59f47f1};
 
     enum uiPlotDrawArea_PIDs
     {

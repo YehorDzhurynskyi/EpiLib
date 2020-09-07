@@ -35,7 +35,7 @@ epiBool PropertyPath::Parse(const std::string& path)
             while (isalnum(path[hashEndIndex]) || path[hashEndIndex] == '_') ++hashEndIndex;
 
             std::string propertyName(&path[hashBeginIndex], hashEndIndex - hashBeginIndex);
-            const MetaPropertyID pid = epiHash(propertyName.c_str());
+            const epiMetaPropertyID pid = epiHash(propertyName.c_str());
             node.PropertyID = pid;
             m_Nodes.push_back(node);
             node = PathNode();
@@ -46,7 +46,7 @@ epiBool PropertyPath::Parse(const std::string& path)
             if (MetaType::IsMultiDimensional(metaProperty->GetTypeID()))
             {
                 assert(metaProperty->HasNested());
-                MetaTypeID elemTypeID = metaProperty->GetNestedTypeID();
+                epiMetaTypeID elemTypeID = metaProperty->GetNestedTypeID();
 
                 if (MetaType::IsCompound(elemTypeID))
                 {
@@ -164,7 +164,7 @@ epiByte* PropertyPath::GetValue(const Object& object) const
     return value;
 }
 
-void PropertyPath::AddPathNode(MetaPropertyID pid)
+void PropertyPath::AddPathNode(epiMetaPropertyID pid)
 {
     PathNode node;
     node.PropertyID = pid;
@@ -173,7 +173,7 @@ void PropertyPath::AddPathNode(MetaPropertyID pid)
     m_Nodes.push_back(std::move(node));
 }
 
-void PropertyPath::AddPathNodeIndexed(MetaPropertyID pid, epiS32 index)
+void PropertyPath::AddPathNodeIndexed(epiMetaPropertyID pid, epiS32 index)
 {
     PathNode node;
     node.PropertyID = pid;

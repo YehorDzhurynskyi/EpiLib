@@ -20,7 +20,7 @@ EPI_GENREGION_BEGIN(gfxContext)
 EPI_GENHIDDEN_gfxContext()
 
 public:
-    constexpr static MetaTypeID TypeID{0x30f166e8};
+    constexpr static epiMetaTypeID TypeID{0x30f166e8};
 
     enum gfxContext_PIDs
     {

@@ -25,7 +25,7 @@ EPI_GENREGION_BEGIN(uiLayoutBox)
 EPI_GENHIDDEN_uiLayoutBox()
 
 public:
-    constexpr static MetaTypeID TypeID{0x777f971a};
+    constexpr static epiMetaTypeID TypeID{0x777f971a};
 
     enum uiLayoutBox_PIDs
     {

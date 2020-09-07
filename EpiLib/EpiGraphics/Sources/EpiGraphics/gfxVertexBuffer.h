@@ -36,7 +36,7 @@ EPI_GENREGION_BEGIN(gfxVertexBuffer)
 EPI_GENHIDDEN_gfxVertexBuffer()
 
 public:
-    constexpr static MetaTypeID TypeID{0xf78a4476};
+    constexpr static epiMetaTypeID TypeID{0xf78a4476};
 
     enum gfxVertexBuffer_PIDs
     {
