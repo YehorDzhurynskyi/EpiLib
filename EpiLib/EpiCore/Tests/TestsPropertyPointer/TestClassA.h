@@ -36,6 +36,8 @@ public:
         PID_APrty14 = 0xa8188df8,
         PID_APrty15 = 0xdf1fbd6e,
         PID_APrty16 = 0x4616ecd4,
+        PID_APrty17 = 0x3111dc42,
+        PID_APrty18 = 0xa1aec1d3,
         PID_APrtyVirtual0 = 0x6b4213f2,
         PID_APrtyVirtual1 = 0x1c452364,
         PID_APrtyVirtual2 = 0x854c72de,
@@ -53,6 +55,8 @@ public:
         PID_APrtyVirtual14 = 0xb975fb5a,
         PID_APrtyVirtual15 = 0xce72cbcc,
         PID_APrtyVirtual16 = 0x577b9a76,
+        PID_APrtyVirtual17 = 0x207caae0,
+        PID_APrtyVirtual18 = 0xb0c3b771,
         PID_APrtyReadCallback0 = 0x3a2ad180,
         PID_APrtyReadCallback1 = 0x4d2de116,
         PID_APrtyReadCallback2 = 0xd424b0ac,
@@ -70,6 +74,8 @@ public:
         PID_APrtyReadCallback14 = 0x72f8388,
         PID_APrtyReadCallback15 = 0x7028b31e,
         PID_APrtyReadCallback16 = 0xe921e2a4,
+        PID_APrtyReadCallback17 = 0x9e26d232,
+        PID_APrtyReadCallback18 = 0xe99cfa3,
         PID_APrtyWriteCallback0 = 0x9cac065,
         PID_APrtyWriteCallback1 = 0x7ecdf0f3,
         PID_APrtyWriteCallback2 = 0xe7c4a149,
@@ -87,7 +93,9 @@ public:
         PID_APrtyWriteCallback14 = 0xd77c756e,
         PID_APrtyWriteCallback15 = 0xa07b45f8,
         PID_APrtyWriteCallback16 = 0x39721442,
-        PID_COUNT = 68
+        PID_APrtyWriteCallback17 = 0x4e7524d4,
+        PID_APrtyWriteCallback18 = 0xdeca3945,
+        PID_COUNT = 76
     };
 
 protected:
@@ -125,6 +133,10 @@ protected:
     void SetAPrtyVirtual15_Callback(const epiString& value);
     const epiWString& GetAPrtyVirtual16_Callback() const;
     void SetAPrtyVirtual16_Callback(const epiWString& value);
+    const epiArray<epiS32>& GetAPrtyVirtual17_Callback() const;
+    void SetAPrtyVirtual17_Callback(const epiArray<epiS32>& value);
+    const epiPtrArray<epiS32>& GetAPrtyVirtual18_Callback() const;
+    void SetAPrtyVirtual18_Callback(const epiPtrArray<epiS32>& value);
     epiChar GetAPrtyReadCallback0_Callback() const;
     epiWChar GetAPrtyReadCallback1_Callback() const;
     epiBool GetAPrtyReadCallback2_Callback() const;
@@ -142,6 +154,8 @@ protected:
     epiS64 GetAPrtyReadCallback14_Callback() const;
     const epiString& GetAPrtyReadCallback15_Callback() const;
     const epiWString& GetAPrtyReadCallback16_Callback() const;
+    const epiArray<epiS32>& GetAPrtyReadCallback17_Callback() const;
+    const epiPtrArray<epiS32>& GetAPrtyReadCallback18_Callback() const;
     void SetAPrtyWriteCallback0_Callback(epiChar value);
     void SetAPrtyWriteCallback1_Callback(epiWChar value);
     void SetAPrtyWriteCallback2_Callback(epiBool value);
@@ -159,6 +173,8 @@ protected:
     void SetAPrtyWriteCallback14_Callback(epiS64 value);
     void SetAPrtyWriteCallback15_Callback(const epiString& value);
     void SetAPrtyWriteCallback16_Callback(const epiWString& value);
+    void SetAPrtyWriteCallback17_Callback(const epiArray<epiS32>& value);
+    void SetAPrtyWriteCallback18_Callback(const epiPtrArray<epiS32>& value);
 
 protected:
     epiChar m_APrty0{'\0'};
@@ -178,6 +194,8 @@ protected:
     epiS64 m_APrty14{0};
     epiString m_APrty15{epiDEBUG_ONLY("Empty")};
     epiWString m_APrty16{epiDEBUG_ONLY(L"Empty")};
+    epiArray<epiS32> m_APrty17;
+    epiPtrArray<epiS32> m_APrty18;
     epiChar m_APrtyReadCallback0{'\0'};
     epiWChar m_APrtyReadCallback1{L'\0'};
     epiBool m_APrtyReadCallback2{false};
@@ -195,6 +213,8 @@ protected:
     epiS64 m_APrtyReadCallback14{0};
     epiString m_APrtyReadCallback15{epiDEBUG_ONLY("Empty")};
     epiWString m_APrtyReadCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiArray<epiS32> m_APrtyReadCallback17;
+    epiPtrArray<epiS32> m_APrtyReadCallback18;
     epiChar m_APrtyWriteCallback0{'\0'};
     epiWChar m_APrtyWriteCallback1{L'\0'};
     epiBool m_APrtyWriteCallback2{false};
@@ -212,6 +232,8 @@ protected:
     epiS64 m_APrtyWriteCallback14{0};
     epiString m_APrtyWriteCallback15{epiDEBUG_ONLY("Empty")};
     epiWString m_APrtyWriteCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiArray<epiS32> m_APrtyWriteCallback17;
+    epiPtrArray<epiS32> m_APrtyWriteCallback18;
 
 EPI_GENREGION_END(TestClassA)
 };

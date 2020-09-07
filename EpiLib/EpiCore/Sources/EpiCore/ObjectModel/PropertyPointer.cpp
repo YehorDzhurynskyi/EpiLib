@@ -119,7 +119,7 @@ void* PropertyPointer::Get() const
 
 void PropertyPointer::Set(void* value)
 {
-    epiAssert(IsWriteable());
+    epiAssert(IsWritable());
 
     if (m_Form == Form::ArrayElem)
     {
@@ -188,7 +188,7 @@ epiBool PropertyPointer::IsReadable() const
     return m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.WriteCallback;
 }
 
-epiBool PropertyPointer::IsWriteable() const
+epiBool PropertyPointer::IsWritable() const
 {
     return m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback;
 }

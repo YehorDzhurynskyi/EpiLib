@@ -2,8 +2,8 @@
 
 #include "common.h"
 #include <string>
-#include <wchar.h>
-#include <complex.h>
+#include <cwchar>
+#include <ccomplex>
 #include <glm/glm.hpp>
 
 using epiChar = char;

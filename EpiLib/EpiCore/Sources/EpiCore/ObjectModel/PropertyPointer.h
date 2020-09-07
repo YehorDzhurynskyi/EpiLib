@@ -18,7 +18,7 @@ public:
     void Set(std::conditional_t<MetaType::IsFundamental<T>(), T, const T&> value);
 
     epiBool IsReadable() const;
-    epiBool IsWriteable() const;
+    epiBool IsWritable() const;
 
     epiMetaTypeID GetTypeID() const;
 
@@ -84,7 +84,7 @@ void PropertyPointer::Set(std::conditional_t<MetaType::IsFundamental<T>(), T, co
 {
     static_assert(std::is_same_v<std::decay_t<T>, T>);
     static_assert(!std::is_pointer_v<T>);
-    epiAssert(IsWriteable());
+    epiAssert(IsWritable());
 
     if constexpr (std::is_base_of_v<Object, T> || MetaType::IsMultiDimensional<T>() || MetaType::IsString<T>())
     {

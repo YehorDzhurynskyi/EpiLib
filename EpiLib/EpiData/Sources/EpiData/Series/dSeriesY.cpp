@@ -65,25 +65,12 @@ epiFloat& dSeriesY::operator[](epiS32 index)
 
 epiBool operator==(const dSeriesY& lhs, const dSeriesY& rhs)
 {
-    if (lhs.GetSize() != rhs.GetSize())
-    {
-        return false;
-    }
-
     if (!epiFloatingEq(lhs.GetXStep(), rhs.GetXStep()))
     {
         return false;
     }
 
-    for (epiU32 i = 0; i < lhs.GetSize(); ++i)
-    {
-        if (!epiFloatingEq(lhs.AtY(i), rhs.AtY(i)))
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return lhs.GetY() == rhs.GetY();
 }
 
 epiBool operator!=(const dSeriesY& lhs, const dSeriesY& rhs)

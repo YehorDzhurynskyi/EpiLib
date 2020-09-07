@@ -4,9 +4,61 @@
 
 #include "TestClassA.h"
 
-#define ASSERT_PP(T, V) ASSERT_EQ(pp.Get<T>(), T{}); pp.Set<T>(V); ASSERT_EQ(pp.Get<T>(), V); break;
-#define ASSERT_PP_COMPOUND_EX(T, V, IV) { T tIV); ASSERT_EQ(pp.Get<T>(), t); t = V; pp.Set<T>(t); ASSERT_EQ(pp.Get<T>(), t); break; }
+#define ASSERT_PP(T, V) \
+    if (pp.IsReadable()) \
+        ASSERT_EQ(pp.Get<T>(), T{}); \
+ \
+    if (pp.IsWritable()) \
+        pp.Set<T>(V); \
+    else \
+        break; \
+ \
+    if (pp.IsReadable()) \
+        ASSERT_EQ(pp.Get<T>(), V); \
+ \
+    break; \
+
+#define ASSERT_PP_COMPOUND_EX(T, V, IV) \
+{ \
+    T temp(IV); \
+ \
+    if (pp.IsReadable()) \
+        ASSERT_EQ(pp.Get<T>(), temp); \
+ \
+    temp = V; \
+    if (pp.IsWritable()) \
+        pp.Set<T>(temp); \
+    else \
+        break; \
+ \
+    if (pp.IsReadable()) \
+        ASSERT_EQ(pp.Get<T>(), temp); \
+ \
+    break; \
+} \
+
 #define ASSERT_PP_COMPOUND(T, V) ASSERT_PP_COMPOUND_EX(T, V, {})
+
+#define ASSERT_PP_ARRAY(T, V) \
+{ \
+    if (!pp.IsReadable()) \
+        break; \
+ \
+    T& temp = pp.Get<T>(); \
+ \
+    ASSERT_EQ(temp, T{}); \
+ \
+    temp = V; \
+    ASSERT_EQ(pp.Get<T>(), V); \
+ \
+    if (!pp.IsWritable()) \
+        break; \
+ \
+    pp.Set<T>(T{}); \
+    ASSERT_EQ(pp.Get<T>(), T{}); \
+ \
+    break; \
+} \
 
 EPI_NAMESPACE_BEGIN()
 
@@ -24,29 +76,32 @@ TEST(PropertyPointer, Base)
 
             switch (p.GetTypeID())
             {
-            case epiMetaTypeID_epiChar: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiChar>(), '\0'); if (pp.IsWriteable()) pp.Set<epiChar>('H'); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiChar>(), 'H'); break;
-            case epiMetaTypeID_epiWChar: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiWChar>(), L'\0'); if (pp.IsWriteable()) pp.Set<epiWChar>(L'H'); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiWChar>(), L'H'); break;
+            case epiMetaTypeID_epiChar: ASSERT_PP(epiChar, 'K')
+            case epiMetaTypeID_epiWChar: ASSERT_PP(epiWChar, L'H')
 
-            case epiMetaTypeID_epiBool: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiBool>(), false); if (pp.IsWriteable()) pp.Set<epiBool>(true); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiBool>(), true); break;
+            case epiMetaTypeID_epiBool: ASSERT_PP(epiBool, true)
 
-            case epiMetaTypeID_epiByte: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiByte>(), 0); if (pp.IsWriteable()) pp.Set<epiByte>(12); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiByte>(), 12); break;
+            case epiMetaTypeID_epiByte: ASSERT_PP(epiByte, 12)
 
-            case epiMetaTypeID_epiFloat: if (pp.IsReadable()) ASSERT_NEAR(pp.Get<epiFloat>(), 0.0f, epiFloatingEqTolerance()); if (pp.IsWriteable()) pp.Set<epiFloat>(-125.0f); else break; if (pp.IsReadable()) ASSERT_NEAR(pp.Get<epiFloat>(), -125.0f, epiFloatingEqTolerance()); break;
-            case epiMetaTypeID_epiDouble: if (pp.IsReadable()) ASSERT_NEAR(pp.Get<epiDouble>(), 0.0, epiFloatingEqTolerance()); if (pp.IsWriteable()) pp.Set<epiDouble>(-0.035); else break; if (pp.IsReadable()) ASSERT_NEAR(pp.Get<epiDouble>(), -0.035, epiFloatingEqTolerance()); break;
+            case epiMetaTypeID_epiFloat: if (pp.IsReadable()) ASSERT_NEAR(pp.Get<epiFloat>(), 0.0f, epiFloatingEqTolerance()); if (pp.IsWritable()) pp.Set<epiFloat>(-125.0f); else break; if (pp.IsReadable()) ASSERT_NEAR(pp.Get<epiFloat>(), -125.0f, epiFloatingEqTolerance()); break;
+            case epiMetaTypeID_epiDouble: if (pp.IsReadable()) ASSERT_NEAR(pp.Get<epiDouble>(), 0.0, epiFloatingEqTolerance()); if (pp.IsWritable()) pp.Set<epiDouble>(-0.035); else break; if (pp.IsReadable()) ASSERT_NEAR(pp.Get<epiDouble>(), -0.035, epiFloatingEqTolerance()); break;
 
-            case epiMetaTypeID_epiSize_t: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiSize_t>(), 0); if (pp.IsWriteable()) pp.Set<epiSize_t>(550); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiSize_t>(), 550); break;
+            case epiMetaTypeID_epiSize_t: ASSERT_PP(epiSize_t, 550)
 
-            case epiMetaTypeID_epiString: { epiString t(epiDEBUG_ONLY("Empty")); if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiString>(), t); t = "Test text"; if (pp.IsWriteable()) pp.Set<epiString>(t); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiString>(), t); break; }
-            case epiMetaTypeID_epiWString: { epiWString t(epiDEBUG_ONLY(L"Empty")); if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiWString>(), t); t = L"Test Wtext"; if (pp.IsWriteable()) pp.Set<epiWString>(t); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiWString>(), t); break; }
+            case epiMetaTypeID_epiU8: ASSERT_PP(epiU8, 32)
+            case epiMetaTypeID_epiU16: ASSERT_PP(epiU16, 158)
+            case epiMetaTypeID_epiU32: ASSERT_PP(epiU32, 2444212)
+            case epiMetaTypeID_epiU64: ASSERT_PP(epiU64, 298190129300)
+            case epiMetaTypeID_epiS8: ASSERT_PP(epiS8, -16)
+            case epiMetaTypeID_epiS16: ASSERT_PP(epiS16, -1241)
+            case epiMetaTypeID_epiS32: ASSERT_PP(epiS32, 89537)
+            case epiMetaTypeID_epiS64: ASSERT_PP(epiS64, 213125125)
 
-            case epiMetaTypeID_epiU8: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiU8>(), 0); if (pp.IsWriteable()) pp.Set<epiU8>(32); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiU8>(), 32); break;
-            case epiMetaTypeID_epiU16: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiU16>(), 0); if (pp.IsWriteable()) pp.Set<epiU16>(158); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiU16>(), 158); break;
-            case epiMetaTypeID_epiU32: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiU32>(), 0); if (pp.IsWriteable()) pp.Set<epiU32>(2444212); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiU32>(), 2444212); break;
-            case epiMetaTypeID_epiU64: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiU64>(), 0); if (pp.IsWriteable()) pp.Set<epiU64>(298190129300); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiU64>(), 298190129300); break;
-            case epiMetaTypeID_epiS8: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiS8>(), 0); if (pp.IsWriteable()) pp.Set<epiS8>(-16); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiS8>(), -16); break;
-            case epiMetaTypeID_epiS16: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiS16>(), 0); if (pp.IsWriteable()) pp.Set<epiS16>(-1241); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiS16>(), -1241); break;
-            case epiMetaTypeID_epiS32: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiS32>(), 0); if (pp.IsWriteable()) pp.Set<epiS32>(89537); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiS32>(), 89537); break;
-            case epiMetaTypeID_epiS64: if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiS64>(), 0); if (pp.IsWriteable()) pp.Set<epiS64>(213125125); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<epiS64>(), 213125125); break;
+            case epiMetaTypeID_epiString: ASSERT_PP_COMPOUND_EX(epiString, "Test text", epiDEBUG_ONLY("Empty"))
+            case epiMetaTypeID_epiWString: ASSERT_PP_COMPOUND_EX(epiWString, L"Test Wtext", epiDEBUG_ONLY(L"Empty"))
+
+            case epiMetaTypeID_epiArray: ASSERT_PP_ARRAY(epiArray<epiS32>, epiArray<epiS32>({ -5, 1, 2, 3, 4, -3 }))
+            case epiMetaTypeID_epiPtrArray: ASSERT_PP_ARRAY(epiPtrArray<epiS32>, epiPtrArray<epiS32>({ nullptr, (epiS32*)0xfa7f7af, (epiS32*)0x0000353f }))
 
             // TODO: handle
             // case epiMetaTypeID_epiArray: ASSERT_EQ(pp.Get<epiArray<epiS32>>(), epiArray<epiS32>{}); pp.Set<epiArray<epiS32>>({ 4, 3, -122, 5 }); ASSERT_EQ(pp.Get<epiArray<epiS32>>(), epiArray<epiS32>({ 4, 3, -122, 5 })); break;
@@ -76,8 +131,6 @@ TEST(PropertyPointer, Base)
 
         m = m->GetSuperTypeID() != epiMetaTypeID_None ? ClassRegistry_Type_Lookup(m->GetSuperTypeID()) : nullptr;
     }
-
-    ASSERT_EQ(4, 2 + 2);
 }
 
 EPI_NAMESPACE_END()

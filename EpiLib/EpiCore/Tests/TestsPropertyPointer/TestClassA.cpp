@@ -5,6 +5,9 @@ EPI_GENREGION_END(include)
 
 namespace
 {
+
+using namespace epi;
+
 epiChar V0;
 epiWChar V1;
 epiBool V2;
@@ -22,6 +25,8 @@ epiS32 V13;
 epiS64 V14;
 epiString V15(epiDEBUG_ONLY("Empty"));
 epiWString V16(epiDEBUG_ONLY(L"Empty"));
+epiArray<epiS32> V17;
+epiPtrArray<epiS32> V18;
 
 epiChar R0;
 epiWChar R1;
@@ -40,6 +45,9 @@ epiS32 R13;
 epiS64 R14;
 epiString R15(epiDEBUG_ONLY("Empty"));
 epiWString R16(epiDEBUG_ONLY(L"Empty"));
+epiArray<epiS32> R17;
+epiPtrArray<epiS32> R18;
+
 }
 
 #define EmitGetter(t, name, p, n) \
@@ -79,6 +87,9 @@ EmitGetterSetter(epiS32, Virtual, V, 13)
 EmitGetterSetter(epiS64, Virtual, V, 14)
 EmitGetterSetter(const epiString&, Virtual, V, 15)
 EmitGetterSetter(const epiWString&, Virtual, V, 16)
+EmitGetterSetter(const epiArray<epiS32>&, Virtual, V, 17)
+EmitGetterSetter(const epiPtrArray<epiS32>&, Virtual, V, 18)
+
 EmitGetter(epiChar, ReadCallback, R, 0)
 EmitGetter(epiWChar, ReadCallback, R, 1)
 EmitGetter(epiBool, ReadCallback, R, 2)
@@ -96,6 +107,9 @@ EmitGetter(epiS32, ReadCallback, R, 13)
 EmitGetter(epiS64, ReadCallback, R, 14)
 EmitGetter(const epiString&, ReadCallback, R, 15)
 EmitGetter(const epiWString&, ReadCallback, R, 16)
+EmitGetter(const epiArray<epiS32>&, ReadCallback, R, 17)
+EmitGetter(const epiPtrArray<epiS32>&, ReadCallback, R, 18)
+
 EmitSetter(epiChar, WriteCallback, V, 0)
 EmitSetter(epiWChar, WriteCallback, V, 1)
 EmitSetter(epiBool, WriteCallback, V, 2)
@@ -113,5 +127,7 @@ EmitSetter(epiS32, WriteCallback, V, 13)
 EmitSetter(epiS64, WriteCallback, V, 14)
 EmitSetter(const epiString&, WriteCallback, V, 15)
 EmitSetter(const epiWString&, WriteCallback, V, 16)
+EmitSetter(const epiArray<epiS32>&, WriteCallback, V, 17)
+EmitSetter(const epiPtrArray<epiS32>&, WriteCallback, V, 18)
 
 EPI_NAMESPACE_END()

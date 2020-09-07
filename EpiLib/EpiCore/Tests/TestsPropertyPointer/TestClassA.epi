@@ -17,9 +17,8 @@ class TestClassA
     epiS64 APrty14;
     epiString APrty15;
     epiWString APrty16;
-    # TODO: uncomment
-    # epiArray Prty17;
-    # epiPtrArray Prty18;
+    epiArray<epiS32> APrty17;
+    epiPtrArray<epiS32> APrty18;
 
     [Virtual]
     {
@@ -40,9 +39,8 @@ class TestClassA
         epiS64 APrtyVirtual14;
         epiString APrtyVirtual15;
         epiWString APrtyVirtual16;
-        # TODO: uncomment
-        # epiArray Prty17;
-        # epiPtrArray Prty18;
+        epiArray<epiS32> APrtyVirtual17;
+        epiPtrArray<epiS32> APrtyVirtual18;
     }
 
     [ReadCallback]
@@ -64,9 +62,8 @@ class TestClassA
         epiS64 APrtyReadCallback14;
         epiString APrtyReadCallback15;
         epiWString APrtyReadCallback16;
-        # TODO: uncomment
-        # epiArray Prty17;
-        # epiPtrArray Prty18;
+        epiArray<epiS32> APrtyReadCallback17;
+        epiPtrArray<epiS32> APrtyReadCallback18;
     }
 
     [WriteCallback]
@@ -88,8 +85,7 @@ class TestClassA
         epiS64 APrtyWriteCallback14;
         epiString APrtyWriteCallback15;
         epiWString APrtyWriteCallback16;
-        # TODO: uncomment
-        # epiArray Prty17;
-        # epiPtrArray Prty18;
+        epiArray<epiS32> APrtyWriteCallback17;
+        epiPtrArray<epiS32> APrtyWriteCallback18;
     }
 };
