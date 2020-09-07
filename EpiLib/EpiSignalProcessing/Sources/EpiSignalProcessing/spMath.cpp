@@ -48,6 +48,7 @@ dSeriesY spMath::IDFT_Real(const dSeriesYComplex& series)
 
 dSeriesY spMath::IDFT_Real(const dSeriesYComplex& series, epiSize_t N)
 {
+    // TODO: rewrite in more optimal way
     dSeriesY y;
 
     const epiSize_t N2 = series.GetSize();
