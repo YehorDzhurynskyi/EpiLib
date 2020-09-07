@@ -20,80 +20,98 @@ epiS8 V11;
 epiS16 V12;
 epiS32 V13;
 epiS64 V14;
-epiString V15;
-epiWString V16;
+epiString V15(epiDEBUG_ONLY("Empty"));
+epiWString V16(epiDEBUG_ONLY(L"Empty"));
+
+epiChar R0;
+epiWChar R1;
+epiBool R2;
+epiByte R3;
+epiFloat R4;
+epiDouble R5;
+epiSize_t R6;
+epiU8 R7;
+epiU16 R8;
+epiU32 R9;
+epiU64 R10;
+epiS8 R11;
+epiS16 R12;
+epiS32 R13;
+epiS64 R14;
+epiString R15(epiDEBUG_ONLY("Empty"));
+epiWString R16(epiDEBUG_ONLY(L"Empty"));
 }
 
-#define EmitGetter(t, name, n) \
+#define EmitGetter(t, name, p, n) \
 t TestClassA::GetAPrty##name##n##_Callback() const \
 { \
-    static_assert(std::is_same_v<decltype(V##n), std::decay_t<t>>); \
-    return V##n; \
+    static_assert(std::is_same_v<decltype(p##n), std::decay_t<t>>); \
+    return p##n; \
 } \
 
-#define EmitSetter(t, name, n) \
+#define EmitSetter(t, name, p, n) \
 void TestClassA::SetAPrty##name##n##_Callback(t value) \
 { \
-    static_assert(std::is_same_v<decltype(V##n), std::decay_t<t>>); \
-    V##n = value; \
+    static_assert(std::is_same_v<decltype(p##n), std::decay_t<t>>); \
+    p##n = value; \
 } \
 
-#define EmitGetterSetter(t, name, n) \
-    EmitGetter(t, name, n) \
-    EmitSetter(t, name, n) \
+#define EmitGetterSetter(t, name, p, n) \
+    EmitGetter(t, name, p, n) \
+    EmitSetter(t, name, p, n) \
 
 EPI_NAMESPACE_BEGIN()
 
-EmitGetterSetter(epiChar, Virtual, 0)
-EmitGetterSetter(epiWChar, Virtual, 1)
-EmitGetterSetter(epiBool, Virtual, 2)
-EmitGetterSetter(epiByte, Virtual, 3)
-EmitGetterSetter(epiFloat, Virtual, 4)
-EmitGetterSetter(epiDouble, Virtual, 5)
-EmitGetterSetter(epiSize_t, Virtual, 6)
-EmitGetterSetter(epiU8, Virtual, 7)
-EmitGetterSetter(epiU16, Virtual, 8)
-EmitGetterSetter(epiU32, Virtual, 9)
-EmitGetterSetter(epiU64, Virtual, 10)
-EmitGetterSetter(epiS8, Virtual, 11)
-EmitGetterSetter(epiS16, Virtual, 12)
-EmitGetterSetter(epiS32, Virtual, 13)
-EmitGetterSetter(epiS64, Virtual, 14)
-EmitGetterSetter(const epiString&, Virtual, 15)
-EmitGetterSetter(const epiWString&, Virtual, 16)
-EmitGetter(epiChar, ReadCallback, 0)
-EmitGetter(epiWChar, ReadCallback, 1)
-EmitGetter(epiBool, ReadCallback, 2)
-EmitGetter(epiByte, ReadCallback, 3)
-EmitGetter(epiFloat, ReadCallback, 4)
-EmitGetter(epiDouble, ReadCallback, 5)
-EmitGetter(epiSize_t, ReadCallback, 6)
-EmitGetter(epiU8, ReadCallback, 7)
-EmitGetter(epiU16, ReadCallback, 8)
-EmitGetter(epiU32, ReadCallback, 9)
-EmitGetter(epiU64, ReadCallback, 10)
-EmitGetter(epiS8, ReadCallback, 11)
-EmitGetter(epiS16, ReadCallback, 12)
-EmitGetter(epiS32, ReadCallback, 13)
-EmitGetter(epiS64, ReadCallback, 14)
-EmitGetter(const epiString&, ReadCallback, 15)
-EmitGetter(const epiWString&, ReadCallback, 16)
-EmitSetter(epiChar, WriteCallback, 0)
-EmitSetter(epiWChar, WriteCallback, 1)
-EmitSetter(epiBool, WriteCallback, 2)
-EmitSetter(epiByte, WriteCallback, 3)
-EmitSetter(epiFloat, WriteCallback, 4)
-EmitSetter(epiDouble, WriteCallback, 5)
-EmitSetter(epiSize_t, WriteCallback, 6)
-EmitSetter(epiU8, WriteCallback, 7)
-EmitSetter(epiU16, WriteCallback, 8)
-EmitSetter(epiU32, WriteCallback, 9)
-EmitSetter(epiU64, WriteCallback, 10)
-EmitSetter(epiS8, WriteCallback, 11)
-EmitSetter(epiS16, WriteCallback, 12)
-EmitSetter(epiS32, WriteCallback, 13)
-EmitSetter(epiS64, WriteCallback, 14)
-EmitSetter(const epiString&, WriteCallback, 15)
-EmitSetter(const epiWString&, WriteCallback, 16)
+EmitGetterSetter(epiChar, Virtual, V, 0)
+EmitGetterSetter(epiWChar, Virtual, V, 1)
+EmitGetterSetter(epiBool, Virtual, V, 2)
+EmitGetterSetter(epiByte, Virtual, V, 3)
+EmitGetterSetter(epiFloat, Virtual, V, 4)
+EmitGetterSetter(epiDouble, Virtual, V, 5)
+EmitGetterSetter(epiSize_t, Virtual, V, 6)
+EmitGetterSetter(epiU8, Virtual, V, 7)
+EmitGetterSetter(epiU16, Virtual, V, 8)
+EmitGetterSetter(epiU32, Virtual, V, 9)
+EmitGetterSetter(epiU64, Virtual, V, 10)
+EmitGetterSetter(epiS8, Virtual, V, 11)
+EmitGetterSetter(epiS16, Virtual, V, 12)
+EmitGetterSetter(epiS32, Virtual, V, 13)
+EmitGetterSetter(epiS64, Virtual, V, 14)
+EmitGetterSetter(const epiString&, Virtual, V, 15)
+EmitGetterSetter(const epiWString&, Virtual, V, 16)
+EmitGetter(epiChar, ReadCallback, R, 0)
+EmitGetter(epiWChar, ReadCallback, R, 1)
+EmitGetter(epiBool, ReadCallback, R, 2)
+EmitGetter(epiByte, ReadCallback, R, 3)
+EmitGetter(epiFloat, ReadCallback, R, 4)
+EmitGetter(epiDouble, ReadCallback, R, 5)
+EmitGetter(epiSize_t, ReadCallback, R, 6)
+EmitGetter(epiU8, ReadCallback, R, 7)
+EmitGetter(epiU16, ReadCallback, R, 8)
+EmitGetter(epiU32, ReadCallback, R, 9)
+EmitGetter(epiU64, ReadCallback, R, 10)
+EmitGetter(epiS8, ReadCallback, R, 11)
+EmitGetter(epiS16, ReadCallback, R, 12)
+EmitGetter(epiS32, ReadCallback, R, 13)
+EmitGetter(epiS64, ReadCallback, R, 14)
+EmitGetter(const epiString&, ReadCallback, R, 15)
+EmitGetter(const epiWString&, ReadCallback, R, 16)
+EmitSetter(epiChar, WriteCallback, V, 0)
+EmitSetter(epiWChar, WriteCallback, V, 1)
+EmitSetter(epiBool, WriteCallback, V, 2)
+EmitSetter(epiByte, WriteCallback, V, 3)
+EmitSetter(epiFloat, WriteCallback, V, 4)
+EmitSetter(epiDouble, WriteCallback, V, 5)
+EmitSetter(epiSize_t, WriteCallback, V, 6)
+EmitSetter(epiU8, WriteCallback, V, 7)
+EmitSetter(epiU16, WriteCallback, V, 8)
+EmitSetter(epiU32, WriteCallback, V, 9)
+EmitSetter(epiU64, WriteCallback, V, 10)
+EmitSetter(epiS8, WriteCallback, V, 11)
+EmitSetter(epiS16, WriteCallback, V, 12)
+EmitSetter(epiS32, WriteCallback, V, 13)
+EmitSetter(epiS64, WriteCallback, V, 14)
+EmitSetter(const epiString&, WriteCallback, V, 15)
+EmitSetter(const epiWString&, WriteCallback, V, 16)
 
 EPI_NAMESPACE_END()

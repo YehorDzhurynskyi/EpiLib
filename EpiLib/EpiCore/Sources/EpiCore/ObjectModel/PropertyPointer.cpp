@@ -6,7 +6,7 @@ namespace epi
 {
 
 #define SetCallback(_x) (*((void (**)(Object*, _x))addr))(m_Self, *((_x*)&value))
-#define SetCallback_Ref(_x) (*((void (**)(Object*, const _x&))addr))(m_Self, (const _x&)value)
+#define SetCallback_Ref(_x) (*((void (**)(Object*, const _x&))addr))(m_Self, *((const _x*)value))
 
 #define GetCallback(_x) { _x v = (*((_x (**)(Object*))addr))(m_Self); value = (void*)*((epiSize_t*)&v); }
 #define GetCallback_Ref(_x) { const _x& v = (*((const _x& (**)(Object*))addr))(m_Self); value = (void*)&v; }
@@ -35,6 +35,8 @@ PropertyPointer PropertyPointer::CreateFromArray(epiBaseArray& self, epiMetaType
 
 void* PropertyPointer::Get() const
 {
+    epiAssert(IsReadable());
+
     void* value = nullptr;
 
     if (m_Form == Form::ArrayElem)
@@ -117,6 +119,8 @@ void* PropertyPointer::Get() const
 
 void PropertyPointer::Set(void* value)
 {
+    epiAssert(IsWriteable());
+
     if (m_Form == Form::ArrayElem)
     {
         memcpy_s(m_ValueAddr, m_SizeOf, &reinterpret_cast<Object&>(value), m_SizeOf);
@@ -169,14 +173,29 @@ void PropertyPointer::Set(void* value)
             case epiMetaTypeID_epiS16: *((epiS16*)addr) = *((epiS16*)&value); break;
             case epiMetaTypeID_epiS32: *((epiS32*)addr) = *((epiS32*)&value); break;
             case epiMetaTypeID_epiS64: *((epiS64*)addr) = *((epiS64*)&value); break;
-            case epiMetaTypeID_epiString: *((epiString*)addr) = (const epiString&)value; break;
-            case epiMetaTypeID_epiWString: *((epiWString*)addr) = (const epiWString&)value; break;
-            case epiMetaTypeID_epiArray: *((epiBaseArray*)addr) = (const epiBaseArray&)value; break;
-            case epiMetaTypeID_epiPtrArray: *((epiBaseArray*)addr) = (const epiBaseArray&)value; break;
+            case epiMetaTypeID_epiString: *((epiString*)addr) = *((const epiString*)value); break;
+            case epiMetaTypeID_epiWString: *((epiWString*)addr) = *((const epiWString*)value); break;
+            case epiMetaTypeID_epiArray: *((epiBaseArray*)addr) = *((const epiBaseArray*)value); break;
+            case epiMetaTypeID_epiPtrArray: *((epiBaseArray*)addr) = *((const epiBaseArray*)value); break;
             default: epiAssert(false, "Unexpected type id"); break;
             }
         }
     }
+}
+
+epiBool PropertyPointer::IsReadable() const
+{
+    return m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.WriteCallback;
+}
+
+epiBool PropertyPointer::IsWriteable() const
+{
+    return m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback;
+}
+
+epiMetaTypeID PropertyPointer::GetTypeID() const
+{
+    return m_TypeID;
 }
 
 }

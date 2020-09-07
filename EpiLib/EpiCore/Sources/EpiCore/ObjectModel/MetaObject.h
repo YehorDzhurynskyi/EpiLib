@@ -250,44 +250,6 @@ const MetaClass& ClassRegistry_GetMetaClass()
 }
 
 template<typename T>
-constexpr epiMetaTypeID MetaType::TypeOf()
-{
-    if constexpr (std::is_same_v<epiChar, T>) return epiMetaTypeID_epiChar;
-    else if constexpr (std::is_same_v<epiWChar, T>) return epiMetaTypeID_epiWChar;
-    else if constexpr (std::is_same_v<epiBool, T>) return epiMetaTypeID_epiBool;
-    else if constexpr (std::is_same_v<epiByte, T>) return epiMetaTypeID_epiByte;
-    else if constexpr (std::is_same_v<epiFloat, T>) return epiMetaTypeID_epiFloat;
-    else if constexpr (std::is_same_v<epiDouble, T>) return epiMetaTypeID_epiDouble;
-    else if constexpr (std::is_same_v<epiSize_t, T>) return epiMetaTypeID_epiSize_t;
-    else if constexpr (std::is_same_v<epiString, T>) return epiMetaTypeID_epiString;
-    else if constexpr (std::is_same_v<epiWString, T>) return epiMetaTypeID_epiWString;
-    else if constexpr (std::is_same_v<epiU8, T>) return epiMetaTypeID_epiU8;
-    else if constexpr (std::is_same_v<epiU16, T>) return epiMetaTypeID_epiU16;
-    else if constexpr (std::is_same_v<epiU32, T>) return epiMetaTypeID_epiU32;
-    else if constexpr (std::is_same_v<epiU64, T>) return epiMetaTypeID_epiU64;
-    else if constexpr (std::is_same_v<epiS8, T>) return epiMetaTypeID_epiS8;
-    else if constexpr (std::is_same_v<epiS16, T>) return epiMetaTypeID_epiS16;
-    else if constexpr (std::is_same_v<epiS32, T>) return epiMetaTypeID_epiS32;
-    else if constexpr (std::is_same_v<epiS64, T>) return epiMetaTypeID_epiS64;
-    else if constexpr (std::is_same_v<epiVec2f, T>) return epiMetaTypeID_epiVec2f;
-    else if constexpr (std::is_same_v<epiVec2d, T>) return epiMetaTypeID_epiVec2d;
-    else if constexpr (std::is_same_v<epiVec2s, T>) return epiMetaTypeID_epiVec2s;
-    else if constexpr (std::is_same_v<epiVec2u, T>) return epiMetaTypeID_epiVec2u;
-    else if constexpr (std::is_same_v<epiVec3f, T>) return epiMetaTypeID_epiVec3f;
-    else if constexpr (std::is_same_v<epiVec3d, T>) return epiMetaTypeID_epiVec3d;
-    else if constexpr (std::is_same_v<epiVec3s, T>) return epiMetaTypeID_epiVec3s;
-    else if constexpr (std::is_same_v<epiVec3u, T>) return epiMetaTypeID_epiVec3u;
-    else if constexpr (std::is_same_v<epiVec4f, T>) return epiMetaTypeID_epiVec4f;
-    else if constexpr (std::is_same_v<epiVec4d, T>) return epiMetaTypeID_epiVec4d;
-    else if constexpr (std::is_same_v<epiVec4s, T>) return epiMetaTypeID_epiVec4s;
-    else if constexpr (std::is_same_v<epiVec4u, T>) return epiMetaTypeID_epiVec4u;
-    else if constexpr (std::is_same_v<epiMat2x2f, T>) return epiMetaTypeID_epiMat2x2f;
-    else if constexpr (std::is_same_v<epiMat3x3f, T>) return epiMetaTypeID_epiMat3x3f;
-    else if constexpr (std::is_same_v<epiMat4x4f, T>) return epiMetaTypeID_epiMat4x4f;
-    else static_assert(false, "Unhandled case");
-}
-
-template<typename T>
 constexpr epiBool MetaType::IsFundamental()
 {
     if constexpr (std::is_same_v<epiChar, T>) return true;
