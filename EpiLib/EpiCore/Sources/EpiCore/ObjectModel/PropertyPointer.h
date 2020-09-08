@@ -4,6 +4,12 @@
 
 EPI_NAMESPACE_BEGIN()
 
+template<typename T>
+using PropertyPointerGet_t = std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, T&>;
+
+template<typename T>
+using PropertyPointerSet_t = std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, const T&>;
+
 class Object;
 class PropertyPointer final
 {
@@ -12,10 +18,10 @@ public:
     static PropertyPointer CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx);
 
     template<typename T>
-    auto Get() const -> std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, T&>;
+    PropertyPointerGet_t<T> Get() const;
 
     template<typename T>
-    void Set(std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, const T&> value);
+    void Set(PropertyPointerSet_t<T> value);
 
     epiBool IsReadable() const;
     epiBool IsWritable() const;
@@ -64,7 +70,7 @@ protected:
 };
 
 template<typename T>
-auto PropertyPointer::Get() const -> std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, T&>
+PropertyPointerGet_t<T> PropertyPointer::Get() const
 {
     static_assert(std::is_same_v<std::decay_t<T>, T>, "Please remove the reference, cv-qualifiers from provided template argument");
     epiAssert(IsReadable());
@@ -90,7 +96,7 @@ auto PropertyPointer::Get() const -> std::conditional_t<MetaType::IsFundamental<
 }
 
 template<typename T>
-void PropertyPointer::Set(std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, const T&> value)
+void PropertyPointer::Set(PropertyPointerSet_t<T> value)
 {
     static_assert(std::is_same_v<std::decay_t<T>, T>);
     epiAssert(IsWritable());
