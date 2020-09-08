@@ -78,9 +78,9 @@ public:
     };
 
 protected:
-    epiArray<uiLayoutItem> m_Items;
-    epiVec2f m_Position;
-    epiVec2f m_Size;
+    epiArray<uiLayoutItem> m_Items{};
+    epiVec2f m_Position{};
+    epiVec2f m_Size{};
     uiAlignment m_Alignment{uiAlignment_Center};
 
 EPI_GENREGION_END(uiLayout)

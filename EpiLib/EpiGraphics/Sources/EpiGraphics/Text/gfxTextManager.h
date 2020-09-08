@@ -29,7 +29,7 @@ public:
     };
 
 protected:
-    gfxTextFace m_DefaultFace;
+    gfxTextFace m_DefaultFace{};
 
 EPI_GENREGION_END(gfxTextManager)
 

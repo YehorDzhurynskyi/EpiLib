@@ -30,7 +30,7 @@ protected:
     epiSize_t GetSize_Callback() const;
 
 protected:
-    epiArray<epiComplexf> m_Y;
+    epiArray<epiComplexf> m_Y{};
 
 EPI_GENREGION_END(dSeriesYComplex)
 

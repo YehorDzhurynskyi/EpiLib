@@ -105,14 +105,14 @@ protected:
     void SetLayout_Callback(uiLayout* value);
 
 protected:
-    epiVec2f m_Position;
-    uiSizePolicyInfo m_SizePolicyInfo;
-    epiVec2f m_Size;
-    epiVec2f m_SizeMinimum;
-    epiVec2f m_SizeMaximum;
-    epiVec2f m_SizeHint;
+    epiVec2f m_Position{};
+    uiSizePolicyInfo m_SizePolicyInfo{};
+    epiVec2f m_Size{};
+    epiVec2f m_SizeMinimum{};
+    epiVec2f m_SizeMaximum{};
+    epiVec2f m_SizeHint{};
     uiWidget* m_Parent{nullptr};
-    epiPtrArray<uiWidget> m_Children;
+    epiPtrArray<uiWidget> m_Children{};
     uiLayout* m_Layout{nullptr};
 
 EPI_GENREGION_END(uiWidget)

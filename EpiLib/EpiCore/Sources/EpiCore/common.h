@@ -26,3 +26,16 @@
 #define epiRand01() ((epiFloat)rand() / RAND_MAX)
 #define epiToRadians(_degree) ((epiFloat)(_degree) * (M_PI / 180.0f))
 #define epiToDegree(_radians) ((epiFloat)(_radians) * (180.0f / M_PI))
+
+template<typename T>
+constexpr bool epiEqual(const T& lhs, const T& rhs)
+{
+    if constexpr (std::is_floating_point_v<T>)
+    {
+        return epiFloatingEq(lhs, rhs);
+    }
+    else
+    {
+        return lhs == rhs;
+    }
+}

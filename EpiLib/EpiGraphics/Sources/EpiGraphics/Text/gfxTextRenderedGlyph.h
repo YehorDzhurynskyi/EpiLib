@@ -27,8 +27,8 @@ public:
     };
 
 protected:
-    epiVec2u m_Bearing;
-    epiVec2u m_Size;
+    epiVec2u m_Bearing{};
+    epiVec2u m_Size{};
     epiU32 m_Advance{0};
 
 EPI_GENREGION_END(gfxTextRenderedGlyph)

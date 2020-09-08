@@ -24,7 +24,7 @@ public:
     };
 
 protected:
-    epiRect2f m_FrameDimension;
+    epiRect2f m_FrameDimension{};
 
 EPI_GENREGION_END(gfxCameraOrtho)
 

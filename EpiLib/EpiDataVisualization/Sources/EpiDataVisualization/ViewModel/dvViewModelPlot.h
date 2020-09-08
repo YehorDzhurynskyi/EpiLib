@@ -35,10 +35,10 @@ protected:
     void SetZoom_Callback(const epiVec2f& value);
 
 protected:
-    epiPtrArray<dvViewModelSeriesBase> m_Series;
-    epiRect2f m_BBox;
-    epiVec2f m_Origin;
-    epiVec2f m_Zoom;
+    epiPtrArray<dvViewModelSeriesBase> m_Series{};
+    epiRect2f m_BBox{};
+    epiVec2f m_Origin{};
+    epiVec2f m_Zoom{};
 
 EPI_GENREGION_END(dvViewModelPlot)
 

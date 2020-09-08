@@ -26,7 +26,7 @@ public:
     };
 
 protected:
-    dvViewModelPlot m_ViewModel;
+    dvViewModelPlot m_ViewModel{};
 
 EPI_GENREGION_END(uiPlot)
 };

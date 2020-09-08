@@ -34,8 +34,8 @@ protected:
     epiVec2f GetMouseUICoord_Callback() const;
 
 protected:
-    gfxContext m_GFXContext;
-    uiPage m_Page;
+    gfxContext m_GFXContext{};
+    uiPage m_Page{};
 
 EPI_GENREGION_END(uiContext)
 

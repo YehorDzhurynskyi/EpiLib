@@ -54,6 +54,15 @@ inline auto epiSerialize_Impl_Fetch(T& v)
         }
         return arr;
     }
+    else if constexpr (std::is_same_v<epiMat2x2f, T> || std::is_same_v<epiMat3x3f, T> || std::is_same_v<epiMat4x4f, T>)
+    {
+        auto arr = json_t::array();
+        for (int i = 0; i < T::row_type::length() * T::col_type::length(); ++i)
+        {
+            arr.push_back(epiSerialize_Impl_Fetch(v[i]));
+        }
+        return arr;
+    }
     else if constexpr (std::is_same_v<epiComplexf, T> || std::is_same_v<epiComplexd, T>)
     {
         auto arr = json_t::array();
@@ -146,6 +155,14 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
     {
         assert(json.size() == T::length());
         for (int i = 0; i < T::length(); ++i)
+        {
+            epiDeserialize_Impl_Fetch(v[i], json[i]);
+        }
+    }
+    else if constexpr (std::is_same_v<epiMat2x2f, T> || std::is_same_v<epiMat3x3f, T> || std::is_same_v<epiMat4x4f, T>)
+    {
+        assert(json.size() == T::row_type::length() * T::col_type::length());
+        for (int i = 0; i < T::row_type::length() * T::col_type::length(); ++i)
         {
             epiDeserialize_Impl_Fetch(v[i], json[i]);
         }

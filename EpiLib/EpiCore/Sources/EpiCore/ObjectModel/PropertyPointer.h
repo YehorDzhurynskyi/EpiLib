@@ -23,8 +23,18 @@ public:
     epiMetaTypeID GetTypeID() const;
 
 protected:
-    void* Get() const;
-    void Set(void* value);
+    template<typename T>
+    void* Get_Static() const;
+
+    template<typename T>
+    void Set_Static(const void* value);
+
+#if 0
+    // NOTE: runtime lookup
+    // uncomment if compile-time type deduction isn't enough
+    void* Get_Dynamic() const;
+    void Set_Dynamic(void* value);
+#endif
 
 protected:
     union
@@ -60,17 +70,17 @@ auto PropertyPointer::Get() const -> std::conditional_t<MetaType::IsFundamental<
     static_assert(!std::is_pointer_v<T>);
     epiAssert(IsReadable());
 
-    if constexpr (std::is_base_of_v<Object, T> || MetaType::IsMultiDimensional<T>() || MetaType::IsString<T>())
+    if constexpr (MetaType::IsCompound<T>() || MetaType::IsString<T>() || MetaType::IsMultiDimensional<T>())
     {
-        epiAssert(MetaType::IsCompound(m_TypeID) || MetaType::IsMultiDimensional(m_TypeID) || MetaType::IsString(m_TypeID), "Type missmatch");
+        epiAssert(MetaType::IsCompound(m_TypeID) || MetaType::IsString(m_TypeID) || MetaType::IsMultiDimensional(m_TypeID), "Type missmatch");
 
-        return *reinterpret_cast<T*>(Get());
+        return *reinterpret_cast<T*>(Get_Static<T>());
     }
     else if constexpr (MetaType::IsFundamental<T>())
     {
         static_assert(sizeof(T) <= sizeof(void*));
 
-        void* v = Get();
+        void* v = Get_Static<T>();
         return *reinterpret_cast<T*>(&v);
     }
     else
@@ -86,22 +96,176 @@ void PropertyPointer::Set(std::conditional_t<MetaType::IsFundamental<T>(), T, co
     static_assert(!std::is_pointer_v<T>);
     epiAssert(IsWritable());
 
-    if constexpr (std::is_base_of_v<Object, T> || MetaType::IsMultiDimensional<T>() || MetaType::IsString<T>())
+    if constexpr (MetaType::IsCompound<T>() || MetaType::IsString<T>() || MetaType::IsMultiDimensional<T>())
     {
-        epiAssert(MetaType::IsCompound(m_TypeID) || MetaType::IsMultiDimensional(m_TypeID) || MetaType::IsString(m_TypeID), "Type missmatch");
+        epiAssert(MetaType::IsCompound(m_TypeID) || MetaType::IsString(m_TypeID) || MetaType::IsMultiDimensional(m_TypeID), "Type missmatch");
 
-        Set(const_cast<void*>(reinterpret_cast<const void*>(&value)));
+        Set_Static<T>(reinterpret_cast<const void*>(&value));
     }
     else if constexpr (MetaType::IsFundamental<T>())
     {
         static_assert(sizeof(T) <= sizeof(void*));
 
-        Set(*reinterpret_cast<void**>(&value));
+        Set_Static<T>(*reinterpret_cast<void**>(&value));
     }
     else
     {
         static_assert(false, "Unhandled case!");
     }
 }
+
+#define GetCallback(_x) { _x v = (*((_x (**)(Object*))addr))(m_Self); value = (void*)*((epiSize_t*)&v); }
+#define GetCallback_Ref(_x) { const _x& v = (*((const _x& (**)(Object*))addr))(m_Self); value = (void*)&v; }
+
+template<typename T>
+void* PropertyPointer::Get_Static() const
+{
+    epiAssert(IsReadable());
+
+    void* value = nullptr;
+
+    if (m_Form == Form::ArrayElem)
+    {
+        value = m_ValueAddr;
+    }
+    else if (m_Form == Form::Property)
+    {
+        void* addr = (epiByte*)m_Self + (size_t)m_Meta->m_PtrRead;
+        if (m_Meta->m_Flags.ReadCallback)
+        {
+            if constexpr (MetaType::IsFundamental<T>())
+            {
+                epiAssert(MetaType::IsFundamental(m_Meta->m_TypeID));
+                GetCallback(T);
+            }
+            else if constexpr (MetaType::IsString<T>())
+            {
+                epiAssert(MetaType::IsString(m_Meta->m_TypeID));
+                GetCallback_Ref(T);
+            }
+            else if constexpr (MetaType::IsMultiDimensional<T>())
+            {
+                epiAssert(MetaType::IsMultiDimensional(m_Meta->m_TypeID));
+                GetCallback_Ref(T);
+            }
+            else if constexpr (MetaType::IsCompound<T>())
+            {
+                epiAssert(MetaType::IsCompound(m_Meta->m_TypeID));
+                GetCallback_Ref(T);
+            }
+            else
+            {
+                static_assert(false, "Unexpected type id");
+            }
+        }
+        else
+        {
+            if constexpr (MetaType::IsFundamental<T>())
+            {
+                epiAssert(MetaType::IsFundamental(m_Meta->m_TypeID));
+                value = (void*)*((void**)addr);
+            }
+            else if constexpr (MetaType::IsString<T>())
+            {
+                epiAssert(MetaType::IsString(m_Meta->m_TypeID));
+                value = addr;
+            }
+            else if constexpr (MetaType::IsMultiDimensional<T>())
+            {
+                epiAssert(MetaType::IsMultiDimensional(m_Meta->m_TypeID));
+                value = addr;
+            }
+            else if constexpr (MetaType::IsCompound<T>())
+            {
+                epiAssert(MetaType::IsCompound(m_Meta->m_TypeID));
+                value = addr;
+            }
+            else
+            {
+                static_assert(false, "Unexpected type id");
+            }
+        }
+    }
+
+    return value;
+}
+
+#undef GetCallback
+#undef GetCallback_Ref
+
+#define SetCallback(_x) (*((void (**)(Object*, _x))addr))(m_Self, *((_x*)&value))
+#define SetCallback_Ref(_x) (*((void (**)(Object*, const _x&))addr))(m_Self, *((const _x*)value))
+
+template<typename T>
+void PropertyPointer::Set_Static(const void* value)
+{
+    epiAssert(IsWritable());
+
+    if (m_Form == Form::ArrayElem)
+    {
+        memcpy_s(m_ValueAddr, m_SizeOf, &reinterpret_cast<Object&>(value), m_SizeOf);
+    }
+    else if (m_Form == Form::Property)
+    {
+        void* addr = (epiByte*)m_Self + (size_t)m_Meta->m_PtrWrite;
+        if (m_Meta->m_Flags.WriteCallback)
+        {
+            if constexpr (MetaType::IsFundamental<T>())
+            {
+                epiAssert(MetaType::IsFundamental(m_Meta->m_TypeID));
+                SetCallback(T);
+            }
+            else if constexpr (MetaType::IsString<T>())
+            {
+                epiAssert(MetaType::IsString(m_Meta->m_TypeID));
+                SetCallback_Ref(T);
+            }
+            else if constexpr (MetaType::IsMultiDimensional<T>())
+            {
+                epiAssert(MetaType::IsMultiDimensional(m_Meta->m_TypeID));
+                SetCallback_Ref(T);
+            }
+            else if constexpr (MetaType::IsCompound<T>())
+            {
+                epiAssert(MetaType::IsCompound(m_Meta->m_TypeID));
+                SetCallback_Ref(T);
+            }
+            else
+            {
+                static_assert(false, "Unexpected type id");
+            }
+        }
+        else
+        {
+            if constexpr (MetaType::IsFundamental<T>())
+            {
+                epiAssert(MetaType::IsFundamental(m_Meta->m_TypeID));
+                *((T*)addr) = *((T*)&value);
+            }
+            else if constexpr (MetaType::IsString<T>())
+            {
+                epiAssert(MetaType::IsString(m_Meta->m_TypeID));
+                *((T*)addr) = *((const T*)value);
+            }
+            else if constexpr (MetaType::IsMultiDimensional<T>())
+            {
+                epiAssert(MetaType::IsMultiDimensional(m_Meta->m_TypeID));
+                *((T*)addr) = *((const T*)value);
+            }
+            else if constexpr (MetaType::IsCompound<T>())
+            {
+                epiAssert(MetaType::IsCompound(m_Meta->m_TypeID));
+                *((T*)addr) = *((const T*)value);
+            }
+            else
+            {
+                static_assert(false, "Unexpected type id");
+            }
+        }
+    }
+}
+
+#undef SetCallback
+#undef SetCallback_Ref
 
 EPI_NAMESPACE_END()

@@ -2,7 +2,7 @@
 
 #include "EpiCore/ObjectModel/PropertyPointer.h"
 
-#include "TestClassA.h"
+#include "TestClass.h"
 
 #define ASSERT_PP(T, V) \
     if (pp.IsReadable()) \
@@ -73,6 +73,8 @@ TEST(PropertyPointer, Base)
         {
             auto pp = PropertyPointer::CreateFromProperty(a, &p);
             ASSERT_EQ(pp.GetTypeID(), p.GetTypeID());
+            ASSERT_EQ(pp.IsReadable(), p.GetFlags().ReadCallback || !p.GetFlags().WriteCallback);
+            ASSERT_EQ(pp.IsWritable(), p.GetFlags().WriteCallback || !p.GetFlags().ReadCallback);
 
             switch (p.GetTypeID())
             {
@@ -100,31 +102,59 @@ TEST(PropertyPointer, Base)
             case epiMetaTypeID_epiString: ASSERT_PP_COMPOUND_EX(epiString, "Test text", epiDEBUG_ONLY("Empty"))
             case epiMetaTypeID_epiWString: ASSERT_PP_COMPOUND_EX(epiWString, L"Test Wtext", epiDEBUG_ONLY(L"Empty"))
 
-            case epiMetaTypeID_epiArray: ASSERT_PP_ARRAY(epiArray<epiS32>, epiArray<epiS32>({ -5, 1, 2, 3, 4, -3 }))
-            case epiMetaTypeID_epiPtrArray: ASSERT_PP_ARRAY(epiPtrArray<epiS32>, epiPtrArray<epiS32>({ nullptr, (epiS32*)0xfa7f7af, (epiS32*)0x0000353f }))
+            case epiMetaTypeID_epiArray:
+                switch (p.GetNestedTypeID())
+                {
+                case epiMetaTypeID_epiS32: ASSERT_PP_ARRAY(epiArray<epiS32>, epiArray<epiS32>({ -5, 1, 2, 3, 4, -3 }))
+                case epiMetaTypeID_epiString: ASSERT_PP_ARRAY(epiArray<epiString>, epiArray<epiString>({ "Hello", " ", "World", "!", "" }))
+                default: ASSERT_FALSE("Unhandled case");
+                }
+                break;
 
-            // TODO: handle
-            // case epiMetaTypeID_epiArray: ASSERT_EQ(pp.Get<epiArray<epiS32>>(), epiArray<epiS32>{}); pp.Set<epiArray<epiS32>>({ 4, 3, -122, 5 }); ASSERT_EQ(pp.Get<epiArray<epiS32>>(), epiArray<epiS32>({ 4, 3, -122, 5 })); break;
-            // case epiMetaTypeID_epiPtrArray: ASSERT_EQ(pp.Get<epiChar>(), '0'); pp.Set<epiChar>('H'); ASSERT_EQ(pp.Get<epiChar>(), 'H'); break;
+            case epiMetaTypeID_epiPtrArray:
+                switch (p.GetNestedTypeID())
+                {
+                case epiMetaTypeID_epiS32: ASSERT_PP_ARRAY(epiPtrArray<epiS32>, epiPtrArray<epiS32>({ nullptr, (epiS32*)0xfa7f7af, (epiS32*)0x0000353f }))
+                case epiMetaTypeID_epiString: ASSERT_PP_ARRAY(epiPtrArray<epiString>, epiPtrArray<epiString>({ nullptr, (epiString*)0xfa7f7af, (epiString*)0x0000353f }))
+                default: ASSERT_FALSE("Unhandled case");
+                }
+                break;
 
-            // case epiMetaTypeID_epiVec2f: ASSERT_EQ(pp.Get<epiVec2f>(), epiVec2f(0.0f, 0.0f)); pp.Set<epiVec2f>(epiVec2f(21.0f, -0.05f)); ASSERT_EQ(pp.Get<epiVec2f>(), epiVec2f(21.0f, -0.05f)); break;
-            // case epiMetaTypeID_epiVec2d: ASSERT_EQ(pp.Get<epiVec2d>(), epiVec2d(0.0, 0.0)); pp.Set<epiVec2d>(epiVec2d(0.0210, -12.05)); ASSERT_EQ(pp.Get<epiVec2d>(), epiVec2d(0.0210, -12.05)); break;
-            // case epiMetaTypeID_epiVec2s: ASSERT_EQ(pp.Get<epiVec2s>(), epiVec2s(0, 0)); pp.Set<epiVec2s>(epiVec2s(-3, 12)); ASSERT_EQ(pp.Get<epiVec2s>(), epiVec2s(-3, 12)); break;
-            // case epiMetaTypeID_epiVec2u: ASSERT_EQ(pp.Get<epiVec2u>(), epiVec2u(0, 0)); pp.Set<epiVec2u>(epiVec2u(0, 17)); ASSERT_EQ(pp.Get<epiVec2u>(), epiVec2u(0, 17)); break;
+            case epiMetaTypeID_epiVec2f: ASSERT_PP_COMPOUND(epiVec2f, epiVec2f({ 5.0f, -0.0052f }))
+            case epiMetaTypeID_epiVec2d: ASSERT_PP_COMPOUND(epiVec2d, epiVec2d({ -35.0, 0.018 }))
+            case epiMetaTypeID_epiVec2s: ASSERT_PP_COMPOUND(epiVec2s, epiVec2s({ -9123, 0 }))
+            case epiMetaTypeID_epiVec2u: ASSERT_PP_COMPOUND(epiVec2u, epiVec2u({ 65653, 998 }))
 
-            // case epiMetaTypeID_epiVec3f: ASSERT_EQ(pp.Get<epiVec3f>(), '0'); pp.Set<epiVec3f>('H'); ASSERT_EQ(pp.Get<epiVec3f>(), 'H'); break;
-            // case epiMetaTypeID_epiVec3d: ASSERT_EQ(pp.Get<epiVec3d>(), '0'); pp.Set<epiVec3d>('H'); ASSERT_EQ(pp.Get<epiVec3d>(), 'H'); break;
-            // case epiMetaTypeID_epiVec3s: ASSERT_EQ(pp.Get<epiVec3s>(), '0'); pp.Set<epiVec3s>('H'); ASSERT_EQ(pp.Get<epiVec3s>(), 'H'); break;
-            // case epiMetaTypeID_epiVec3u: ASSERT_EQ(pp.Get<epiVec3u>(), '0'); pp.Set<epiVec3u>('H'); ASSERT_EQ(pp.Get<epiVec3u>(), 'H'); break;
+            case epiMetaTypeID_epiVec3f: ASSERT_PP_COMPOUND(epiVec3f, epiVec3f({ 5.0f, -0.0052f, -18.02f }))
+            case epiMetaTypeID_epiVec3d: ASSERT_PP_COMPOUND(epiVec3d, epiVec3d({ -35.0, 0.018, -0.074 }))
+            case epiMetaTypeID_epiVec3s: ASSERT_PP_COMPOUND(epiVec3s, epiVec3s({ -9123, 0, 182842 }))
+            case epiMetaTypeID_epiVec3u: ASSERT_PP_COMPOUND(epiVec3u, epiVec3u({ 65653, 998, 8232 }))
 
-            // case epiMetaTypeID_epiVec4f: ASSERT_EQ(pp.Get<epiVec4f>(), '0'); pp.Set<epiVec4f>('H'); ASSERT_EQ(pp.Get<epiVec4f>(), 'H'); break;
-            // case epiMetaTypeID_epiVec4d: ASSERT_EQ(pp.Get<epiVec4d>(), '0'); pp.Set<epiVec4d>('H'); ASSERT_EQ(pp.Get<epiVec4d>(), 'H'); break;
-            // case epiMetaTypeID_epiVec4s: ASSERT_EQ(pp.Get<epiVec4s>(), '0'); pp.Set<epiVec4s>('H'); ASSERT_EQ(pp.Get<epiVec4s>(), 'H'); break;
-            // case epiMetaTypeID_epiVec4u: ASSERT_EQ(pp.Get<epiVec4u>(), '0'); pp.Set<epiVec4u>('H'); ASSERT_EQ(pp.Get<epiVec4u>(), 'H'); break;
+            case epiMetaTypeID_epiVec4f: ASSERT_PP_COMPOUND(epiVec4f, epiVec4f({ 5.0f, -0.0052f, -18.02f, 0.99f }))
+            case epiMetaTypeID_epiVec4d: ASSERT_PP_COMPOUND(epiVec4d, epiVec4d({ -35.0, 0.018, -0.074, 0.421 }))
+            case epiMetaTypeID_epiVec4s: ASSERT_PP_COMPOUND(epiVec4s, epiVec4s({ -9123, 0, 182842, -67 }))
+            case epiMetaTypeID_epiVec4u: ASSERT_PP_COMPOUND(epiVec4u, epiVec4u({ 65653, 998, 8232, 74908 }))
 
-            // case epiMetaTypeID_epiMat2x2f: ASSERT_EQ(pp.Get<epiMat2x2f>(), '0'); pp.Set<epiMat2x2f>('H'); ASSERT_EQ(pp.Get<epiMat2x2f>(), 'H'); break;
-            // case epiMetaTypeID_epiMat3x3f: ASSERT_EQ(pp.Get<epiMat3x3f>(), '0'); pp.Set<epiMat3x3f>('H'); ASSERT_EQ(pp.Get<epiMat3x3f>(), 'H'); break;
-            // case epiMetaTypeID_epiMat4x4f: ASSERT_EQ(pp.Get<epiMat4x4f>(), '0'); pp.Set<epiMat4x4f>('H'); ASSERT_EQ(pp.Get<epiMat4x4f>(), 'H'); break;
+            case epiMetaTypeID_epiMat2x2f: ASSERT_PP_COMPOUND(epiMat2x2f, epiMat2x2f({ 5.0f, -0.0052f,
+                                                                                       0.50f, -102.0f }))
+
+            case epiMetaTypeID_epiMat3x3f: ASSERT_PP_COMPOUND(epiMat3x3f, epiMat3x3f({ 5.0f, -0.0052f, 0.50f,
+                                                                                       -98.006f, 0.0f, -0.0f,
+                                                                                       80.4f, -6.02f, 0.9 }))
+
+            case epiMetaTypeID_epiMat4x4f: ASSERT_PP_COMPOUND(epiMat4x4f, epiMat4x4f({ 5.0f, -0.0052f, 0.50, 70.0f,
+                                                                                       -98.006f, 0.0f, -0.0, -23.25f,
+                                                                                       80.4f, -6.02f, 0.9f, 0.0012f,
+                                                                                       65.2f, 21.0f, 78.02f, -0.0014f }))
+
+            case epiMetaTypeID_epiComplexf: ASSERT_PP_COMPOUND(epiComplexf, epiComplexf({ -5.0f, -2.0f }))
+            case epiMetaTypeID_epiComplexd: ASSERT_PP_COMPOUND(epiComplexd, epiComplexd({ 0.0055, -0.78 }))
+
+            case epiMetaTypeID_epiRect2f: ASSERT_PP_COMPOUND(epiRect2f, epiRect2f({ 5.0f, 3.0f, 0.05f, 9.0f }))
+            case epiMetaTypeID_epiRect2d: ASSERT_PP_COMPOUND(epiRect2d, epiRect2d({ -5.0, -13.0, 10.05, 21.0 }))
+            case epiMetaTypeID_epiRect2s: ASSERT_PP_COMPOUND(epiRect2s, epiRect2s({ -5, -2, 15, 71 }))
+            case epiMetaTypeID_epiRect2u: ASSERT_PP_COMPOUND(epiRect2u, epiRect2u({ 807, 35, 1998, 421 }))
+
             default: ASSERT_FALSE("Unhandled case");
             }
         }

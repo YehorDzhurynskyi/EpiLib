@@ -25,7 +25,7 @@ public:
     };
 
 protected:
-    gfxTexture m_Texture;
+    gfxTexture m_Texture{};
 
 EPI_GENREGION_END(gfxTextRendered)
 

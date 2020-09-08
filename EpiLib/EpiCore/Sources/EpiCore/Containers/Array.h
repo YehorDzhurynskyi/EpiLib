@@ -215,19 +215,9 @@ public:
 
         for (epiU32 i = 0; i < lhs.GetSize(); ++i)
         {
-            if constexpr (std::is_floating_point_v<T>)
+            if (!epiEqual(lhs[i], rhs[i]))
             {
-                if (!epiFloatingEq(lhs[i], rhs[i]))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (lhs[i] != rhs[i])
-                {
-                    return false;
-                }
+                return false;
             }
         }
 

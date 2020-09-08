@@ -27,7 +27,7 @@ public:
     };
 
 protected:
-    epiPtrArray<dSeriesBase> m_Series;
+    epiPtrArray<dSeriesBase> m_Series{};
 
 EPI_GENREGION_END(dvPlot)
 

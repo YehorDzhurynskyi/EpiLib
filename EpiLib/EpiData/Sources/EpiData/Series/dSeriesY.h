@@ -32,7 +32,7 @@ protected:
 
 protected:
     epiFloat m_XStep{1.0f};
-    epiArray<epiFloat> m_Y;
+    epiArray<epiFloat> m_Y{};
 
 EPI_GENREGION_END(dSeriesY)
 

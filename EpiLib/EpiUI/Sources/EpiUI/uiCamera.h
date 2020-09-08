@@ -25,8 +25,8 @@ public:
     };
 
 protected:
-    epiRect2f m_FrameDimensionPhysical;
-    epiRect2f m_FrameDimensionVirtual;
+    epiRect2f m_FrameDimensionPhysical{};
+    epiRect2f m_FrameDimensionVirtual{};
 
 EPI_GENREGION_END(uiCamera)
 

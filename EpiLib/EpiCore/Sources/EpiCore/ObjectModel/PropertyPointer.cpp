@@ -2,14 +2,7 @@
 
 #include "Object.h"
 
-namespace epi
-{
-
-#define SetCallback(_x) (*((void (**)(Object*, _x))addr))(m_Self, *((_x*)&value))
-#define SetCallback_Ref(_x) (*((void (**)(Object*, const _x&))addr))(m_Self, *((const _x*)value))
-
-#define GetCallback(_x) { _x v = (*((_x (**)(Object*))addr))(m_Self); value = (void*)*((epiSize_t*)&v); }
-#define GetCallback_Ref(_x) { const _x& v = (*((const _x& (**)(Object*))addr))(m_Self); value = (void*)&v; }
+EPI_NAMESPACE_BEGIN()
 
 PropertyPointer PropertyPointer::CreateFromProperty(Object& self, const MetaProperty* property)
 {
@@ -33,7 +26,26 @@ PropertyPointer PropertyPointer::CreateFromArray(epiBaseArray& self, epiMetaType
     return ptr;
 }
 
-void* PropertyPointer::Get() const
+epiBool PropertyPointer::IsReadable() const
+{
+    return m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.WriteCallback;
+}
+
+epiBool PropertyPointer::IsWritable() const
+{
+    return m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback;
+}
+
+epiMetaTypeID PropertyPointer::GetTypeID() const
+{
+    return m_TypeID;
+}
+
+#if 0
+// NOTE: runtime lookup
+// uncomment if compile-time type deduction isn't enough
+
+void* PropertyPointer::Get_Dynamic() const
 {
     epiAssert(IsReadable());
 
@@ -117,7 +129,7 @@ void* PropertyPointer::Get() const
     return value;
 }
 
-void PropertyPointer::Set(void* value)
+void PropertyPointer::Set_Dynamic(void* value)
 {
     epiAssert(IsWritable());
 
@@ -182,20 +194,6 @@ void PropertyPointer::Set(void* value)
         }
     }
 }
+#endif
 
-epiBool PropertyPointer::IsReadable() const
-{
-    return m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.WriteCallback;
-}
-
-epiBool PropertyPointer::IsWritable() const
-{
-    return m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback;
-}
-
-epiMetaTypeID PropertyPointer::GetTypeID() const
-{
-    return m_TypeID;
-}
-
-}
+EPI_NAMESPACE_END()

@@ -98,75 +98,71 @@ inline MetaProperty epiMetaProperty(const epiChar* name,
     return prty;
 }
 
-enum : epiMetaTypeID
-{
-    epiMetaTypeID_None = 0,
-    epiMetaTypeID_Ptr = epiHashCompileTime(Ptr),
+static constexpr epiMetaTypeID epiMetaTypeID_None = 0;
+static constexpr epiMetaTypeID epiMetaTypeID_Ptr = epiHashCompileTime(Ptr);
 
-    epiMetaTypeID_epiChar = epiHashCompileTime(epiChar),
-    epiMetaTypeID_epiWChar = epiHashCompileTime(epiWChar),
-    epiMetaTypeID_epiBool = epiHashCompileTime(epiBool),
-    epiMetaTypeID_epiByte = epiHashCompileTime(epiByte),
-    epiMetaTypeID_epiFloat = epiHashCompileTime(epiFloat),
-    epiMetaTypeID_epiDouble = epiHashCompileTime(epiDouble),
-    epiMetaTypeID_epiSize_t = epiHashCompileTime(epiSize_t),
-    epiMetaTypeID_epiString = epiHashCompileTime(epiString),
-    epiMetaTypeID_epiWString = epiHashCompileTime(epiWString),
-    epiMetaTypeID_epiU8 = epiHashCompileTime(epiU8),
-    epiMetaTypeID_epiU16 = epiHashCompileTime(epiU16),
-    epiMetaTypeID_epiU32 = epiHashCompileTime(epiU32),
-    epiMetaTypeID_epiU64 = epiHashCompileTime(epiU64),
-    epiMetaTypeID_epiS8 = epiHashCompileTime(epiS8),
-    epiMetaTypeID_epiS16 = epiHashCompileTime(epiS16),
-    epiMetaTypeID_epiS32 = epiHashCompileTime(epiS32),
-    epiMetaTypeID_epiS64 = epiHashCompileTime(epiS64),
+static constexpr epiMetaTypeID epiMetaTypeID_epiChar = epiHashCompileTime(epiChar);
+static constexpr epiMetaTypeID epiMetaTypeID_epiWChar = epiHashCompileTime(epiWChar);
+static constexpr epiMetaTypeID epiMetaTypeID_epiBool = epiHashCompileTime(epiBool);
+static constexpr epiMetaTypeID epiMetaTypeID_epiByte = epiHashCompileTime(epiByte);
+static constexpr epiMetaTypeID epiMetaTypeID_epiFloat = epiHashCompileTime(epiFloat);
+static constexpr epiMetaTypeID epiMetaTypeID_epiDouble = epiHashCompileTime(epiDouble);
+static constexpr epiMetaTypeID epiMetaTypeID_epiSize_t = epiHashCompileTime(epiSize_t);
+static constexpr epiMetaTypeID epiMetaTypeID_epiString = epiHashCompileTime(epiString);
+static constexpr epiMetaTypeID epiMetaTypeID_epiWString = epiHashCompileTime(epiWString);
+static constexpr epiMetaTypeID epiMetaTypeID_epiU8 = epiHashCompileTime(epiU8);
+static constexpr epiMetaTypeID epiMetaTypeID_epiU16 = epiHashCompileTime(epiU16);
+static constexpr epiMetaTypeID epiMetaTypeID_epiU32 = epiHashCompileTime(epiU32);
+static constexpr epiMetaTypeID epiMetaTypeID_epiU64 = epiHashCompileTime(epiU64);
+static constexpr epiMetaTypeID epiMetaTypeID_epiS8 = epiHashCompileTime(epiS8);
+static constexpr epiMetaTypeID epiMetaTypeID_epiS16 = epiHashCompileTime(epiS16);
+static constexpr epiMetaTypeID epiMetaTypeID_epiS32 = epiHashCompileTime(epiS32);
+static constexpr epiMetaTypeID epiMetaTypeID_epiS64 = epiHashCompileTime(epiS64);
 
-    epiMetaTypeID_epiArray = epiHashCompileTime(epiArray),
-    epiMetaTypeID_epiPtrArray = epiHashCompileTime(epiPtrArray),
+static constexpr epiMetaTypeID epiMetaTypeID_epiArray = epiHashCompileTime(epiArray);
+static constexpr epiMetaTypeID epiMetaTypeID_epiPtrArray = epiHashCompileTime(epiPtrArray);
 
-    epiMetaTypeID_epiVec2f = epiHashCompileTime(epiVec2f),
-    epiMetaTypeID_epiVec2d = epiHashCompileTime(epiVec2d),
-    epiMetaTypeID_epiVec2s = epiHashCompileTime(epiVec2s),
-    epiMetaTypeID_epiVec2u = epiHashCompileTime(epiVec2u),
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2f = epiHashCompileTime(epiVec2f);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2d = epiHashCompileTime(epiVec2d);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2s = epiHashCompileTime(epiVec2s);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2u = epiHashCompileTime(epiVec2u);
 
-    epiMetaTypeID_epiVec3f = epiHashCompileTime(epiVec3f),
-    epiMetaTypeID_epiVec3d = epiHashCompileTime(epiVec3d),
-    epiMetaTypeID_epiVec3s = epiHashCompileTime(epiVec3s),
-    epiMetaTypeID_epiVec3u = epiHashCompileTime(epiVec3u),
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3f = epiHashCompileTime(epiVec3f);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3d = epiHashCompileTime(epiVec3d);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3s = epiHashCompileTime(epiVec3s);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3u = epiHashCompileTime(epiVec3u);
 
-    epiMetaTypeID_epiVec4f = epiHashCompileTime(epiVec4f),
-    epiMetaTypeID_epiVec4d = epiHashCompileTime(epiVec4d),
-    epiMetaTypeID_epiVec4s = epiHashCompileTime(epiVec4s),
-    epiMetaTypeID_epiVec4u = epiHashCompileTime(epiVec4u),
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4f = epiHashCompileTime(epiVec4f);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4d = epiHashCompileTime(epiVec4d);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4s = epiHashCompileTime(epiVec4s);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4u = epiHashCompileTime(epiVec4u);
 
-    epiMetaTypeID_epiMat2x2f = epiHashCompileTime(epiMat2x2f),
-    epiMetaTypeID_epiMat3x3f = epiHashCompileTime(epiMat3x3f),
-    epiMetaTypeID_epiMat4x4f = epiHashCompileTime(epiMat4x4f)
-};
+static constexpr epiMetaTypeID epiMetaTypeID_epiMat2x2f = epiHashCompileTime(epiMat2x2f);
+static constexpr epiMetaTypeID epiMetaTypeID_epiMat3x3f = epiHashCompileTime(epiMat3x3f);
+static constexpr epiMetaTypeID epiMetaTypeID_epiMat4x4f = epiHashCompileTime(epiMat4x4f);
+
+static constexpr epiMetaTypeID epiMetaTypeID_epiComplexf = epiHashCompileTime(epiComplexf);
+static constexpr epiMetaTypeID epiMetaTypeID_epiComplexd = epiHashCompileTime(epiComplexd);
+
+static constexpr epiMetaTypeID epiMetaTypeID_epiRect2f = epiHashCompileTime(epiRect2f);
+static constexpr epiMetaTypeID epiMetaTypeID_epiRect2d = epiHashCompileTime(epiRect2d);
+static constexpr epiMetaTypeID epiMetaTypeID_epiRect2s = epiHashCompileTime(epiRect2s);
+static constexpr epiMetaTypeID epiMetaTypeID_epiRect2u = epiHashCompileTime(epiRect2u);
 
 class MetaType
 {
 public:
-    static epiBool IsFundamental(epiMetaTypeID typeID);
-    static epiBool IsString(epiMetaTypeID typeID);
-    static epiBool IsMultiDimensional(epiMetaTypeID typeID);
-    static epiBool IsMultiDimensionalInplace(epiMetaTypeID typeID);
-    static epiBool IsCompound(epiMetaTypeID typeID);
+    static constexpr epiBool IsFundamental(epiMetaTypeID typeID);
+    static constexpr epiBool IsString(epiMetaTypeID typeID);
+    static constexpr epiBool IsMultiDimensional(epiMetaTypeID typeID);
+    static constexpr epiBool IsMultiDimensionalInplace(epiMetaTypeID typeID);
+    static constexpr epiBool IsCompound(epiMetaTypeID typeID);
 
-    template<typename T>
-    static constexpr epiMetaTypeID TypeOf();
-
-    template<typename T>
-    static constexpr epiBool IsFundamental();
-
-    template<typename T>
-    static constexpr epiBool IsString();
-
-    template<typename T>
-    static constexpr epiBool IsMultiDimensional();
-
-    template<typename T>
-    static constexpr epiBool IsMultiDimensionalInplace();
+    template<typename T> static constexpr epiBool IsFundamental();
+    template<typename T> static constexpr epiBool IsString();
+    template<typename T> static constexpr epiBool IsMultiDimensional();
+    template<typename T> static constexpr epiBool IsMultiDimensionalInplace();
+    template<typename T> static constexpr epiBool IsCompound();
 
 #if 0
     static epiByte* GetElementByIndex(const epiByte* container, const MetaProperty& meta, epiS32 index);
@@ -249,58 +245,156 @@ const MetaClass& ClassRegistry_GetMetaClass()
     return t;
 }
 
+constexpr epiBool MetaType::IsFundamental(epiMetaTypeID typeID)
+{
+    switch (typeID)
+    {
+    case epiMetaTypeID_epiChar:
+    case epiMetaTypeID_epiWChar:
+    case epiMetaTypeID_epiBool:
+    case epiMetaTypeID_epiByte:
+    case epiMetaTypeID_epiFloat:
+    case epiMetaTypeID_epiDouble:
+    case epiMetaTypeID_epiSize_t:
+    case epiMetaTypeID_epiU8:
+    case epiMetaTypeID_epiU16:
+    case epiMetaTypeID_epiU32:
+    case epiMetaTypeID_epiU64:
+    case epiMetaTypeID_epiS8:
+    case epiMetaTypeID_epiS16:
+    case epiMetaTypeID_epiS32:
+    case epiMetaTypeID_epiS64:
+        return true;
+    default: return false;
+    }
+}
+
+constexpr epiBool MetaType::IsString(epiMetaTypeID typeID)
+{
+    return typeID == epiMetaTypeID_epiString || typeID == epiMetaTypeID_epiWString;
+}
+
+constexpr epiBool MetaType::IsMultiDimensional(epiMetaTypeID typeID)
+{
+    return
+        typeID == epiMetaTypeID_epiArray ||
+        typeID == epiMetaTypeID_epiPtrArray ||
+        IsMultiDimensionalInplace(typeID);
+}
+
+constexpr epiBool MetaType::IsMultiDimensionalInplace(epiMetaTypeID typeID)
+{
+    switch (typeID)
+    {
+    case epiMetaTypeID_epiVec2f:
+    case epiMetaTypeID_epiVec2d:
+    case epiMetaTypeID_epiVec2s:
+    case epiMetaTypeID_epiVec2u:
+    case epiMetaTypeID_epiVec3f:
+    case epiMetaTypeID_epiVec3d:
+    case epiMetaTypeID_epiVec3s:
+    case epiMetaTypeID_epiVec3u:
+    case epiMetaTypeID_epiVec4f:
+    case epiMetaTypeID_epiVec4d:
+    case epiMetaTypeID_epiVec4s:
+    case epiMetaTypeID_epiVec4u:
+    case epiMetaTypeID_epiMat2x2f:
+    case epiMetaTypeID_epiMat3x3f:
+    case epiMetaTypeID_epiMat4x4f:
+    case epiMetaTypeID_epiComplexf:
+    case epiMetaTypeID_epiComplexd:
+    case epiMetaTypeID_epiRect2f:
+    case epiMetaTypeID_epiRect2d:
+    case epiMetaTypeID_epiRect2s:
+    case epiMetaTypeID_epiRect2u:
+    return true;
+    default: return false;
+    }
+}
+
+constexpr epiBool MetaType::IsCompound(epiMetaTypeID typeID)
+{
+    return
+        typeID != epiMetaTypeID_None &&
+        !IsString(typeID) &&
+        !IsFundamental(typeID) &&
+        !IsMultiDimensional(typeID);
+}
+
 template<typename T>
 constexpr epiBool MetaType::IsFundamental()
 {
-    if constexpr (std::is_same_v<epiChar, T>) return true;
-    else if constexpr (std::is_same_v<epiWChar, T>) return true;
-    else if constexpr (std::is_same_v<epiBool, T>) return true;
-    else if constexpr (std::is_same_v<epiByte, T>) return true;
-    else if constexpr (std::is_same_v<epiFloat, T>) return true;
-    else if constexpr (std::is_same_v<epiDouble, T>) return true;
-    else if constexpr (std::is_same_v<epiSize_t, T>) return true;
-    else if constexpr (std::is_same_v<epiU8, T>) return true;
-    else if constexpr (std::is_same_v<epiU16, T>) return true;
-    else if constexpr (std::is_same_v<epiU32, T>) return true;
-    else if constexpr (std::is_same_v<epiU64, T>) return true;
-    else if constexpr (std::is_same_v<epiS8, T>) return true;
-    else if constexpr (std::is_same_v<epiS16, T>) return true;
-    else if constexpr (std::is_same_v<epiS32, T>) return true;
-    else if constexpr (std::is_same_v<epiS64, T>) return true;
+    if constexpr (std::is_same_v<epiChar, T>) { static_assert(IsFundamental(epiMetaTypeID_epiChar)); return true; }
+    else if constexpr (std::is_same_v<epiWChar, T>) { static_assert(IsFundamental(epiMetaTypeID_epiWChar)); return true; }
+    else if constexpr (std::is_same_v<epiBool, T>) { static_assert(IsFundamental(epiMetaTypeID_epiBool)); return true; }
+    else if constexpr (std::is_same_v<epiByte, T>) { static_assert(IsFundamental(epiMetaTypeID_epiByte)); return true; }
+    else if constexpr (std::is_same_v<epiFloat, T>) { static_assert(IsFundamental(epiMetaTypeID_epiFloat)); return true; }
+    else if constexpr (std::is_same_v<epiDouble, T>) { static_assert(IsFundamental(epiMetaTypeID_epiDouble)); return true; }
+    else if constexpr (std::is_same_v<epiSize_t, T>) { static_assert(IsFundamental(epiMetaTypeID_epiSize_t)); return true; }
+    else if constexpr (std::is_same_v<epiU8, T>) { static_assert(IsFundamental(epiMetaTypeID_epiU8)); return true; }
+    else if constexpr (std::is_same_v<epiU16, T>) { static_assert(IsFundamental(epiMetaTypeID_epiU16)); return true; }
+    else if constexpr (std::is_same_v<epiU32, T>) { static_assert(IsFundamental(epiMetaTypeID_epiU32)); return true; }
+    else if constexpr (std::is_same_v<epiU64, T>) { static_assert(IsFundamental(epiMetaTypeID_epiU64)); return true; }
+    else if constexpr (std::is_same_v<epiS8, T>) { static_assert(IsFundamental(epiMetaTypeID_epiS8)); return true; }
+    else if constexpr (std::is_same_v<epiS16, T>) { static_assert(IsFundamental(epiMetaTypeID_epiS16)); return true; }
+    else if constexpr (std::is_same_v<epiS32, T>) { static_assert(IsFundamental(epiMetaTypeID_epiS32)); return true; }
+    else if constexpr (std::is_same_v<epiS64, T>) { static_assert(IsFundamental(epiMetaTypeID_epiS64)); return true; }
     else return false;
 }
 
 template<typename T>
 constexpr epiBool MetaType::IsString()
 {
+    static_assert(IsString(epiMetaTypeID_epiString) && IsString(epiMetaTypeID_epiWString));
+ 
     return std::is_same_v<epiString, T> || std::is_same_v<epiWString, T>;
 }
 
 template<typename T>
 constexpr epiBool MetaType::IsMultiDimensional()
 {
+    static_assert(IsMultiDimensional(epiMetaTypeID_epiArray) || IsMultiDimensional(epiMetaTypeID_epiPtrArray));
+
     return std::is_base_of_v<epiBaseArray, T> || IsMultiDimensionalInplace<T>();
 }
 
 template<typename T>
 constexpr epiBool MetaType::IsMultiDimensionalInplace()
 {
-    if constexpr (std::is_same_v<epiVec2f, T>) return true;
-    else if constexpr (std::is_same_v<epiVec2d, T>) return true;
-    else if constexpr (std::is_same_v<epiVec2s, T>) return true;
-    else if constexpr (std::is_same_v<epiVec2u, T>) return true;
-    else if constexpr (std::is_same_v<epiVec3f, T>) return true;
-    else if constexpr (std::is_same_v<epiVec3d, T>) return true;
-    else if constexpr (std::is_same_v<epiVec3s, T>) return true;
-    else if constexpr (std::is_same_v<epiVec3u, T>) return true;
-    else if constexpr (std::is_same_v<epiVec4f, T>) return true;
-    else if constexpr (std::is_same_v<epiVec4d, T>) return true;
-    else if constexpr (std::is_same_v<epiVec4s, T>) return true;
-    else if constexpr (std::is_same_v<epiVec4u, T>) return true;
-    else if constexpr (std::is_same_v<epiMat2x2f, T>) return true;
-    else if constexpr (std::is_same_v<epiMat3x3f, T>) return true;
-    else if constexpr (std::is_same_v<epiMat4x4f, T>) return true;
+    if constexpr (std::is_same_v<epiVec2f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2f)); return true; }
+    else if constexpr (std::is_same_v<epiVec2d, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2d)); return true; }
+    else if constexpr (std::is_same_v<epiVec2s, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2s)); return true; }
+    else if constexpr (std::is_same_v<epiVec2u, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2u)); return true; }
+    else if constexpr (std::is_same_v<epiVec3f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3f)); return true; }
+    else if constexpr (std::is_same_v<epiVec3d, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3d)); return true; }
+    else if constexpr (std::is_same_v<epiVec3s, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3s)); return true; }
+    else if constexpr (std::is_same_v<epiVec3u, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3u)); return true; }
+    else if constexpr (std::is_same_v<epiVec4f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4f)); return true; }
+    else if constexpr (std::is_same_v<epiVec4d, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4d)); return true; }
+    else if constexpr (std::is_same_v<epiVec4s, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4s)); return true; }
+    else if constexpr (std::is_same_v<epiVec4u, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4u)); return true; }
+    else if constexpr (std::is_same_v<epiMat2x2f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiMat2x2f)); return true; }
+    else if constexpr (std::is_same_v<epiMat3x3f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiMat3x3f)); return true; }
+    else if constexpr (std::is_same_v<epiMat4x4f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiMat4x4f)); return true; }
+    else if constexpr (std::is_same_v<epiComplexf, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiComplexf)); return true; }
+    else if constexpr (std::is_same_v<epiComplexd, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiComplexd)); return true; }
+    else if constexpr (std::is_same_v<epiRect2f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiRect2f)); return true; }
+    else if constexpr (std::is_same_v<epiRect2d, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiRect2d)); return true; }
+    else if constexpr (std::is_same_v<epiRect2s, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiRect2s)); return true; }
+    else if constexpr (std::is_same_v<epiRect2u, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiRect2u)); return true; }
     else return false;
+}
+
+template<typename T>
+constexpr epiBool MetaType::IsCompound()
+{
+    if constexpr (std::is_base_of_v<Object, T>)
+    {
+        static_assert(IsCompound(T::TypeID));
+        return true;
+    }
+
+    return false;
 }
 
 }

@@ -27,7 +27,7 @@ public:
 
 protected:
     dSeriesBase* m_Model{nullptr};
-    Color m_Color;
+    Color m_Color{};
 
 EPI_GENREGION_END(dvViewModelSeriesBase)
 };

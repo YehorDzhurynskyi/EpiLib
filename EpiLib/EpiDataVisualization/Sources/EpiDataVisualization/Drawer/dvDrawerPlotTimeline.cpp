@@ -52,10 +52,10 @@ void dvDrawerPlotTimeline::Draw(gfxContext& ctx, const dvViewModelPlot& plot, co
         }
     }
 
-    const epiVec2f tl = ((plot.GetClipBox().TopLeft() - box.BottomLeft()) / box.GetSize()) * frame.GetSize() + frame.BottomLeft();
-    const epiVec2f br = ((plot.GetClipBox().BottomRight() - box.BottomLeft()) / box.GetSize()) * frame.GetSize() + frame.BottomLeft();
+    const epiVec2f lt = ((plot.GetClipBox().LeftTop() - box.LeftBottom()) / box.GetSize()) * frame.GetSize() + frame.LeftBottom();
+    const epiVec2f rb = ((plot.GetClipBox().RightBottom() - box.LeftBottom()) / box.GetSize()) * frame.GetSize() + frame.LeftBottom();
 
-    epiRect2f overlay(tl, br);
+    epiRect2f overlay(lt, rb);
     ctx.GetDrawerPrimitive().DrawQuad(overlay, Color(0x80, 0x80, 0x80, 0x60), -1.0f);
 }
 

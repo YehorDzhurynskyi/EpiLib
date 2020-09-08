@@ -32,9 +32,9 @@ public:
     };
 
 protected:
-    gfxDrawerText m_DrawerText;
-    gfxDrawerPrimitive m_DrawerPrimitive;
-    gfxVertexArray m_NullVertexArray;
+    gfxDrawerText m_DrawerText{};
+    gfxDrawerPrimitive m_DrawerPrimitive{};
+    gfxVertexArray m_NullVertexArray{};
     gfxCamera* m_Camera{nullptr};
 
 EPI_GENREGION_END(gfxContext)

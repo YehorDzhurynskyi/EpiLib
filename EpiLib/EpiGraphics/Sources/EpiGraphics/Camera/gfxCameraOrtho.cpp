@@ -10,10 +10,10 @@ EPI_NAMESPACE_BEGIN()
 epiMat4x4f gfxCameraOrtho::GetProjectionMatrix_Internal() const
 {
     const epiRect2f& rect = GetFrameDimension();
-    const epiVec2f& tl = rect.TopLeft();
-    const epiVec2f& br = rect.BottomRight();
+    const epiVec2f& lb = rect.LeftBottom();
+    const epiVec2f& rt = rect.RightTop();
 
-    epiMat4x4f mat = glm::ortho(tl.x, br.x, br.y, tl.y, GetPlaneNear(), GetPlaneFar());
+    epiMat4x4f mat = glm::ortho(lb.x, rt.x, lb.y, rt.y, GetPlaneNear(), GetPlaneFar());
     mat[0][0] /= GetAspectRatio();
 
     return mat;

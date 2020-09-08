@@ -39,9 +39,9 @@ protected:
     epiMat4x4f GetViewMatrixInverse_Callback() const;
 
 protected:
-    epiVec3f m_Position;
-    epiVec3f m_LookAtPosition;
-    epiVec3f m_UpDirection;
+    epiVec3f m_Position{};
+    epiVec3f m_LookAtPosition{};
+    epiVec3f m_UpDirection{};
     epiFloat m_PlaneFar{0.0f};
     epiFloat m_PlaneNear{0.0f};
     epiFloat m_AspectRatio{0.0f};

@@ -179,27 +179,27 @@ void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color, epi
     VertexQuad& vertex5 = m_VertexBufferMappingQuads.PushBack<VertexQuad>();
     VertexQuad& vertex6 = m_VertexBufferMappingQuads.PushBack<VertexQuad>();
 
-    const epiVec2f& tl = rect.TopLeft();
-    const epiVec2f& tr = rect.TopRight();
-    const epiVec2f& bl = rect.BottomLeft();
-    const epiVec2f& br = rect.BottomRight();
+    const epiVec2f& lb = rect.LeftBottom();
+    const epiVec2f& rt = rect.RightTop();
+    const epiVec2f& lt = rect.LeftTop();
+    const epiVec2f& rb = rect.RightBottom();
 
-    vertex1.Position.x = tr.x;
-    vertex1.Position.y = tr.y;
+    vertex1.Position.x = rt.x;
+    vertex1.Position.y = rt.y;
     vertex1.Position.z = z;
 
-    vertex2.Position.x = tl.x;
-    vertex2.Position.y = tl.y;
+    vertex2.Position.x = lt.x;
+    vertex2.Position.y = lt.y;
     vertex2.Position.z = z;
 
-    vertex3.Position.x = bl.x;
-    vertex3.Position.y = bl.y;
+    vertex3.Position.x = lb.x;
+    vertex3.Position.y = lb.y;
     vertex3.Position.z = z;
 
     vertex4 = vertex3;
 
-    vertex5.Position.x = br.x;
-    vertex5.Position.y = br.y;
+    vertex5.Position.x = rb.x;
+    vertex5.Position.y = rb.y;
     vertex5.Position.z = z;
 
     vertex6 = vertex1;

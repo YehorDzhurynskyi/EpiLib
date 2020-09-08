@@ -64,7 +64,7 @@ protected:
     void SetColor_Callback(const epiVec4f& value);
 
 protected:
-    epiVec4f m_Color;
+    epiVec4f m_Color{};
 
 EPI_GENREGION_END(Color)
 public:

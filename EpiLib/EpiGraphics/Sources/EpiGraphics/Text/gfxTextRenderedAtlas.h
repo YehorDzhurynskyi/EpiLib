@@ -28,11 +28,11 @@ public:
     };
 
 protected:
-    epiRect2f m_UV;
+    epiRect2f m_UV{};
     epiFloat m_AspectRatio{0.0f};
     epiFloat m_Height{0.0f};
-    epiVec2f m_Advance;
-    epiVec2f m_Bearing;
+    epiVec2f m_Advance{};
+    epiVec2f m_Bearing{};
 
 EPI_GENREGION_END(gfxTextRenderedAtlasGlyph)
 };

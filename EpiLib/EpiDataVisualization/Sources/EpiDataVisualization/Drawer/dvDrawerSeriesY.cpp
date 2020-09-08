@@ -16,7 +16,7 @@ void dvDrawerSeriesY::Draw_Internal(gfxContext& ctx, const dvViewModelSeriesBase
     for (epiFloat y : seriesY->GetY())
     {
         const epiVec2f world(x, y);
-        const epiVec2f yy = ((world - worldFrame.BottomLeft()) / worldFrame.GetSize()) * uiFrame.GetSize() + uiFrame.BottomLeft();
+        const epiVec2f yy = ((world - worldFrame.LeftBottom()) / worldFrame.GetSize()) * uiFrame.GetSize() + uiFrame.LeftBottom();
 
         DrawLineStrip(yy, series.GetColor(), z);
 

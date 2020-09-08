@@ -52,7 +52,7 @@ using epiVec4 = epiVec<4, T>;
 using epiVec4f = epiVec4<epiFloat>;
 using epiVec4d = epiVec4<epiDouble>;
 using epiVec4s = epiVec4<epiS32>;
-using epiVec4u = epiVec2<epiU32>;
+using epiVec4u = epiVec4<epiU32>;
 
 using epiMat2x2f = glm::mat2x2;
 using epiMat3x3f = glm::mat3x3;
@@ -84,46 +84,49 @@ public:
         return isValid;
     }
 
-    epiRect2(const epiVec2<T>& tl, const epiVec2<T>& br)
-        : Left(tl.x)
-        , Top(tl.y)
-        , Right(br.x)
-        , Bottom(br.y)
+    epiRect2(const epiVec2<T>& lb, const epiVec2<T>& rt)
+        : Left(lb.x)
+        , Bottom(lb.y)
+        , Right(rt.x)
+        , Top(rt.y)
     {
         Validate();
     }
 
-    epiRect2(T left, T top, T right, T bottom)
+    epiRect2(T left, T bottom, T width, T height)
         : Left(left)
-        , Top(top)
-        , Right(right)
         , Bottom(bottom)
+        , Right(left + width)
+        , Top(bottom + height)
     {
+        epiAssert(width >= T{});
+        epiAssert(height >= T{});
+
         Validate();
     }
 
-    epiVec2<T> TopLeft() const
-    {
-        Validate();
-        return epiVec2<T>(Left, Top);
-    }
-
-    epiVec2<T> BottomRight() const
-    {
-        Validate();
-        return epiVec2<T>(Right, Bottom);
-    }
-
-    epiVec2<T> BottomLeft() const
+    epiVec2<T> LeftBottom() const
     {
         Validate();
         return epiVec2<T>(Left, Bottom);
     }
 
-    epiVec2<T> TopRight() const
+    epiVec2<T> RightTop() const
     {
         Validate();
         return epiVec2<T>(Right, Top);
+    }
+
+    epiVec2<T> LeftTop() const
+    {
+        Validate();
+        return epiVec2<T>(Left, Top);
+    }
+
+    epiVec2<T> RightBottom() const
+    {
+        Validate();
+        return epiVec2<T>(Right, Bottom);
     }
 
     T GetWidth() const
@@ -150,9 +153,23 @@ public:
     {
         return
             vec.x >= Left &&
-            vec.x <= Right &&
             vec.y >= Bottom &&
+            vec.x <= Right &&
             vec.y <= Top;
+    }
+
+    friend epiBool operator==(const epiRect2<T>& lhs, const epiRect2<T>& rhs)
+    {
+        return
+            epiEqual(lhs.Left, rhs.Left) &&
+            epiEqual(lhs.Bottom, rhs.Bottom) &&
+            epiEqual(lhs.Right, rhs.Right) &&
+            epiEqual(lhs.Top, rhs.Top);
+    }
+
+    friend epiBool operator!=(const epiRect2<T>& lhs, const epiRect2<T>& rhs)
+    {
+        return !(operator==(lhs, rhs));
     }
 
     friend epiRect2<T> operator*(const epiRect2<T>& lhs, epiFloat rhs)
@@ -160,9 +177,9 @@ public:
         epiRect2<T> rect;
 
         rect.Left = lhs.Left * rhs;
-        rect.Top = lhs.Top * rhs;
-        rect.Right = lhs.Right * rhs;
         rect.Bottom = lhs.Bottom * rhs;
+        rect.Right = lhs.Right * rhs;
+        rect.Top = lhs.Top * rhs;
 
         return rect;
     }
@@ -172,9 +189,9 @@ public:
         epiRect2<T> rect;
 
         rect.Left = rhs.Left * lhs;
-        rect.Top = rhs.Top * lhs;
-        rect.Right = rhs.Right * lhs;
         rect.Bottom = rhs.Bottom * lhs;
+        rect.Right = rhs.Right * lhs;
+        rect.Top = rhs.Top * lhs;
 
         return rect;
     }
@@ -184,9 +201,9 @@ public:
         epiRect2<T> rect;
 
         rect.Left = lhs.Left + rhs.x;
-        rect.Top = lhs.Top + rhs.y;
-        rect.Right = lhs.Right + rhs.x;
         rect.Bottom = lhs.Bottom + rhs.y;
+        rect.Right = lhs.Right + rhs.x;
+        rect.Top = lhs.Top + rhs.y;
 
         return rect;
     }
@@ -196,9 +213,9 @@ public:
         epiRect2<T> rect;
 
         rect.Left = rhs.Left + lhs.x;
-        rect.Top = rhs.Top + lhs.y;
-        rect.Right = rhs.Right + lhs.x;
         rect.Bottom = rhs.Bottom + lhs.y;
+        rect.Right = rhs.Right + lhs.x;
+        rect.Top = rhs.Top + lhs.y;
 
         return rect;
     }
@@ -206,9 +223,9 @@ public:
     epiRect2<T>& operator*=(const epiVec2<T>& rhs)
     {
         Left *=  rhs.x;
-        Top *= rhs.y;
-        Right *= rhs.x;
         Bottom *= rhs.y;
+        Right *= rhs.x;
+        Top *= rhs.y;
 
         return *this;
     }
@@ -216,9 +233,9 @@ public:
     epiRect2<T>& operator/=(const epiVec2<T>& rhs)
     {
         Left /= rhs.x;
-        Top /= rhs.y;
-        Right /= rhs.x;
         Bottom /= rhs.y;
+        Right /= rhs.x;
+        Top /= rhs.y;
 
         return *this;
     }
@@ -228,9 +245,9 @@ public:
         epiRect2<T> rect;
 
         rect.Left = lhs.Left * rhs.x;
-        rect.Top = lhs.Top * rhs.y;
-        rect.Right = lhs.Right * rhs.x;
         rect.Bottom = lhs.Bottom * rhs.y;
+        rect.Right = lhs.Right * rhs.x;
+        rect.Top = lhs.Top * rhs.y;
 
         return rect;
     }
@@ -240,9 +257,9 @@ public:
         epiRect2<T> rect;
 
         rect.Left = rhs.Left * lhs.x;
-        rect.Top = rhs.Top * lhs.y;
-        rect.Right = rhs.Right * lhs.x;
         rect.Bottom = rhs.Bottom * lhs.y;
+        rect.Right = rhs.Right * lhs.x;
+        rect.Top = rhs.Top * lhs.y;
 
         return rect;
     }
@@ -252,9 +269,9 @@ public:
         epiRect2<T> rect;
 
         rect.Left = lhs.Left / rhs.x;
-        rect.Top = lhs.Top / rhs.y;
-        rect.Right = lhs.Right / rhs.x;
         rect.Bottom = lhs.Bottom / rhs.y;
+        rect.Right = lhs.Right / rhs.x;
+        rect.Top = lhs.Top / rhs.y;
 
         return rect;
     }
@@ -264,9 +281,9 @@ public:
         epiRect2<T> rect;
 
         rect.Left = rhs.Left / lhs.x;
-        rect.Top = rhs.Top / lhs.y;
-        rect.Right = rhs.Right / lhs.x;
         rect.Bottom = rhs.Bottom / lhs.y;
+        rect.Right = rhs.Right / lhs.x;
+        rect.Top = rhs.Top / lhs.y;
 
         return rect;
     }
@@ -327,9 +344,9 @@ public:
 
 public:
     T Left{};
-    T Top{};
-    T Right{};
     T Bottom{};
+    T Right{};
+    T Top{};
 };
 
 using epiRect2f = epiRect2<epiFloat>;
