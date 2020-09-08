@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 namespace
 {
 
-using namespace epi;
+EPI_NAMESPACE_USING()
 
 const epiChar kShaderSourceLinesVertex[] = R"(
 #version 400 core

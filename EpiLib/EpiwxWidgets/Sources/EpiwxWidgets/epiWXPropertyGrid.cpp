@@ -6,7 +6,7 @@
 
 #include <fmt/core.h>
 
-using namespace epi;
+EPI_NAMESPACE_USING()
 
 wxBEGIN_EVENT_TABLE(epiWXPropertyGrid, wxPropertyGrid)
     EVT_PG_CHANGED(-1, epiWXPropertyGrid::OnPropertyGridChanged)

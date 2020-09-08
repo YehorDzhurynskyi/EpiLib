@@ -7,6 +7,7 @@
 
 #define EPI_NAMESPACE_BEGIN() namespace epi {
 #define EPI_NAMESPACE_END() }
+#define EPI_NAMESPACE_USING() using namespace epi;
 
 #define epiAssert(_x, _msg) assert(_x && "Function (" __FUNCTION__ "):" #_msg)
 #define epiExpect(_x, _msg) assert(_x && "Function (" __FUNCTION__ "):" #_msg)

@@ -14,7 +14,7 @@
 #include <glad/glad.h>
 #include <wx/wx.h>
 
-using namespace epi;
+EPI_NAMESPACE_USING()
 
 wxBEGIN_EVENT_TABLE(epiWXPlot, wxGLCanvas)
     EVT_SIZE(epiWXPlot::OnResize)

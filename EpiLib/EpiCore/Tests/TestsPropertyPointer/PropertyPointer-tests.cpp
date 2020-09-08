@@ -60,18 +60,21 @@
     break; \
 } \
 
-EPI_NAMESPACE_BEGIN()
-
-TEST(PropertyPointer, Base)
+namespace
 {
-    TestClassA a;
 
-    const auto* m = &a.GetMetaClass();
+EPI_NAMESPACE_USING()
+
+void TraverseProperties(TestClassA& obj)
+{
+    obj.Reset();
+
+    const auto* m = &obj.GetMetaClass();
     while (m)
     {
         for (const auto& p : m->GetClassData())
         {
-            auto pp = PropertyPointer::CreateFromProperty(a, &p);
+            auto pp = PropertyPointer::CreateFromProperty(obj, &p);
             ASSERT_EQ(pp.GetTypeID(), p.GetTypeID());
             ASSERT_EQ(pp.IsReadable(), p.GetFlags().ReadCallback || !p.GetFlags().WriteCallback);
             ASSERT_EQ(pp.IsWritable(), p.GetFlags().WriteCallback || !p.GetFlags().ReadCallback);
@@ -105,22 +108,22 @@ TEST(PropertyPointer, Base)
             case epiMetaTypeID_epiWString: ASSERT_PP_COMPOUND_EX(epiWString, L"Test Wtext", epiDEBUG_ONLY(L"Empty"))
 
             case epiMetaTypeID_epiArray:
-                switch (p.GetNestedTypeID())
-                {
-                case epiMetaTypeID_epiS32: ASSERT_PP_ARRAY(epiArray<epiS32>, epiArray<epiS32>({ -5, 1, 2, 3, 4, -3 }))
-                case epiMetaTypeID_epiString: ASSERT_PP_ARRAY(epiArray<epiString>, epiArray<epiString>({ "Hello", " ", "World", "!", "" }))
-                default: ASSERT_FALSE("Unhandled case");
-                }
-                break;
+            switch (p.GetNestedTypeID())
+            {
+            case epiMetaTypeID_epiS32: ASSERT_PP_ARRAY(epiArray<epiS32>, epiArray<epiS32>({ -5, 1, 2, 3, 4, -3 }))
+            case epiMetaTypeID_epiString: ASSERT_PP_ARRAY(epiArray<epiString>, epiArray<epiString>({ "Hello", " ", "World", "!", "" }))
+            default: ASSERT_FALSE("Unhandled case");
+            }
+            break;
 
             case epiMetaTypeID_epiPtrArray:
-                switch (p.GetNestedTypeID())
-                {
-                case epiMetaTypeID_epiS32: ASSERT_PP_ARRAY(epiPtrArray<epiS32>, epiPtrArray<epiS32>({ nullptr, (epiS32*)0xfa7f7af, (epiS32*)0x0000353f }))
-                case epiMetaTypeID_epiString: ASSERT_PP_ARRAY(epiPtrArray<epiString>, epiPtrArray<epiString>({ nullptr, (epiString*)0xfa7f7af, (epiString*)0x0000353f }))
-                default: ASSERT_FALSE("Unhandled case");
-                }
-                break;
+            switch (p.GetNestedTypeID())
+            {
+            case epiMetaTypeID_epiS32: ASSERT_PP_ARRAY(epiPtrArray<epiS32>, epiPtrArray<epiS32>({ nullptr, (epiS32*)0xfa7f7af, (epiS32*)0x0000353f }))
+            case epiMetaTypeID_epiString: ASSERT_PP_ARRAY(epiPtrArray<epiString>, epiPtrArray<epiString>({ nullptr, (epiString*)0xfa7f7af, (epiString*)0x0000353f }))
+            default: ASSERT_FALSE("Unhandled case");
+            }
+            break;
 
             case epiMetaTypeID_epiVec2f: ASSERT_PP_COMPOUND(epiVec2f, epiVec2f({ 5.0f, -0.0052f }))
             case epiMetaTypeID_epiVec2d: ASSERT_PP_COMPOUND(epiVec2d, epiVec2d({ -35.0, 0.018 }))
@@ -165,6 +168,45 @@ TEST(PropertyPointer, Base)
 
         m = m->GetSuperTypeID() != epiMetaTypeID_None ? ClassRegistry_Type_Lookup(m->GetSuperTypeID()) : nullptr;
     }
+}
+
+}
+
+EPI_NAMESPACE_BEGIN()
+
+TEST(PropertyPointer, InheritedObject)
+{
+    TestClassA obj;
+
+    TraverseProperties(obj);
+}
+
+TEST(PropertyPointer, InheritedSingleDepth)
+{
+    TestClassB obj;
+
+    TraverseProperties(obj);
+}
+
+TEST(PropertyPointer, InheritedSingleDepthSingleInterface)
+{
+    TestClassC obj;
+
+    TraverseProperties(obj);
+}
+
+TEST(PropertyPointer, InheritedDoubleDepth)
+{
+    TestClassBB obj;
+
+    TraverseProperties(obj);
+}
+
+TEST(PropertyPointer, InheritedDoubleDepthDoubleInterface)
+{
+    TestClassCC obj;
+
+    TraverseProperties(obj);
 }
 
 EPI_NAMESPACE_END()
