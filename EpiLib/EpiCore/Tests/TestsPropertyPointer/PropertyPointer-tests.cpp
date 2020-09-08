@@ -20,7 +20,7 @@
 
 #define ASSERT_PP_COMPOUND_EX(T, V, IV) \
 { \
-    T temp(IV); \
+    T temp = IV; \
  \
     if (pp.IsReadable()) \
         ASSERT_EQ(pp.Get<T>(), temp); \
@@ -78,6 +78,8 @@ TEST(PropertyPointer, Base)
 
             switch (p.GetTypeID())
             {
+            case epiMetaTypeID_Ptr: if (pp.IsReadable()) ASSERT_EQ(pp.Get<Object*>(), nullptr); if (pp.IsWritable()) pp.Set<Object*>((Object*)0x00fff2); else break; if (pp.IsReadable()) ASSERT_EQ(pp.Get<Object*>(), (Object*)0x00fff2); break;
+
             case epiMetaTypeID_epiChar: ASSERT_PP(epiChar, 'K')
             case epiMetaTypeID_epiWChar: ASSERT_PP(epiWChar, L'H')
 
@@ -154,6 +156,8 @@ TEST(PropertyPointer, Base)
             case epiMetaTypeID_epiRect2d: ASSERT_PP_COMPOUND(epiRect2d, epiRect2d({ -5.0, -13.0, 10.05, 21.0 }))
             case epiMetaTypeID_epiRect2s: ASSERT_PP_COMPOUND(epiRect2s, epiRect2s({ -5, -2, 15, 71 }))
             case epiMetaTypeID_epiRect2u: ASSERT_PP_COMPOUND(epiRect2u, epiRect2u({ 807, 35, 1998, 421 }))
+
+            case epiHashCompileTime(InplaceClass): ASSERT_PP_COMPOUND_EX(InplaceClass, InplaceClass(5, -127.0f, "Hi,!", { 0.05f, -192.0f, 25.0f, 0.005f }), InplaceClass({}))
 
             default: ASSERT_FALSE("Unhandled case");
             }

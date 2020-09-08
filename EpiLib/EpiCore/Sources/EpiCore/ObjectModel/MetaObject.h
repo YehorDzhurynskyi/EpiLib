@@ -157,12 +157,14 @@ public:
     static constexpr epiBool IsMultiDimensional(epiMetaTypeID typeID);
     static constexpr epiBool IsMultiDimensionalInplace(epiMetaTypeID typeID);
     static constexpr epiBool IsCompound(epiMetaTypeID typeID);
+    static constexpr epiBool IsPointer(epiMetaTypeID typeID);
 
     template<typename T> static constexpr epiBool IsFundamental();
     template<typename T> static constexpr epiBool IsString();
     template<typename T> static constexpr epiBool IsMultiDimensional();
     template<typename T> static constexpr epiBool IsMultiDimensionalInplace();
     template<typename T> static constexpr epiBool IsCompound();
+    template<typename T> static constexpr epiBool IsPointer();
 
 #if 0
     static epiByte* GetElementByIndex(const epiByte* container, const MetaProperty& meta, epiS32 index);
@@ -321,6 +323,11 @@ constexpr epiBool MetaType::IsCompound(epiMetaTypeID typeID)
         !IsMultiDimensional(typeID);
 }
 
+constexpr epiBool MetaType::IsPointer(epiMetaTypeID typeID)
+{
+    return epiMetaTypeID_Ptr == typeID;
+}
+
 template<typename T>
 constexpr epiBool MetaType::IsFundamental()
 {
@@ -395,6 +402,14 @@ constexpr epiBool MetaType::IsCompound()
     }
 
     return false;
+}
+
+template<typename T>
+constexpr epiBool MetaType::IsPointer()
+{
+    static_assert(IsPointer(epiMetaTypeID_Ptr));
+
+    return std::is_pointer_v<T>;
 }
 
 }

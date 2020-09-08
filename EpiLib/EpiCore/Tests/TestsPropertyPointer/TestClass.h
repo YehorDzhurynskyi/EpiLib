@@ -8,6 +8,57 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+class InplaceClass : public Object
+{
+EPI_GENREGION_BEGIN(InplaceClass)
+
+EPI_GENHIDDEN_InplaceClass()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x8c2da82a};
+
+    enum InplaceClass_PIDs
+    {
+        PID_InplacePrty0 = 0x147cfcef,
+        PID_InplacePrty1 = 0x637bcc79,
+        PID_InplacePrty2 = 0xfa729dc3,
+        PID_InplacePrty3 = 0x8d75ad55,
+        PID_COUNT = 4
+    };
+
+protected:
+    epiS32 m_InplacePrty0{0};
+    epiFloat m_InplacePrty1{0.0f};
+    epiString m_InplacePrty2{epiDEBUG_ONLY("Empty")};
+    epiRect2f m_InplacePrty3{};
+
+EPI_GENREGION_END(InplaceClass)
+
+public:
+    InplaceClass() = default;
+    InplaceClass(epiS32 p0, epiFloat p1, epiString p2, epiRect2f p3)
+        : m_InplacePrty0(p0)
+        , m_InplacePrty1(p1)
+        , m_InplacePrty2(p2)
+        , m_InplacePrty3(p3)
+    {
+    }
+
+    friend epiBool operator==(const InplaceClass& lhs, const InplaceClass& rhs)
+    {
+        return
+            epiEqual(lhs.m_InplacePrty0, rhs.m_InplacePrty0) &&
+            epiEqual(lhs.m_InplacePrty1, rhs.m_InplacePrty1) &&
+            epiEqual(lhs.m_InplacePrty2, rhs.m_InplacePrty2) &&
+            epiEqual(lhs.m_InplacePrty3, rhs.m_InplacePrty3);
+    }
+
+    friend epiBool operator!=(const InplaceClass& lhs, const InplaceClass& rhs)
+    {
+        return !(operator==(lhs, rhs));
+    }
+};
+
 class TestClassA : public Object
 {
 EPI_GENREGION_BEGIN(TestClassA)
@@ -61,6 +112,8 @@ public:
         PID_APrty39 = 0xe49f93c7,
         PID_APrty40 = 0xd202bda4,
         PID_APrty41 = 0xa5058d32,
+        PID_APrty42 = 0x3c0cdc88,
+        PID_APrty43 = 0x4b0bec1e,
         PID_APrtyVirtual0 = 0x6b4213f2,
         PID_APrtyVirtual1 = 0x1c452364,
         PID_APrtyVirtual2 = 0x854c72de,
@@ -103,6 +156,8 @@ public:
         PID_APrtyVirtual39 = 0xf5f2e565,
         PID_APrtyVirtual40 = 0xc36fcb06,
         PID_APrtyVirtual41 = 0xb468fb90,
+        PID_APrtyVirtual42 = 0x2d61aa2a,
+        PID_APrtyVirtual43 = 0x5a669abc,
         PID_APrtyReadCallback0 = 0x3a2ad180,
         PID_APrtyReadCallback1 = 0x4d2de116,
         PID_APrtyReadCallback2 = 0xd424b0ac,
@@ -145,6 +200,8 @@ public:
         PID_APrtyReadCallback39 = 0x4ba89db7,
         PID_APrtyReadCallback40 = 0x7d35b3d4,
         PID_APrtyReadCallback41 = 0xa328342,
+        PID_APrtyReadCallback42 = 0x933bd2f8,
+        PID_APrtyReadCallback43 = 0xe43ce26e,
         PID_APrtyWriteCallback0 = 0x9cac065,
         PID_APrtyWriteCallback1 = 0x7ecdf0f3,
         PID_APrtyWriteCallback2 = 0xe7c4a149,
@@ -187,7 +244,9 @@ public:
         PID_APrtyWriteCallback39 = 0x9bfb6b51,
         PID_APrtyWriteCallback40 = 0xad664532,
         PID_APrtyWriteCallback41 = 0xda6175a4,
-        PID_COUNT = 168
+        PID_APrtyWriteCallback42 = 0x4368241e,
+        PID_APrtyWriteCallback43 = 0x346f1488,
+        PID_COUNT = 176
     };
 
 protected:
@@ -275,6 +334,10 @@ protected:
     void SetAPrtyVirtual40_Callback(const epiRect2s& value);
     const epiRect2u& GetAPrtyVirtual41_Callback() const;
     void SetAPrtyVirtual41_Callback(const epiRect2u& value);
+    const InplaceClass& GetAPrtyVirtual42_Callback() const;
+    void SetAPrtyVirtual42_Callback(const InplaceClass& value);
+    const InplaceClass* GetAPrtyVirtual43_Callback() const;
+    void SetAPrtyVirtual43_Callback(InplaceClass* value);
     epiChar GetAPrtyReadCallback0_Callback() const;
     epiWChar GetAPrtyReadCallback1_Callback() const;
     epiBool GetAPrtyReadCallback2_Callback() const;
@@ -317,6 +380,8 @@ protected:
     const epiRect2d& GetAPrtyReadCallback39_Callback() const;
     const epiRect2s& GetAPrtyReadCallback40_Callback() const;
     const epiRect2u& GetAPrtyReadCallback41_Callback() const;
+    const InplaceClass& GetAPrtyReadCallback42_Callback() const;
+    const InplaceClass* GetAPrtyReadCallback43_Callback() const;
     void SetAPrtyWriteCallback0_Callback(epiChar value);
     void SetAPrtyWriteCallback1_Callback(epiWChar value);
     void SetAPrtyWriteCallback2_Callback(epiBool value);
@@ -359,6 +424,8 @@ protected:
     void SetAPrtyWriteCallback39_Callback(const epiRect2d& value);
     void SetAPrtyWriteCallback40_Callback(const epiRect2s& value);
     void SetAPrtyWriteCallback41_Callback(const epiRect2u& value);
+    void SetAPrtyWriteCallback42_Callback(const InplaceClass& value);
+    void SetAPrtyWriteCallback43_Callback(InplaceClass* value);
 
 protected:
     epiChar m_APrty0{'\0'};
@@ -403,6 +470,8 @@ protected:
     epiRect2d m_APrty39{};
     epiRect2s m_APrty40{};
     epiRect2u m_APrty41{};
+    InplaceClass m_APrty42{};
+    InplaceClass* m_APrty43{nullptr};
     epiChar m_APrtyReadCallback0{'\0'};
     epiWChar m_APrtyReadCallback1{L'\0'};
     epiBool m_APrtyReadCallback2{false};
@@ -445,6 +514,8 @@ protected:
     epiRect2d m_APrtyReadCallback39{};
     epiRect2s m_APrtyReadCallback40{};
     epiRect2u m_APrtyReadCallback41{};
+    InplaceClass m_APrtyReadCallback42{};
+    InplaceClass* m_APrtyReadCallback43{nullptr};
     epiChar m_APrtyWriteCallback0{'\0'};
     epiWChar m_APrtyWriteCallback1{L'\0'};
     epiBool m_APrtyWriteCallback2{false};
@@ -487,6 +558,8 @@ protected:
     epiRect2d m_APrtyWriteCallback39{};
     epiRect2s m_APrtyWriteCallback40{};
     epiRect2u m_APrtyWriteCallback41{};
+    InplaceClass m_APrtyWriteCallback42{};
+    InplaceClass* m_APrtyWriteCallback43{nullptr};
 
 EPI_GENREGION_END(TestClassA)
 };

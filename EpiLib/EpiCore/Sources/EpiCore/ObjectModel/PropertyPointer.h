@@ -12,10 +12,10 @@ public:
     static PropertyPointer CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx);
 
     template<typename T>
-    auto Get() const -> std::conditional_t<MetaType::IsFundamental<T>(), T, T&>;
+    auto Get() const -> std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, T&>;
 
     template<typename T>
-    void Set(std::conditional_t<MetaType::IsFundamental<T>(), T, const T&> value);
+    void Set(std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, const T&> value);
 
     epiBool IsReadable() const;
     epiBool IsWritable() const;
@@ -64,10 +64,9 @@ protected:
 };
 
 template<typename T>
-auto PropertyPointer::Get() const -> std::conditional_t<MetaType::IsFundamental<T>(), T, T&>
+auto PropertyPointer::Get() const -> std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, T&>
 {
     static_assert(std::is_same_v<std::decay_t<T>, T>, "Please remove the reference, cv-qualifiers from provided template argument");
-    static_assert(!std::is_pointer_v<T>);
     epiAssert(IsReadable());
 
     if constexpr (MetaType::IsCompound<T>() || MetaType::IsString<T>() || MetaType::IsMultiDimensional<T>())
@@ -76,8 +75,9 @@ auto PropertyPointer::Get() const -> std::conditional_t<MetaType::IsFundamental<
 
         return *reinterpret_cast<T*>(Get_Static<T>());
     }
-    else if constexpr (MetaType::IsFundamental<T>())
+    else if constexpr (MetaType::IsFundamental<T>() || MetaType::IsPointer<T>())
     {
+        epiAssert(MetaType::IsFundamental(m_TypeID) || MetaType::IsPointer(m_TypeID), "Type missmatch");
         static_assert(sizeof(T) <= sizeof(void*));
 
         void* v = Get_Static<T>();
@@ -90,10 +90,9 @@ auto PropertyPointer::Get() const -> std::conditional_t<MetaType::IsFundamental<
 }
 
 template<typename T>
-void PropertyPointer::Set(std::conditional_t<MetaType::IsFundamental<T>(), T, const T&> value)
+void PropertyPointer::Set(std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, const T&> value)
 {
     static_assert(std::is_same_v<std::decay_t<T>, T>);
-    static_assert(!std::is_pointer_v<T>);
     epiAssert(IsWritable());
 
     if constexpr (MetaType::IsCompound<T>() || MetaType::IsString<T>() || MetaType::IsMultiDimensional<T>())
@@ -102,8 +101,9 @@ void PropertyPointer::Set(std::conditional_t<MetaType::IsFundamental<T>(), T, co
 
         Set_Static<T>(reinterpret_cast<const void*>(&value));
     }
-    else if constexpr (MetaType::IsFundamental<T>())
+    else if constexpr (MetaType::IsFundamental<T>() || MetaType::IsPointer<T>())
     {
+        epiAssert(MetaType::IsFundamental(m_TypeID) || MetaType::IsPointer(m_TypeID), "Type missmatch");
         static_assert(sizeof(T) <= sizeof(void*));
 
         Set_Static<T>(*reinterpret_cast<void**>(&value));
@@ -138,6 +138,11 @@ void* PropertyPointer::Get_Static() const
                 epiAssert(MetaType::IsFundamental(m_Meta->m_TypeID));
                 GetCallback(T);
             }
+            else if constexpr (MetaType::IsPointer<T>())
+            {
+                epiAssert(MetaType::IsPointer(m_Meta->m_TypeID));
+                GetCallback(T);
+            }
             else if constexpr (MetaType::IsString<T>())
             {
                 epiAssert(MetaType::IsString(m_Meta->m_TypeID));
@@ -163,6 +168,11 @@ void* PropertyPointer::Get_Static() const
             if constexpr (MetaType::IsFundamental<T>())
             {
                 epiAssert(MetaType::IsFundamental(m_Meta->m_TypeID));
+                value = (void*)*((void**)addr);
+            }
+            else if constexpr (MetaType::IsPointer<T>())
+            {
+                epiAssert(MetaType::IsPointer(m_Meta->m_TypeID));
                 value = (void*)*((void**)addr);
             }
             else if constexpr (MetaType::IsString<T>())
@@ -215,6 +225,11 @@ void PropertyPointer::Set_Static(const void* value)
                 epiAssert(MetaType::IsFundamental(m_Meta->m_TypeID));
                 SetCallback(T);
             }
+            else if constexpr (MetaType::IsPointer<T>())
+            {
+                epiAssert(MetaType::IsPointer(m_Meta->m_TypeID));
+                SetCallback(T);
+            }
             else if constexpr (MetaType::IsString<T>())
             {
                 epiAssert(MetaType::IsString(m_Meta->m_TypeID));
@@ -240,6 +255,11 @@ void PropertyPointer::Set_Static(const void* value)
             if constexpr (MetaType::IsFundamental<T>())
             {
                 epiAssert(MetaType::IsFundamental(m_Meta->m_TypeID));
+                *((T*)addr) = *((T*)&value);
+            }
+            else if constexpr (MetaType::IsPointer<T>())
+            {
+                epiAssert(MetaType::IsPointer(m_Meta->m_TypeID));
                 *((T*)addr) = *((T*)&value);
             }
             else if constexpr (MetaType::IsString<T>())

@@ -1,3 +1,11 @@
+class InplaceClass
+{
+    epiS32 InplacePrty0;
+    epiFloat InplacePrty1;
+    epiString InplacePrty2;
+    epiRect2f InplacePrty3;
+};
+
 class TestClassA
 {
     epiChar APrty0;
@@ -42,6 +50,8 @@ class TestClassA
     epiRect2d APrty39;
     epiRect2s APrty40;
     epiRect2u APrty41;
+    InplaceClass APrty42;
+    InplaceClass* APrty43;
 
     [Virtual]
     {
@@ -87,6 +97,8 @@ class TestClassA
         epiRect2d APrtyVirtual39;
         epiRect2s APrtyVirtual40;
         epiRect2u APrtyVirtual41;
+        InplaceClass APrtyVirtual42;
+        InplaceClass* APrtyVirtual43;
     }
 
     [ReadCallback]
@@ -133,6 +145,8 @@ class TestClassA
         epiRect2d APrtyReadCallback39;
         epiRect2s APrtyReadCallback40;
         epiRect2u APrtyReadCallback41;
+        InplaceClass APrtyReadCallback42;
+        InplaceClass* APrtyReadCallback43;
     }
 
     [WriteCallback]
@@ -179,5 +193,7 @@ class TestClassA
         epiRect2d APrtyWriteCallback39;
         epiRect2s APrtyWriteCallback40;
         epiRect2u APrtyWriteCallback41;
+        InplaceClass APrtyWriteCallback42;
+        InplaceClass* APrtyWriteCallback43;
     }
 };

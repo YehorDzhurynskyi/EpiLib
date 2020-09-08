@@ -50,6 +50,8 @@ epiRect2f V38{};
 epiRect2d V39{};
 epiRect2s V40{};
 epiRect2u V41{};
+InplaceClass V42{};
+InplaceClass* V43{};
 
 epiChar R0{};
 epiWChar R1{};
@@ -93,20 +95,22 @@ epiRect2f R38{};
 epiRect2d R39{};
 epiRect2s R40{};
 epiRect2u R41{};
+InplaceClass R42{};
+InplaceClass* R43{};
 
 }
 
 #define EmitGetter(t, name, p, n) \
 t TestClassA::GetAPrty##name##n##_Callback() const \
 { \
-    static_assert(std::is_same_v<decltype(p##n), std::decay_t<t>>); \
+    static_assert(std::is_same_v<std::decay_t<decltype(p##n)>, std::decay_t<t>>); \
     return p##n; \
 } \
 
 #define EmitSetter(t, name, p, n) \
 void TestClassA::SetAPrty##name##n##_Callback(t value) \
 { \
-    static_assert(std::is_same_v<decltype(p##n), std::decay_t<t>>); \
+    static_assert(std::is_same_v<std::decay_t<decltype(p##n)>, std::decay_t<t>>); \
     p##n = value; \
 } \
 
@@ -158,6 +162,14 @@ EmitGetterSetter(const epiRect2f&, Virtual, V, 38)
 EmitGetterSetter(const epiRect2d&, Virtual, V, 39)
 EmitGetterSetter(const epiRect2s&, Virtual, V, 40)
 EmitGetterSetter(const epiRect2u&, Virtual, V, 41)
+EmitGetterSetter(const InplaceClass&, Virtual, V, 42)
+
+const InplaceClass* TestClassA::GetAPrtyVirtual43_Callback() const
+{
+    return V43;
+}
+
+EmitSetter(InplaceClass*, Virtual, V, 43)
 
 EmitGetter(epiChar, ReadCallback, R, 0)
 EmitGetter(epiWChar, ReadCallback, R, 1)
@@ -201,6 +213,12 @@ EmitGetter(const epiRect2f&, ReadCallback, R, 38)
 EmitGetter(const epiRect2d&, ReadCallback, R, 39)
 EmitGetter(const epiRect2s&, ReadCallback, R, 40)
 EmitGetter(const epiRect2u&, ReadCallback, R, 41)
+EmitGetter(const InplaceClass&, ReadCallback, R, 42)
+
+const InplaceClass* TestClassA::GetAPrtyReadCallback43_Callback() const
+{
+    return R43;
+}
 
 EmitSetter(epiChar, WriteCallback, V, 0)
 EmitSetter(epiWChar, WriteCallback, V, 1)
@@ -244,5 +262,7 @@ EmitSetter(const epiRect2f&, WriteCallback, V, 38)
 EmitSetter(const epiRect2d&, WriteCallback, V, 39)
 EmitSetter(const epiRect2s&, WriteCallback, V, 40)
 EmitSetter(const epiRect2u&, WriteCallback, V, 41)
+EmitSetter(const InplaceClass&, WriteCallback, V, 42)
+EmitSetter(InplaceClass*, WriteCallback, V, 43)
 
 EPI_NAMESPACE_END()
