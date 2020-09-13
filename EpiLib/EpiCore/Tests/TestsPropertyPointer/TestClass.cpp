@@ -19,8 +19,8 @@ EPI_GENREGION_END(include)
     thread_local epiS16 p##12{}; \
     thread_local epiS32 p##13{}; \
     thread_local epiS64 p##14{}; \
-    thread_local epiString p##15(epiDEBUG_ONLY("Empty")); \
-    thread_local epiWString p##16(epiDEBUG_ONLY(L"Empty")); \
+    thread_local epiString p##15{epiDEBUG_ONLY("Empty")}; \
+    thread_local epiWString p##16{epiDEBUG_ONLY(L"Empty")}; \
     thread_local epiArray<epiS32> p##17{}; \
     thread_local epiPtrArray<epiS32> p##18{}; \
     thread_local epiArray<epiString> p##19{}; \
@@ -66,8 +66,8 @@ EPI_GENREGION_END(include)
     p##12 = {}; \
     p##13 = {}; \
     p##14 = {}; \
-    p##15 = epiDEBUG_ONLY("Empty"); \
-    p##16 = epiDEBUG_ONLY(L"Empty"); \
+    p##15 = {epiDEBUG_ONLY("Empty")}; \
+    p##16 = {epiDEBUG_ONLY(L"Empty")}; \
     p##17 = {}; \
     p##18 = {}; \
     p##19 = {}; \

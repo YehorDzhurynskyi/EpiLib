@@ -2,11 +2,13 @@ include(ExternalProject)
 
 function(epi_extern_add EXTERN)
     cmake_parse_arguments(EXTERN
-        ""
+        "DONT_ADD_SUBDIRECTORY"
         ""
         "COMPONENTS"
         ${ARGN}
     )
+
+    # TODO: check whether the dependency is already installed before compiling it from scratch
 
     set(EXTERN_DIR "${EPI_DIR}/Build/CMake/Extern/${EXTERN}")
 
@@ -18,33 +20,35 @@ function(epi_extern_add EXTERN)
         message(FATAL_ERROR "No `CMakeLists.txt.in` file exists for `${EXTERN}` target! `${EXTERN_DIR}/CMakeLists.txt.in` path is expected!")
     endif ()
 
-    configure_file("${EXTERN_DIR}/CMakeLists.txt.in" "${EXTERN}/CMakeLists.txt")
+    configure_file("${EXTERN_DIR}/CMakeLists.txt.in" "${EXTERN}/CMakeLists.txt" @ONLY)
 
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
         RESULT_VARIABLE COMMAND_STATUS
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}"
     )
 
-    if(COMMAND_STATUS)
+    if (COMMAND_STATUS)
         message(FATAL_ERROR "CMake step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
-    endif()
+    endif ()
 
     execute_process(COMMAND ${CMAKE_COMMAND} --build .
         RESULT_VARIABLE COMMAND_STATUS
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}"
     )
 
-    if(COMMAND_STATUS)
+    if (COMMAND_STATUS)
         message(FATAL_ERROR "Build step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
-    endif()
-
-    if (EXISTS "${EXTERN_DIR}/config.cmake")
-        include("${EXTERN_DIR}/config.cmake")
     endif ()
 
-    add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/src"
-                     "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/build"
-                     EXCLUDE_FROM_ALL)
+    if (EXISTS "${EXTERN_DIR}/configure.cmake")
+        include("${EXTERN_DIR}/configure.cmake")
+    endif ()
+
+    if (NOT EXTERN_DONT_ADD_SUBDIRECTORY)
+        add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
+                         "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
+                         EXCLUDE_FROM_ALL)
+    endif ()
  
     list(LENGTH EXTERN_COMPONENTS EXTERN_COMPONENTS_LENGTH)
     if (NOT EXTERN_COMPONENTS_LENGTH EQUAL 0)

@@ -104,8 +104,8 @@ void TraverseProperties(TestClassA& obj)
             case epiMetaTypeID_epiS32: ASSERT_PP(epiS32, 89537)
             case epiMetaTypeID_epiS64: ASSERT_PP(epiS64, 213125125)
 
-            case epiMetaTypeID_epiString: ASSERT_PP_COMPOUND_EX(epiString, "Test text", epiDEBUG_ONLY("Empty"))
-            case epiMetaTypeID_epiWString: ASSERT_PP_COMPOUND_EX(epiWString, L"Test Wtext", epiDEBUG_ONLY(L"Empty"))
+            case epiMetaTypeID_epiString: ASSERT_PP_COMPOUND_EX(epiString, "Test text", epiString(epiDEBUG_ONLY("Empty")))
+            case epiMetaTypeID_epiWString: ASSERT_PP_COMPOUND_EX(epiWString, L"Test Wtext", epiWString(epiDEBUG_ONLY(L"Empty")))
 
             case epiMetaTypeID_epiArray:
             switch (p.GetNestedTypeID())

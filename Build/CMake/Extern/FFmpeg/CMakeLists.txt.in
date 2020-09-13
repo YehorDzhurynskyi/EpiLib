@@ -4,42 +4,61 @@ project(FFmpeg-extern NONE)
 
 include(ExternalProject)
 
+# TODO: disable unnecessary libraries considering `COMPONENTS` parameter of `epi_extern_add` function
+# TODO: configure `FFMPEG_ARGS` considering `TOOLCAHIN`, `ARCH`, `OS` etc
+
 set(FFMPEG_ARGS
     --arch=x86_64
     --target-os=win64
     --toolchain=msvc
 
-    --enable-shared
-    --disable-static
-
     --enable-asm
-    --enable-yasm
+    --enable-x86asm
 
     --disable-programs
     --disable-doc
+
+    --extra-cflags="/MDd"
+    --extra-cxxflags="/MDd"
 )
 string(JOIN " " FFMPEG_ARGS ${FFMPEG_ARGS})
 
-epi_win_to_wsl_unix_path("${FFMPEG_DIR}/src" FFMPEG_SOURCE_WSL_DIR)
-epi_win_to_wsl_unix_path("${FFMPEG_DIR}/install" FFMPEG_ISNTALL_WSL_DIR)
+set(FFMPEG_SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/src")
+set(FFMPEG_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/build" CACHE PATH "" FORCE)
 
-# if (NOT GIT_EXECUTABLE)
-#     find_program(GIT_EXECUTABLE
-#         NAMES "bash-git.bat"
-#         PATHS "${EPI_BUILD_DIR}/Scripts/"
-#     )
-# endif()
+if (WIN32)
+    execute_process(COMMAND bash -c "wslpath -a ${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/src"
+        RESULT_VARIABLE COMMAND_STATUS
+        OUTPUT_VARIABLE FFMPEG_SOURCE_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if (COMMAND_STATUS)
+        message(FATAL_ERROR "FFMpeg `wslpath` command has failed: ${COMMAND_STATUS}")
+    endif ()
+
+    execute_process(COMMAND bash -c "wslpath -a ${FFMPEG_BUILD_DIR}"
+        RESULT_VARIABLE COMMAND_STATUS
+        OUTPUT_VARIABLE FFMPEG_BUILD_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if (COMMAND_STATUS)
+        message(FATAL_ERROR "FFMpeg `wslpath` command has failed: ${COMMAND_STATUS}")
+    endif ()
+endif (WIN32)
 
 ExternalProject_Add(FFmpeg
-    GIT_REPOSITORY      "https://github.com/FFmpeg/FFmpeg.git"
-    GIT_TAG             "n4.2.1"
     SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/src"
     BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/build"
+    TMP_DIR             "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/tmp"
+    STAMP_DIR           "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/stamp"
+    DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/download"
+    INSTALL_DIR         "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/install"
+    LOG_DIR             "${CMAKE_CURRENT_BINARY_DIR}/FFmpeg/log"
 
-    GIT_SHALLOW         1
-    GIT_PROGRESS        1
-
-    CONFIGURE_COMMAND   C:/Windows/sysnative/bash.exe -c "cd \"${FFMPEG_SOURCE_WSL_DIR}\" && ./configure ${FFMPEG_ARGS} --prefix=\"${FFMPEG_ISNTALL_WSL_DIR}\""
-    BUILD_COMMAND       C:/Windows/sysnative/bash.exe -c "cd \"${FFMPEG_SOURCE_WSL_DIR}\" && make && find . -name *.d -type f -delete"
-    #INSTALL_COMMAND     C:/Windows/sysnative/bash.exe -c "cd \"${FFMPEG_SOURCE_WSL_DIR}\" && make install"
+    DOWNLOAD_COMMAND    C:/Windows/sysnative/bash.exe -c "git clone --progress --depth 1 --branch n4.3.1 https://github.com/FFmpeg/FFmpeg.git '${FFMPEG_SOURCE_DIR}'"
+    CONFIGURE_COMMAND   C:/Windows/sysnative/bash.exe -c "cd '${FFMPEG_SOURCE_DIR}' && ./configure ${FFMPEG_ARGS} --prefix='${FFMPEG_BUILD_DIR}'"
+    BUILD_COMMAND       C:/Windows/sysnative/bash.exe -c "cd '${FFMPEG_SOURCE_DIR}' && make && find . -name *.d -type f -delete"
+    INSTALL_COMMAND     C:/Windows/sysnative/bash.exe -c "cd '${FFMPEG_SOURCE_DIR}' && make install"
 )
