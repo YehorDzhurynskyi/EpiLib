@@ -7,9 +7,9 @@ EPI_NAMESPACE_BEGIN()
 
 using namespace std::complex_literals;
 
-dSeriesYComplex spMath::DFT_Real(const dSeriesY& series)
+dSeries1Dc spMath::DFT_Real(const dSeries1Df& series)
 {
-    dSeriesYComplex X;
+    dSeries1Dc X;
 
     const epiSize_t N = series.GetSize();
     if (N == 0)
@@ -35,21 +35,21 @@ dSeriesYComplex spMath::DFT_Real(const dSeriesY& series)
     return X;
 }
 
-dSeriesY spMath::IDFT_Real(const dSeriesYComplex& series)
+dSeries1Df spMath::IDFT_Real(const dSeries1Dc& series)
 {
     const epiSize_t N = series.GetSize();
     if (N == 0)
     {
-        return dSeriesY{};
+        return dSeries1Df{};
     }
 
     return IDFT_Real(series, (N - 1) * 2);
 }
 
-dSeriesY spMath::IDFT_Real(const dSeriesYComplex& series, epiSize_t N)
+dSeries1Df spMath::IDFT_Real(const dSeries1Dc& series, epiSize_t N)
 {
     // TODO: rewrite in more optimal way
-    dSeriesY y;
+    dSeries1Df y;
 
     const epiSize_t N2 = series.GetSize();
     if (N2 == 0)

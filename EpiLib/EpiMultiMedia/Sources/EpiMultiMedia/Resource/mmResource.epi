@@ -1,0 +1,20 @@
+enum mmMIMEType
+{
+    UNKNOWN,
+    AUDIO_MPEG
+};
+
+enum mmResourceStatus
+{
+    Broken,
+    LoadedMeta,
+    LoadedFully
+};
+
+class mmResource
+{
+    epiString URI;
+    mmMIMEType MIME = mmMIMEType::UNKNOWN;
+
+    mmResourceStatus Status = mmResourceStatus::Broken;
+};

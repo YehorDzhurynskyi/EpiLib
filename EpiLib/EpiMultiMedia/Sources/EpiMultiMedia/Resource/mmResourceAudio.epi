@@ -1,0 +1,5 @@
+class mmResourceAudio : mmResource
+{
+    epiU32 SampleRate;
+    dSeries1Df Samples;
+};

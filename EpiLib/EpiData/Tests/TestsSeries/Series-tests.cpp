@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "EpiData/Series/dSeriesYComplex.h"
+#include "EpiData/Series/dSeries1Dc.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -52,7 +52,7 @@ TEST(dSeriesYComplex, Theta)
 
     for (epiU32 i = 0; i < epiArrLen(c); ++i)
     {
-        const epiFloat theta = dSeriesYComplex{ c[i] }.AtTheta(0);
+        const epiFloat theta = dSeries1Dc{ c[i] }.AtTheta(0);
         EXPECT_NEAR(theta, expected[i], epiFloatingEqTolerance());
     }
 }
