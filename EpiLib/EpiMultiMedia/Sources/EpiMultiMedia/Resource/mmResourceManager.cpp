@@ -39,8 +39,9 @@ std::unique_ptr<mmResource> mmResourceManager::LoadResource(const epiChar* url)
         if (const int ret = avformat_find_stream_info(avFormatContext, nullptr); ret >= 0)
         {
             resource = std::make_unique<mmResourceAudio>();
+            resource->SetURI(url); // TODO: replace with URI but not URL
             resource->SetMIME(mmMIMEType::AUDIO_MPEG); // TODO: determine MIME type
-            resource->SetStatus(mmResourceStatus::LoadedMeta);
+            resource->SetStatus(mmResourceStatus::LoadedPartially);
 
             // TODO: figure out whether `avformat_close_input` should be called on `avformat_...` failure
             avformat_close_input(&avFormatContext);

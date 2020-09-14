@@ -7,7 +7,7 @@ enum mmMIMEType
 enum mmResourceStatus
 {
     Broken,
-    LoadedMeta,
+    LoadedPartially,
     LoadedFully
 };
 

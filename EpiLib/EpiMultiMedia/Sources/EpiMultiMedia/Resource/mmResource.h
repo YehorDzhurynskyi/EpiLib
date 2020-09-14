@@ -20,7 +20,7 @@ enum class mmResourceStatus
 {
 EPI_GENREGION_BEGIN(mmResourceStatus)
     Broken = 0,
-    LoadedMeta = 1,
+    LoadedPartially = 1,
     LoadedFully = 2
 EPI_GENREGION_END(mmResourceStatus)
 };
