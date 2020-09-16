@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class gfxVertexBufferUsage
+enum class gfxVertexBufferUsage : epiS32
 {
 EPI_GENREGION_BEGIN(gfxVertexBufferUsage)
     StaticRead = 0,
@@ -20,7 +20,7 @@ EPI_GENREGION_BEGIN(gfxVertexBufferUsage)
 EPI_GENREGION_END(gfxVertexBufferUsage)
 };
 
-enum class gfxVertexBufferMapAccess
+enum class gfxVertexBufferMapAccess : epiS32
 {
 EPI_GENREGION_BEGIN(gfxVertexBufferMapAccess)
     Read = 0,

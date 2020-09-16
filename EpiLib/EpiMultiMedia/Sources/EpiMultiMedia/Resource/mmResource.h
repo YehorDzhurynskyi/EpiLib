@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class mmMIMEType
+enum class mmMIMEType : epiS32
 {
 EPI_GENREGION_BEGIN(mmMIMEType)
     UNKNOWN = 0,
@@ -16,7 +16,7 @@ EPI_GENREGION_BEGIN(mmMIMEType)
 EPI_GENREGION_END(mmMIMEType)
 };
 
-enum class mmResourceStatus
+enum class mmResourceStatus : epiS32
 {
 EPI_GENREGION_BEGIN(mmResourceStatus)
     Broken = 0,

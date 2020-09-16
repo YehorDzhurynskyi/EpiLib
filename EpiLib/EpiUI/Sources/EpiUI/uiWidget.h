@@ -10,7 +10,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum uiSizePolicy
+enum uiSizePolicy : epiS32
 {
 EPI_GENREGION_BEGIN(uiSizePolicy)
     uiSizePolicy_Fixed = (1 << 1),

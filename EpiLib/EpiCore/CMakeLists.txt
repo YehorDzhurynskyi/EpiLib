@@ -42,6 +42,9 @@ add_library(EpiCore
     Sources/EpiCore/ObjectModel/PropertyPointer.h
     Sources/EpiCore/ObjectModel/PropertyPointer.cpp
     Sources/EpiCore/ObjectModel/Handle.h
+
+    Sources/EpiCore/Event/EventBus.h
+    Sources/EpiCore/Event/EventBus.cpp
 )
 
 get_target_property(EpiCore_SOURCES EpiCore SOURCES)
@@ -77,6 +80,11 @@ target_precompile_headers(EpiCore
         <cstdint>
         <functional>
         <type_traits>
+        <thread>
+        <mutex>
+        <condition_variable>
+        <atomic>
+        <future>
 
         [["EpiCore/epi_config.h"]]
         [["EpiCore/types.h"]]

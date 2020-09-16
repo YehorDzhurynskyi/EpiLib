@@ -23,9 +23,10 @@ extern "C"
 
 EPI_NAMESPACE_BEGIN()
 
-std::unique_ptr<mmResource> mmResourceManager::LoadResource(const epiChar* url)
+mmResource* mmResourceManager::LoadResource(const epiChar* url, epiBool loadFully)
 {
-    std::unique_ptr<mmResource> resource = std::make_unique<mmResource>();
+    std::unique_ptr<mmResource>& resource = m_Resources[url];
+    resource = std::make_unique<mmResource>();
     resource->SetURI(url); // TODO: replace with URI but not URL
 
     // TODO: investigate `options` parameter
@@ -56,7 +57,7 @@ std::unique_ptr<mmResource> mmResourceManager::LoadResource(const epiChar* url)
         // TODO: log
     }
 
-    return resource;
+    return resource.get();
 }
 
 EPI_NAMESPACE_END()

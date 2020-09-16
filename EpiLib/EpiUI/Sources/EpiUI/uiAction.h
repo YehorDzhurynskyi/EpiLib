@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class uiMouseAction
+enum class uiMouseAction : epiS32
 {
 EPI_GENREGION_BEGIN(uiMouseAction)
     Release = 0,

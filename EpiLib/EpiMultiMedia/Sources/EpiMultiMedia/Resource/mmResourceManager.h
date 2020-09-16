@@ -17,7 +17,11 @@ protected:
     mmResourceManager() = default;
 
 public:
-    std::unique_ptr<mmResource> LoadResource(const epiChar* url);
+    mmResource* LoadResource(const epiChar* url, epiBool loadFully = false);
+
+protected:
+    // TODO: replace with a more advanced method
+    std::map<epiString, std::unique_ptr<mmResource>> m_Resources;
 };
 
 EPI_NAMESPACE_END()

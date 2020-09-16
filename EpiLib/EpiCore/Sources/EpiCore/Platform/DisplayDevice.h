@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class DPIAwareness
+enum class DPIAwareness : epiS32
 {
 EPI_GENREGION_BEGIN(DPIAwareness)
     UnAware = 0,

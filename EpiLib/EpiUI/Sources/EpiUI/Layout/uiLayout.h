@@ -9,7 +9,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class uiSizeContraint
+enum class uiSizeContraint : epiS32
 {
 EPI_GENREGION_BEGIN(uiSizeContraint)
     Default = 0,
@@ -21,7 +21,7 @@ EPI_GENREGION_BEGIN(uiSizeContraint)
 EPI_GENREGION_END(uiSizeContraint)
 };
 
-enum uiAlignment
+enum uiAlignment : epiS32
 {
 EPI_GENREGION_BEGIN(uiAlignment)
     uiAlignment_Left = (1 << 1),

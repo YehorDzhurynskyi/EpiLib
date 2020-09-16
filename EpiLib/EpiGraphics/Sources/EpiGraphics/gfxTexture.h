@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class gfxTextureType
+enum class gfxTextureType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxTextureType)
     None = 0,
@@ -16,7 +16,7 @@ EPI_GENREGION_BEGIN(gfxTextureType)
 EPI_GENREGION_END(gfxTextureType)
 };
 
-enum class gfxTextureFormat
+enum class gfxTextureFormat : epiS32
 {
 EPI_GENREGION_BEGIN(gfxTextureFormat)
     R = 0,
@@ -28,7 +28,7 @@ EPI_GENREGION_BEGIN(gfxTextureFormat)
 EPI_GENREGION_END(gfxTextureFormat)
 };
 
-enum class gfxTexturePixelType
+enum class gfxTexturePixelType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxTexturePixelType)
     BYTE = 0,

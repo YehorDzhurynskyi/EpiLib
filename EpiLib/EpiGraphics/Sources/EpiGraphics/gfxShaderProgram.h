@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class gfxShaderType
+enum class gfxShaderType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxShaderType)
     None = 0,

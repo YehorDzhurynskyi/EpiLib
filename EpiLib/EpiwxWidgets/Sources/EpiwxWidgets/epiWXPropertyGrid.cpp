@@ -76,21 +76,21 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, epiMetaTypeID 
         auto ptr = new PropertyPointer();
         *ptr = PropertyPointer::CreateFromArray(array, nestedTypeID, i);
 
-        if (MetaType::IsCompound(nestedTypeID))
+        if (MetaType::IsFundamental(nestedTypeID))
+        {
+            AddFundamental(*ptr, label.c_str(), parentPrty, true);
+        }
+        else if (MetaType::IsString(nestedTypeID))
+        {
+            AddString(*ptr, label.c_str(), parentPrty, true);
+        }
+        else if (MetaType::IsCompound(nestedTypeID))
         {
             Object& obj = ptr->Get<Object>();
             wxPGProperty* prty = new wxStringProperty(label.c_str(), wxPG_LABEL, obj.ToString().c_str());
             AddProperty(*ptr, prty, parentPrty, true);
 
             FillCompound(obj, prty);
-        }
-        else if (MetaType::IsString(nestedTypeID))
-        {
-            AddString(*ptr, label.c_str(), parentPrty, true);
-        }
-        else if (MetaType::IsFundamental(nestedTypeID))
-        {
-            AddFundamental(*ptr, label.c_str(), parentPrty, true);
         }
         else
         {
@@ -116,12 +116,13 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
         auto ptr = new PropertyPointer();
         *ptr = PropertyPointer::CreateFromProperty(object, property);
 
-        if (MetaType::IsCompound(property->GetTypeID()))
+        if (MetaType::IsFundamental(property->GetTypeID()))
         {
-            wxPGProperty* prty = new wxStringProperty(label, wxPG_LABEL, "");
-            AddProperty(*ptr, prty, parentPrty, editable);
-
-            FillCompound(ptr->Get<Object>(), prty);
+            AddFundamental(*ptr, label, parentPrty, editable);
+        }
+        else if (MetaType::IsString(property->GetTypeID()))
+        {
+            AddString(*ptr, label, parentPrty, editable);
         }
         else if (MetaType::IsMultiDimensional(property->GetTypeID()))
         {
@@ -130,13 +131,12 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
 
             FillMultiDimensional(ptr->Get<epiBaseArray>(), property->GetNestedTypeID(), prty);
         }
-        else if (MetaType::IsFundamental(property->GetTypeID()))
+        else if (MetaType::IsCompound(property->GetTypeID()))
         {
-            AddFundamental(*ptr, label, parentPrty, editable);
-        }
-        else if (MetaType::IsString(property->GetTypeID()))
-        {
-            AddString(*ptr, label, parentPrty, editable);
+            wxPGProperty* prty = new wxStringProperty(label, wxPG_LABEL, "");
+            AddProperty(*ptr, prty, parentPrty, editable);
+
+            FillCompound(ptr->Get<Object>(), prty);
         }
         else
         {

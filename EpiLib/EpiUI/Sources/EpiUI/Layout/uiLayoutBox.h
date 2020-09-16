@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class uiDirection
+enum class uiDirection : epiS32
 {
 EPI_GENREGION_BEGIN(uiDirection)
     LeftToRight = 0,
