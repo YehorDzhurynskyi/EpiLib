@@ -65,6 +65,8 @@ namespace
 
 EPI_NAMESPACE_USING()
 
+// TODO: add tests for array elements
+
 void TraverseProperties(TestClassA& obj)
 {
     obj.Reset();
