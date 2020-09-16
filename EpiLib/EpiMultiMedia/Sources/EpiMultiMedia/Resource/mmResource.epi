@@ -1,20 +1,14 @@
-enum mmMIMEType
-{
-    UNKNOWN,
-    AUDIO_MPEG
-};
-
 enum mmResourceStatus
 {
+    Empty,
     Broken,
-    LoadedPartially,
-    LoadedFully
+    LoadedShallow,
+    LoadedDeep
 };
 
 class mmResource
 {
-    epiString URI;
-    mmMIMEType MIME = mmMIMEType::UNKNOWN;
-
-    mmResourceStatus Status = mmResourceStatus::Broken;
+    epiString URL;
+    mmResourceStatus Status = mmResourceStatus::Empty;
+    epiPtrArray<mmMediaBase> Media;
 };

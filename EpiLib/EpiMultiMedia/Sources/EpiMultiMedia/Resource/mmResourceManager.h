@@ -17,7 +17,10 @@ protected:
     mmResourceManager() = default;
 
 public:
-    mmResource* LoadResource(const epiChar* url, epiBool loadFully = false);
+    mmResource* LoadResource(const epiChar* url, bool deepLoad = false);
+
+    void LoadResourceShallow(mmResource& resource);
+    void LoadResourceDeep(mmResource& resource);
 
 protected:
     // TODO: replace with a more advanced method

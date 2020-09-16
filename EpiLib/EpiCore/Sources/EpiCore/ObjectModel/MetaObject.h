@@ -318,6 +318,7 @@ constexpr epiBool MetaType::IsCompound(epiMetaTypeID typeID)
 {
     return
         typeID != epiMetaTypeID_None &&
+        !IsPointer(typeID) &&
         !IsString(typeID) &&
         !IsFundamental(typeID) &&
         !IsMultiDimensional(typeID);

@@ -129,7 +129,18 @@ void* PropertyPointer::Get_Static() const
 
     if (m_Form == Form::ArrayElem)
     {
-        value = m_ValueAddr;
+        if constexpr (MetaType::IsFundamental<T>() || MetaType::IsPointer<T>())
+        {
+            value = (void*)*((void**)m_ValueAddr);
+        }
+        else if constexpr (MetaType::IsString<T>() || MetaType::IsMultiDimensional<T>() || MetaType::IsCompound<T>())
+        {
+            value = m_ValueAddr;
+        }
+        else
+        {
+            static_assert(false, "Unexpected type id");
+        }
     }
     else if (m_Form == Form::Property)
     {

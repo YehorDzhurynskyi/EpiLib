@@ -6,22 +6,17 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-EPI_NAMESPACE_BEGIN()
+#include "EpiMultimedia/mmMediaBase.h"
 
-enum class mmMIMEType : epiS32
-{
-EPI_GENREGION_BEGIN(mmMIMEType)
-    UNKNOWN = 0,
-    AUDIO_MPEG = 1
-EPI_GENREGION_END(mmMIMEType)
-};
+EPI_NAMESPACE_BEGIN()
 
 enum class mmResourceStatus : epiS32
 {
 EPI_GENREGION_BEGIN(mmResourceStatus)
-    Broken = 0,
-    LoadedPartially = 1,
-    LoadedFully = 2
+    Empty = 0,
+    Broken = 1,
+    LoadedShallow = 2,
+    LoadedDeep = 3
 EPI_GENREGION_END(mmResourceStatus)
 };
 
@@ -36,16 +31,16 @@ public:
 
     enum mmResource_PIDs
     {
-        PID_URI = 0x12bbf3ab,
-        PID_MIME = 0x74106de4,
+        PID_URL = 0x62d10724,
         PID_Status = 0x7cac602a,
+        PID_Media = 0xabed8e08,
         PID_COUNT = 3
     };
 
 protected:
-    epiString m_URI{epiDEBUG_ONLY("Empty")};
-    mmMIMEType m_MIME{mmMIMEType::UNKNOWN};
-    mmResourceStatus m_Status{mmResourceStatus::Broken};
+    epiString m_URL{epiDEBUG_ONLY("Empty")};
+    mmResourceStatus m_Status{mmResourceStatus::Empty};
+    epiPtrArray<mmMediaBase> m_Media{};
 
 EPI_GENREGION_END(mmResource)
 };

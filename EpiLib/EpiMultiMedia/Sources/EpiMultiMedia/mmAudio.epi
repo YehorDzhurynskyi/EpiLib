@@ -1,4 +1,4 @@
-class mmResourceAudio : mmResource
+class mmAudio : mmMediaBase
 {
     epiU32 SampleRate;
     dSeries1Df Samples;

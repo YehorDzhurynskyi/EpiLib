@@ -1,14 +1,18 @@
 project(EpiMultimedia)
 
 add_library(EpiMultimedia
+    Sources/EpiMultimedia/mmMediaBase.epi
+    Sources/EpiMultimedia/mmMediaBase.h
+    Sources/EpiMultimedia/mmMediaBase.cpp
+    Sources/EpiMultimedia/mmAudio.epi
+    Sources/EpiMultimedia/mmAudio.h
+    Sources/EpiMultimedia/mmAudio.cpp
+
     Sources/EpiMultimedia/Resource/mmResourceManager.h
     Sources/EpiMultimedia/Resource/mmResourceManager.cpp
     Sources/EpiMultimedia/Resource/mmResource.epi
     Sources/EpiMultimedia/Resource/mmResource.h
     Sources/EpiMultimedia/Resource/mmResource.cpp
-    Sources/EpiMultimedia/Resource/mmResourceAudio.epi
-    Sources/EpiMultimedia/Resource/mmResourceAudio.h
-    Sources/EpiMultimedia/Resource/mmResourceAudio.cpp
 )
 get_target_property(EpiMultimedia_SOURCES EpiMultimedia SOURCES)
 epi_pack_sources(${EpiMultimedia_SOURCES})

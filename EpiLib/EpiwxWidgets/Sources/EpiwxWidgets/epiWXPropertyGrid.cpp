@@ -71,7 +71,7 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, epiMetaTypeID 
     const epiSize_t arraySz = array.GetSize();
     for (epiU32 i = 0; i < arraySz; ++i)
     {
-        const std::string label = fmt::format("[{:d}]", i);
+        const epiString label = fmt::format("[{:d}]", i);
 
         auto ptr = new PropertyPointer();
         *ptr = PropertyPointer::CreateFromArray(array, nestedTypeID, i);
@@ -94,6 +94,36 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, epiMetaTypeID 
         }
         else
         {
+            epiAssert(false, "Unhandled case");
+        }
+
+        // TODO: replace unique_ptr with plain type
+        // PROBLEM: property's client data dangling pointer
+        m_PropertyPointers.push_back(ptr);
+    }
+}
+
+void epiWXPropertyGrid::FillMultiDimensionalPtr(epi::epiBaseArray& array, epi::epiMetaTypeID nestedTypeID, wxPGProperty* parentPrty)
+{
+    const epiSize_t arraySz = array.GetSize();
+    for (epiU32 i = 0; i < arraySz; ++i)
+    {
+        const epiString label = fmt::format("[{:d}]", i);
+
+        auto ptr = new PropertyPointer();
+        *ptr = PropertyPointer::CreateFromArray(array, epiMetaTypeID_Ptr, i);
+
+        if (MetaType::IsCompound(nestedTypeID))
+        {
+            Object* obj = ptr->Get<Object*>();
+            wxPGProperty* prty = new wxStringProperty(label.c_str(), wxPG_LABEL, obj->ToString().c_str());
+            AddProperty(*ptr, prty, parentPrty, true);
+
+            FillCompound(*obj, prty);
+        }
+        else
+        {
+            // TODO: finish other branches
             epiAssert(false, "Unhandled case");
         }
 
@@ -129,7 +159,25 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
             wxPGProperty* prty = new wxStringProperty(property->GetName(), wxPG_LABEL, "<Array>");
             AddProperty(*ptr, prty, parentPrty, editable);
 
-            FillMultiDimensional(ptr->Get<epiBaseArray>(), property->GetNestedTypeID(), prty);
+            if (property->GetTypeID() == epiMetaTypeID_epiArray)
+            {
+                FillMultiDimensional(ptr->Get<epiBaseArray>(), property->GetNestedTypeID(), prty);
+            }
+            else if (property->GetTypeID() == epiMetaTypeID_epiPtrArray)
+            {
+                FillMultiDimensionalPtr(ptr->Get<epiBaseArray>(), property->GetNestedTypeID(), prty);
+            }
+            else
+            {
+                epiAssert(false, "Unhandled case");
+            }
+        }
+        else if (MetaType::IsPointer(property->GetTypeID()))
+        {
+            wxPGProperty* prty = new wxStringProperty(label, wxPG_LABEL, "");
+            AddProperty(*ptr, prty, parentPrty, editable);
+
+            FillCompound(*ptr->Get<Object*>(), prty);
         }
         else if (MetaType::IsCompound(property->GetTypeID()))
         {
