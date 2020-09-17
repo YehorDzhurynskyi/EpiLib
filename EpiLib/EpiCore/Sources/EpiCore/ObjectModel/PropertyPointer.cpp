@@ -28,12 +28,12 @@ PropertyPointer PropertyPointer::CreateFromArray(epiBaseArray& self, epiMetaType
 
 epiBool PropertyPointer::IsReadable() const
 {
-    return m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.WriteCallback;
+    return m_Form == Form::ArrayElem || m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.WriteCallback;
 }
 
 epiBool PropertyPointer::IsWritable() const
 {
-    return m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback;
+    return m_Form == Form::ArrayElem || m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback;
 }
 
 epiMetaTypeID PropertyPointer::GetTypeID() const

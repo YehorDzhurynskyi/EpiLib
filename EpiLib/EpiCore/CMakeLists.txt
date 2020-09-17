@@ -88,8 +88,8 @@ target_precompile_headers(EpiCore
 
         [["EpiCore/epi_config.h"]]
         [["EpiCore/types.h"]]
-        [["EpiCore/common.h"]]
         [["EpiCore/Hash.h"]]
+        [["EpiCore/common.h"]]
         [["EpiCore/ObjectModel/Serialization.h"]]
         [["EpiCore/ObjectModel/MetaObject.h"]]
         [["EpiCore/Containers/Array.h"]]

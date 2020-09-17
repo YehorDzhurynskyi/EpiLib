@@ -3,8 +3,7 @@
 #include "MetaObject.h"
 #include <nlohmann/json.hpp>
 
-namespace epi
-{
+EPI_NAMESPACE_BEGIN()
 
 using json_t = nlohmann::json;
 
@@ -41,12 +40,16 @@ protected:
     virtual void OnPostDeserialization() {}
 };
 
+// TODO: move to a different place
 template<typename T, typename U>
-T* As(U* rhs)
+T* epiAs(U* rhs)
 {
-    static_assert(std::is_base_of<Object, U>::value);
-    static_assert(std::is_base_of<Object, T>::value);
-    static_assert(std::is_base_of<U, T>::value);
+    static_assert(!std::is_pointer_v<T> && !std::is_pointer_v<U>);
+    static_assert(!std::is_reference_v<T> && !std::is_reference_v<U>);
+
+    static_assert(std::is_base_of_v<Object, std::decay_t<U>>);
+    static_assert(std::is_base_of_v<Object, std::decay_t<T>>);
+    static_assert(std::is_base_of_v<std::decay_t<U>, std::decay_t<T>>);
 
     if (!rhs->Is(T::TypeID))
     {
@@ -56,4 +59,4 @@ T* As(U* rhs)
     return static_cast<T*>(rhs);
 }
 
-}
+EPI_NAMESPACE_END()

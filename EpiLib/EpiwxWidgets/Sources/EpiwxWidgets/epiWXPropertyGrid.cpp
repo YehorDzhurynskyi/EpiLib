@@ -156,16 +156,18 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
         }
         else if (MetaType::IsMultiDimensional(property->GetTypeID()))
         {
-            wxPGProperty* prty = new wxStringProperty(property->GetName(), wxPG_LABEL, "<Array>");
+            epiBaseArray& array = ptr->Get<epiBaseArray>();
+
+            wxPGProperty* prty = new wxStringProperty(property->GetName(), wxPG_LABEL, fmt::format("<Array> size={:d}", array.GetSize()));
             AddProperty(*ptr, prty, parentPrty, editable);
 
             if (property->GetTypeID() == epiMetaTypeID_epiArray)
             {
-                FillMultiDimensional(ptr->Get<epiBaseArray>(), property->GetNestedTypeID(), prty);
+                FillMultiDimensional(array, property->GetNestedTypeID(), prty);
             }
             else if (property->GetTypeID() == epiMetaTypeID_epiPtrArray)
             {
-                FillMultiDimensionalPtr(ptr->Get<epiBaseArray>(), property->GetNestedTypeID(), prty);
+                FillMultiDimensionalPtr(array, property->GetNestedTypeID(), prty);
             }
             else
             {

@@ -7,34 +7,11 @@ class epiBaseArray
 {
 public:
     epiBaseArray() = default;
-
-    epiBaseArray(const epiBaseArray& rhs)
-    {
-        // NOTE: doing a virtual call to make the copying work for metaprogramming operations
-        // `epiBaseArray` will call `CopyFromShallow()` method that will do a copy
-        // to avoid the double copying every derivative class should override the
-        // copy methods with an empty body
-
-        CopyFromShallow(rhs);
-    }
-
-    epiBaseArray& operator=(const epiBaseArray& rhs)
-    {
-        // NOTE: doing a virtual call to make the copying work for metaprogramming operations
-        // `epiBaseArray` will call `CopyFromShallow()` method that will do a copy
-        // to avoid the double copying every derivative class should override the
-        // copy methods with an empty body
-
-        CopyFromShallow(rhs);
-        return *this;
-    }
-
+    epiBaseArray(const epiBaseArray& rhs) = default;
+    epiBaseArray& operator=(const epiBaseArray& rhs) = default;
     epiBaseArray(epiBaseArray&&) = default;
     epiBaseArray& operator=(epiBaseArray&&) = default;
     virtual ~epiBaseArray() = default;
-
-    virtual void CopyFromShallow(const epiBaseArray& rhs) = 0;
-    virtual void CopyFromDeep(const epiBaseArray& rhs) = 0;
 
     virtual epiByte* GetData() = 0;
     virtual epiSize_t GetSize() const = 0;
@@ -64,44 +41,6 @@ public:
     epiArray(std::initializer_list<T> list)
         : m_Vector{list}
     {
-    }
-
-    epiArray(const epiArray& rhs)
-        : epiBaseArray(rhs)
-    {
-        // NOTE: doing nothing:
-        // `epiBaseArray` will call `CopyFromShallow()` method that will do a copy
-        // to avoid the double copying every derivative class should override the
-        // copy methods with an empty body
-    }
-
-    epiArray& operator=(const epiArray& rhs)
-    {
-        epiBaseArray::operator=(rhs);
-
-        // NOTE: doing nothing:
-        // `epiBaseArray` will call `CopyFromShallow()` method that will do a copy
-        // to avoid the double copying every derivative class should override the
-        // copy methods with an empty body
-
-        return *this;
-    }
-
-    epiArray(epiArray&& rhs) = default;
-    epiArray& operator=(epiArray&& rhs) = default;
-
-    void CopyFromShallow(const epiBaseArray& rhs) override
-    {
-        const auto& rrhs = static_cast<const epiArray<T>&>(rhs);
-        m_Vector = rrhs.m_Vector;
-    }
-
-    void CopyFromDeep(const epiBaseArray& rhs) override
-    {
-        const auto& rrhs = static_cast<const epiArray<T>&>(rhs);
-        m_Vector.resize(rrhs.m_Vector.size());
-
-        std::copy(rrhs.m_Vector.data(), rrhs.m_Vector.data() + rrhs.m_Vector.size(), m_Vector.data());
     }
 
     epiByte* GetData() override

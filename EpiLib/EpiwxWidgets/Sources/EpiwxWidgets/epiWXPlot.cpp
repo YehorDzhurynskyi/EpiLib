@@ -106,7 +106,7 @@ void epiWXPlot::OnResize(wxSizeEvent& event)
 {
     const wxSize& size = event.GetSize();
 
-    if (uiCamera* camera = As<uiCamera>(m_UIContext->GetGFXContext().GetCamera()))
+    if (uiCamera* camera = epiAs<uiCamera>(m_UIContext->GetGFXContext().GetCamera()))
     {
         camera->SetAspectRatio(size.x / static_cast<epiFloat>(size.y));
 

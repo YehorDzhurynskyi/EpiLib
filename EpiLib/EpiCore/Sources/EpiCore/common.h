@@ -17,7 +17,6 @@
 
 #define epiTriggerBreakpoint() __debugbreak()
 
-#define epiAs(_T, _V) static_cast<_T>(_V)
 #define epiArrLen(_V) (sizeof(_V) / sizeof(_V[0]))
 
 #define epiFloatingEqTolerance() 1.0e-5f

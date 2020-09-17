@@ -1,5 +1,7 @@
 class mmAudio : mmMediaBase
 {
+    # TODO: add [Editor(ReadOnly=True)]
     epiU32 SampleRate;
-    dSeries1Df Samples;
+
+    epiArray<dSeries1Df> Channels;
 };
