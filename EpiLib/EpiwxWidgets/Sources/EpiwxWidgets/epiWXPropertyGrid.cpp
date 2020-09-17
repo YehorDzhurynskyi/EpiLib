@@ -68,7 +68,8 @@ void epiWXPropertyGrid::FillCompound(Object& object, wxPGProperty* prty)
 
 void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, epiMetaTypeID nestedTypeID, wxPGProperty* parentPrty)
 {
-    const epiSize_t arraySz = array.GetSize();
+    // TODO: add the ability to upload another `n` items with Property Grid UI
+    const epiSize_t arraySz = std::min(100ull, array.GetSize());
     for (epiU32 i = 0; i < arraySz; ++i)
     {
         const epiString label = fmt::format("[{:d}]", i);
@@ -105,7 +106,8 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, epiMetaTypeID 
 
 void epiWXPropertyGrid::FillMultiDimensionalPtr(epi::epiBaseArray& array, epi::epiMetaTypeID nestedTypeID, wxPGProperty* parentPrty)
 {
-    const epiSize_t arraySz = array.GetSize();
+    // TODO: add the ability to upload another `n` items with Property Grid UI
+    const epiSize_t arraySz = std::min(100ull, array.GetSize());
     for (epiU32 i = 0; i < arraySz; ++i)
     {
         const epiString label = fmt::format("[{:d}]", i);

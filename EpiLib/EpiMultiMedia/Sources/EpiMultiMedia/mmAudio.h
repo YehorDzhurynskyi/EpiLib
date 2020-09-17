@@ -22,12 +22,14 @@ public:
     enum mmAudio_PIDs
     {
         PID_SampleRate = 0x2d49dd9c,
+        PID_BitRate = 0x33cbeca8,
         PID_Channels = 0xa6280e0,
-        PID_COUNT = 2
+        PID_COUNT = 3
     };
 
 protected:
     epiU32 m_SampleRate{0};
+    epiU32 m_BitRate{0};
     epiArray<dSeries1Df> m_Channels{};
 
 EPI_GENREGION_END(mmAudio)

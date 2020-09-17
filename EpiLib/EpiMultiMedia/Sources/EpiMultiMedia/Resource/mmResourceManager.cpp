@@ -155,10 +155,18 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                                     if (avcodec_open2(avCodecContext, avCodec, nullptr) == 0)
                                     {
                                         audio->SetSampleRate(avCodecContext->sample_rate);
+                                        audio->SetBitRate(avCodecContext->bit_rate);
+
+                                        // TODO: set CodecName: avCodecContext->codec->long_name
+                                        // TODO: set TicksPerFrame: avCodecContext->ticks_per_frame
+
                                         epiArray<dSeries1Df>& channels = audio->GetChannels();
                                         epiFor(avCodecContext->channels)
                                         {
-                                            channels.PushBack();
+                                            dSeries1Df& series = channels.PushBack();
+
+                                            // TODO: calculate the total number of samples
+                                            series.Reserve(10000);
                                         }
 
                                         AVPacket packet;
@@ -195,20 +203,28 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                                                     }
                                                 }
 
-                                                if (ret != 0)
+                                                switch (ret)
                                                 {
-                                                    // TODO: log
+                                                case AVERROR_EOF: break;
+                                                case AVERROR(EAGAIN): /* TODO: log: output is not available in this state - user must try to send new input */ break;
+                                                case AVERROR(EINVAL): /* TODO: log: codec not opened, or it is an encoder */ break;
+                                                case AVERROR_INPUT_CHANGED: /* TODO: log: current decoded frame has changed parameters */ break;
+                                                default: /* TODO: log */ break;
+                                                }
+
+                                                if (ret != AVERROR_EOF && ret != AVERROR(EAGAIN))
+                                                {
                                                     break;
                                                 }
                                             }
+                                        }
 
-                                            if (ret != 0)
-                                            {
-                                                // TODO: log
-                                            }
+                                        av_frame_free(&frame);
+                                        av_packet_unref(&packet);
 
-                                            av_frame_free(&frame);
-                                            av_packet_unref(&packet);
+                                        if (ret != 0)
+                                        {
+                                            // TODO: log
                                         }
                                     }
                                     else

@@ -3,5 +3,8 @@ class mmAudio : mmMediaBase
     # TODO: add [Editor(ReadOnly=True)]
     epiU32 SampleRate;
 
+    # TODO: add [Editor(ReadOnly=True)]
+    epiU32 BitRate;
+
     epiArray<dSeries1Df> Channels;
 };
