@@ -1,7 +1,5 @@
 #include "EpiwxWidgets/epiWXPropertyGrid.h"
 
-#include "EpiwxWidgets/epiWXPlot.h"
-
 #include <wx/wx.h>
 
 #include <fmt/core.h>
@@ -9,8 +7,8 @@
 EPI_NAMESPACE_USING()
 
 wxBEGIN_EVENT_TABLE(epiWXPropertyGrid, wxPropertyGrid)
-    EVT_PG_CHANGED(-1, epiWXPropertyGrid::OnPropertyGridChanged)
-    EVT_PG_RIGHT_CLICK(-1, epiWXPropertyGrid::OnPropertyGridRightClick)
+    EVT_PG_CHANGED(wxID_ANY, epiWXPropertyGrid::OnPropertyGridChanged)
+    EVT_PG_RIGHT_CLICK(wxID_ANY, epiWXPropertyGrid::OnPropertyGridRightClick)
 wxEND_EVENT_TABLE()
 
 epiWXPropertyGrid::epiWXPropertyGrid(wxWindow* parent,
@@ -19,7 +17,7 @@ epiWXPropertyGrid::epiWXPropertyGrid(wxWindow* parent,
                                      const wxSize& size,
                                      long style,
                                      const wxString& name)
-    : wxPropertyGrid(parent, id, pos, size, style, name)
+    : wxPropertyGrid(parent, id, pos, size, style | wxPG_SPLITTER_AUTO_CENTER, name)
 {
 }
 
@@ -52,6 +50,7 @@ void epiWXPropertyGrid::FillCompound(Object& object, wxPGProperty* prty)
             wxPGProperty* p = new wxStringProperty(m->GetName(), wxPG_LABEL, "");
             p = prty != nullptr ? prty->InsertChild(0, p) : Append(p);
             p->ChangeFlag(wxPGPropertyFlags::wxPG_PROP_NOEDITOR, true);
+            p->ChangeFlag(wxPGPropertyFlags::wxPG_PROP_READONLY, true);
 
             FillProperties(object, metaClassData, p);
         }
@@ -162,6 +161,11 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
 
             wxPGProperty* prty = new wxStringProperty(property->GetName(), wxPG_LABEL, fmt::format("<Array> size={:d}", array.GetSize()));
             AddProperty(*ptr, prty, parentPrty, editable);
+
+            prty->ChangeFlag(wxPGPropertyFlags::wxPG_PROP_NOEDITOR, true);
+            prty->ChangeFlag(wxPGPropertyFlags::wxPG_PROP_READONLY, true);
+            prty->ChangeFlag(wxPGPropertyFlags::wxPG_PROP_DISABLED, true);
+            prty->ChangeFlag(wxPGPropertyFlags::wxPG_PROP_COLLAPSED, true);
 
             if (property->GetTypeID() == epiMetaTypeID_epiArray)
             {
@@ -299,11 +303,8 @@ void epiWXPropertyGrid::OnPropertyGridRightClick(wxPropertyGridEvent& event)
         return;
     }
 
-    void* clientData = property->GetClientData();
-    PropertyPointer* ptr = reinterpret_cast<PropertyPointer*>(clientData);
-    if (ptr->GetTypeID() != epiMetaTypeID_epiFloat)
+    if (PropertyPointer* ptr = reinterpret_cast<PropertyPointer*>(property->GetClientData()))
     {
-        wxMessageBox(wxT("Only real number property could be chosen!"), wxT("Error"));
-        return;
+        OnPropertyRightClick(*ptr);
     }
 }

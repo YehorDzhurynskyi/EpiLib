@@ -22,6 +22,8 @@ public:
     void SetObject(epi::Object& object);
     void Clear() override;
 
+    virtual void OnPropertyRightClick(epi::PropertyPointer& ptr) {}
+
 protected:
     void FillCompound(epi::Object& object, wxPGProperty* parentPrty);
     void FillMultiDimensional(epi::epiBaseArray& array, epi::epiMetaTypeID nestedTypeID, wxPGProperty* parentPrty);
