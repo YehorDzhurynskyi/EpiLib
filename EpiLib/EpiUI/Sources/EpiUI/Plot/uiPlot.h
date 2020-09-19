@@ -29,6 +29,9 @@ protected:
     dvVMPlot m_ViewModel{};
 
 EPI_GENREGION_END(uiPlot)
+
+public:
+    uiPlot();
 };
 
 EPI_NAMESPACE_END()

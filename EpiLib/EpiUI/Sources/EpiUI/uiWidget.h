@@ -90,8 +90,7 @@ public:
         PID_SizeHint = 0xee7e8791,
         PID_Parent = 0x3a226579,
         PID_Children = 0x58e1d3ec,
-        PID_Layout = 0x3d966ed4,
-        PID_COUNT = 13
+        PID_COUNT = 12
     };
 
 protected:
@@ -102,7 +101,6 @@ protected:
     epiFloat GetHeight_Callback() const;
     void SetHeight_Callback(epiFloat value);
     epiVec2f GetMouseLocalUICoord_Callback() const;
-    void SetLayout_Callback(uiLayout* value);
 
 protected:
     epiVec2f m_Position{};
@@ -113,7 +111,6 @@ protected:
     epiVec2f m_SizeHint{};
     uiWidget* m_Parent{nullptr};
     epiPtrArray<uiWidget> m_Children{};
-    uiLayout* m_Layout{nullptr};
 
 EPI_GENREGION_END(uiWidget)
 
@@ -127,11 +124,6 @@ public:
         static_assert(std::is_base_of_v<uiWidget, T>);
         T& widget = *static_cast<T*>(m_Children.PushBack(new T(std::forward<Args&&>(args)...)));
         widget.m_Parent = this;
-
-        if (m_Layout != nullptr)
-        {
-            m_Layout->AddWidget(&widget);
-        }
 
         return widget;
     }

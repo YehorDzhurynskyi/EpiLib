@@ -1,0 +1,10 @@
+enum dvSeries1DfRepr
+{
+    Peak
+};
+
+class dvVMSeries1Df : dvVMSeriesBase
+{
+    dSeries1Df* Series;
+    dvSeries1DfRepr Repr = dvSeries1DfRepr::Peak;
+};

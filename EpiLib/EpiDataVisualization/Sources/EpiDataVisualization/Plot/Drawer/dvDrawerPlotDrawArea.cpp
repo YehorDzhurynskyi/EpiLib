@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotDrawArea.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.h"
-
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
 
@@ -73,7 +71,9 @@ void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvVMPlot& plot, const epi
 
         const epiString str = fmt::format("{:.{}f}", x, fpWidthX);
         const epiWString wstr(str.begin(), str.end());
-        ctx.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 24.0f);
+
+        // TODO: make text size independent from actual frame size
+        ctx.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 36.0f);
 
         x += stepX;
     }
@@ -101,21 +101,11 @@ void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvVMPlot& plot, const epi
 
         const epiString str = fmt::format("{:.{}f}", y, fpWidthY);
         const epiWString wstr(str.begin(), str.end());
-        ctx.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 24.0f);
+
+        // TODO: make text size independent from actual frame size
+        ctx.GetDrawerText().DrawText(wstr.c_str(), p + epiVec2f(5.0f, 5.0f), 36.0f);
 
         y += stepY;
-    }
-
-    if (gfxCamera* camera = ctx.GetCamera())
-    {
-        for (const auto& series : plot.GetSeries())
-        {
-            dvDrawerSeriesY drawer;
-
-            drawer.SceneBegin();
-            drawer.Draw(ctx, *series, box, frame);
-            drawer.SceneEnd(*camera);
-        }
     }
 }
 

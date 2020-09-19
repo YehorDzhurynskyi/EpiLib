@@ -16,7 +16,7 @@ public:
                       wxWindowID id = wxID_ANY,
                       const wxPoint& pos = wxDefaultPosition,
                       const wxSize& size = wxDefaultSize,
-                      long style = wxPG_DEFAULT_STYLE,
+                      long style = 0,
                       const wxString& name = wxPropertyGridNameStr);
 
     void SetObject(epi::Object& object);

@@ -73,15 +73,6 @@ void uiWidget::SetHeight_Callback(epiFloat value)
     m_Size.y = value;
 }
 
-void uiWidget::SetLayout_Callback(uiLayout* value)
-{
-    m_Layout = value;
-    for (auto& w : m_Children)
-    {
-        m_Layout->AddWidget(w);
-    }
-}
-
 void uiWidget::OnMousePrimary(uiMouseAction action)
 {
     if (uiWidget* widget = WidgetOverMouse(GetMouseLocalUICoord()))
@@ -109,6 +100,19 @@ void uiWidget::OnMouseFocus(epiBool focused)
 #if 1
 void uiWidget::OnResize()
 {
+    if (uiWidget* parent = GetParent())
+    {
+        SetBBox(parent->GetBBox());
+    }
+
+    for (auto& w : GetChildren())
+    {
+        w->OnResize();
+    }
+}
+#else
+void uiWidget::OnResize()
+{
     if (uiLayout* layout = GetLayout())
     {
         if (uiWidget* parent = GetParent())
@@ -124,7 +128,7 @@ void uiWidget::OnResize()
         w->OnResize();
     }
 }
-#else
+
 void uiWidget::OnResize()
 {
     epiAssert(m_Parent, "Top-level widget should override this method");

@@ -68,12 +68,10 @@ epiWXPlot::epiWXPlot(wxWindow* parent,
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    m_PlotView = &m_UIContext->GetPage().Add<uiPlot>();
+    m_Plot = &m_UIContext->GetPage().Add<uiPlot>();
     m_UIContext->GetPage().SetUIContext(m_UIContext); // TODO: fix
-    uiLayoutBox* layout = new uiLayoutBox();
-    m_PlotView->SetLayout(layout); // TODO: fix
 
-    dvVMPlot& vm = m_PlotView->GetViewModel();
+    dvVMPlot& vm = m_Plot->GetViewModel();
 
     epiRect2f bbox;
     bbox.Left = 0.0f;
@@ -88,21 +86,6 @@ epiWXPlot::epiWXPlot(wxWindow* parent,
     clipbox.Top = 1.5f;
     clipbox.Bottom = -1.5f;
     vm.SetClipBox(clipbox);
-
-    {
-        uiPlotDrawArea& drawArea = m_PlotView->Add<uiPlotDrawArea>();
-        drawArea.SetViewModel(&vm);
-        uiSizePolicyInfo& policy = drawArea.GetSizePolicyInfo();
-        policy.SetSizePolicyVertical(uiSizePolicy_Expanding);
-    }
-
-    {
-        uiPlotTimeline& timeline = m_PlotView->Add<uiPlotTimeline>();
-        timeline.SetViewModel(&vm);
-        uiSizePolicyInfo& policy = timeline.GetSizePolicyInfo();
-        policy.SetSizePolicyVertical(uiSizePolicy_Fixed);
-        timeline.SetSizeHint(epiVec2f{ 0.0f, 100.0f });
-    }
 }
 
 void epiWXPlot::OnResize(wxSizeEvent& event)

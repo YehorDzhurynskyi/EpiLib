@@ -19,7 +19,6 @@ epiWXPropertyGrid::epiWXPropertyGrid(wxWindow* parent,
                                      const wxString& name)
     : wxPropertyGrid(parent, id, pos, size, style, name)
 {
-    SetWindowStyle(wxPG_SPLITTER_AUTO_CENTER | wxPG_TOOLTIPS | wxPG_BOLD_MODIFIED);
     SetExtraStyle(wxPG_EX_HELP_AS_TOOLTIPS);
 }
 

@@ -5,6 +5,7 @@ class dvVMPlot
         epiRect2f ClipBox;
     }
 
+    # TODO: add [Owner]
     [ReadOnly]
     {
         epiPtrArray<dvVMSeriesBase> Series;

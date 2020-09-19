@@ -21,22 +21,12 @@ add_library(EpiUI
     Sources/EpiUI/uiPage.h
     Sources/EpiUI/uiPage.cpp
 
-    Sources/EpiUI/Layout/uiLayout.epi
-    Sources/EpiUI/Layout/uiLayout.h
-    Sources/EpiUI/Layout/uiLayout.cpp
-    Sources/EpiUI/Layout/uiLayoutBox.epi
-    Sources/EpiUI/Layout/uiLayoutBox.h
-    Sources/EpiUI/Layout/uiLayoutBox.cpp
-
     Sources/EpiUI/Plot/uiPlot.epi
     Sources/EpiUI/Plot/uiPlot.h
     Sources/EpiUI/Plot/uiPlot.cpp
     Sources/EpiUI/Plot/uiPlotDrawArea.epi
     Sources/EpiUI/Plot/uiPlotDrawArea.h
     Sources/EpiUI/Plot/uiPlotDrawArea.cpp
-    Sources/EpiUI/Plot/uiPlotTimeline.epi
-    Sources/EpiUI/Plot/uiPlotTimeline.h
-    Sources/EpiUI/Plot/uiPlotTimeline.cpp
 )
 get_target_property(EpiUI_SOURCES EpiUI SOURCES)
 epi_pack_sources(${EpiUI_SOURCES})

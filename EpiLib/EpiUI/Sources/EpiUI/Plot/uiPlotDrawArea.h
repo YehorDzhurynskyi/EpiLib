@@ -49,7 +49,7 @@ protected:
     epiBool m_MouseDragActive;
     epiVec2f m_MouseDragPosition;
     epiVec2f m_MouseDragOrigin;
-    dvDrawerPlotDrawArea m_Drawer;
+    dvDrawerPlotDrawArea m_DrawerDrawArea;
 };
 
 EPI_NAMESPACE_END()

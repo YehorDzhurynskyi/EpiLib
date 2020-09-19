@@ -8,7 +8,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-class dSeriesBase;
 class dvVMSeriesBase : public Object
 {
 EPI_GENREGION_BEGIN(dvVMSeriesBase)
@@ -20,13 +19,11 @@ public:
 
     enum dvVMSeriesBase_PIDs
     {
-        PID_Model = 0x16545ddd,
         PID_Color = 0xa79767ed,
-        PID_COUNT = 2
+        PID_COUNT = 1
     };
 
 protected:
-    dSeriesBase* m_Model{nullptr};
     Color m_Color{};
 
 EPI_GENREGION_END(dvVMSeriesBase)

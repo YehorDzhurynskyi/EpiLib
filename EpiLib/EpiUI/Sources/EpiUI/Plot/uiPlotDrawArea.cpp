@@ -5,6 +5,10 @@ EPI_GENREGION_END(include)
 
 #include "EpiUI/uiContext.h"
 
+#include "EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.h"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMSeries1Df.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeries1Df.h"
+
 EPI_NAMESPACE_BEGIN()
 
 void uiPlotDrawArea::Update()
@@ -26,7 +30,25 @@ void uiPlotDrawArea::Draw(uiContext& uiContext)
 
     if (dvVMPlot* vm = GetViewModel())
     {
-        m_Drawer.Draw(uiContext.GetGFXContext(), *vm, GetBBox());
+        m_DrawerDrawArea.Draw(uiContext.GetGFXContext(), *vm, GetBBox());
+
+        gfxContext& gfxContext = uiContext.GetGFXContext();
+
+        if (gfxCamera* camera = gfxContext.GetCamera())
+        {
+            for (const auto& seriesBase : vm->GetSeries())
+            {
+                if (dvVMSeries1Df* series1df = epiAs<dvVMSeries1Df>(seriesBase))
+                {
+                    // TODO: maybe make it RAII: `SceneBegin` on ctor, `SceneEnd` on dtor
+                    dvDrawerSeries1Df drawerSeries1df;
+
+                    drawerSeries1df.SceneBegin();
+                    drawerSeries1df.Draw(gfxContext, *series1df, vm->GetClipBox(), GetBBox());
+                    drawerSeries1df.SceneEnd(*camera);
+                }
+            }
+        }
     }
 }
 

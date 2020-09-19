@@ -96,6 +96,7 @@ class uiWidget
         epiPtrArray<uiWidget> Children;
     }
 
-    [WriteCallback]
-    uiLayout* Layout;
+    # TODO: implement
+    # [WriteCallback]
+    # uiLayout* Layout;
 };

@@ -35,5 +35,5 @@ protected:
     wxGLContext* m_GLContext;
     epi::uiContext* m_UIContext;
 
-    epi::uiPlot* m_PlotView;
+    epi::uiPlot* m_Plot;
 };
