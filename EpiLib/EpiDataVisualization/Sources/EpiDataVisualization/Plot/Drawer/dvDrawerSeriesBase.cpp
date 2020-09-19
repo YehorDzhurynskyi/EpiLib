@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesBase.h"
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesBase.cxx"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesBase.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesBase.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/Color.h"
@@ -88,7 +88,7 @@ dvDrawerSeriesBase::dvDrawerSeriesBase()
     m_ShaderProgramLineStrip = CreateProgramLineStrip();
 }
 
-void dvDrawerSeriesBase::Draw(gfxContext& ctx, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
+void dvDrawerSeriesBase::Draw(gfxContext& ctx, const dvVMSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
 {
     Draw_Internal(ctx, series, worldFrame, uiFrame, z);
 }

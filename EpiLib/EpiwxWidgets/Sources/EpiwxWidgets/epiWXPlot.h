@@ -4,8 +4,6 @@
 
 #include "EpiGraphics/gfxContext.h"
 
-#include "EpiDataVisualization/Plot/dvPlot.h"
-
 #include <wx/glcanvas.h>
 
 namespace epi
@@ -19,7 +17,14 @@ public:
     wxDECLARE_EVENT_TABLE();
 
 public:
-    epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList);
+    epiWXPlot(wxWindow *parent,
+              const wxGLAttributes& attribList,
+              wxWindowID id = wxID_ANY,
+              const wxPoint& pos = wxDefaultPosition,
+              const wxSize& size = wxDefaultSize,
+              long style = 0,
+              const wxString& name = wxGLCanvasName,
+              const wxPalette& palette = wxNullPalette);
 
     void OnResize(wxSizeEvent& event);
     void OnPaint(wxPaintEvent& event);
@@ -31,5 +36,4 @@ protected:
     epi::uiContext* m_UIContext;
 
     epi::uiPlot* m_PlotView;
-    epi::dvPlot m_PlotModel;
 };

@@ -1,10 +1,10 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.hxx"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotDrawArea.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.h"
 
 #include "EpiGraphics/gfxContext.h"
 #include "EpiGraphics/gfxDrawer.h"
@@ -28,7 +28,7 @@ public:
 EPI_GENREGION_END(dvDrawerPlotDrawArea)
 
 public:
-    void Draw(gfxContext& ctx, const dvViewModelPlot& plot, const epiRect2f& frame);
+    void Draw(gfxContext& ctx, const dvVMPlot& plot, const epiRect2f& frame);
 
 protected:
     void GridMarkup(epiFloat domain, epiFloat& outStep, epiU32& outNLines);

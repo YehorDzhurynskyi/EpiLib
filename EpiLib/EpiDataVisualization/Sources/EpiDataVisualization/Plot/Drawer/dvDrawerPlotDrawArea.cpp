@@ -1,9 +1,9 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.h"
-#include "EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.cxx"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotDrawArea.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotDrawArea.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesY.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.h"
 
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
@@ -23,7 +23,7 @@ const epiU32 kGridLineCountMax = 13;
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvViewModelPlot& plot, const epiRect2f& frame)
+void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvVMPlot& plot, const epiRect2f& frame)
 {
     const epiRect2f& box = plot.GetClipBox();
 

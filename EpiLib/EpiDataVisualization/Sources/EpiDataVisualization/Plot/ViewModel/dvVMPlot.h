@@ -1,24 +1,24 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/ViewModel/dvViewModelPlot.hxx"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class dvViewModelSeriesBase;
-class dvViewModelPlot : public Object
+class dvVMSeriesBase;
+class dvVMPlot : public Object
 {
-EPI_GENREGION_BEGIN(dvViewModelPlot)
+EPI_GENREGION_BEGIN(dvVMPlot)
 
-EPI_GENHIDDEN_dvViewModelPlot()
+EPI_GENHIDDEN_dvVMPlot()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x46670485};
+    constexpr static epiMetaTypeID TypeID{0xfb421c80};
 
-    enum dvViewModelPlot_PIDs
+    enum dvVMPlot_PIDs
     {
         PID_ClipBox = 0xa7011dd3,
         PID_Series = 0x3dbc041b,
@@ -35,20 +35,20 @@ protected:
     void SetZoom_Callback(const epiVec2f& value);
 
 protected:
-    epiPtrArray<dvViewModelSeriesBase> m_Series{};
+    epiPtrArray<dvVMSeriesBase> m_Series{};
     epiRect2f m_BBox{};
     epiVec2f m_Origin{};
     epiVec2f m_Zoom{};
 
-EPI_GENREGION_END(dvViewModelPlot)
+EPI_GENREGION_END(dvVMPlot)
 
 public:
-    dvViewModelPlot();
-    dvViewModelPlot(const dvViewModelPlot& rhs) = default;
-    dvViewModelPlot& operator=(const dvViewModelPlot& rhs) = default;
-    dvViewModelPlot(dvViewModelPlot&& rhs) = default;
-    dvViewModelPlot& operator=(dvViewModelPlot&& rhs) = default;
-    ~dvViewModelPlot() = default;
+    dvVMPlot();
+    dvVMPlot(const dvVMPlot& rhs) = default;
+    dvVMPlot& operator=(const dvVMPlot& rhs) = default;
+    dvVMPlot(dvVMPlot&& rhs) = default;
+    dvVMPlot& operator=(dvVMPlot&& rhs) = default;
+    ~dvVMPlot() = default;
 
 public:
     template<typename T, typename ...Args>

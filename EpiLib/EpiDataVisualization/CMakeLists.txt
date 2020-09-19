@@ -1,29 +1,25 @@
 project(EpiDataVisualization)
 
 add_library(EpiDataVisualization
-    Sources/EpiDataVisualization/Plot/dvPlot.epi
-    Sources/EpiDataVisualization/Plot/dvPlot.h
-    Sources/EpiDataVisualization/Plot/dvPlot.cpp
+    Sources/EpiDataVisualization/Plot/ViewModel/dvVMPlot.epi
+    Sources/EpiDataVisualization/Plot/ViewModel/dvVMPlot.h
+    Sources/EpiDataVisualization/Plot/ViewModel/dvVMPlot.cpp
+    Sources/EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.epi
+    Sources/EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.h
+    Sources/EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.cpp
 
-    Sources/EpiDataVisualization/ViewModel/dvViewModelPlot.epi
-    Sources/EpiDataVisualization/ViewModel/dvViewModelPlot.h
-    Sources/EpiDataVisualization/ViewModel/dvViewModelPlot.cpp
-    Sources/EpiDataVisualization/ViewModel/dvViewModelSeriesBase.epi
-    Sources/EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h
-    Sources/EpiDataVisualization/ViewModel/dvViewModelSeriesBase.cpp
-
-    Sources/EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.epi
-    Sources/EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.h
-    Sources/EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.cpp
-    Sources/EpiDataVisualization/Drawer/dvDrawerPlotTimeline.epi
-    Sources/EpiDataVisualization/Drawer/dvDrawerPlotTimeline.h
-    Sources/EpiDataVisualization/Drawer/dvDrawerPlotTimeline.cpp
-    Sources/EpiDataVisualization/Drawer/dvDrawerSeriesBase.epi
-    Sources/EpiDataVisualization/Drawer/dvDrawerSeriesBase.h
-    Sources/EpiDataVisualization/Drawer/dvDrawerSeriesBase.cpp
-    Sources/EpiDataVisualization/Drawer/dvDrawerSeriesY.epi
-    Sources/EpiDataVisualization/Drawer/dvDrawerSeriesY.h
-    Sources/EpiDataVisualization/Drawer/dvDrawerSeriesY.cpp
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerPlotDrawArea.epi
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerPlotDrawArea.h
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerPlotDrawArea.cpp
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerPlotTimeline.epi
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerPlotTimeline.h
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerPlotTimeline.cpp
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerSeriesBase.epi
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerSeriesBase.h
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerSeriesBase.cpp
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.epi
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.h
+    Sources/EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.cpp
 )
 get_target_property(EpiDataVisualization_SOURCES EpiDataVisualization SOURCES)
 epi_pack_sources(${EpiDataVisualization_SOURCES})

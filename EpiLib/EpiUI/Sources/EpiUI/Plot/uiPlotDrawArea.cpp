@@ -13,7 +13,7 @@ void uiPlotDrawArea::Update()
 
     if (m_MouseDragActive)
     {
-        if (dvViewModelPlot* vm = GetViewModel())
+        if (dvVMPlot* vm = GetViewModel())
         {
             vm->SetOrigin(m_MouseDragOrigin + m_MouseDragPosition - CalcMouseWorldCoord(m_MouseDragOrigin));
         }
@@ -24,7 +24,7 @@ void uiPlotDrawArea::Draw(uiContext& uiContext)
 {
     super::Draw(uiContext);
 
-    if (dvViewModelPlot* vm = GetViewModel())
+    if (dvVMPlot* vm = GetViewModel())
     {
         m_Drawer.Draw(uiContext.GetGFXContext(), *vm, GetBBox());
     }
@@ -40,7 +40,7 @@ void uiPlotDrawArea::OnMousePrimary(uiMouseAction action)
     }
     else if (action == uiMouseAction::Click)
     {
-        if (dvViewModelPlot* vm = GetViewModel())
+        if (dvVMPlot* vm = GetViewModel())
         {
             m_MouseDragOrigin = vm->GetOrigin();
             m_MouseDragPosition = GetMouseWorldCoord();
@@ -53,7 +53,7 @@ void uiPlotDrawArea::OnMouseWheel(epiFloat dZoom)
 {
     super::OnMouseWheel(dZoom);
 
-    if (dvViewModelPlot* vm = GetViewModel())
+    if (dvVMPlot* vm = GetViewModel())
     {
         const epiRect2f& box = vm->GetClipBox();
         const epiFloat domain = box.GetWidth();
@@ -79,7 +79,7 @@ void uiPlotDrawArea::OnMouseFocus(epiBool focused)
 
 epiVec2f uiPlotDrawArea::CalcMouseWorldCoord(const epiVec2f& origin) const
 {
-    if (const dvViewModelPlot* vm = GetViewModel())
+    if (const dvVMPlot* vm = GetViewModel())
     {
         const epiRect2f& box = vm->GetClipBox();
 
@@ -93,7 +93,7 @@ epiVec2f uiPlotDrawArea::CalcMouseWorldCoord(const epiVec2f& origin) const
 
 epiVec2f uiPlotDrawArea::GetMouseWorldCoord_Callback() const
 {
-    if (const dvViewModelPlot* vm = GetViewModel())
+    if (const dvVMPlot* vm = GetViewModel())
     {
         return CalcMouseWorldCoord(vm->GetOrigin());
     }

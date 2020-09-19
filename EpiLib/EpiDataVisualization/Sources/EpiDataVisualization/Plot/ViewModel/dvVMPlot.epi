@@ -1,4 +1,4 @@
-class dvViewModelPlot
+class dvVMPlot
 {
     [Virtual, ReadCallback(SuppressRef=true)]
     {
@@ -7,7 +7,7 @@ class dvViewModelPlot
 
     [ReadOnly]
     {
-        epiPtrArray<dvViewModelSeriesBase> Series;
+        epiPtrArray<dvVMSeriesBase> Series;
     }
 
     epiRect2f BBox;

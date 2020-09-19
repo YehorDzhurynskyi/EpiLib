@@ -1,10 +1,10 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesBase.hxx"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesBase.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.h"
 
 #include "EpiGraphics/gfxContext.h"
 #include "EpiGraphics/gfxDrawer.h"
@@ -34,13 +34,13 @@ public:
     dvDrawerSeriesBase();
 
 public:
-    void Draw(gfxContext& ctx, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z = -50.0f);
+    void Draw(gfxContext& ctx, const dvVMSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z = -50.0f);
 
     void SceneBegin();
     void SceneEnd(const gfxCamera& camera);
 
 protected:
-    virtual void Draw_Internal(gfxContext& ctx, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z) = 0;
+    virtual void Draw_Internal(gfxContext& ctx, const dvVMSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z) = 0;
     void DrawLineStrip(const epiVec2f& p, const Color& color, epiFloat z);
 
 private:

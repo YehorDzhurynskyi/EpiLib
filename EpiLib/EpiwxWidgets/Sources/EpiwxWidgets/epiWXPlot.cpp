@@ -1,8 +1,9 @@
 #include "EpiwxWidgets/epiWXPlot.h"
 
-#include "EpiDataVisualization/ViewModel/dvViewModelSeriesBase.h"
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
+
+#include "EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.h"
 
 #include "EpiUI/Plot/uiPlot.h"
 #include "EpiUI/Plot/uiPlotDrawArea.h"
@@ -23,13 +24,15 @@ wxBEGIN_EVENT_TABLE(epiWXPlot, wxGLCanvas)
     EVT_MOUSE_EVENTS(epiWXPlot::OnMouse)
 wxEND_EVENT_TABLE()
 
-epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
-    : wxGLCanvas(parent,
-                 attribList,
-                 -1,
-                 wxDefaultPosition,
-                 wxDefaultSize,
-                 wxFULL_REPAINT_ON_RESIZE)
+epiWXPlot::epiWXPlot(wxWindow* parent,
+                     const wxGLAttributes& attribList,
+                     wxWindowID id,
+                     const wxPoint& pos,
+                     const wxSize& size,
+                     long style,
+                     const wxString& name,
+                     const wxPalette& palette)
+    : wxGLCanvas(parent, attribList, id, pos, size, style, name, palette)
 {
     wxGLContextAttrs contextAttr;
     contextAttr.PlatformDefaults().CoreProfile().OGLVersion(4, 0).EndList();
@@ -37,13 +40,13 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     m_GLContext = new wxGLContext(this, nullptr, &contextAttr);
     if (!m_GLContext->IsOK())
     {
-        wxMessageBox(wxT("Failed to set OpenGL 4.0"), wxT("Error"));
+        epiLogFatal("OpenGL Failed to setup OpenGL 4.0!");
     }
     SetCurrent(*m_GLContext);
 
     if (!gladLoadGL())
     {
-        wxMessageBox(wxT("Failed on OpenGL GetProcAddress"), wxT("Error"));
+        epiLogFatal("OpenGL Failed to `GetProcAddress`!");
     }
 
     m_UIContext = new uiContext();
@@ -70,7 +73,7 @@ epiWXPlot::epiWXPlot(wxWindow* parent, const wxGLAttributes& attribList)
     uiLayoutBox* layout = new uiLayoutBox();
     m_PlotView->SetLayout(layout); // TODO: fix
 
-    dvViewModelPlot& vm = m_PlotView->GetViewModel();
+    dvVMPlot& vm = m_PlotView->GetViewModel();
 
     epiRect2f bbox;
     bbox.Left = 0.0f;

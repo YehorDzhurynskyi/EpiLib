@@ -1,11 +1,11 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerPlotTimeline.hxx"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotTimeline.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
-#include "EpiDataVisualization/Drawer/dvDrawerPlotDrawArea.h"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotDrawArea.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -27,7 +27,7 @@ public:
 EPI_GENREGION_END(dvDrawerPlotTimeline)
 
 public:
-    void Draw(gfxContext& ctx, const dvViewModelPlot& viewmodel, const epiRect2f& frame);
+    void Draw(gfxContext& ctx, const dvVMPlot& viewmodel, const epiRect2f& frame);
 };
 
 EPI_NAMESPACE_END()

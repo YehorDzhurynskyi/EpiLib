@@ -1,4 +1,4 @@
-class dvViewModelSeriesBase
+class dvVMSeriesBase
 {
     dSeriesBase* Model;
     Color Color;

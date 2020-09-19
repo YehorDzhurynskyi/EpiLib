@@ -1,13 +1,13 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesY.h"
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesY.cxx"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiData/Series/dSeriesY.h"
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerSeriesY::Draw_Internal(gfxContext& ctx, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
+void dvDrawerSeriesY::Draw_Internal(gfxContext& ctx, const dvVMSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
 {
     epiAssert(series.GetModel()->Is(dSeriesY::TypeID), "The series should be instance of dvSeriesY");
 

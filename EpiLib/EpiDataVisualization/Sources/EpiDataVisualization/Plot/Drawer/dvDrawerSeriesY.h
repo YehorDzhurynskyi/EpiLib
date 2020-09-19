@@ -1,10 +1,10 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesY.hxx"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesBase.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesBase.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -25,7 +25,7 @@ public:
 EPI_GENREGION_END(dvDrawerSeriesY)
 
 public:
-    void Draw_Internal(gfxContext& ctx, const dvViewModelSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z);
+    void Draw_Internal(gfxContext& ctx, const dvVMSeriesBase& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z);
 };
 
 EPI_NAMESPACE_END()

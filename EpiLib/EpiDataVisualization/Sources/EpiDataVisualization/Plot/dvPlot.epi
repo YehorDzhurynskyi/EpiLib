@@ -1,5 +1,0 @@
-class dvPlot
-{
-    [ReadOnly]
-    epiPtrArray<dSeriesBase> Series;
-};

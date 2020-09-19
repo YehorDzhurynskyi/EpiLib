@@ -1,11 +1,11 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
-#include "EpiDataVisualization/ViewModel/dvViewModelPlot.cxx"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.h"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.cxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-dvViewModelPlot::dvViewModelPlot()
+dvVMPlot::dvVMPlot()
 {
     epiRect2f bbox;
     bbox.Left = -FLT_MAX;
@@ -24,7 +24,7 @@ dvViewModelPlot::dvViewModelPlot()
     SetClipBox(clipbox);
 }
 
-epiRect2f dvViewModelPlot::GetClipBox_Callback() const
+epiRect2f dvVMPlot::GetClipBox_Callback() const
 {
     epiRect2f box;
     box.Left = -1.0f;
@@ -43,13 +43,13 @@ epiRect2f dvViewModelPlot::GetClipBox_Callback() const
     return clipbox;
 }
 
-void dvViewModelPlot::SetClipBox_Callback(const epiRect2f& value)
+void dvVMPlot::SetClipBox_Callback(const epiRect2f& value)
 {
     SetZoom({ value.GetWidth() / 2.0f, value.GetHeight() / 2.0f });
     SetOrigin({ value.GetWidth() / 2.0f + value.Left, value.GetHeight() / 2.0f + value.Bottom });
 }
 
-void dvViewModelPlot::SetOrigin_Callback(const epiVec2f& value)
+void dvVMPlot::SetOrigin_Callback(const epiVec2f& value)
 {
     epiRect2f box;
     box.Left = -1.0f;
@@ -70,7 +70,7 @@ void dvViewModelPlot::SetOrigin_Callback(const epiVec2f& value)
     m_Origin = origin;
 }
 
-void dvViewModelPlot::SetZoom_Callback(const epiVec2f& value)
+void dvVMPlot::SetZoom_Callback(const epiVec2f& value)
 {
     epiAssert(value.x > 0.0f && value.y > 0.0f, "zoom value should be greater than 0");
 

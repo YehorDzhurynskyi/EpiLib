@@ -4,8 +4,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiUI/Plot/uiPlotTimeline.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
-#include "EpiDataVisualization/Drawer/dvDrawerPlotTimeline.h"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotTimeline.h"
 
 #include "EpiUI/uiWidget.h"
 
@@ -31,7 +31,7 @@ protected:
     epiVec2f GetMouseWorldCoord_Callback() const;
 
 protected:
-    dvViewModelPlot* m_ViewModel{nullptr};
+    dvVMPlot* m_ViewModel{nullptr};
 
 EPI_GENREGION_END(uiPlotTimeline)
 

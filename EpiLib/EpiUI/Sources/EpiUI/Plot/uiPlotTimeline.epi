@@ -1,6 +1,6 @@
 class uiPlotTimeline : uiWidget
 {
-    dvViewModelPlot* ViewModel;
+    dvVMPlot* ViewModel;
 
     [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
     {

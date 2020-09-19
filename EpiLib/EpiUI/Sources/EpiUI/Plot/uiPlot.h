@@ -6,7 +6,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiUI/uiWidget.h"
 
-#include "EpiDataVisualization/ViewModel/dvViewModelPlot.h"
+#include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -26,7 +26,7 @@ public:
     };
 
 protected:
-    dvViewModelPlot m_ViewModel{};
+    dvVMPlot m_ViewModel{};
 
 EPI_GENREGION_END(uiPlot)
 };

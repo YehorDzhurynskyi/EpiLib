@@ -1,15 +1,15 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiDataVisualization/Drawer/dvDrawerPlotTimeline.h"
-#include "EpiDataVisualization/Drawer/dvDrawerPlotTimeline.cxx"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotTimeline.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerPlotTimeline.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiDataVisualization/Drawer/dvDrawerSeriesY.h"
+#include "EpiDataVisualization/Plot/Drawer/dvDrawerSeriesY.h"
 
 #include <fmt/core.h>
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlotTimeline::Draw(gfxContext& ctx, const dvViewModelPlot& plot, const epiRect2f& frame)
+void dvDrawerPlotTimeline::Draw(gfxContext& ctx, const dvVMPlot& plot, const epiRect2f& frame)
 {
     const epiRect2f& box = plot.GetBBox();
     const epiFloat domainX = box.GetWidth();
