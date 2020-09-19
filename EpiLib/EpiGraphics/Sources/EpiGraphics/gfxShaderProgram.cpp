@@ -64,8 +64,7 @@ void gfxShader::CreateFromSource(const epiChar* source, gfxShaderType type)
         GLchar log[4096];
         glGetShaderInfoLog(m_ShaderID, sizeof(log), nullptr, log);
 
-        // TODO: log
-        epiAssert(false, "");
+        epiLogFatal("OpenGL shader compilation has failed!: {}", log);
 
         Destroy();
     }
@@ -210,8 +209,7 @@ void gfxShaderProgram::Build()
         GLchar log[4096];
         glGetProgramInfoLog(m_ProgramID, sizeof(log), nullptr, log);
 
-        // TODO: log
-        epiAssert(false, "");
+        epiLogFatal("OpenGL shader linking has failed!: {}", log);
 
         Destroy();
     }

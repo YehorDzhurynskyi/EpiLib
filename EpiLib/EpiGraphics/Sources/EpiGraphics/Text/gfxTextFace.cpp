@@ -20,28 +20,10 @@ gfxTextFace::~gfxTextFace()
 
 void gfxTextFace::PrepareFontMetrics(epiU32 fontSize) const
 {
-#if 0
-    FT_Matrix matrix = {
-        (epiS32)((1.0f / kDpiX) * 0x10000L),
-        (epiS32)((0.0f) * 0x10000L),
-        (epiS32)((0.0f) * 0x10000L),
-        (epiS32)((1.0f) * 0x10000L)
-    };
-
-    if (FT_Set_Char_Size(m_Face, (epiS32)(fontSize * kDpiX), 0, kDpiY * kDpiX, kDpiY))
-    {
-        // TODO: log
-        epiAssert(false, "FT_Set_Char_Size Failed");
-    }
-
-    FT_Set_Transform(m_Face, &matrix, NULL);
-#endif
-
     const epiVec2u dpi = DisplayDevice::DPI();
     if (FT_Set_Char_Size(m_Face, 0, fontSize * 64, dpi.x, dpi.y))
     {
-        // TODO: log
-        epiAssert(false, "FT_Set_Char_Size Failed");
+        epiLogFatal("FreeType `FT_Set_Char_Size` has failed!");
     }
 }
 

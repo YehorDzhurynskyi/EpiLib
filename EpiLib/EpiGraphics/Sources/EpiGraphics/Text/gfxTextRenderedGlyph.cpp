@@ -10,8 +10,8 @@ gfxTextRenderedGlyph* gfxTextRenderedABC::GlyphOf(epiWChar ch)
     auto it = m_ABC.find(ch);
     if (it == m_ABC.end())
     {
-        // TODO: log
-        epiAssert(false, "Failed to get uv coords of ch!");
+        // TODO: mention `ch` value in log in some way
+        epiLogError("Failed to get uv coords of `ch`!");
         return nullptr;
     }
     return &it->second;

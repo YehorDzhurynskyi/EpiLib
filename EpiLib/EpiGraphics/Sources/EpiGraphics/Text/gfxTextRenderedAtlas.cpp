@@ -10,8 +10,8 @@ const gfxTextRenderedAtlasGlyph* gfxTextRenderedAtlas::GlyphOf(epiWChar ch) cons
     auto it = m_CharMap.find(ch);
     if (it == m_CharMap.end())
     {
-        // TODO: log
-        epiAssert(false, "Failed to get uv coords of ch!");
+        // TODO: mention `ch` value in log in some way
+        epiLogError("Failed to get uv coords of `ch`!");
         return nullptr;
     }
     return &it->second;

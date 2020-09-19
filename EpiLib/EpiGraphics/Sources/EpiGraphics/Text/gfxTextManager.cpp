@@ -15,8 +15,7 @@ gfxTextManager::gfxTextManager()
 {
     if (FT_Init_FreeType(&m_FTLibrary))
     {
-        // TODO: log
-        epiAssert(false, "FreeType Library initialization failed!");
+        epiLogFatal("FreeType `FT_Init_FreeType` has failed!");
     }
 
     CreateFace(m_DefaultFace, "C:\\Windows\\Fonts\\arial.ttf");
@@ -34,14 +33,12 @@ void gfxTextManager::CreateFace(gfxTextFace& target, const epiChar* ttf) const
 {
     if (FT_New_Face(m_FTLibrary, ttf, 0, &target.m_Face))
     {
-        // TODO: log
-        epiAssert(false, "FT_New_Face Failed");
+        epiLogFatal("FreeType `FT_New_Face` has failed!");
     }
 
     if (FT_Select_Charmap(target.m_Face, FT_ENCODING_UNICODE))
     {
-        // TODO: log
-        epiAssert(false, "FT_Select_Charmap Failed");
+        epiLogFatal("FreeType `FT_Select_Charmap` has failed!");
     }
 }
 

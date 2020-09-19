@@ -39,3 +39,12 @@ constexpr bool epiEqual(const T& lhs, const T& rhs)
         return lhs == rhs;
     }
 }
+
+#include <spdlog/spdlog.h>
+
+#define epiLogTrace(MSG, ...) spdlog::trace(MSG, __VA_ARGS__)
+#define epiLogDebug(MSG, ...) spdlog::debug(MSG, __VA_ARGS__)
+#define epiLogInfo(MSG, ...) spdlog::info(MSG, __VA_ARGS__)
+#define epiLogWarn(MSG, ...) spdlog::warn(MSG, __VA_ARGS__)
+#define epiLogError(MSG, ...) spdlog::error(MSG, __VA_ARGS__)
+#define epiLogFatal(MSG, ...) spdlog::critical(MSG, __VA_ARGS__)

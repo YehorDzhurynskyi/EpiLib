@@ -48,7 +48,8 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
         status != mmResourceStatus::Empty &&
         status != mmResourceStatus::Broken)
     {
-        // TODO: log
+        // TODO: log string representation of `status`
+        epiLogWarn("`LoadResourceShallow` has early returned: status=`{}` , url=`{}`!", status, resource.GetURL());
         return;
     }
 
@@ -68,7 +69,7 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
             {
                 switch (avFormatContext->streams[i]->codec->codec_type)
                 {
-                case AVMEDIA_TYPE_UNKNOWN: /* TODO: log */ break;
+                case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("`LoadResourceShallow` unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
                 case AVMEDIA_TYPE_AUDIO:
                 {
                     mmAudio* audio = new mmAudio();
@@ -86,13 +87,13 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
         }
         else
         {
-            // TODO: log
+            epiLogWarn("`LoadResourceShallow` resource is broken: url=`{}`!", resource.GetURL());
             resource.SetStatus(mmResourceStatus::Broken);
         }
     }
     else
     {
-        // TODO: log
+        epiLogWarn("`LoadResourceShallow` resource is broken: url=`{}`!", resource.GetURL());
         resource.SetStatus(mmResourceStatus::Broken);
     }
 }
@@ -104,7 +105,8 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
         status != mmResourceStatus::LoadedShallow &&
         status != mmResourceStatus::Broken)
     {
-        // TODO: log
+        // TODO: log string representation of `status`
+        epiLogWarn("`LoadResourceDeep` has early returned: status=`{}` , url=`{}`!", status, resource.GetURL());
         return;
     }
 
@@ -124,7 +126,7 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
             {
                 switch (avFormatContext->streams[streamIdx]->codec->codec_type)
                 {
-                case AVMEDIA_TYPE_UNKNOWN: /* TODO: log */ break;
+                case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("`LoadResourceDeep` unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
                 case AVMEDIA_TYPE_AUDIO:
                 {
                     mmAudio* audio = nullptr;
@@ -133,7 +135,7 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                         mmMediaBase* mediaBase = media[streamIdx];
                         if (audio = epiAs<mmAudio>(mediaBase); audio == nullptr)
                         {
-                            // TODO: log
+                            epiLogError("`LoadResourceDeep` media stream matching has failed (`mmAudio` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
                         }
                     }
                     else
@@ -183,7 +185,9 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                                                     const epiS32 sampleSize = av_get_bytes_per_sample(avCodecContext->sample_fmt);
                                                     if (sampleSize < 0)
                                                     {
-                                                        // TODO: log
+                                                        epiLogError("`LoadResourceDeep` can't calculate sample size from sample format: sample_fmt=`{}`, url=`{}`!",
+                                                                    avCodecContext->sample_fmt,
+                                                                    resource.GetURL());
                                                         break;
                                                     }
 
@@ -206,10 +210,19 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                                                 switch (ret)
                                                 {
                                                 case AVERROR_EOF: break;
-                                                case AVERROR(EAGAIN): /* TODO: log: output is not available in this state - user must try to send new input */ break;
-                                                case AVERROR(EINVAL): /* TODO: log: codec not opened, or it is an encoder */ break;
-                                                case AVERROR_INPUT_CHANGED: /* TODO: log: current decoded frame has changed parameters */ break;
-                                                default: /* TODO: log */ break;
+                                                case AVERROR(EAGAIN): break;
+                                                case AVERROR(EINVAL):
+                                                {
+                                                    epiLogError("`LoadResourceDeep` `avcodec_receive_frame` has returned `AVERROR(EINVAL)` (codec not opened, or it is an encoder): url=`{}`!", resource.GetURL());
+                                                } break;
+                                                case AVERROR_INPUT_CHANGED:
+                                                {
+                                                    epiLogError("`LoadResourceDeep` `avcodec_receive_frame` has returned `AVERROR_INPUT_CHANGED` (current decoded frame has changed parameters): url=`{}`!", resource.GetURL());
+                                                } break;
+                                                default:
+                                                {
+                                                    epiLogError("`LoadResourceDeep` `avcodec_receive_frame` has returned an error code: code=`{}`, url=`{}`!", ret, resource.GetURL());
+                                                } break;
                                                 }
 
                                                 if (ret != AVERROR_EOF && ret != AVERROR(EAGAIN))
@@ -222,31 +235,31 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                                         av_frame_free(&frame);
                                         av_packet_unref(&packet);
 
-                                        if (ret != 0)
+                                        if (ret != AVERROR_EOF)
                                         {
-                                            // TODO: log
+                                            epiLogError("`LoadResourceDeep` `av_read_frame` has returned an error code: code=`{}`, url=`{}`!", ret, resource.GetURL());
                                         }
                                     }
                                     else
                                     {
-                                        // TODO: log
+                                        epiLogError("`LoadResourceDeep` `avcodec_open2` has failed: url=`{}`!", resource.GetURL());
                                     }
                                 }
                                 else
                                 {
-                                    // TODO: log
+                                    epiLogError("`LoadResourceDeep` `avcodec_copy_context` has failed: url=`{}`!", resource.GetURL());
                                 }
 
                                 avcodec_free_context(&avCodecContext);
                             }
                             else
                             {
-                                // TODO: log
+                                epiLogError("`LoadResourceDeep` `avcodec_alloc_context3` has failed: url=`{}`!", resource.GetURL());
                             }
                         }
                         else
                         {
-                            // TODO: log
+                            epiLogError("`LoadResourceDeep` `avcodec_find_decoder` has failed: codec_id=`{}`, url=`{}`!", avCodecContextOrig->codec_id, resource.GetURL());
                         }
                     }
                 } break;
@@ -260,13 +273,13 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
         }
         else
         {
-            // TODO: log
+            epiLogWarn("`LoadResourceDeep` resource is broken: url=`{}`!", resource.GetURL());
             resource.SetStatus(mmResourceStatus::Broken);
         }
     }
     else
     {
-        // TODO: log
+        epiLogWarn("`LoadResourceDeep` resource is broken: url=`{}`!", resource.GetURL());
         resource.SetStatus(mmResourceStatus::Broken);
     }
 }

@@ -55,6 +55,7 @@ epi_module_register(exprtk EXTERN
     FOLDER "EpiLib/Extern"
 )
 
+epi_extern_add(spdlog)
 epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
 epi_extern_add(fmt)
@@ -103,6 +104,7 @@ target_include_directories(EpiCore
 
 target_link_libraries(EpiCore
     PUBLIC
+        spdlog
         nlohmann_json
         glm
         fmt
