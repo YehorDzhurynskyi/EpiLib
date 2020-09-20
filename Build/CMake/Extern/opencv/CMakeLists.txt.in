@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 2.8.2)
+
+project(opencv-extern NONE)
+
+include(ExternalProject)
+ExternalProject_Add(opencv
+    GIT_REPOSITORY      https://github.com/opencv/opencv
+    GIT_TAG             4.4.0
+    SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/opencv/src"
+    BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/opencv/build"
+
+    GIT_SHALLOW         1
+    GIT_PROGRESS        1
+
+    CONFIGURE_COMMAND   ""
+    BUILD_COMMAND       ""
+    INSTALL_COMMAND     ""
+    TEST_COMMAND        ""
+)

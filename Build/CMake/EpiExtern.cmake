@@ -49,7 +49,11 @@ function(epi_extern_add EXTERN)
                          "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
                          EXCLUDE_FROM_ALL)
     endif ()
- 
+
+    if (EXISTS "${EXTERN_DIR}/target.cmake")
+        include("${EXTERN_DIR}/target.cmake")
+    endif ()
+
     list(LENGTH EXTERN_COMPONENTS EXTERN_COMPONENTS_LENGTH)
     if (NOT EXTERN_COMPONENTS_LENGTH EQUAL 0)
         if (TARGET ${EXTERN})

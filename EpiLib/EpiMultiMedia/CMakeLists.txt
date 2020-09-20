@@ -24,12 +24,32 @@ target_include_directories(EpiMultimedia
 )
 
 epi_extern_add(FFmpeg DONT_ADD_SUBDIRECTORY)
+epi_extern_add(opencv
+    COMPONENTS
+        opencv_core
+        opencv_highgui
+        opencv_calib3d
+        opencv_dnn
+        opencv_features2d
+        opencv_flann
+        opencv_gapi
+        opencv_imgcodecs
+        opencv_imgproc
+        opencv_ml
+        opencv_objdetect
+        opencv_photo
+        opencv_stitching
+        opencv_ts
+        opencv_video
+        opencv_videoio
+)
 
 target_link_libraries(EpiMultimedia
     PUBLIC
         EpiCore
         EpiData
         FFmpeg
+        opencv
 )
 
 epi_module_register(EpiMultimedia

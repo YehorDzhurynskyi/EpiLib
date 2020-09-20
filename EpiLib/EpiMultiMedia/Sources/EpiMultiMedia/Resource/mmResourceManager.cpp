@@ -49,7 +49,7 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
         status != mmResourceStatus::Broken)
     {
         // TODO: log string representation of `status`
-        epiLogWarn("`LoadResourceShallow` has early returned: status=`{}` , url=`{}`!", status, resource.GetURL());
+        epiLogWarn("`LoadResourceShallow` has early returned: status=`{}`, url=`{}`!", status, resource.GetURL());
         return;
     }
 
@@ -106,7 +106,7 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
         status != mmResourceStatus::Broken)
     {
         // TODO: log string representation of `status`
-        epiLogWarn("`LoadResourceDeep` has early returned: status=`{}` , url=`{}`!", status, resource.GetURL());
+        epiLogWarn("`LoadResourceDeep` has early returned: status=`{}`, url=`{}`!", status, resource.GetURL());
         return;
     }
 

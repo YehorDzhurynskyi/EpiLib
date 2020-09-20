@@ -24,12 +24,25 @@ function(epi_module_register EPIMODULE)
         ${ARGN}
     )
 
+    if (NOT TARGET ${EPIMODULE})
+        message(FATAL_ERROR "`${EPIMODULE}` is not defined!")
+    endif ()
+
     get_target_property(EPIMODULE_ALIASED_TARGET ${EPIMODULE} ALIASED_TARGET)
     if (EPIMODULE_ALIASED_TARGET)
         set(EPIMODULE ${EPIMODULE_ALIASED_TARGET})
     endif ()
 
     get_target_property(EPIMODULE_TYPE ${EPIMODULE} TYPE)
+
+    # TODO: finish recursive extern registering
+    # if (NOT ${EPIMODULE_TYPE} STREQUAL "INTERFACE_LIBRARY")
+    #     get_target_property(EPIMODULE_LINK_LIBRARIES ${EPIMODULE} LINK_LIBRARIES)
+    #     message(STATUS "EPIMODULE_LINK_LIBRARIES=${EPIMODULE_LINK_LIBRARIES}")
+    # else ()
+    #     get_target_property(EPIMODULE_LINK_LIBRARIES ${EPIMODULE} INTERFACE_LINK_LIBRARIES)
+    #     message(STATUS "EPIMODULE_LINK_LIBRARIES=${EPIMODULE_LINK_LIBRARIES}")
+    # endif ()
 
     if (NOT ${EPIMODULE_TYPE} STREQUAL "INTERFACE_LIBRARY")
         get_target_property(EPIMODULE_SOURCE_DIR ${EPIMODULE} SOURCE_DIR)
