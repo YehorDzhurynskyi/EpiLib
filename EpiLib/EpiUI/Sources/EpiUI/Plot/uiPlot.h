@@ -6,6 +6,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiUI/uiWidget.h"
 
+#include "EpiData/Series/dSeriesBase.h"
+
 #include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.h"
 
 EPI_NAMESPACE_BEGIN()

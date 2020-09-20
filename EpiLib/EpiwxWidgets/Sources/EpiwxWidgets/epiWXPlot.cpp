@@ -5,10 +5,10 @@
 
 #include "EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.h"
 
+#include "EpiUI/uiContext.h"
 #include "EpiUI/Plot/uiPlot.h"
 #include "EpiUI/Plot/uiPlotDrawArea.h"
 #include "EpiUI/Plot/uiPlotTimeline.h"
-#include "EpiUI/Layout/uiLayoutBox.h"
 
 #include "EpiCore/ObjectModel/PropertyPointer.h"
 
@@ -180,4 +180,10 @@ void epiWXPlot::OnMouse(wxMouseEvent& event)
     {
         m_UIContext->OnMouseFocus(event.Entering());
     }
+}
+
+dvVMPlot& epiWXPlot::GetViewModel()
+{
+    epiAssert(m_Plot != nullptr);
+    return m_Plot->GetViewModel();
 }

@@ -1,15 +1,15 @@
 #pragma once
 
-#include "EpiUI/uiContext.h"
-
-#include "EpiGraphics/gfxContext.h"
-
 #include <wx/glcanvas.h>
 
-namespace epi
-{
+#include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.h"
+
+EPI_NAMESPACE_BEGIN()
+
 class uiPlot;
-}
+class uiContext;
+
+EPI_NAMESPACE_END()
 
 class epiWXPlot : public wxGLCanvas
 {
@@ -31,9 +31,10 @@ public:
     void OnIdle(wxIdleEvent& event);
     void OnMouse(wxMouseEvent& event);
 
+    epi::dvVMPlot& GetViewModel();
+
 protected:
     wxGLContext* m_GLContext;
     epi::uiContext* m_UIContext;
-
     epi::uiPlot* m_Plot;
 };

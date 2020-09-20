@@ -58,7 +58,7 @@ gfxShaderProgram CreateProgramLines()
     return program;
 }
 
-const epiU32 kMaxLineCount = 512;
+const epiU32 kMaxLineCount = 6'000'000u; // TODO: =) reduce
 struct VertexLine
 {
     epiVec3f Position;

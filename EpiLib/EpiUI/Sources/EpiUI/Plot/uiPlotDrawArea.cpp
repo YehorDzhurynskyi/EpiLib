@@ -42,10 +42,7 @@ void uiPlotDrawArea::Draw(uiContext& uiContext)
                 {
                     // TODO: maybe make it RAII: `SceneBegin` on ctor, `SceneEnd` on dtor
                     dvDrawerSeries1Df drawerSeries1df;
-
-                    drawerSeries1df.SceneBegin();
                     drawerSeries1df.Draw(gfxContext, *series1df, vm->GetClipBox(), GetBBox());
-                    drawerSeries1df.SceneEnd(*camera);
                 }
             }
         }
@@ -83,7 +80,7 @@ void uiPlotDrawArea::OnMouseWheel(epiFloat dZoom)
 
         epiVec2f zoom = vm->GetZoom();
         zoom.x -= scale * dZoom;
-        zoom.x = std::clamp(zoom.x, 0.0001f, 1000000.0f); // TODO: use epi attrs force min max
+        zoom.x = std::clamp(zoom.x, 0.0001f, std::numeric_limits<epiFloat>::max() / 2.0f); // TODO: use epi attrs force min max
 
         vm->SetZoom(zoom);
     }

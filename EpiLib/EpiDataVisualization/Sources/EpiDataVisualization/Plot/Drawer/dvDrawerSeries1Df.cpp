@@ -7,22 +7,26 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerSeries1Df::Draw(gfxContext& ctx, const dvVMSeries1Df& seriesVM, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z)
+void dvDrawerSeries1Df::Draw(gfxContext& ctx, const dvVMSeries1Df& seriesVM, const epiRect2f& worldFrame, const epiRect2f& uiFrame)
 {
     switch (seriesVM.GetRepr())
     {
     case dvSeries1DfRepr::Peak:
     {
-        epiFloat x = 0.0f;
         const dSeries1Df* series = seriesVM.GetSeries();
-        for (epiFloat y : series->GetData())
+        const epiArray<epiFloat>& data = series->GetData();
+
+        const epiS32 left = std::max(static_cast<epiS32>(worldFrame.Left), 0);
+        const epiS32 right = std::min(static_cast<epiS32>(std::ceil(worldFrame.Right)), static_cast<epiS32>(data.Size()));
+        for (epiS32 x = left; x < right; ++x)
         {
-            const epiVec2f world(x, y);
-            const epiVec2f p = ((world - worldFrame.LeftBottom()) / worldFrame.GetSize()) * uiFrame.GetSize() + uiFrame.LeftBottom();
+            const epiFloat y = data[x];
+            const epiVec2f world1(x, 0.0f);
+            const epiVec2f world2(x, y);
+            const epiVec2f p1 = ((world1 - worldFrame.LeftBottom()) / worldFrame.GetSize()) * uiFrame.GetSize() + uiFrame.LeftBottom();
+            const epiVec2f p2 = ((world2 - worldFrame.LeftBottom()) / worldFrame.GetSize()) * uiFrame.GetSize() + uiFrame.LeftBottom();
 
-            ctx.GetDrawerPrimitive().DrawLine(epiVec2f{ x, 0.0f }, p, seriesVM.GetColor(), z);
-
-            x += 1.0f;
+            ctx.GetDrawerPrimitive().DrawLine(p1, p2, seriesVM.GetColor(), -99.0f);
         }
     } break;
     }

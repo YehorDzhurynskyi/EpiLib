@@ -26,7 +26,7 @@ public:
 EPI_GENREGION_END(dvDrawerSeries1Df)
 
 public:
-    void Draw(gfxContext& ctx, const dvVMSeries1Df& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame, epiFloat z = -100.0f);
+    void Draw(gfxContext& ctx, const dvVMSeries1Df& series, const epiRect2f& worldFrame, const epiRect2f& uiFrame);
 };
 
 EPI_NAMESPACE_END()

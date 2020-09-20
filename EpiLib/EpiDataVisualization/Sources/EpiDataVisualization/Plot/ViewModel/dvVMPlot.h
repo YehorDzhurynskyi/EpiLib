@@ -52,11 +52,14 @@ public:
 
 public:
     template<typename T, typename ...Args>
-    T& Add(Args&& ...args)
-    {
-        static_assert(std::is_base_of_v<dvVMSeriesBase, T>);
-        return *static_cast<T*>(m_Series.PushBack(new T(std::forward<Args&&>(args)...)));
-    }
+    T& Add(Args&& ...args);
 };
+
+template<typename T, typename ...Args>
+T& dvVMPlot::Add(Args&& ...args)
+{
+    static_assert(std::is_base_of_v<dvVMSeriesBase, T>);
+    return *static_cast<T*>(m_Series.PushBack(new T(std::forward<Args&&>(args)...)));
+}
 
 EPI_NAMESPACE_END()

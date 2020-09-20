@@ -52,8 +52,8 @@ void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvVMPlot& plot, const epi
     const epiU32 fpWidthX = std::ceilf(std::fabsf(std::min(0.0f, std::log10f(stepX))));
     for (epiU32 i = 0; i < nLinesX + 1; ++i)
     {
-        const epiFloat xx = ((x - box.Left) / domainX) * frame.GetWidth();
-        epiVec2f p(frame.Left + xx, frame.Bottom);
+        const epiFloat xx = ((x - box.Left) / domainX) * frame.GetWidth() + frame.Left;
+        epiVec2f p(xx, frame.Bottom);
 
         ctx.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kBlack * Color(1.0f, 1.0f, 1.0f, 0.35f));
 
@@ -61,8 +61,8 @@ void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvVMPlot& plot, const epi
         epiFloat x2 = x - stepX + secondaryStepX;
         for (epiU32 j = 0; j < kGridLineCountSecondary; ++j)
         {
-            const epiFloat xx2 = ((x2 - box.Left) / domainX) * frame.GetWidth();
-            epiVec2f p(frame.Left + xx2, frame.Bottom);
+            const epiFloat xx2 = ((x2 - box.Left) / domainX) * frame.GetWidth() + frame.Left;
+            epiVec2f p(xx2, frame.Bottom);
 
             ctx.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(0.0f, frame.GetHeight()), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.15f));
 
@@ -82,8 +82,8 @@ void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvVMPlot& plot, const epi
     const epiU32 fpWidthY = std::ceilf(std::fabsf(std::min(0.0f, std::log10f(stepY))));
     for (epiU32 i = 0; i < nLinesY + 1; ++i)
     {
-        const epiFloat yy = ((y - box.Bottom) / domainY) * frame.GetHeight();
-        epiVec2f p(frame.Left, frame.Bottom + yy);
+        const epiFloat yy = ((y - box.Bottom) / domainY) * frame.GetHeight() + frame.Bottom;
+        epiVec2f p(frame.Left, yy);
 
         ctx.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kBlack * Color(1.0f, 1.0f, 1.0f, 0.35f));
 
@@ -91,8 +91,8 @@ void dvDrawerPlotDrawArea::Draw(gfxContext& ctx, const dvVMPlot& plot, const epi
         epiFloat y2 = y - stepY + secondaryStepY;
         for (epiU32 j = 0; j < kGridLineCountSecondary; ++j)
         {
-            const epiFloat yy2 = ((y2 - box.Bottom) / domainY) * frame.GetHeight();
-            epiVec2f p(frame.Left, frame.Bottom + yy2);
+            const epiFloat yy2 = ((y2 - box.Bottom) / domainY) * frame.GetHeight() + frame.Bottom;
+            epiVec2f p(frame.Left, yy2);
 
             ctx.GetDrawerPrimitive().DrawLine(p, p + epiVec2f(frame.GetWidth(), 0.0f), Color::kLightGray * Color(1.0f, 1.0f, 1.0f, 0.15f));
 

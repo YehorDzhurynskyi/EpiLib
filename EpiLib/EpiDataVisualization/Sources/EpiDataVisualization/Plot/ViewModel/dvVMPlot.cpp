@@ -3,6 +3,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiDataVisualization/Plot/ViewModel/dvVMPlot.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiData/Series/dSeriesBase.h"
+
 EPI_NAMESPACE_BEGIN()
 
 dvVMPlot::dvVMPlot()
@@ -18,8 +20,8 @@ dvVMPlot::dvVMPlot()
     epiRect2f clipbox;
     clipbox.Left = -1.0f;
     clipbox.Right = 1.0f;
-    clipbox.Bottom = -1.0f;
-    clipbox.Top = 1.0f;
+    clipbox.Bottom = -1.5f;
+    clipbox.Top = 1.5f;
 
     SetClipBox(clipbox);
 }

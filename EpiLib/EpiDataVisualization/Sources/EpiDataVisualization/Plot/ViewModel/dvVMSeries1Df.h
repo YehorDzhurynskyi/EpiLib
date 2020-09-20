@@ -12,7 +12,7 @@ EPI_NAMESPACE_BEGIN()
 
 enum class dvSeries1DfRepr : epiS32
 {
-    EPI_GENREGION_BEGIN(dvSeries1DfRepr)
+EPI_GENREGION_BEGIN(dvSeries1DfRepr)
     Peak = 0
 EPI_GENREGION_END(dvSeries1DfRepr)
 };
