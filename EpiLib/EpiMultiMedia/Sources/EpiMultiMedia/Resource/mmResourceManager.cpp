@@ -58,11 +58,8 @@ epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const
     };
 
     std::map<epiS32, ParsingContext> parsingContextMap;
-
-    epiBool status = false;
     for (const auto& [streamIdx, media] : streams)
     {
-        status = false;
         ParsingContext& parsingContext = parsingContextMap[streamIdx];
 
         AVCodecContext* avCodecContextOrig = avFormatContext.streams[streamIdx]->codec;
@@ -70,14 +67,14 @@ epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const
         if (avCodec == nullptr)
         {
             epiLogError("`avcodec_find_decoder` has failed: codec_id=`{}`, url=`{}`!", avCodecContextOrig->codec_id, resource.GetURL());
-            break;
+            return false;
         }
 
         AVCodecContext* avCodecContext = avcodec_alloc_context3(avCodec);
         if (avCodecContext == nullptr)
         {
             epiLogError("`avcodec_alloc_context3` has failed: url=`{}`!", resource.GetURL());
-            break;
+            return false;
         }
 
         parsingContext.CodecContext = avCodecContext;
@@ -85,21 +82,15 @@ epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const
         if (avcodec_copy_context(avCodecContext, avCodecContextOrig) != 0)
         {
             epiLogError("`avcodec_copy_context` has failed: url=`{}`!", resource.GetURL());
-            break;
+            return false;
         }
 
         // TODO: investigate `options` parameter
         if (avcodec_open2(avCodecContext, avCodec, nullptr) != 0)
         {
             epiLogError("`avcodec_open2` has failed: url=`{}`!", resource.GetURL());
-            break;
+            return false;
         }
-
-        status = true;
-    }
-
-    if (!status) {
-        return false;
     }
 
     for (const auto& [streamIdx, media] : streams)
@@ -252,17 +243,39 @@ epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const
                           parsingContext.FrameDecoded->data,
                           parsingContext.FrameDecoded->linesize);
 
-                mmFrame& frameDst = video->GetFrames().PushBack();
-                epiArray<epiByte>& dataDst = frameDst.GetImage().GetData();
+                mmImage& imageDst = video->GetFrames().PushBack().GetImage();
+                imageDst.SetWidth(parsingContext.CodecContext->width);
+                imageDst.SetHeight(parsingContext.CodecContext->height);
 
+                // TODO: set bit depth
+                // imageDst.SetBitDepth(parsingContext.FrameDecoded->bit)
+
+#ifdef EPI_DEBUG
                 for (epiS32 i = 1; i < AV_NUM_DATA_POINTERS; ++i)
                 {
                     epiAssert(parsingContext.FrameDecoded->data[i] == nullptr);
                     epiAssert(parsingContext.FrameDecoded->linesize[i] == 0);
                 }
+#endif // EPI_DEBUG
 
-                dataDst.Resize(parsingContext.FrameDecoded->linesize[0]);
-                memcpy(dataDst.GetData(), parsingContext.FrameDecoded->data[0], parsingContext.FrameDecoded->linesize[0]);
+                epiArray<epiByte>& dataDst = imageDst.GetData();
+                const epiS32 bufferSize = av_image_get_buffer_size(AV_PIX_FMT_RGB24,
+                                                                   parsingContext.CodecContext->width,
+                                                                   parsingContext.CodecContext->height,
+                                                                   1);
+                epiAssert(bufferSize > 0);
+
+                dataDst.Resize(bufferSize);
+
+                const epiS32 bytesCopied = av_image_copy_to_buffer(dataDst.GetData(),
+                                                                   dataDst.GetSize(),
+                                                                   parsingContext.FrameDecoded->data,
+                                                                   parsingContext.FrameDecoded->linesize,
+                                                                   AV_PIX_FMT_RGB24,
+                                                                   parsingContext.CodecContext->width,
+                                                                   parsingContext.CodecContext->height,
+                                                                   1);
+                epiAssert(bytesCopied == bufferSize);
             }
         }
 

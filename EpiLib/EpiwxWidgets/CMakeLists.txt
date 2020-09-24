@@ -1,6 +1,8 @@
 project(EpiwxWidgets)
 
 add_library(EpiwxWidgets
+    Sources/EpiwxWidgets/epiWXImagePanel.h
+    Sources/EpiwxWidgets/epiWXImagePanel.cpp
     Sources/EpiwxWidgets/epiWXPropertyGrid.h
     Sources/EpiwxWidgets/epiWXPropertyGrid.cpp
     Sources/EpiwxWidgets/epiWXPlot.h

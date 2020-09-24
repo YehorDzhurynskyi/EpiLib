@@ -1,13 +1,18 @@
 #pragma once
 
+// TODO: remove `epiDEBUG`
+
 #ifdef _DEBUG
 #define epiDEBUG
+#define EPI_DEBUG
 #else
-#define epiRELEASE
+#define EPI_RELEASE
 #endif
 
 #ifdef epiDEBUG
 #define epiDEBUG_ONLY(x) x
+#define EPI_DEBUG_ONLY(x) x
 #else
 #define epiDEBUG_ONLY(x)
+#define EPI_DEBUG_ONLY(x)
 #endif
