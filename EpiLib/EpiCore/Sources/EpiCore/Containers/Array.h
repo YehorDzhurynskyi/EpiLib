@@ -73,6 +73,11 @@ public:
         m_Vector.reserve(size);
     }
 
+    void Resize(epiSize_t size)
+    {
+        m_Vector.resize(size);
+    }
+
     T& PushBack(T&& value = T())
     {
         m_Vector.push_back(std::forward<T&&>(value));

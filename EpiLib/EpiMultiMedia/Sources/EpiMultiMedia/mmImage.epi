@@ -1,0 +1,11 @@
+class mmImage : mmMediaBase
+{
+    # TODO: add [Editor(ReadOnly=True)]
+    {
+        epiU32 BitDepth;
+        epiSize_t Width;
+        epiSize_t Height;
+    }
+
+    epiArray<epiByte> Data;
+};

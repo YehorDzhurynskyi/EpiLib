@@ -6,6 +6,7 @@ include(ExternalProject)
 
 # TODO: disable unnecessary libraries considering `COMPONENTS` parameter of `epi_extern_add` function
 # TODO: configure `FFMPEG_ARGS` considering `TOOLCAHIN`, `ARCH`, `OS` etc
+# TODO: compile in `Release` mode
 
 set(FFMPEG_ARGS
     --arch=x86_64

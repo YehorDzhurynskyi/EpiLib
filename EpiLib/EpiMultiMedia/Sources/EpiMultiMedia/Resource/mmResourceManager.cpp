@@ -13,11 +13,14 @@
 #pragma comment(lib, "mfuuid.lib")
 
 #include "EpiMultimedia/mmAudio.h"
+#include "EpiMultimedia/mmVideo.h"
 
 extern "C"
 {
 
 #include "libavformat/avformat.h"
+#include "libswscale/swscale.h"
+#include "libavutil/imgutils.h"
 
 }
 
@@ -74,6 +77,11 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
                 {
                     mmAudio* audio = new mmAudio();
                     media.push_back(audio);
+                } break;
+                case AVMEDIA_TYPE_VIDEO:
+                {
+                    mmVideo* video = new mmVideo();
+                    media.push_back(video);
                 } break;
                 }
             }
@@ -205,6 +213,155 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                                                             dstSample = *sample;
                                                         }
                                                     }
+                                                }
+
+                                                switch (ret)
+                                                {
+                                                case AVERROR_EOF: break;
+                                                case AVERROR(EAGAIN): break;
+                                                case AVERROR(EINVAL):
+                                                {
+                                                    epiLogError("`LoadResourceDeep` `avcodec_receive_frame` has returned `AVERROR(EINVAL)` (codec not opened, or it is an encoder): url=`{}`!", resource.GetURL());
+                                                } break;
+                                                case AVERROR_INPUT_CHANGED:
+                                                {
+                                                    epiLogError("`LoadResourceDeep` `avcodec_receive_frame` has returned `AVERROR_INPUT_CHANGED` (current decoded frame has changed parameters): url=`{}`!", resource.GetURL());
+                                                } break;
+                                                default:
+                                                {
+                                                    epiLogError("`LoadResourceDeep` `avcodec_receive_frame` has returned an error code: code=`{}`, url=`{}`!", ret, resource.GetURL());
+                                                } break;
+                                                }
+
+                                                if (ret != AVERROR_EOF && ret != AVERROR(EAGAIN))
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        av_frame_free(&frame);
+                                        av_packet_unref(&packet);
+
+                                        if (ret != AVERROR_EOF)
+                                        {
+                                            epiLogError("`LoadResourceDeep` `av_read_frame` has returned an error code: code=`{}`, url=`{}`!", ret, resource.GetURL());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        epiLogError("`LoadResourceDeep` `avcodec_open2` has failed: url=`{}`!", resource.GetURL());
+                                    }
+                                }
+                                else
+                                {
+                                    epiLogError("`LoadResourceDeep` `avcodec_copy_context` has failed: url=`{}`!", resource.GetURL());
+                                }
+
+                                avcodec_free_context(&avCodecContext);
+                            }
+                            else
+                            {
+                                epiLogError("`LoadResourceDeep` `avcodec_alloc_context3` has failed: url=`{}`!", resource.GetURL());
+                            }
+                        }
+                        else
+                        {
+                            epiLogError("`LoadResourceDeep` `avcodec_find_decoder` has failed: codec_id=`{}`, url=`{}`!", avCodecContextOrig->codec_id, resource.GetURL());
+                        }
+                    }
+                } break;
+                case AVMEDIA_TYPE_VIDEO:
+                {
+                    mmVideo* video = nullptr;
+                    if (resource.GetStatus() == mmResourceStatus::LoadedShallow)
+                    {
+                        mmMediaBase* mediaBase = media[streamIdx];
+                        if (video = epiAs<mmVideo>(mediaBase); video == nullptr)
+                        {
+                            epiLogError("`LoadResourceDeep` media stream matching has failed (`mmAudio` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
+                        }
+                    }
+                    else
+                    {
+                        video = new mmVideo();
+                        media.push_back(video);
+                    }
+
+                    if (video != nullptr)
+                    {
+                        AVCodecContext* avCodecContextOrig = avFormatContext->streams[streamIdx]->codec;
+                        if (AVCodec* avCodec = avcodec_find_decoder(avCodecContextOrig->codec_id); avCodec != nullptr)
+                        {
+                            if (AVCodecContext* avCodecContext = avcodec_alloc_context3(avCodec))
+                            {
+                                if (avcodec_copy_context(avCodecContext, avCodecContextOrig) == 0)
+                                {
+                                    // TODO: investigate `options` parameter
+                                    if (avcodec_open2(avCodecContext, avCodec, nullptr) == 0)
+                                    {
+                                        epiAssert(avCodecContext->framerate.den == 1);
+                                        video->SetFrameRate(avCodecContext->framerate.num);
+                                        video->SetBitRate(avCodecContext->bit_rate);
+
+                                        // TODO: set CodecName: avCodecContext->codec->long_name
+                                        // TODO: set TicksPerFrame: avCodecContext->ticks_per_frame
+
+                                        epiArray<mmFrame>& frames = video->GetFrames();
+
+                                        // TODO: reserve
+
+                                        SwsContext* swsCtx = sws_getContext(avCodecContext->coded_width,
+                                                                            avCodecContext->coded_height,
+                                                                            avCodecContext->pix_fmt,
+                                                                            avCodecContext->width,
+                                                                            avCodecContext->height,
+                                                                            AV_PIX_FMT_RGB24,
+                                                                            SWS_BILINEAR,
+                                                                            nullptr,
+                                                                            nullptr,
+                                                                            nullptr);
+
+                                        AVFrame* frameRGB = av_frame_alloc();
+                                        const epiS32 imageBytes = av_image_alloc(frameRGB->data,
+                                                                                 frameRGB->linesize,
+                                                                                 avCodecContext->width,
+                                                                                 avCodecContext->height,
+                                                                                 AV_PIX_FMT_RGB24,
+                                                                                 1);
+
+                                        epiAssert(imageBytes > 0);
+
+                                        AVPacket packet;
+                                        AVFrame* frame = av_frame_alloc();
+
+                                        epiS32 ret;
+                                        while ((ret = av_read_frame(avFormatContext, &packet)) == 0)
+                                        {
+                                            if (packet.stream_index == streamIdx)
+                                            {
+                                                avcodec_send_packet(avCodecContext, &packet);
+                                                while ((ret = avcodec_receive_frame(avCodecContext, frame)) == 0)
+                                                {
+                                                    sws_scale(swsCtx,
+                                                              frame->data,
+                                                              frame->linesize,
+                                                              0,
+                                                              avCodecContext->height,
+                                                              frameRGB->data,
+                                                              frameRGB->linesize);
+
+                                                    mmFrame& frameDst = frames.PushBack();
+                                                    epiArray<epiByte>& dataDst = frameDst.GetImage().GetData();
+
+                                                    for (epiS32 i = 1; i < AV_NUM_DATA_POINTERS; ++i)
+                                                    {
+                                                        epiAssert(frameRGB->data[i] == nullptr);
+                                                        epiAssert(frameRGB->linesize[i] == 0);
+                                                    }
+
+                                                    dataDst.Resize(frameRGB->linesize[0]);
+                                                    memcpy(dataDst.GetData(), frameRGB->data[0], frameRGB->linesize[0]);
                                                 }
 
                                                 switch (ret)

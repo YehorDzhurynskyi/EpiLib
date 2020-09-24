@@ -1,0 +1,10 @@
+class mmVideo : mmMediaBase
+{
+    # TODO: add [Editor(ReadOnly=True)]
+    epiU32 FrameRate;
+
+    # TODO: add [Editor(ReadOnly=True)]
+    epiU32 BitRate;
+
+    epiArray<mmFrame> Frames;
+};

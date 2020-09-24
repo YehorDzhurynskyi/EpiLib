@@ -7,6 +7,15 @@ add_library(EpiMultimedia
     Sources/EpiMultimedia/mmAudio.epi
     Sources/EpiMultimedia/mmAudio.h
     Sources/EpiMultimedia/mmAudio.cpp
+    Sources/EpiMultimedia/mmImage.epi
+    Sources/EpiMultimedia/mmImage.h
+    Sources/EpiMultimedia/mmImage.cpp
+    Sources/EpiMultimedia/mmFrame.epi
+    Sources/EpiMultimedia/mmFrame.h
+    Sources/EpiMultimedia/mmFrame.cpp
+    Sources/EpiMultimedia/mmVideo.epi
+    Sources/EpiMultimedia/mmVideo.h
+    Sources/EpiMultimedia/mmVideo.cpp
 
     Sources/EpiMultimedia/Resource/mmResourceManager.h
     Sources/EpiMultimedia/Resource/mmResourceManager.cpp
