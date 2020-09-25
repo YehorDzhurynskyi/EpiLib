@@ -1,11 +1,22 @@
+enum mmImagePixelFormat
+{
+    R8G8B8,
+    GRAYSCALE
+};
+
 class mmImage : mmMediaBase
 {
     # TODO: add [Editor(ReadOnly=True)]
     {
+        [ReadOnly]
         epiU32 BitDepth;
+
         epiSize_t Width;
         epiSize_t Height;
     }
 
-    epiArray<epiByte> Data;
+    epiArray<epiU8> Data;
+
+    [WriteCallback]
+    mmImagePixelFormat PixelFormat;
 };

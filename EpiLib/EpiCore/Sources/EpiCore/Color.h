@@ -31,8 +31,10 @@ public:
         PID_BGRA32 = 0x35619af3,
         PID_RGB24 = 0x3de8f258,
         PID_BGR24 = 0x412ec6aa,
+        PID_Lumaf = 0x9ff8d403,
+        PID_Lumau = 0x1b4695dd,
         PID_Color = 0xa79767ed,
-        PID_COUNT = 13
+        PID_COUNT = 15
     };
 
 protected:
@@ -60,6 +62,8 @@ protected:
     void SetRGB24_Callback(epiU32 value);
     epiU32 GetBGR24_Callback() const;
     void SetBGR24_Callback(epiU32 value);
+    epiFloat GetLumaf_Callback() const;
+    epiU8 GetLumau_Callback() const;
     const epiVec4f& GetColor_Callback() const;
     void SetColor_Callback(const epiVec4f& value);
 
@@ -86,6 +90,8 @@ public:
 
     Color(epiFloat r, epiFloat g, epiFloat b, epiFloat a);
     Color(epiS32 r, epiS32 g, epiS32 b, epiS32 a);
+    Color(epiFloat r, epiFloat g, epiFloat b);
+    Color(epiS32 r, epiS32 g, epiS32 b);
 
 protected:
     epiBool Validate() const;

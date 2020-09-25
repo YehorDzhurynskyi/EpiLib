@@ -78,8 +78,8 @@ void TraverseProperties(TestClassA& obj)
         {
             auto pp = PropertyPointer::CreateFromProperty(obj, &p);
             ASSERT_EQ(pp.GetTypeID(), p.GetTypeID());
-            ASSERT_EQ(pp.IsReadable(), p.GetFlags().ReadCallback || !p.GetFlags().WriteCallback);
-            ASSERT_EQ(pp.IsWritable(), p.GetFlags().WriteCallback || !p.GetFlags().ReadCallback);
+            ASSERT_EQ(pp.IsReadable(), p.GetFlags().ReadCallback || !p.GetFlags().WriteCallback || !p.GetFlags().WriteOnly);
+            ASSERT_EQ(pp.IsWritable(), p.GetFlags().WriteCallback || !p.GetFlags().ReadCallback || !p.GetFlags().ReadOnly);
 
             switch (p.GetTypeID())
             {

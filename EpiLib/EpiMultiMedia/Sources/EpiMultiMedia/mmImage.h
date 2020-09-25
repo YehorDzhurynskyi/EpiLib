@@ -8,6 +8,14 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+enum class mmImagePixelFormat : epiS32
+{
+EPI_GENREGION_BEGIN(mmImagePixelFormat)
+    R8G8B8 = 0,
+    GRAYSCALE = 1
+EPI_GENREGION_END(mmImagePixelFormat)
+};
+
 class mmImage : public mmMediaBase
 {
 EPI_GENREGION_BEGIN(mmImage)
@@ -23,16 +31,27 @@ public:
         PID_Width = 0x4ddb6a2b,
         PID_Height = 0xf2e1e039,
         PID_Data = 0xdc15c5d,
-        PID_COUNT = 4
+        PID_PixelFormat = 0xc9797cbb,
+        PID_COUNT = 5
     };
+
+protected:
+    void SetPixelFormat_Callback(mmImagePixelFormat value);
 
 protected:
     epiU32 m_BitDepth{0};
     epiSize_t m_Width{0};
     epiSize_t m_Height{0};
-    epiArray<epiByte> m_Data{};
+    epiArray<epiU8> m_Data{};
+    mmImagePixelFormat m_PixelFormat{};
 
 EPI_GENREGION_END(mmImage)
+
+public:
+    static epiU32 BitDepthOf(mmImagePixelFormat fmt);
+
+public:
+    mmImage toGrayScale() const;
 };
 
 EPI_NAMESPACE_END()

@@ -29,6 +29,16 @@ Color::Color(epiS32 r, epiS32 g, epiS32 b, epiS32 a)
     SetAu(a);
 }
 
+Color::Color(epiFloat r, epiFloat g, epiFloat b)
+    : Color(r, g, b, 1.0f)
+{
+}
+
+Color::Color(epiS32 r, epiS32 g, epiS32 b)
+    : Color(r, g, b, 255)
+{
+}
+
 // TODO: create an interface IValidation with `epiBool IValidate()` & `epiBool IValidate_Callback()`
 // methods and call on each accessor method, declare IValidate as a wrapper for IValidate_Callback
 // and soround IValidation with EPI_DEBUG
@@ -212,6 +222,16 @@ void Color::SetBGR24_Callback(epiU32 value)
     SetAu(0);
 
     Validate();
+}
+
+epiFloat Color::GetLumaf_Callback() const
+{
+    return GetRf() * 0.299f + GetGf() * 0.587f + GetBf() * 0.114f;
+}
+
+epiU8 Color::GetLumau_Callback() const
+{
+    return static_cast<epiU8>(GetLumaf() * 255.0f);
 }
 
 const epiVec4f& Color::GetColor_Callback() const

@@ -102,15 +102,10 @@ namespace
 EPI_NAMESPACE_USING()
 
 EmitGlobals(AV)
-EmitGlobals(AR)
 EmitGlobals(BV)
-EmitGlobals(BR)
 EmitGlobals(CV)
-EmitGlobals(CR)
 EmitGlobals(BBV)
-EmitGlobals(BBR)
 EmitGlobals(CCV)
-EmitGlobals(CCR)
 
 }
 
@@ -184,99 +179,99 @@ const InplaceClass* TestClass##b::Get##b##PrtyVirtual43_Callback() const \
  \
 EmitSetter(InplaceClass*, Virtual, b##V, 43, b) \
  \
-EmitGetter(epiChar, ReadCallback, b##R, 0, b) \
-EmitGetter(epiWChar, ReadCallback, b##R, 1, b) \
-EmitGetter(epiBool, ReadCallback, b##R, 2, b) \
-EmitGetter(epiByte, ReadCallback, b##R, 3, b) \
-EmitGetter(epiFloat, ReadCallback, b##R, 4, b) \
-EmitGetter(epiDouble, ReadCallback, b##R, 5, b) \
-EmitGetter(epiSize_t, ReadCallback, b##R, 6, b) \
-EmitGetter(epiU8, ReadCallback, b##R, 7, b) \
-EmitGetter(epiU16, ReadCallback, b##R, 8, b) \
-EmitGetter(epiU32, ReadCallback, b##R, 9, b) \
-EmitGetter(epiU64, ReadCallback, b##R, 10, b) \
-EmitGetter(epiS8, ReadCallback, b##R, 11, b) \
-EmitGetter(epiS16, ReadCallback, b##R, 12, b) \
-EmitGetter(epiS32, ReadCallback, b##R, 13, b) \
-EmitGetter(epiS64, ReadCallback, b##R, 14, b) \
-EmitGetter(const epiString&, ReadCallback, b##R, 15, b) \
-EmitGetter(const epiWString&, ReadCallback, b##R, 16, b) \
-EmitGetter(const epiArray<epiS32>&, ReadCallback, b##R, 17, b) \
-EmitGetter(const epiPtrArray<epiS32>&, ReadCallback, b##R, 18, b) \
-EmitGetter(const epiArray<epiString>&, ReadCallback, b##R, 19, b) \
-EmitGetter(const epiPtrArray<epiString>&, ReadCallback, b##R, 20, b) \
-EmitGetter(const epiVec2f&, ReadCallback, b##R, 21, b) \
-EmitGetter(const epiVec2d&, ReadCallback, b##R, 22, b) \
-EmitGetter(const epiVec2s&, ReadCallback, b##R, 23, b) \
-EmitGetter(const epiVec2u&, ReadCallback, b##R, 24, b) \
-EmitGetter(const epiVec3f&, ReadCallback, b##R, 25, b) \
-EmitGetter(const epiVec3d&, ReadCallback, b##R, 26, b) \
-EmitGetter(const epiVec3s&, ReadCallback, b##R, 27, b) \
-EmitGetter(const epiVec3u&, ReadCallback, b##R, 28, b) \
-EmitGetter(const epiVec4f&, ReadCallback, b##R, 29, b) \
-EmitGetter(const epiVec4d&, ReadCallback, b##R, 30, b) \
-EmitGetter(const epiVec4s&, ReadCallback, b##R, 31, b) \
-EmitGetter(const epiVec4u&, ReadCallback, b##R, 32, b) \
-EmitGetter(const epiMat2x2f&, ReadCallback, b##R, 33, b) \
-EmitGetter(const epiMat3x3f&, ReadCallback, b##R, 34, b) \
-EmitGetter(const epiMat4x4f&, ReadCallback, b##R, 35, b) \
-EmitGetter(const epiComplexf&, ReadCallback, b##R, 36, b) \
-EmitGetter(const epiComplexd&, ReadCallback, b##R, 37, b) \
-EmitGetter(const epiRect2f&, ReadCallback, b##R, 38, b) \
-EmitGetter(const epiRect2d&, ReadCallback, b##R, 39, b) \
-EmitGetter(const epiRect2s&, ReadCallback, b##R, 40, b) \
-EmitGetter(const epiRect2u&, ReadCallback, b##R, 41, b) \
-EmitGetter(const InplaceClass&, ReadCallback, b##R, 42, b) \
+EmitGetter(epiChar, ReadCallback, m_##b##PrtyReadCallback, 0, b) \
+EmitGetter(epiWChar, ReadCallback, m_##b##PrtyReadCallback, 1, b) \
+EmitGetter(epiBool, ReadCallback, m_##b##PrtyReadCallback, 2, b) \
+EmitGetter(epiByte, ReadCallback, m_##b##PrtyReadCallback, 3, b) \
+EmitGetter(epiFloat, ReadCallback, m_##b##PrtyReadCallback, 4, b) \
+EmitGetter(epiDouble, ReadCallback, m_##b##PrtyReadCallback, 5, b) \
+EmitGetter(epiSize_t, ReadCallback, m_##b##PrtyReadCallback, 6, b) \
+EmitGetter(epiU8, ReadCallback, m_##b##PrtyReadCallback, 7, b) \
+EmitGetter(epiU16, ReadCallback, m_##b##PrtyReadCallback, 8, b) \
+EmitGetter(epiU32, ReadCallback, m_##b##PrtyReadCallback, 9, b) \
+EmitGetter(epiU64, ReadCallback, m_##b##PrtyReadCallback, 10, b) \
+EmitGetter(epiS8, ReadCallback, m_##b##PrtyReadCallback, 11, b) \
+EmitGetter(epiS16, ReadCallback, m_##b##PrtyReadCallback, 12, b) \
+EmitGetter(epiS32, ReadCallback, m_##b##PrtyReadCallback, 13, b) \
+EmitGetter(epiS64, ReadCallback, m_##b##PrtyReadCallback, 14, b) \
+EmitGetter(const epiString&, ReadCallback, m_##b##PrtyReadCallback, 15, b) \
+EmitGetter(const epiWString&, ReadCallback, m_##b##PrtyReadCallback, 16, b) \
+EmitGetter(const epiArray<epiS32>&, ReadCallback, m_##b##PrtyReadCallback, 17, b) \
+EmitGetter(const epiPtrArray<epiS32>&, ReadCallback, m_##b##PrtyReadCallback, 18, b) \
+EmitGetter(const epiArray<epiString>&, ReadCallback, m_##b##PrtyReadCallback, 19, b) \
+EmitGetter(const epiPtrArray<epiString>&, ReadCallback, m_##b##PrtyReadCallback, 20, b) \
+EmitGetter(const epiVec2f&, ReadCallback, m_##b##PrtyReadCallback, 21, b) \
+EmitGetter(const epiVec2d&, ReadCallback, m_##b##PrtyReadCallback, 22, b) \
+EmitGetter(const epiVec2s&, ReadCallback, m_##b##PrtyReadCallback, 23, b) \
+EmitGetter(const epiVec2u&, ReadCallback, m_##b##PrtyReadCallback, 24, b) \
+EmitGetter(const epiVec3f&, ReadCallback, m_##b##PrtyReadCallback, 25, b) \
+EmitGetter(const epiVec3d&, ReadCallback, m_##b##PrtyReadCallback, 26, b) \
+EmitGetter(const epiVec3s&, ReadCallback, m_##b##PrtyReadCallback, 27, b) \
+EmitGetter(const epiVec3u&, ReadCallback, m_##b##PrtyReadCallback, 28, b) \
+EmitGetter(const epiVec4f&, ReadCallback, m_##b##PrtyReadCallback, 29, b) \
+EmitGetter(const epiVec4d&, ReadCallback, m_##b##PrtyReadCallback, 30, b) \
+EmitGetter(const epiVec4s&, ReadCallback, m_##b##PrtyReadCallback, 31, b) \
+EmitGetter(const epiVec4u&, ReadCallback, m_##b##PrtyReadCallback, 32, b) \
+EmitGetter(const epiMat2x2f&, ReadCallback, m_##b##PrtyReadCallback, 33, b) \
+EmitGetter(const epiMat3x3f&, ReadCallback, m_##b##PrtyReadCallback, 34, b) \
+EmitGetter(const epiMat4x4f&, ReadCallback, m_##b##PrtyReadCallback, 35, b) \
+EmitGetter(const epiComplexf&, ReadCallback, m_##b##PrtyReadCallback, 36, b) \
+EmitGetter(const epiComplexd&, ReadCallback, m_##b##PrtyReadCallback, 37, b) \
+EmitGetter(const epiRect2f&, ReadCallback, m_##b##PrtyReadCallback, 38, b) \
+EmitGetter(const epiRect2d&, ReadCallback, m_##b##PrtyReadCallback, 39, b) \
+EmitGetter(const epiRect2s&, ReadCallback, m_##b##PrtyReadCallback, 40, b) \
+EmitGetter(const epiRect2u&, ReadCallback, m_##b##PrtyReadCallback, 41, b) \
+EmitGetter(const InplaceClass&, ReadCallback, m_##b##PrtyReadCallback, 42, b) \
  \
 const InplaceClass* TestClass##b::Get##b##PrtyReadCallback43_Callback() const \
 { \
-    return b##R43; \
+    return m_##b##PrtyReadCallback43; \
 } \
  \
-EmitSetter(epiChar, WriteCallback, b##V, 0, b) \
-EmitSetter(epiWChar, WriteCallback, b##V, 1, b) \
-EmitSetter(epiBool, WriteCallback, b##V, 2, b) \
-EmitSetter(epiByte, WriteCallback, b##V, 3, b) \
-EmitSetter(epiFloat, WriteCallback, b##V, 4, b) \
-EmitSetter(epiDouble, WriteCallback, b##V, 5, b) \
-EmitSetter(epiSize_t, WriteCallback, b##V, 6, b) \
-EmitSetter(epiU8, WriteCallback, b##V, 7, b) \
-EmitSetter(epiU16, WriteCallback, b##V, 8, b) \
-EmitSetter(epiU32, WriteCallback, b##V, 9, b) \
-EmitSetter(epiU64, WriteCallback, b##V, 10, b) \
-EmitSetter(epiS8, WriteCallback, b##V, 11, b) \
-EmitSetter(epiS16, WriteCallback, b##V, 12, b) \
-EmitSetter(epiS32, WriteCallback, b##V, 13, b) \
-EmitSetter(epiS64, WriteCallback, b##V, 14, b) \
-EmitSetter(const epiString&, WriteCallback, b##V, 15, b) \
-EmitSetter(const epiWString&, WriteCallback, b##V, 16, b) \
-EmitSetter(const epiArray<epiS32>&, WriteCallback, b##V, 17, b) \
-EmitSetter(const epiPtrArray<epiS32>&, WriteCallback, b##V, 18, b) \
-EmitSetter(const epiArray<epiString>&, WriteCallback, b##V, 19, b) \
-EmitSetter(const epiPtrArray<epiString>&, WriteCallback, b##V, 20, b) \
-EmitSetter(const epiVec2f&, WriteCallback, b##V, 21, b) \
-EmitSetter(const epiVec2d&, WriteCallback, b##V, 22, b) \
-EmitSetter(const epiVec2s&, WriteCallback, b##V, 23, b) \
-EmitSetter(const epiVec2u&, WriteCallback, b##V, 24, b) \
-EmitSetter(const epiVec3f&, WriteCallback, b##V, 25, b) \
-EmitSetter(const epiVec3d&, WriteCallback, b##V, 26, b) \
-EmitSetter(const epiVec3s&, WriteCallback, b##V, 27, b) \
-EmitSetter(const epiVec3u&, WriteCallback, b##V, 28, b) \
-EmitSetter(const epiVec4f&, WriteCallback, b##V, 29, b) \
-EmitSetter(const epiVec4d&, WriteCallback, b##V, 30, b) \
-EmitSetter(const epiVec4s&, WriteCallback, b##V, 31, b) \
-EmitSetter(const epiVec4u&, WriteCallback, b##V, 32, b) \
-EmitSetter(const epiMat2x2f&, WriteCallback, b##V, 33, b) \
-EmitSetter(const epiMat3x3f&, WriteCallback, b##V, 34, b) \
-EmitSetter(const epiMat4x4f&, WriteCallback, b##V, 35, b) \
-EmitSetter(const epiComplexf&, WriteCallback, b##V, 36, b) \
-EmitSetter(const epiComplexd&, WriteCallback, b##V, 37, b) \
-EmitSetter(const epiRect2f&, WriteCallback, b##V, 38, b) \
-EmitSetter(const epiRect2d&, WriteCallback, b##V, 39, b) \
-EmitSetter(const epiRect2s&, WriteCallback, b##V, 40, b) \
-EmitSetter(const epiRect2u&, WriteCallback, b##V, 41, b) \
-EmitSetter(const InplaceClass&, WriteCallback, b##V, 42, b) \
-EmitSetter(InplaceClass*, WriteCallback, b##V, 43, b) \
+EmitSetter(epiChar, WriteCallback, m_##b##PrtyWriteCallback, 0, b) \
+EmitSetter(epiWChar, WriteCallback, m_##b##PrtyWriteCallback, 1, b) \
+EmitSetter(epiBool, WriteCallback, m_##b##PrtyWriteCallback, 2, b) \
+EmitSetter(epiByte, WriteCallback, m_##b##PrtyWriteCallback, 3, b) \
+EmitSetter(epiFloat, WriteCallback, m_##b##PrtyWriteCallback, 4, b) \
+EmitSetter(epiDouble, WriteCallback, m_##b##PrtyWriteCallback, 5, b) \
+EmitSetter(epiSize_t, WriteCallback, m_##b##PrtyWriteCallback, 6, b) \
+EmitSetter(epiU8, WriteCallback, m_##b##PrtyWriteCallback, 7, b) \
+EmitSetter(epiU16, WriteCallback, m_##b##PrtyWriteCallback, 8, b) \
+EmitSetter(epiU32, WriteCallback, m_##b##PrtyWriteCallback, 9, b) \
+EmitSetter(epiU64, WriteCallback, m_##b##PrtyWriteCallback, 10, b) \
+EmitSetter(epiS8, WriteCallback, m_##b##PrtyWriteCallback, 11, b) \
+EmitSetter(epiS16, WriteCallback, m_##b##PrtyWriteCallback, 12, b) \
+EmitSetter(epiS32, WriteCallback, m_##b##PrtyWriteCallback, 13, b) \
+EmitSetter(epiS64, WriteCallback, m_##b##PrtyWriteCallback, 14, b) \
+EmitSetter(const epiString&, WriteCallback, m_##b##PrtyWriteCallback, 15, b) \
+EmitSetter(const epiWString&, WriteCallback, m_##b##PrtyWriteCallback, 16, b) \
+EmitSetter(const epiArray<epiS32>&, WriteCallback, m_##b##PrtyWriteCallback, 17, b) \
+EmitSetter(const epiPtrArray<epiS32>&, WriteCallback, m_##b##PrtyWriteCallback, 18, b) \
+EmitSetter(const epiArray<epiString>&, WriteCallback, m_##b##PrtyWriteCallback, 19, b) \
+EmitSetter(const epiPtrArray<epiString>&, WriteCallback, m_##b##PrtyWriteCallback, 20, b) \
+EmitSetter(const epiVec2f&, WriteCallback, m_##b##PrtyWriteCallback, 21, b) \
+EmitSetter(const epiVec2d&, WriteCallback, m_##b##PrtyWriteCallback, 22, b) \
+EmitSetter(const epiVec2s&, WriteCallback, m_##b##PrtyWriteCallback, 23, b) \
+EmitSetter(const epiVec2u&, WriteCallback, m_##b##PrtyWriteCallback, 24, b) \
+EmitSetter(const epiVec3f&, WriteCallback, m_##b##PrtyWriteCallback, 25, b) \
+EmitSetter(const epiVec3d&, WriteCallback, m_##b##PrtyWriteCallback, 26, b) \
+EmitSetter(const epiVec3s&, WriteCallback, m_##b##PrtyWriteCallback, 27, b) \
+EmitSetter(const epiVec3u&, WriteCallback, m_##b##PrtyWriteCallback, 28, b) \
+EmitSetter(const epiVec4f&, WriteCallback, m_##b##PrtyWriteCallback, 29, b) \
+EmitSetter(const epiVec4d&, WriteCallback, m_##b##PrtyWriteCallback, 30, b) \
+EmitSetter(const epiVec4s&, WriteCallback, m_##b##PrtyWriteCallback, 31, b) \
+EmitSetter(const epiVec4u&, WriteCallback, m_##b##PrtyWriteCallback, 32, b) \
+EmitSetter(const epiMat2x2f&, WriteCallback, m_##b##PrtyWriteCallback, 33, b) \
+EmitSetter(const epiMat3x3f&, WriteCallback, m_##b##PrtyWriteCallback, 34, b) \
+EmitSetter(const epiMat4x4f&, WriteCallback, m_##b##PrtyWriteCallback, 35, b) \
+EmitSetter(const epiComplexf&, WriteCallback, m_##b##PrtyWriteCallback, 36, b) \
+EmitSetter(const epiComplexd&, WriteCallback, m_##b##PrtyWriteCallback, 37, b) \
+EmitSetter(const epiRect2f&, WriteCallback, m_##b##PrtyWriteCallback, 38, b) \
+EmitSetter(const epiRect2d&, WriteCallback, m_##b##PrtyWriteCallback, 39, b) \
+EmitSetter(const epiRect2s&, WriteCallback, m_##b##PrtyWriteCallback, 40, b) \
+EmitSetter(const epiRect2u&, WriteCallback, m_##b##PrtyWriteCallback, 41, b) \
+EmitSetter(const InplaceClass&, WriteCallback, m_##b##PrtyWriteCallback, 42, b) \
+EmitSetter(InplaceClass*, WriteCallback, m_##b##PrtyWriteCallback, 43, b) \
 
 EPI_NAMESPACE_BEGIN()
 
@@ -289,7 +284,8 @@ EmitCallbacks(CC)
 void TestClassA::Reset()
 {
     EmitReset(AV)
-    EmitReset(AR)
+    EmitReset(m_APrtyReadCallback)
+    EmitReset(m_APrtyWriteCallback)
 }
 
 void TestClassB::Reset()
@@ -297,7 +293,8 @@ void TestClassB::Reset()
     super::Reset();
 
     EmitReset(BV)
-    EmitReset(BR)
+    EmitReset(m_BPrtyReadCallback)
+    EmitReset(m_BPrtyWriteCallback)
 }
 
 void TestClassC::Reset()
@@ -305,7 +302,8 @@ void TestClassC::Reset()
     super::Reset();
 
     EmitReset(CV)
-    EmitReset(CR)
+    EmitReset(m_CPrtyReadCallback)
+    EmitReset(m_CPrtyWriteCallback)
 }
 
 void TestClassBB::Reset()
@@ -313,7 +311,8 @@ void TestClassBB::Reset()
     super::Reset();
 
     EmitReset(BBV)
-    EmitReset(BBR)
+    EmitReset(m_BBPrtyReadCallback)
+    EmitReset(m_BBPrtyWriteCallback)
 }
 
 void TestClassCC::Reset()
@@ -321,7 +320,8 @@ void TestClassCC::Reset()
     super::Reset();
 
     EmitReset(CCV)
-    EmitReset(CCR)
+    EmitReset(m_CCPrtyReadCallback)
+    EmitReset(m_CCPrtyWriteCallback)
 }
 
 EPI_NAMESPACE_END()

@@ -6,6 +6,8 @@ class InplaceClass
     epiRect2f InplacePrty3;
 };
 
+# TODO: add enum
+
 class TestClassA
 {
     epiChar APrty0;
