@@ -16,6 +16,23 @@ epiU32 mmImage::BitDepthOf(mmImagePixelFormat fmt)
     }
 }
 
+void mmImage::BuildHistogram(dSeries1Df& histogram) const
+{
+    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
+
+    histogram.Resize(256);
+
+    for (epiU32 i = 0; i < 256; ++i)
+    {
+        histogram[i] = 0.0f;
+    }
+
+    for (const auto& x : GetData())
+    {
+        histogram[x] += 1.0f;
+    }
+}
+
 mmImage mmImage::toGrayScale() const
 {
     mmImage to;
@@ -25,7 +42,17 @@ mmImage mmImage::toGrayScale() const
 
     switch (GetPixelFormat())
     {
-    case mmImagePixelFormat::GRAYSCALE: return *this;
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        const epiArray<epiByte>& fromData = GetData();
+        epiArray<epiByte>& toData = to.GetData();
+        toData.Resize(fromData.Size());
+
+        for (epiU32 i = 0; i < fromData.Size(); ++i)
+        {
+            toData[i] = fromData[i];
+        }
+    } break;
     case mmImagePixelFormat::R8G8B8:
     {
         const epiArray<epiByte>& fromData = GetData();

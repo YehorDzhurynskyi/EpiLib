@@ -5,4 +5,10 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+void dvVMSeriesBase::SetColor_Callback(const Color& value)
+{
+    SetColor1(value);
+    SetColor2(value);
+}
+
 EPI_NAMESPACE_END()

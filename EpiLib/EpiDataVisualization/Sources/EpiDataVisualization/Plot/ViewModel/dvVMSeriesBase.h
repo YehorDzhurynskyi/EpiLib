@@ -19,12 +19,18 @@ public:
 
     enum dvVMSeriesBase_PIDs
     {
+        PID_Color1 = 0x5dc0e615,
+        PID_Color2 = 0xc4c9b7af,
         PID_Color = 0xa79767ed,
-        PID_COUNT = 1
+        PID_COUNT = 3
     };
 
 protected:
-    Color m_Color{};
+    void SetColor_Callback(const Color& value);
+
+protected:
+    Color m_Color1{};
+    Color m_Color2{};
 
 EPI_GENREGION_END(dvVMSeriesBase)
 };

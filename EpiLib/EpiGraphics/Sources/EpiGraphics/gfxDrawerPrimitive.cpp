@@ -113,7 +113,7 @@ gfxShaderProgram CreateProgramQuad()
     return program;
 }
 
-const epiU32 kMaxQuadCount = 128;
+const epiU32 kMaxQuadCount = 1'000'000u; // TODO: =) reduce
 struct VertexQuad
 {
     epiVec3f Position;
@@ -157,20 +157,30 @@ gfxDrawerPrimitive::gfxDrawerPrimitive()
 
 void gfxDrawerPrimitive::DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color, epiFloat z)
 {
+    DrawLine(p1, p2, color, color, z);
+}
+
+void gfxDrawerPrimitive::DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color1, const Color& color2, epiFloat z)
+{
     VertexLine& vertex1 = m_VertexBufferMappingLines.PushBack<VertexLine>();
     vertex1.Position.x = p1.x;
     vertex1.Position.y = p1.y;
     vertex1.Position.z = z;
-    vertex1.ColorTint = color.GetColor();
+    vertex1.ColorTint = color1.GetColor();
 
     VertexLine& vertex2 = m_VertexBufferMappingLines.PushBack<VertexLine>();
     vertex2.Position.x = p2.x;
     vertex2.Position.y = p2.y;
     vertex2.Position.z = z;
-    vertex2.ColorTint = color.GetColor();
+    vertex2.ColorTint = color2.GetColor();
 }
 
 void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color, epiFloat z)
+{
+    DrawQuad(rect, color, color, z);
+}
+
+void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color1, const Color& color2, epiFloat z)
 {
     VertexQuad& vertex1 = m_VertexBufferMappingQuads.PushBack<VertexQuad>();
     VertexQuad& vertex2 = m_VertexBufferMappingQuads.PushBack<VertexQuad>();
@@ -204,12 +214,12 @@ void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color, epi
 
     vertex6 = vertex1;
 
-    vertex1.ColorTint = color.GetColor();
-    vertex2.ColorTint = color.GetColor();
-    vertex3.ColorTint = color.GetColor();
-    vertex4.ColorTint = color.GetColor();
-    vertex5.ColorTint = color.GetColor();
-    vertex6.ColorTint = color.GetColor();
+    vertex1.ColorTint = color2.GetColor();
+    vertex2.ColorTint = color2.GetColor();
+    vertex3.ColorTint = color1.GetColor();
+    vertex4.ColorTint = color1.GetColor();
+    vertex5.ColorTint = color1.GetColor();
+    vertex6.ColorTint = color2.GetColor();
 }
 
 void gfxDrawerPrimitive::SceneBegin()

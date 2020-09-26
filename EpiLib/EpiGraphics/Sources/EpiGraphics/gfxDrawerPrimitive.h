@@ -37,8 +37,10 @@ public:
     gfxDrawerPrimitive();
 
 public:
-    void DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color = Color::kLightBlue, epiFloat z = -100.0f);
-    void DrawQuad(const epiRect2f& rect, const Color& color = Color::kLightBlue, epiFloat z = -100.0f);
+    void DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color, epiFloat z = -100.0f);
+    void DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color1, const Color& color2, epiFloat z = -100.0f);
+    void DrawQuad(const epiRect2f& rect, const Color& color, epiFloat z = -100.0f);
+    void DrawQuad(const epiRect2f& rect, const Color& color1, const Color& color2, epiFloat z = -100.0f);
 
     void SceneBegin();
     void SceneEnd(const gfxCamera& camera);

@@ -35,10 +35,25 @@ protected:
 EPI_GENREGION_END(dSeries1Df)
 
 public:
+    using value_type = typename decltype(m_Data)::value_type;
+    using allocator_type = typename decltype(m_Data)::allocator_type;
+    using pointer = typename decltype(m_Data)::pointer;
+    using const_pointer = typename decltype(m_Data)::const_pointer;
+    using reference = typename decltype(m_Data)::reference;
+    using const_reference = typename decltype(m_Data)::const_reference;
+    using size_type = typename decltype(m_Data)::size_type;
+    using difference_type = typename decltype(m_Data)::difference_type;
+    using iterator = typename decltype(m_Data)::iterator;
+    using const_iterator = typename decltype(m_Data)::const_iterator;
+    using reverse_iterator = typename decltype(m_Data)::reverse_iterator;
+    using const_reverse_iterator = typename decltype(m_Data)::const_reverse_iterator;
+
+public:
     dSeries1Df() = default;
     dSeries1Df(std::initializer_list<epiFloat> list);
 
     void Reserve(epiSize_t capacity);
+    void Resize(epiSize_t size);
     void Clear();
 
     epiFloat& PushBack(epiFloat && value = epiFloat());
@@ -51,6 +66,17 @@ public:
 
     friend epiBool operator==(const dSeries1Df& lhs, const dSeries1Df& rhs);
     friend epiBool operator!=(const dSeries1Df& lhs, const dSeries1Df& rhs);
+
+    auto begin() -> typename iterator { return m_Data.begin(); }
+    auto end() -> typename iterator { return m_Data.end(); }
+    auto begin() const -> typename const_iterator { return m_Data.cbegin(); }
+    auto end() const -> typename const_iterator { return m_Data.cend(); }
+    auto cbegin() const -> typename const_iterator { return m_Data.cbegin(); }
+    auto cend() const -> typename const_iterator { return m_Data.cend(); }
+    auto rbegin() -> typename reverse_iterator { return m_Data.rbegin(); }
+    auto rend() -> typename reverse_iterator { return m_Data.rend(); }
+    auto crbegin() -> typename const_reverse_iterator { return m_Data.crbegin(); }
+    auto crend() -> typename const_reverse_iterator { return m_Data.crend(); }
 };
 
 EPI_NAMESPACE_END()

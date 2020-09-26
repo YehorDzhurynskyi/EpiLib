@@ -1,6 +1,7 @@
 enum dvSeries1DfRepr
 {
-    Peak
+    Peak,
+    Bar
 };
 
 class dvVMSeries1Df : dvVMSeriesBase

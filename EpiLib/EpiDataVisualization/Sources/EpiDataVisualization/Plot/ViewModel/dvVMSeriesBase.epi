@@ -1,5 +1,9 @@
 # TODO: add [Abstract]
 class dvVMSeriesBase
 {
+    Color Color1;
+    Color Color2;
+
+    [Virtual, WriteOnly]
     Color Color;
 };

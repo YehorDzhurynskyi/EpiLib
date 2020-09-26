@@ -6,6 +6,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiMultimedia/mmMediaBase.h"
 
+#include "EpiData/Series/dSeries1Df.h"
+
 EPI_NAMESPACE_BEGIN()
 
 enum class mmImagePixelFormat : epiS32
@@ -51,6 +53,8 @@ public:
     static epiU32 BitDepthOf(mmImagePixelFormat fmt);
 
 public:
+    void BuildHistogram(dSeries1Df& histogram) const;
+
     mmImage toGrayScale() const;
 };
 

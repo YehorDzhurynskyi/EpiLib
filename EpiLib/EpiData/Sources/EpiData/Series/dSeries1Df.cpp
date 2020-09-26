@@ -25,6 +25,11 @@ void dSeries1Df::Reserve(epiSize_t capacity)
     GetData().Reserve(capacity);
 }
 
+void dSeries1Df::Resize(epiSize_t size)
+{
+    GetData().Resize(size);
+}
+
 void dSeries1Df::Clear()
 {
     GetData().Clear();
