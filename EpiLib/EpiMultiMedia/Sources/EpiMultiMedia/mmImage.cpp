@@ -72,6 +72,35 @@ void mmImage::Contrast(epiS8 contrast)
     }
 }
 
+void mmImage::ContrastStretch(epiU8 lower, epiU8 upper)
+{
+    // TODO: implement per channel stretching
+
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        epiArray<epiByte>& data = GetData();
+        for (epiU32 i = 0; i < data.Size(); ++i)
+        {
+            data[i] = Color(data[i], data[i], data[i]).ContrastStretch(lower, upper).GetLumau();
+        }
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        epiArray<epiByte>& data = GetData();
+        epiAssert(data.Size() % 3 == 0);
+        for (epiU32 i = 0; i < data.Size() / 3; ++i)
+        {
+            const Color color = Color(data[i * 3 + 0], data[i * 3 + 1], data[i * 3 + 2]).ContrastStretch(lower, upper);
+            data[i * 3 + 0] = color.GetRu();
+            data[i * 3 + 1] = color.GetGu();
+            data[i * 3 + 2] = color.GetBu();
+        }
+    } break;
+    }
+}
+
 mmImage mmImage::ToGrayScale() const
 {
     mmImage to;

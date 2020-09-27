@@ -101,6 +101,7 @@ protected:
 
 public:
     Color Contrast(epiS8 contrast) const;
+    Color ContrastStretch(epiU8 lower, epiU8 upper) const;
 
     Color& operator+=(const Color& rhs);
     Color& operator*=(const Color& rhs);

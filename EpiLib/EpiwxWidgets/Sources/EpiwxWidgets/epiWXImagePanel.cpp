@@ -3,6 +3,7 @@
 #include <wx/dcclient.h>
 #include <wx/menu.h>
 #include <wx/numdlg.h>
+#include <wx/msgdlg.h>
 
 wxBEGIN_EVENT_TABLE(epiWXImagePanel, wxPanel)
     EVT_PAINT(epiWXImagePanel::OnPaint)
@@ -34,13 +35,7 @@ void epiWXImagePanel::OnMouse(wxMouseEvent& event)
     if (event.RightDown())
     {
         wxMenu contextMenu;
-        contextMenu.Append(ID_IMAGE_FIT_TO_SCREEN, wxT("&Fit to screen"));
-        contextMenu.AppendSeparator();
-        contextMenu.Append(ID_IMAGE_TO_GRAYSCALE, wxT("&Convert to grayscale"));
-        contextMenu.AppendSeparator();
-        contextMenu.Append(ID_IMAGE_CONTRAST, wxT("&Contrast"));
-        contextMenu.AppendSeparator();
-        contextMenu.Append(ID_IMAGE_RESET, wxT("&Reset"));
+        BuildContextMenu(contextMenu);
 
         PopupMenu(&contextMenu);
     }
@@ -48,32 +43,79 @@ void epiWXImagePanel::OnMouse(wxMouseEvent& event)
 
 void epiWXImagePanel::OnMenu(wxCommandEvent& event)
 {
+    OnMenuEvent(event);
+}
+
+void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
+{
     switch (event.GetId())
     {
-    case ID_IMAGE_RESET:
+    case ID_IMAGE_PANEL_RESET:
     {
         ImageReset();
     } break;
-    case ID_IMAGE_FIT_TO_SCREEN:
+    case ID_IMAGE_PANEL_FIT_TO_SCREEN:
     {
         ImageFitToScreen();
     } break;
-    case ID_IMAGE_TO_GRAYSCALE:
+    case ID_IMAGE_PANEL_TO_GRAYSCALE:
     {
         ImageToGrayScale();
     } break;
-    case ID_IMAGE_CONTRAST:
+    case ID_IMAGE_PANEL_CONTRAST:
     {
         const epiS8 contrast = static_cast<epiS8>(wxGetNumberFromUser(fmt::format("Set contrast value in range [{}..{}]", std::numeric_limits<epiS8>::min(), std::numeric_limits<epiS8>::max()),
-                                                                      "Contrast:",
-                                                                      "Contrast",
-                                                                      0,
-                                                                      std::numeric_limits<epiS8>::min(),
-                                                                      std::numeric_limits<epiS8>::max(),
-                                                                      this));
+                                                  "Contrast:",
+                                                  "Contrast",
+                                                  0,
+                                                  std::numeric_limits<epiS8>::min(),
+                                                  std::numeric_limits<epiS8>::max(),
+                                                  this));
         ImageContrast(contrast);
     } break;
+    case ID_IMAGE_PANEL_CONTRAST_STRETCH:
+    {
+        const epiU8 contrastLower = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast lower value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
+                                                      "Contrast:",
+                                                      "Contrast",
+                                                      0,
+                                                      std::numeric_limits<epiU8>::min(),
+                                                      std::numeric_limits<epiU8>::max(),
+                                                      this));
+
+        const epiU8 contrastUpper = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast upper value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
+                                                       "Contrast:",
+                                                       "Contrast",
+                                                       0,
+                                                       std::numeric_limits<epiU8>::min(),
+                                                       std::numeric_limits<epiU8>::max(),
+                                                       this));
+
+        if (contrastLower >= contrastUpper)
+        {
+            wxMessageBox("Are you sure you want to quit the program?",
+                         "Error",
+                         wxOK | wxICON_ERROR,
+                         this);
+        }
+        else
+        {
+            ImageContrastStretch(contrastLower, contrastUpper);
+        }
+    } break;
     }
+}
+
+void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
+{
+    contextMenu.Append(ID_IMAGE_PANEL_FIT_TO_SCREEN, wxT("&Fit to screen"));
+    contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE, wxT("&Convert to grayscale"));
+    contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_CONTRAST, wxT("&Contrast"));
+    contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_STRETCH, wxT("&Contrast stretch"));
+    contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_RESET, wxT("&Reset"));
 }
 
 void epiWXImagePanel::ImageReset()
@@ -120,6 +162,13 @@ void epiWXImagePanel::ImageScale(epiFloat factor)
 void epiWXImagePanel::ImageContrast(epiS8 contrast)
 {
     m_ImageTgt.Contrast(contrast);
+
+    ImageRefresh();
+}
+
+void epiWXImagePanel::ImageContrastStretch(epiU8 lower, epiU8 upper)
+{
+    m_ImageTgt.ContrastStretch(lower, upper);
 
     ImageRefresh();
 }

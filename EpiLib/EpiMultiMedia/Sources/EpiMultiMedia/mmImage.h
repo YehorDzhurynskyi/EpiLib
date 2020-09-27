@@ -56,7 +56,9 @@ public:
     mmImage Duplicate() const; // TODO: replace with auto-generated method
 
     void BuildHistogram(dSeries1Df& histogram) const;
+
     void Contrast(epiS8 contrast);
+    void ContrastStretch(epiU8 lower, epiU8 upper);
 
     mmImage ToGrayScale() const;
 };

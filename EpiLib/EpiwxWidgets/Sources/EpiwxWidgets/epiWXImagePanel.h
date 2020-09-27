@@ -13,10 +13,12 @@ public:
 
     enum
     {
-        ID_IMAGE_RESET = wxID_HIGHEST + 1,
-        ID_IMAGE_FIT_TO_SCREEN,
-        ID_IMAGE_TO_GRAYSCALE,
-        ID_IMAGE_CONTRAST
+        ID_IMAGE_PANEL_RESET = wxID_HIGHEST + 1,
+        ID_IMAGE_PANEL_FIT_TO_SCREEN,
+        ID_IMAGE_PANEL_TO_GRAYSCALE,
+        ID_IMAGE_PANEL_CONTRAST,
+        ID_IMAGE_PANEL_CONTRAST_STRETCH,
+        ID_IMAGE_PANEL_HIGHEST
     };
 
 public:
@@ -32,13 +34,15 @@ public:
 
     void OnPaint(wxPaintEvent& event);
     void OnMouse(wxMouseEvent& event);
-    void OnMenu(wxCommandEvent& event);
+    virtual void OnMenuEvent(wxCommandEvent& event);
+    virtual void BuildContextMenu(wxMenu& contextMenu);
 
     void ImageReset();
     void ImageFitToScreen();
     void ImageToGrayScale();
     void ImageScale(epiFloat factor = 1.0f);
     void ImageContrast(epiS8 contrast);
+    void ImageContrastStretch(epiU8 lower, epiU8 upper);
 
     const epi::mmImage& GetImage() const;
     epi::mmImage& GetImage();
@@ -48,6 +52,9 @@ public:
 protected:
     void ImageRefresh();
     wxImage ToWXImage(epi::mmImage& image);
+
+private:
+    void OnMenu(wxCommandEvent& event);
 
 protected:
     epi::mmImage m_ImageSrc;
