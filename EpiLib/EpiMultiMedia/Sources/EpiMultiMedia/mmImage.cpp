@@ -101,7 +101,7 @@ void mmImage::Contrast(epiS8 contrast)
 
 void mmImage::ContrastStretch(epiU8 lower, epiU8 upper)
 {
-    // TODO: implement per channel stretching
+    epiAssert(lower < upper);
 
     switch (GetPixelFormat())
     {
@@ -125,6 +125,30 @@ void mmImage::ContrastStretch(epiU8 lower, epiU8 upper)
             data[i * 3 + 2] = color.GetBu();
         }
     } break;
+    }
+}
+
+void mmImage::ContrastStretch(epiU8 lowerR,
+                              epiU8 upperR,
+                              epiU8 lowerG,
+                              epiU8 upperG,
+                              epiU8 lowerB,
+                              epiU8 upperB)
+{
+    // TODO: ensure the statement
+    epiAssert(GetPixelFormat() == mmImagePixelFormat::R8G8B8);
+    epiAssert(lowerR < upperR);
+    epiAssert(lowerG < upperG);
+    epiAssert(lowerB < upperB);
+
+    epiArray<epiByte>& data = GetData();
+    epiAssert(data.Size() % 3 == 0);
+    for (epiU32 i = 0; i < data.Size() / 3; ++i)
+    {
+        const Color color = Color(data[i * 3 + 0], data[i * 3 + 1], data[i * 3 + 2]).ContrastStretch(lowerR, upperR, lowerG, upperG, lowerB, upperB);
+        data[i * 3 + 0] = color.GetRu();
+        data[i * 3 + 1] = color.GetGu();
+        data[i * 3 + 2] = color.GetBu();
     }
 }
 

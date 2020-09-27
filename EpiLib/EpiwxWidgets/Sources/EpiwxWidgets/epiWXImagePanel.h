@@ -18,6 +18,7 @@ public:
         ID_IMAGE_PANEL_TO_GRAYSCALE,
         ID_IMAGE_PANEL_CONTRAST,
         ID_IMAGE_PANEL_CONTRAST_STRETCH,
+        ID_IMAGE_PANEL_CONTRAST_STRETCH_PER_CHANNEL,
         ID_IMAGE_PANEL_HIGHEST
     };
 
@@ -43,6 +44,12 @@ public:
     void ImageScale(epiFloat factor = 1.0f);
     void ImageContrast(epiS8 contrast);
     void ImageContrastStretch(epiU8 lower, epiU8 upper);
+    void ImageContrastStretch(epiU8 lowerR,
+                              epiU8 upperR,
+                              epiU8 lowerG,
+                              epiU8 upperG,
+                              epiU8 lowerB,
+                              epiU8 upperB);
 
     const epi::mmImage& GetImage() const;
     epi::mmImage& GetImage();

@@ -96,9 +96,27 @@ Color Color::Contrast(epiS8 contrast) const
 Color Color::ContrastStretch(epiU8 lower, epiU8 upper) const
 {
     epiAssert(lower < upper);
-    // TODO: implement per channel stretching
+
     const epiU8 c = static_cast<epiU8>(std::clamp((255.0f / (upper - lower)) * (GetLumau() - lower), 0.0f, 255.0f));
     return Color(c, c, c);
+}
+
+Color Color::ContrastStretch(epiU8 lowerR,
+                             epiU8 upperR,
+                             epiU8 lowerG,
+                             epiU8 upperG,
+                             epiU8 lowerB,
+                             epiU8 upperB) const
+{
+    epiAssert(lowerR < upperR);
+    epiAssert(lowerG < upperG);
+    epiAssert(lowerB < upperB);
+
+    const epiU8 r = static_cast<epiU8>(std::clamp((255.0f / (upperR - lowerR)) * (GetRu() - lowerR), 0.0f, 255.0f));
+    const epiU8 g = static_cast<epiU8>(std::clamp((255.0f / (upperG - lowerG)) * (GetGu() - lowerG), 0.0f, 255.0f));
+    const epiU8 b = static_cast<epiU8>(std::clamp((255.0f / (upperB - lowerB)) * (GetBu() - lowerB), 0.0f, 255.0f));
+
+    return Color(r, g, b);
 }
 
 epiU8 Color::GetRu_Callback() const
