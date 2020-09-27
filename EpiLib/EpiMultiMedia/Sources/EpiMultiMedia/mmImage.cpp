@@ -28,7 +28,7 @@ mmImage mmImage::Duplicate() const
     return image;
 }
 
-void mmImage::BuildHistogram(dSeries1Df& histogram) const
+void mmImage::Histogram(dSeries1Df& histogram) const
 {
     // TODO: adapt for any pixelformat
     epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
@@ -40,13 +40,13 @@ void mmImage::BuildHistogram(dSeries1Df& histogram) const
         histogram[i] = 0.0f;
     }
 
-    for (const auto& x : GetData())
+    for (const epiU8& x : GetData())
     {
         histogram[x] += 1.0f;
     }
 }
 
-void mmImage::BuildHistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG, dSeries1Df& histogramB) const
+void mmImage::HistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG, dSeries1Df& histogramB) const
 {
     // TODO: adapt for any pixelformat
     epiAssert(GetPixelFormat() == mmImagePixelFormat::R8G8B8);
@@ -69,6 +69,80 @@ void mmImage::BuildHistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histo
         histogramR[data[i * 3 + 0]] += 1.0f;
         histogramG[data[i * 3 + 1]] += 1.0f;
         histogramB[data[i * 3 + 2]] += 1.0f;
+    }
+}
+
+void mmImage::HistogramEqualize()
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        dSeries1Df histogram;
+        Histogram(histogram);
+
+        const epiFloat hSum = std::accumulate(histogram.begin(), histogram.end(), 0.0f);
+
+        std::array<epiFloat, 256> hComp;
+
+        epiAssert(histogram.GetSize() == hComp.size());
+
+        epiFloat h = 0.0f;
+        for (epiU32 i = 0; i < 256; ++i)
+        {
+            hComp[i] = ((h += histogram[i]) / hSum) * 255.0f;
+
+            epiAssert(0.0f <= hComp[i] && hComp[i] <= 255.0f);
+        }
+
+        for (epiU8& x : GetData())
+        {
+            x = static_cast<epiU8>(hComp[x]);
+        }
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        dSeries1Df histogramR;
+        dSeries1Df histogramG;
+        dSeries1Df histogramB;
+
+        HistogramPerChannel(histogramR, histogramG, histogramB);
+
+        const epiFloat hSumR = std::accumulate(histogramR.begin(), histogramR.end(), 0.0f);
+        const epiFloat hSumG = std::accumulate(histogramG.begin(), histogramG.end(), 0.0f);
+        const epiFloat hSumB = std::accumulate(histogramB.begin(), histogramB.end(), 0.0f);
+
+        std::array<epiFloat, 256> hCompR;
+        std::array<epiFloat, 256> hCompG;
+        std::array<epiFloat, 256> hCompB;
+
+        epiAssert(histogramR.GetSize() == hCompR.size());
+        epiAssert(histogramG.GetSize() == hCompG.size());
+        epiAssert(histogramB.GetSize() == hCompB.size());
+
+        epiFloat hR = 0.0f;
+        epiFloat hG = 0.0f;
+        epiFloat hB = 0.0f;
+        for (epiU32 i = 0; i < 256; ++i)
+        {
+            hCompR[i] = ((hR += histogramR[i]) / hSumR) * 255.0f;
+            hCompG[i] = ((hG += histogramG[i]) / hSumG) * 255.0f;
+            hCompB[i] = ((hB += histogramB[i]) / hSumB) * 255.0f;
+
+            epiAssert(0.0f <= hCompR[i] && hCompR[i] <= 255.0f);
+            epiAssert(0.0f <= hCompG[i] && hCompG[i] <= 255.0f);
+            epiAssert(0.0f <= hCompB[i] && hCompB[i] <= 255.0f);
+        }
+
+        epiArray<epiByte>& data = GetData();
+        epiAssert(data.Size() % 3 == 0);
+        for (epiU32 i = 0; i < data.Size() / 3; ++i)
+        {
+            data[i * 3 + 0] = static_cast<epiU8>(hCompR[data[i * 3 + 0]]);
+            data[i * 3 + 1] = static_cast<epiU8>(hCompG[data[i * 3 + 1]]);
+            data[i * 3 + 2] = static_cast<epiU8>(hCompB[data[i * 3 + 2]]);
+        }
+    } break;
     }
 }
 

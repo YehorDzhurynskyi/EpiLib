@@ -181,6 +181,10 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
 
         ImageContrastStretch(contrastLowerR, contrastUpperR, contrastLowerG, contrastUpperG, contrastLowerB, contrastUpperB);
     } break;
+    case ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE:
+    {
+        ImageHistogramEqualize();
+    } break;
     }
 }
 
@@ -193,6 +197,7 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_CONTRAST, wxT("&Contrast"));
     contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_STRETCH, wxT("&Contrast stretch"));
     contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_STRETCH_PER_CHANNEL, wxT("&Contrast stretch (per channel)"));
+    contextMenu.Append(ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE, wxT("&Histogram equalize"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_RESET, wxT("&Reset"));
 }
@@ -260,6 +265,13 @@ void epiWXImagePanel::ImageContrastStretch(epiU8 lowerR,
                                            epiU8 upperB)
 {
     m_ImageTgt.ContrastStretch(lowerR, upperR, lowerG, upperG, lowerB, upperB);
+
+    ImageRefresh();
+}
+
+void epiWXImagePanel::ImageHistogramEqualize()
+{
+    m_ImageTgt.HistogramEqualize();
 
     ImageRefresh();
 }

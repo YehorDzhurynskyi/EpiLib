@@ -76,6 +76,7 @@ public:
     static const Color kBlack;
     static const Color kDarkGray;
     static const Color kLightGray;
+    static const Color kPurple;
     static const Color kMagenta;
     static const Color kLightRed;
     static const Color kDarkRed;

@@ -19,6 +19,7 @@ public:
         ID_IMAGE_PANEL_CONTRAST,
         ID_IMAGE_PANEL_CONTRAST_STRETCH,
         ID_IMAGE_PANEL_CONTRAST_STRETCH_PER_CHANNEL,
+        ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE,
         ID_IMAGE_PANEL_HIGHEST
     };
 
@@ -50,6 +51,7 @@ public:
                               epiU8 upperG,
                               epiU8 lowerB,
                               epiU8 upperB);
+    void ImageHistogramEqualize();
 
     const epi::mmImage& GetImage() const;
     epi::mmImage& GetImage();
