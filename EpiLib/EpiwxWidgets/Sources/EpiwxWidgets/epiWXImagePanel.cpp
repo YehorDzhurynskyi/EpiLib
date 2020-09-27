@@ -2,6 +2,7 @@
 
 #include <wx/dcclient.h>
 #include <wx/menu.h>
+#include <wx/numdlg.h>
 
 wxBEGIN_EVENT_TABLE(epiWXImagePanel, wxPanel)
     EVT_PAINT(epiWXImagePanel::OnPaint)
@@ -30,11 +31,16 @@ void epiWXImagePanel::OnMouse(wxMouseEvent& event)
         ImageScale(m_ScaleFactor + dZoom * 0.05f);
     }
 
-    if (event.RightIsDown())
+    if (event.RightDown())
     {
         wxMenu contextMenu;
-        contextMenu.Append(ID_IMAGE_RESET, wxT("&Reset"));
         contextMenu.Append(ID_IMAGE_FIT_TO_SCREEN, wxT("&Fit to screen"));
+        contextMenu.AppendSeparator();
+        contextMenu.Append(ID_IMAGE_TO_GRAYSCALE, wxT("&Convert to grayscale"));
+        contextMenu.AppendSeparator();
+        contextMenu.Append(ID_IMAGE_CONTRAST, wxT("&Contrast"));
+        contextMenu.AppendSeparator();
+        contextMenu.Append(ID_IMAGE_RESET, wxT("&Reset"));
 
         PopupMenu(&contextMenu);
     }
@@ -52,30 +58,36 @@ void epiWXImagePanel::OnMenu(wxCommandEvent& event)
     {
         ImageFitToScreen();
     } break;
+    case ID_IMAGE_TO_GRAYSCALE:
+    {
+        ImageToGrayScale();
+    } break;
+    case ID_IMAGE_CONTRAST:
+    {
+        const epiS8 contrast = static_cast<epiS8>(wxGetNumberFromUser(fmt::format("Set contrast value in range [{}..{}]", std::numeric_limits<epiS8>::min(), std::numeric_limits<epiS8>::max()),
+                                                                      "Contrast:",
+                                                                      "Contrast",
+                                                                      0,
+                                                                      std::numeric_limits<epiS8>::min(),
+                                                                      std::numeric_limits<epiS8>::max(),
+                                                                      this));
+        ImageContrast(contrast);
+    } break;
     }
-}
-
-void epiWXImagePanel::ImageScale(epiFloat factor)
-{
-    // TODO: clamp `sizeScaled` instead of `m_ScaleFactor`
-    m_ScaleFactor = std::clamp(factor, 0.0001f, 100.0f);
-    const wxSize sizeScaled = m_Image.GetSize() * m_ScaleFactor;
-
-    m_BitmapToDraw = m_Image.Scale(sizeScaled.x, sizeScaled.y, wxIMAGE_QUALITY_NEAREST);
-
-    Refresh();
 }
 
 void epiWXImagePanel::ImageReset()
 {
+    m_ImageTgt = m_ImageSrc.Duplicate();
     ImageScale();
 }
 
 void epiWXImagePanel::ImageFitToScreen()
 {
     wxSize sizeScaled;
-    const epiFloat ar = m_Image.GetWidth() / static_cast<epiFloat>(m_Image.GetHeight());
-    if (std::abs(m_Image.GetWidth() - GetClientSize().x) < std::abs(m_Image.GetHeight() - GetClientSize().y))
+    const epiFloat ar = m_ImageTgt.GetWidth() / static_cast<epiFloat>(m_ImageTgt.GetHeight());
+    if (std::abs(static_cast<epiS32>(m_ImageTgt.GetWidth()) - GetClientSize().x) <
+        std::abs(static_cast<epiS32>(m_ImageTgt.GetHeight()) - GetClientSize().y))
     {
         sizeScaled.x = GetClientSize().x;
         sizeScaled.y = sizeScaled.x / ar;
@@ -86,28 +98,78 @@ void epiWXImagePanel::ImageFitToScreen()
         sizeScaled.x = sizeScaled.y * ar;
     }
 
-    const epiFloat scaleFactor = sizeScaled.x / static_cast<epiFloat>(m_Image.GetSize().x);
+    const epiFloat scaleFactor = sizeScaled.x / static_cast<epiFloat>(m_ImageTgt.GetWidth());
     ImageScale(scaleFactor);
 }
 
-const wxImage& epiWXImagePanel::GetImage() const
+void epiWXImagePanel::ImageToGrayScale()
 {
-    return m_Image;
+    m_ImageTgt = m_ImageTgt.ToGrayScale();
+
+    ImageRefresh();
 }
 
-wxImage& epiWXImagePanel::GetImage()
+void epiWXImagePanel::ImageScale(epiFloat factor)
 {
-    return m_Image;
+    // TODO: clamp `sizeScaled` instead of `m_ScaleFactor`
+    m_ScaleFactor = std::clamp(factor, 0.0001f, 100.0f);
+
+    ImageRefresh();
 }
 
-void epiWXImagePanel::SetImage(const wxImage& image)
+void epiWXImagePanel::ImageContrast(epiS8 contrast)
 {
-    m_Image = image;
-    ImageScale();
+    m_ImageTgt.Contrast(contrast);
+
+    ImageRefresh();
 }
 
-void epiWXImagePanel::SetImage(wxImage&& image)
+void epiWXImagePanel::ImageRefresh()
 {
-    m_Image = std::move(image);
-    ImageScale();
+    m_BitmapToDraw = ToWXImage(m_ImageTgt).Scale(m_ImageTgt.GetWidth() * m_ScaleFactor, m_ImageTgt.GetHeight() * m_ScaleFactor, wxIMAGE_QUALITY_NEAREST);
+    Refresh();
+}
+
+wxImage epiWXImagePanel::ToWXImage(epi::mmImage& image)
+{
+    switch (image.GetPixelFormat())
+    {
+    case epi::mmImagePixelFormat::R8G8B8:
+    {
+        return wxImage(image.GetWidth(), image.GetHeight(), image.GetData().data(), true);
+    } break;
+    case epi::mmImagePixelFormat::GRAYSCALE:
+    {
+        uint8_t* buff = new uint8_t[image.GetWidth() * image.GetHeight() * 3];
+        for (int32_t i = 0; i < image.GetWidth() * image.GetHeight(); ++i)
+        {
+            buff[i * 3 + 0] = image.GetData()[i];
+            buff[i * 3 + 1] = image.GetData()[i];
+            buff[i * 3 + 2] = image.GetData()[i];
+        }
+        return wxImage(image.GetWidth(), image.GetHeight(), buff, true);
+    } break;
+    }
+}
+
+const epi::mmImage& epiWXImagePanel::GetImage() const
+{
+    return m_ImageTgt;
+}
+
+epi::mmImage& epiWXImagePanel::GetImage()
+{
+    return m_ImageTgt;
+}
+
+void epiWXImagePanel::SetImage(const epi::mmImage& image)
+{
+    m_ImageSrc = image;
+    ImageReset();
+}
+
+void epiWXImagePanel::SetImage(epi::mmImage&& image)
+{
+    m_ImageSrc = std::move(image);
+    ImageReset();
 }

@@ -132,6 +132,7 @@ void epiWXPlot::OnPaint(wxPaintEvent& event)
 
 void epiWXPlot::OnIdle(wxIdleEvent& event)
 {
+    // TODO: refresh only on change
     Refresh(false);
 
     m_UIContext->Update();

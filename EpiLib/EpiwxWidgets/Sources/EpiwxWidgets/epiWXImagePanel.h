@@ -4,6 +4,8 @@
 #include <wx/image.h>
 #include <wx/bitmap.h>
 
+#include "EpiMultimedia/mmImage.h"
+
 class epiWXImagePanel : public wxPanel
 {
 public:
@@ -12,7 +14,9 @@ public:
     enum
     {
         ID_IMAGE_RESET = wxID_HIGHEST + 1,
-        ID_IMAGE_FIT_TO_SCREEN
+        ID_IMAGE_FIT_TO_SCREEN,
+        ID_IMAGE_TO_GRAYSCALE,
+        ID_IMAGE_CONTRAST
     };
 
 public:
@@ -32,15 +36,22 @@ public:
 
     void ImageReset();
     void ImageFitToScreen();
+    void ImageToGrayScale();
     void ImageScale(epiFloat factor = 1.0f);
+    void ImageContrast(epiS8 contrast);
 
-    const wxImage& GetImage() const;
-    wxImage& GetImage();
-    void SetImage(const wxImage& image);
-    void SetImage(wxImage&& image);
+    const epi::mmImage& GetImage() const;
+    epi::mmImage& GetImage();
+    void SetImage(const epi::mmImage& image);
+    void SetImage(epi::mmImage&& image);
 
 protected:
-    wxImage m_Image;
+    void ImageRefresh();
+    wxImage ToWXImage(epi::mmImage& image);
+
+protected:
+    epi::mmImage m_ImageSrc;
+    epi::mmImage m_ImageTgt;
     wxBitmap m_BitmapToDraw;
     epiFloat m_ScaleFactor{1.0f};
 };

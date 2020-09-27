@@ -38,6 +38,12 @@ public:
 public:
     epiArray() = default;
 
+    template<typename It>
+    epiArray(It begin, It end)
+        : m_Vector{begin, end}
+    {
+    }
+
     epiArray(std::initializer_list<T> list)
         : m_Vector{list}
     {
@@ -46,6 +52,16 @@ public:
     epiByte* GetData() override
     {
         return reinterpret_cast<epiByte*>(m_Vector.data());
+    }
+
+    const T* data() const
+    {
+        return reinterpret_cast<const T*>(m_Vector.data());
+    }
+
+    T* data()
+    {
+        return reinterpret_cast<T*>(m_Vector.data());
     }
 
     epiSize_t GetSize() const override

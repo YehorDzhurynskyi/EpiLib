@@ -53,9 +53,12 @@ public:
     static epiU32 BitDepthOf(mmImagePixelFormat fmt);
 
 public:
-    void BuildHistogram(dSeries1Df& histogram) const;
+    mmImage Duplicate() const; // TODO: replace with auto-generated method
 
-    mmImage toGrayScale() const;
+    void BuildHistogram(dSeries1Df& histogram) const;
+    void Contrast(epiS8 contrast);
+
+    mmImage ToGrayScale() const;
 };
 
 EPI_NAMESPACE_END()

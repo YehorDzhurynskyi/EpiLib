@@ -23,6 +23,11 @@ Color::Color(epiFloat r, epiFloat g, epiFloat b, epiFloat a)
 }
 
 Color::Color(epiS32 r, epiS32 g, epiS32 b, epiS32 a)
+    : Color(static_cast<epiU8>(r), static_cast<epiU8>(b), static_cast<epiU8>(b), static_cast<epiU8>(a))
+{
+}
+
+Color::Color(epiU8 r, epiU8 g, epiU8 b, epiU8 a)
 {
     SetRu(r);
     SetGu(g);
@@ -36,7 +41,12 @@ Color::Color(epiFloat r, epiFloat g, epiFloat b)
 }
 
 Color::Color(epiS32 r, epiS32 g, epiS32 b)
-    : Color(r, g, b, 255)
+    : Color(static_cast<epiU8>(r), static_cast<epiU8>(b), static_cast<epiU8>(b))
+{
+}
+
+Color::Color(epiU8 r, epiU8 g, epiU8 b)
+    : Color(r, g, b, static_cast<epiU8>(255))
 {
 }
 
@@ -53,6 +63,31 @@ epiBool Color::Validate() const
     epiValidate(m_Color.a >= 0.0f && m_Color.a <= 1.0f, "A channel should be in range [0 - 1]");
 
     return isValid;
+}
+
+Color Color::Contrast(epiS8 contrast) const
+{
+#if 0 // TODO: investigate this filter
+    Color color;
+
+    const epiFloat f = 259.0f * (255.0f + contrast) / 255.0f * (259.0f - contrast);
+    color.SetRf(std::clamp(f * (GetRf() - 0.5f) + 0.5f, 0.0f, 1.0f));
+    color.SetGf(std::clamp(f * (GetGf() - 0.5f) + 0.5f, 0.0f, 1.0f));
+    color.SetBf(std::clamp(f * (GetBf() - 0.5f) + 0.5f, 0.0f, 1.0f));
+    color.SetAf(GetAf());
+
+    return color;
+#else
+    Color color;
+
+    const epiFloat f = (259.0f * (255.0f + contrast)) / (255.0f * (259.0f - contrast));
+    color.SetRu(std::clamp(static_cast<epiS32>(f * (GetRu() - 128) + 128), 0, 255));
+    color.SetGu(std::clamp(static_cast<epiS32>(f * (GetGu() - 128) + 128), 0, 255));
+    color.SetBu(std::clamp(static_cast<epiS32>(f * (GetBu() - 128) + 128), 0, 255));
+    color.SetAu(GetAu());
+
+    return color;
+#endif
 }
 
 epiU8 Color::GetRu_Callback() const

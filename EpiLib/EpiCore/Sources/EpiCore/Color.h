@@ -91,13 +91,17 @@ public:
 
     Color(epiFloat r, epiFloat g, epiFloat b, epiFloat a);
     Color(epiS32 r, epiS32 g, epiS32 b, epiS32 a);
+    Color(epiU8 r, epiU8 g, epiU8 b, epiU8 a);
     Color(epiFloat r, epiFloat g, epiFloat b);
     Color(epiS32 r, epiS32 g, epiS32 b);
+    Color(epiU8 r, epiU8 g, epiU8 b);
 
 protected:
     epiBool Validate() const;
 
 public:
+    Color Contrast(epiS8 contrast) const;
+
     Color& operator+=(const Color& rhs);
     Color& operator*=(const Color& rhs);
 

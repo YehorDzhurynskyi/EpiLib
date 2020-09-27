@@ -13,6 +13,10 @@ class mmImage : mmMediaBase
 
         epiSize_t Width;
         epiSize_t Height;
+
+        # TODO: implement, property grid can't handle it properly
+        # [Virtual, ReadCallback(SuppressRef=true)]
+        # epiVec2u Size;
     }
 
     epiArray<epiU8> Data;
