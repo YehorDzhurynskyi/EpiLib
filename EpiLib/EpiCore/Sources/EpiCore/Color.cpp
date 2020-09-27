@@ -23,7 +23,7 @@ Color::Color(epiFloat r, epiFloat g, epiFloat b, epiFloat a)
 }
 
 Color::Color(epiS32 r, epiS32 g, epiS32 b, epiS32 a)
-    : Color(static_cast<epiU8>(r), static_cast<epiU8>(b), static_cast<epiU8>(b), static_cast<epiU8>(a))
+    : Color(static_cast<epiU8>(r), static_cast<epiU8>(g), static_cast<epiU8>(b), static_cast<epiU8>(a))
 {
 }
 
@@ -41,7 +41,7 @@ Color::Color(epiFloat r, epiFloat g, epiFloat b)
 }
 
 Color::Color(epiS32 r, epiS32 g, epiS32 b)
-    : Color(static_cast<epiU8>(r), static_cast<epiU8>(b), static_cast<epiU8>(b))
+    : Color(static_cast<epiU8>(r), static_cast<epiU8>(g), static_cast<epiU8>(b))
 {
 }
 
