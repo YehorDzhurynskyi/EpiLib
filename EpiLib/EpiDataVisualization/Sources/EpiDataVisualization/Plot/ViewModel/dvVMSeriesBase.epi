@@ -6,4 +6,6 @@ class dvVMSeriesBase
 
     [Virtual, WriteOnly]
     Color Color;
+
+    epiFloat Z = -0.99f;
 };

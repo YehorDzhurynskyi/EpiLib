@@ -26,7 +26,7 @@ void dvDrawerSeries1Df::Draw(gfxContext& ctx, const dvVMSeries1Df& seriesVM, con
             const epiVec2f p1 = ((world1 - worldFrame.LeftBottom()) / worldFrame.GetSize()) * uiFrame.GetSize() + uiFrame.LeftBottom();
             const epiVec2f p2 = ((world2 - worldFrame.LeftBottom()) / worldFrame.GetSize()) * uiFrame.GetSize() + uiFrame.LeftBottom();
 
-            ctx.GetDrawerPrimitive().DrawLine(p1, p2, seriesVM.GetColor1(), seriesVM.GetColor2(), -99.0f);
+            ctx.GetDrawerPrimitive().DrawLine(p1, p2, seriesVM.GetColor1(), seriesVM.GetColor2(), seriesVM.GetZ());
         }
     } break;
     case dvSeries1DfRepr::Bar:
@@ -45,7 +45,7 @@ void dvDrawerSeries1Df::Draw(gfxContext& ctx, const dvVMSeries1Df& seriesVM, con
             const epiVec2f p2 = ((world2 - worldFrame.LeftBottom()) / worldFrame.GetSize()) * uiFrame.GetSize() + uiFrame.LeftBottom();
             const epiRect2f rect(p1, p2);
 
-            ctx.GetDrawerPrimitive().DrawQuad(rect, seriesVM.GetColor1(), seriesVM.GetColor2(), -99.0f);
+            ctx.GetDrawerPrimitive().DrawQuad(rect, seriesVM.GetColor1(), seriesVM.GetColor2(), seriesVM.GetZ());
         }
     } break;
     }

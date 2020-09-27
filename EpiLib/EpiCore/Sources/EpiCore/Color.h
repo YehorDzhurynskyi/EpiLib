@@ -77,9 +77,12 @@ public:
     static const Color kDarkGray;
     static const Color kLightGray;
     static const Color kMagenta;
+    static const Color kLightRed;
+    static const Color kDarkRed;
+    static const Color kLightGreen;
+    static const Color kDarkGreen;
     static const Color kLightBlue;
     static const Color kDarkBlue;
-    static const Color kLightRed;
 
 public:
     Color() = default;

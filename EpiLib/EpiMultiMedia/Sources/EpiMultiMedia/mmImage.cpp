@@ -30,6 +30,7 @@ mmImage mmImage::Duplicate() const
 
 void mmImage::BuildHistogram(dSeries1Df& histogram) const
 {
+    // TODO: adapt for any pixelformat
     epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
 
     histogram.Resize(256);
@@ -42,6 +43,32 @@ void mmImage::BuildHistogram(dSeries1Df& histogram) const
     for (const auto& x : GetData())
     {
         histogram[x] += 1.0f;
+    }
+}
+
+void mmImage::BuildHistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG, dSeries1Df& histogramB) const
+{
+    // TODO: adapt for any pixelformat
+    epiAssert(GetPixelFormat() == mmImagePixelFormat::R8G8B8);
+
+    histogramR.Resize(256);
+    histogramG.Resize(256);
+    histogramB.Resize(256);
+
+    for (epiU32 i = 0; i < 256; ++i)
+    {
+        histogramR[i] = 0.0f;
+        histogramG[i] = 0.0f;
+        histogramB[i] = 0.0f;
+    }
+
+    const epiArray<epiByte>& data = GetData();
+    epiAssert(data.Size() % 3 == 0);
+    for (epiU32 i = 0; i < data.Size() / 3; ++i)
+    {
+        histogramR[data[i * 3 + 0]] += 1.0f;
+        histogramG[data[i * 3 + 1]] += 1.0f;
+        histogramB[data[i * 3 + 2]] += 1.0f;
     }
 }
 

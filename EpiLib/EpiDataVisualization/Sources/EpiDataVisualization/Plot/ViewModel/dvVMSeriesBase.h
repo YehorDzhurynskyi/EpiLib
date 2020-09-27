@@ -22,7 +22,8 @@ public:
         PID_Color1 = 0x5dc0e615,
         PID_Color2 = 0xc4c9b7af,
         PID_Color = 0xa79767ed,
-        PID_COUNT = 3
+        PID_Z = 0x59bc5767,
+        PID_COUNT = 4
     };
 
 protected:
@@ -31,6 +32,7 @@ protected:
 protected:
     Color m_Color1{};
     Color m_Color2{};
+    epiFloat m_Z{-0.99f};
 
 EPI_GENREGION_END(dvVMSeriesBase)
 };
