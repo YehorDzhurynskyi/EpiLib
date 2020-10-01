@@ -26,7 +26,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
     {
         if (epi::epiMetaTypeID typeID = prty.GetTypeID(); epi::MetaType::IsNumeric(typeID))
         {
-            sizer->Add(new wxStaticText(this, wxID_ANY, prty.GetName()), wxSizerFlags().Right().Expand());
+            sizer->Add(new wxStaticText(this, wxID_ANY, prty.GetName()), wxSizerFlags().Right().Expand().CentreVertical());
 
             wxControl* control = nullptr;
             if (epi::MetaType::IsFloating(typeID))
@@ -38,6 +38,22 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                 spin->Bind(wxEVT_SPINCTRLDOUBLE, &epiWXObjectConfigurationPanel::OnSpinDoubleValueChanged, this); // TODO: figure out whether it should be unbonded
 
                 control = spin;
+            }
+            else if (typeID == epi::epiMetaTypeID_epiByte || typeID == epi::epiMetaTypeID_epiS8 || typeID == epi::epiMetaTypeID_epiU8)
+            {
+                epiS32 minValue = 0;
+                epiS32 maxValue = 0;
+                switch (typeID)
+                {
+                case epi::epiMetaTypeID_epiByte: minValue = std::numeric_limits<epiByte>::min(); maxValue = std::numeric_limits<epiByte>::max(); break;
+                case epi::epiMetaTypeID_epiU8: minValue = std::numeric_limits<epiU8>::min(); maxValue = std::numeric_limits<epiU8>::max(); break;
+                case epi::epiMetaTypeID_epiS8: minValue = std::numeric_limits<epiS8>::min(); maxValue = std::numeric_limits<epiS8>::max(); break;
+                default: epiLogError("Unexpected typeID=`{}`", typeID); break;
+                }
+                wxSlider* slider = new wxSlider(this, wxID_ANY, 0, minValue, maxValue, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+                slider->Bind(wxEVT_SLIDER, &epiWXObjectConfigurationPanel::OnSliderValueChanged, this); // TODO: figure out whether it should be unbonded
+
+                control = slider;
             }
             else
             {
@@ -57,7 +73,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                 *ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
                 control->SetClientData(ptr);
 
-                sizer->Add(control, wxSizerFlags().Expand());
+                sizer->Add(control, wxSizerFlags().Expand().CenterVertical());
             }
         }
     }
@@ -84,12 +100,32 @@ void epiWXObjectConfigurationPanel::OnSpinDoubleValueChanged(wxSpinDoubleEvent& 
 {
     EPI_NAMESPACE_USING()
 
-    if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(static_cast<wxSpinCtrl*>(event.GetEventObject())->GetClientData()))
+    const wxSpinCtrlDouble* spin = static_cast<const wxSpinCtrlDouble*>(event.GetEventObject());
+    if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(spin->GetClientData()))
     {
         switch (ptr->GetTypeID())
         {
         case epiMetaTypeID_epiFloat: ptr->Set<epiFloat>(event.GetValue()); break;
         case epiMetaTypeID_epiDouble: ptr->Set<epiDouble>(event.GetValue()); break;
+        default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
+        }
+    }
+
+    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
+}
+
+void epiWXObjectConfigurationPanel::OnSliderValueChanged(wxCommandEvent& event)
+{
+    EPI_NAMESPACE_USING()
+
+    const wxSlider* slider = static_cast<const wxSlider*>(event.GetEventObject());
+    if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
+    {
+        switch (ptr->GetTypeID())
+        {
+        case epiMetaTypeID_epiByte: ptr->Set<epiByte>(slider->GetValue()); break;
+        case epiMetaTypeID_epiU8: ptr->Set<epiU8>(slider->GetValue()); break;
+        case epiMetaTypeID_epiS8: ptr->Set<epiS8>(slider->GetValue()); break;
         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
         }
     }

@@ -66,9 +66,9 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
         }
     }
 
-    contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, this), 0, wxALL, 10);
+    contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, this), wxSizerFlags().Expand());
 
-    sizer->Add(contentSizer);
+    sizer->Add(contentSizer, wxSizerFlags().Expand());
 
     wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
     buttonSizer->Add(new wxButton(this, wxID_OK, "OK"), 0, wxALL, 10);

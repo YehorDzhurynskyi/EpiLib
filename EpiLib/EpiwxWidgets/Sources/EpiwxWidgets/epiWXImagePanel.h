@@ -29,7 +29,7 @@ public:
                                   const wxString& title,
                                   const wxPoint& pos = wxDefaultPosition,
                                   const wxSize& size = wxDefaultSize,
-                                  long style = wxDEFAULT_DIALOG_STYLE,
+                                  long style = wxDEFAULT_DIALOG_STYLE /* TODO: make it resizable `| wxRESIZE_BORDER`*/,
                                   const wxString& name = wxASCII_STR(wxDialogNameStr));
 
     void OnImageUpdated(wxCommandEvent& event);

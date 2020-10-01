@@ -2,6 +2,7 @@
 
 #include <wx/panel.h>
 #include <wx/spinctrl.h>
+#include <wx/slider.h>
 
 #include "EpiCore/ObjectModel/Object.h"
 
@@ -21,6 +22,7 @@ public:
     void OnSpinValueChanged(wxSpinEvent& event);
     void OnSpinTextValueChanged(wxCommandEvent& event);
     void OnSpinDoubleValueChanged(wxSpinDoubleEvent& event);
+    void OnSliderValueChanged(wxCommandEvent& event);
 
 protected:
     void OnSpinValueChanged_Internal(const wxSpinCtrl& spin);
