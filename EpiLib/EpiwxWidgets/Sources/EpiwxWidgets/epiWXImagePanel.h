@@ -3,8 +3,41 @@
 #include <wx/panel.h>
 #include <wx/image.h>
 #include <wx/bitmap.h>
+#include <wx/dialog.h>
+#include <wx/statbmp.h>
 
-#include "EpiMultimedia/mmImage.h"
+#include "EpiwxWidgets/epiWXObjectConfigurationPanel.h"
+
+#include "EpiMultimedia/Image/mmImage.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
+
+EPI_NAMESPACE_BEGIN()
+
+class mmVMImageBase;
+
+EPI_NAMESPACE_END()
+
+class epiWXImageConfigurationDialog : public wxDialog
+{
+public:
+    wxDECLARE_EVENT_TABLE();
+
+public:
+    epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
+                                  wxWindow* parent,
+                                  wxWindowID id,
+                                  const wxString& title,
+                                  const wxPoint& pos = wxDefaultPosition,
+                                  const wxSize& size = wxDefaultSize,
+                                  long style = wxDEFAULT_DIALOG_STYLE,
+                                  const wxString& name = wxASCII_STR(wxDialogNameStr));
+
+    void OnImageUpdated(wxCommandEvent& event);
+
+protected:
+    epi::mmVMImageBase& m_ImageVM;
+    wxStaticBitmap* m_StaticBitmap{nullptr};
+};
 
 class epiWXImagePanel : public wxPanel
 {
@@ -58,16 +91,11 @@ public:
     void SetImage(const epi::mmImage& image);
     void SetImage(epi::mmImage&& image);
 
-protected:
-    void ImageRefresh();
-    wxImage ToWXImage(epi::mmImage& image);
-
 private:
     void OnMenu(wxCommandEvent& event);
 
 protected:
     epi::mmImage m_ImageSrc;
     epi::mmImage m_ImageTgt;
-    wxBitmap m_BitmapToDraw;
     epiFloat m_ScaleFactor{1.0f};
 };

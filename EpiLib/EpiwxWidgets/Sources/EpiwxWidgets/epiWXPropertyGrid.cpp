@@ -74,7 +74,7 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, epiMetaTypeID 
     {
         const epiString label = fmt::format("[{:d}]", i);
 
-        auto ptr = new PropertyPointer();
+        PropertyPointer* ptr = new PropertyPointer();
         *ptr = PropertyPointer::CreateFromArray(array, nestedTypeID, i);
 
         if (MetaType::IsFundamental(nestedTypeID))
@@ -112,7 +112,7 @@ void epiWXPropertyGrid::FillMultiDimensionalPtr(epi::epiBaseArray& array, epi::e
     {
         const epiString label = fmt::format("[{:d}]", i);
 
-        auto ptr = new PropertyPointer();
+        PropertyPointer* ptr = new PropertyPointer();
         *ptr = PropertyPointer::CreateFromArray(array, epiMetaTypeID_Ptr, i);
 
         if (MetaType::IsCompound(nestedTypeID))
@@ -145,7 +145,7 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
         const epiBool editable = !property->GetFlags().ReadOnly;
         const epiChar* label = property->GetName();
 
-        auto ptr = new PropertyPointer();
+        PropertyPointer* ptr = new PropertyPointer();
         *ptr = PropertyPointer::CreateFromProperty(object, property);
 
         if (MetaType::IsFundamental(property->GetTypeID()))

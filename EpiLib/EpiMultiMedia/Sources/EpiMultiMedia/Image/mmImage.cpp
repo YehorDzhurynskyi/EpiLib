@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiMultimedia/mmImage.h"
-#include "EpiMultimedia/mmImage.cxx"
+#include "EpiMultimedia/Image/mmImage.h"
+#include "EpiMultimedia/Image/mmImage.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/Color.h"

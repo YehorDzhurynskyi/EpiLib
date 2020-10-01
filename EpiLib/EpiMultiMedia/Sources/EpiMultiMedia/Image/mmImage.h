@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiMultimedia/mmImage.hxx"
+#include "EpiMultimedia/Image/mmImage.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiMultimedia/mmMediaBase.h"

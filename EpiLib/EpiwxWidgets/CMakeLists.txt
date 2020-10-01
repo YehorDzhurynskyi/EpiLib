@@ -7,6 +7,8 @@ add_library(EpiwxWidgets
     Sources/EpiwxWidgets/epiWXPropertyGrid.cpp
     Sources/EpiwxWidgets/epiWXPlot.h
     Sources/EpiwxWidgets/epiWXPlot.cpp
+    Sources/EpiwxWidgets/epiWXObjectConfigurationPanel.h
+    Sources/EpiwxWidgets/epiWXObjectConfigurationPanel.cpp
 )
 get_target_property(EpiwxWidgets_SOURCES EpiwxWidgets SOURCES)
 epi_pack_sources(${EpiwxWidgets_SOURCES})

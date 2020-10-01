@@ -158,6 +158,8 @@ public:
     static constexpr epiBool IsMultiDimensionalInplace(epiMetaTypeID typeID);
     static constexpr epiBool IsCompound(epiMetaTypeID typeID);
     static constexpr epiBool IsPointer(epiMetaTypeID typeID);
+    static constexpr epiBool IsNumeric(epiMetaTypeID typeID);
+    static constexpr epiBool IsFloating(epiMetaTypeID typeID);
 
     template<typename T> static constexpr epiBool IsFundamental();
     template<typename T> static constexpr epiBool IsString();
@@ -165,6 +167,8 @@ public:
     template<typename T> static constexpr epiBool IsMultiDimensionalInplace();
     template<typename T> static constexpr epiBool IsCompound();
     template<typename T> static constexpr epiBool IsPointer();
+    template<typename T> static constexpr epiBool IsNumeric();
+    template<typename T> static constexpr epiBool IsFloating();
 
 #if 0
     static epiByte* GetElementByIndex(const epiByte* container, const MetaProperty& meta, epiS32 index);
@@ -329,6 +333,51 @@ constexpr epiBool MetaType::IsPointer(epiMetaTypeID typeID)
     return epiMetaTypeID_Ptr == typeID;
 }
 
+constexpr epiBool MetaType::IsNumeric(epiMetaTypeID typeID)
+{
+    switch (typeID)
+    {
+    case epiMetaTypeID_epiByte:
+    case epiMetaTypeID_epiFloat:
+    case epiMetaTypeID_epiDouble:
+    case epiMetaTypeID_epiSize_t:
+    case epiMetaTypeID_epiU8:
+    case epiMetaTypeID_epiU16:
+    case epiMetaTypeID_epiU32:
+    case epiMetaTypeID_epiU64:
+    case epiMetaTypeID_epiS8:
+    case epiMetaTypeID_epiS16:
+    case epiMetaTypeID_epiS32:
+    case epiMetaTypeID_epiS64:
+    return true;
+    default: return false;
+    }
+}
+
+constexpr epiBool MetaType::IsFloating(epiMetaTypeID typeID)
+{
+    switch (typeID)
+    {
+    case epiMetaTypeID_epiFloat:
+    case epiMetaTypeID_epiDouble:
+    case epiMetaTypeID_epiVec2f:
+    case epiMetaTypeID_epiVec2d:
+    case epiMetaTypeID_epiVec3f:
+    case epiMetaTypeID_epiVec3d:
+    case epiMetaTypeID_epiVec4f:
+    case epiMetaTypeID_epiVec4d:
+    case epiMetaTypeID_epiMat2x2f:
+    case epiMetaTypeID_epiMat3x3f:
+    case epiMetaTypeID_epiMat4x4f:
+    case epiMetaTypeID_epiComplexf:
+    case epiMetaTypeID_epiComplexd:
+    case epiMetaTypeID_epiRect2f:
+    case epiMetaTypeID_epiRect2d:
+    return true;
+    default: return false;
+    }
+}
+
 template<typename T>
 constexpr epiBool MetaType::IsFundamental()
 {
@@ -411,6 +460,45 @@ constexpr epiBool MetaType::IsPointer()
     static_assert(IsPointer(epiMetaTypeID_Ptr));
 
     return std::is_pointer_v<T>;
+}
+
+template<typename T>
+constexpr epiBool MetaType::IsNumeric()
+{
+    if constexpr (std::is_same_v<epiByte, T>) { static_assert(IsNumeric(epiMetaTypeID_epiByte)) return true; }
+    else if constexpr (std::is_same_v<epiFloat, T>) { static_assert(IsNumeric(epiMetaTypeID_epiFloat)) return true; }
+    else if constexpr (std::is_same_v<epiDouble, T>) { static_assert(IsNumeric(epiMetaTypeID_epiDouble)) return true; }
+    else if constexpr (std::is_same_v<epiSize_t, T>) { static_assert(IsNumeric(epiMetaTypeID_epiSize_t)) return true; }
+    else if constexpr (std::is_same_v<epiU8, T>) { static_assert(IsNumeric(epiMetaTypeID_epiU8)) return true; }
+    else if constexpr (std::is_same_v<epiU16, T>) { static_assert(IsNumeric(epiMetaTypeID_epiU16)) return true; }
+    else if constexpr (std::is_same_v<epiU32, T>) { static_assert(IsNumeric(epiMetaTypeID_epiU32)) return true; }
+    else if constexpr (std::is_same_v<epiU64, T>) { static_assert(IsNumeric(epiMetaTypeID_epiU64)) return true; }
+    else if constexpr (std::is_same_v<epiS8, T>) { static_assert(IsNumeric(epiMetaTypeID_epiS8)) return true; }
+    else if constexpr (std::is_same_v<epiS16, T>) { static_assert(IsNumeric(epiMetaTypeID_epiS16)) return true; }
+    else if constexpr (std::is_same_v<epiS32, T>) { static_assert(IsNumeric(epiMetaTypeID_epiS32)) return true; }
+    else if constexpr (std::is_same_v<epiS64, T>) { static_assert(IsNumeric(epiMetaTypeID_epiS64)) return true; }
+    else return false;
+}
+
+template<typename T>
+constexpr epiBool MetaType::IsFloating()
+{
+    if constexpr (std::is_same_v<epiFloat, T>) { static_assert(IsFloating(epiMetaTypeID_epiFloat)) return true; }
+    else if constexpr (std::is_same_v<epiDouble, T>) { static_assert(IsFloating(epiMetaTypeID_epiDouble)) return true; }
+    else if constexpr (std::is_same_v<epiVec2f, T>) { static_assert(IsFloating(epiMetaTypeID_epiVec2f)) return true; }
+    else if constexpr (std::is_same_v<epiVec2d, T>) { static_assert(IsFloating(epiMetaTypeID_epiVec2d)) return true; }
+    else if constexpr (std::is_same_v<epiVec3f, T>) { static_assert(IsFloating(epiMetaTypeID_epiVec3f)) return true; }
+    else if constexpr (std::is_same_v<epiVec3d, T>) { static_assert(IsFloating(epiMetaTypeID_epiVec3d)) return true; }
+    else if constexpr (std::is_same_v<epiVec4f, T>) { static_assert(IsFloating(epiMetaTypeID_epiVec4f)) return true; }
+    else if constexpr (std::is_same_v<epiVec4d, T>) { static_assert(IsFloating(epiMetaTypeID_epiVec4d)) return true; }
+    else if constexpr (std::is_same_v<epiMat2x2f, T>) { static_assert(IsFloating(epiMetaTypeID_epiMat2x2f)) return true; }
+    else if constexpr (std::is_same_v<epiMat3x3f, T>) { static_assert(IsFloating(epiMetaTypeID_epiMat3x3f)) return true; }
+    else if constexpr (std::is_same_v<epiMat4x4f, T>) { static_assert(IsFloating(epiMetaTypeID_epiMat4x4f)) return true; }
+    else if constexpr (std::is_same_v<epiComplexf, T>) { static_assert(IsFloating(epiMetaTypeID_epiComplexf)) return true; }
+    else if constexpr (std::is_same_v<epiComplexd, T>) { static_assert(IsFloating(epiMetaTypeID_epiComplexd)) return true; }
+    else if constexpr (std::is_same_v<epiRect2f, T>) { static_assert(IsFloating(epiMetaTypeID_epiRect2f)) return true; }
+    else if constexpr (std::is_same_v<epiRect2d, T>) { static_assert(IsFloating(epiMetaTypeID_epiRect2d)) return true; }
+    else return false;
 }
 
 }

@@ -1,0 +1,7 @@
+# TODO: make [Abstract]
+class mmVMImageBase
+{
+    # add `const`
+    mmImage* ImageSrc;
+    mmImage ImageTgt;
+};

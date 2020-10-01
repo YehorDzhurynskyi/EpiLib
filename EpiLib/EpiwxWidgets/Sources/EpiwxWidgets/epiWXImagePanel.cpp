@@ -1,9 +1,100 @@
 #include "EpiwxWidgets/epiWXImagePanel.h"
 
+#include "EpiwxWidgets/epiWXObjectConfigurationPanel.h"
+
+#include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageContrast.h"
+
 #include <wx/dcclient.h>
 #include <wx/menu.h>
 #include <wx/numdlg.h>
 #include <wx/msgdlg.h>
+#include <wx/sizer.h>
+#include <wx/button.h>
+
+namespace
+{
+
+wxImage ToWXImage(epi::mmImage& image)
+{
+    switch (image.GetPixelFormat())
+    {
+    case epi::mmImagePixelFormat::R8G8B8:
+    {
+        return wxImage(image.GetWidth(), image.GetHeight(), image.GetData().data(), true);
+    } break;
+    case epi::mmImagePixelFormat::GRAYSCALE:
+    {
+        uint8_t* buff = new uint8_t[image.GetWidth() * image.GetHeight() * 3];
+        for (int32_t i = 0; i < image.GetWidth() * image.GetHeight(); ++i)
+        {
+            buff[i * 3 + 0] = image.GetData()[i];
+            buff[i * 3 + 1] = image.GetData()[i];
+            buff[i * 3 + 2] = image.GetData()[i];
+        }
+        return wxImage(image.GetWidth(), image.GetHeight(), buff, true);
+    } break;
+    }
+}
+
+}
+
+wxBEGIN_EVENT_TABLE(epiWXImageConfigurationDialog, wxDialog)
+    EVT_COMMAND(wxID_ANY, OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED, epiWXImageConfigurationDialog::OnImageUpdated)
+wxEND_EVENT_TABLE()
+
+epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
+                                                             wxWindow* parent,
+                                                             wxWindowID id,
+                                                             const wxString& title,
+                                                             const wxPoint& pos,
+                                                             const wxSize& size,
+                                                             long style,
+                                                             const wxString& name)
+    : wxDialog(parent, id, title, pos, size, style, name)
+    , m_ImageVM(vm)
+{
+    wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* contentSizer = new wxBoxSizer(wxHORIZONTAL);
+
+    if (epi::mmImage* image = m_ImageVM.GetImageSrc())
+    {
+        if (wxBitmap bitmap = ToWXImage(*image); bitmap.IsOk())
+        {
+            m_StaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
+            contentSizer->Add(m_StaticBitmap, 0, wxALL, 10);
+        }
+    }
+
+    contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, this), 0, wxALL, 10);
+
+    sizer->Add(contentSizer);
+
+    wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
+    buttonSizer->Add(new wxButton(this, wxID_OK, "OK"), 0, wxALL, 10);
+    buttonSizer->Add(new wxButton(this, wxID_CANCEL, "Cancel"), 0, wxALL, 10);
+
+    sizer->Add(buttonSizer, wxSizerFlags().Right());
+
+    SetSizerAndFit(sizer);
+
+    CenterOnParent();
+}
+
+void epiWXImageConfigurationDialog::OnImageUpdated(wxCommandEvent& event)
+{
+    if (m_StaticBitmap != nullptr)
+    {
+        if (epi::mmImage* image = m_ImageVM.GetImageSrc())
+        {
+            if (wxBitmap bitmap = ToWXImage(m_ImageVM.GetImageTgt()); bitmap.IsOk())
+            {
+                m_StaticBitmap->SetBitmap(bitmap);
+                m_StaticBitmap->Refresh();
+            }
+        }
+    }
+}
 
 wxBEGIN_EVENT_TABLE(epiWXImagePanel, wxPanel)
     EVT_PAINT(epiWXImagePanel::OnPaint)
@@ -15,11 +106,12 @@ void epiWXImagePanel::OnPaint(wxPaintEvent& event)
 {
     wxPaintDC dc(this);
 
-    if (m_BitmapToDraw.IsOk())
+    if (wxBitmap bitmapToDraw = ToWXImage(m_ImageTgt).Scale(m_ImageTgt.GetWidth() * m_ScaleFactor, m_ImageTgt.GetHeight() * m_ScaleFactor, wxIMAGE_QUALITY_NEAREST);
+        bitmapToDraw.IsOk())
     {
         const wxSize& sizeHalfClient = GetClientSize() / 2;
-        const wxSize& sizeHalfImage = m_BitmapToDraw.GetSize() / 2;
-        dc.DrawBitmap(m_BitmapToDraw, sizeHalfClient.x - sizeHalfImage.x, sizeHalfClient.y - sizeHalfImage.y, false);
+        const wxSize& sizeHalfImage = bitmapToDraw.GetSize() / 2;
+        dc.DrawBitmap(bitmapToDraw, sizeHalfClient.x - sizeHalfImage.x, sizeHalfClient.y - sizeHalfImage.y, false);
     }
 }
 
@@ -64,14 +156,13 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     } break;
     case ID_IMAGE_PANEL_CONTRAST:
     {
-        const epiS8 contrast = static_cast<epiS8>(wxGetNumberFromUser(fmt::format("Set contrast value in range [{}..{}]", std::numeric_limits<epiS8>::min(), std::numeric_limits<epiS8>::max()),
-                                                  "Contrast:",
-                                                  "Contrast",
-                                                  0,
-                                                  std::numeric_limits<epiS8>::min(),
-                                                  std::numeric_limits<epiS8>::max(),
-                                                  this));
-        ImageContrast(contrast);
+        epi::mmVMImageContrast vm;
+        vm.SetImageSrc(&m_ImageTgt);
+
+        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Contrast"); dialog.ShowModal() == wxID_OK)
+        {
+            ImageContrast(vm.GetContrast());
+        }
     } break;
     case ID_IMAGE_PANEL_CONTRAST_STRETCH:
     {
@@ -232,7 +323,7 @@ void epiWXImagePanel::ImageToGrayScale()
 {
     m_ImageTgt = m_ImageTgt.ToGrayScale();
 
-    ImageRefresh();
+    Refresh();
 }
 
 void epiWXImagePanel::ImageScale(epiFloat factor)
@@ -240,21 +331,21 @@ void epiWXImagePanel::ImageScale(epiFloat factor)
     // TODO: clamp `sizeScaled` instead of `m_ScaleFactor`
     m_ScaleFactor = std::clamp(factor, 0.0001f, 100.0f);
 
-    ImageRefresh();
+    Refresh();
 }
 
 void epiWXImagePanel::ImageContrast(epiS8 contrast)
 {
     m_ImageTgt.Contrast(contrast);
 
-    ImageRefresh();
+    Refresh();
 }
 
 void epiWXImagePanel::ImageContrastStretch(epiU8 lower, epiU8 upper)
 {
     m_ImageTgt.ContrastStretch(lower, upper);
 
-    ImageRefresh();
+    Refresh();
 }
 
 void epiWXImagePanel::ImageContrastStretch(epiU8 lowerR,
@@ -266,42 +357,14 @@ void epiWXImagePanel::ImageContrastStretch(epiU8 lowerR,
 {
     m_ImageTgt.ContrastStretch(lowerR, upperR, lowerG, upperG, lowerB, upperB);
 
-    ImageRefresh();
+    Refresh();
 }
 
 void epiWXImagePanel::ImageHistogramEqualize()
 {
     m_ImageTgt.HistogramEqualize();
 
-    ImageRefresh();
-}
-
-void epiWXImagePanel::ImageRefresh()
-{
-    m_BitmapToDraw = ToWXImage(m_ImageTgt).Scale(m_ImageTgt.GetWidth() * m_ScaleFactor, m_ImageTgt.GetHeight() * m_ScaleFactor, wxIMAGE_QUALITY_NEAREST);
     Refresh();
-}
-
-wxImage epiWXImagePanel::ToWXImage(epi::mmImage& image)
-{
-    switch (image.GetPixelFormat())
-    {
-    case epi::mmImagePixelFormat::R8G8B8:
-    {
-        return wxImage(image.GetWidth(), image.GetHeight(), image.GetData().data(), true);
-    } break;
-    case epi::mmImagePixelFormat::GRAYSCALE:
-    {
-        uint8_t* buff = new uint8_t[image.GetWidth() * image.GetHeight() * 3];
-        for (int32_t i = 0; i < image.GetWidth() * image.GetHeight(); ++i)
-        {
-            buff[i * 3 + 0] = image.GetData()[i];
-            buff[i * 3 + 1] = image.GetData()[i];
-            buff[i * 3 + 2] = image.GetData()[i];
-        }
-        return wxImage(image.GetWidth(), image.GetHeight(), buff, true);
-    } break;
-    }
 }
 
 const epi::mmImage& epiWXImagePanel::GetImage() const

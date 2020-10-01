@@ -5,7 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiMultimedia/mmMediaBase.h"
-#include "EpiMultimedia/mmImage.h"
+#include "EpiMultimedia/Image/mmImage.h"
 
 #include "EpiData/Series/dSeries1Df.h"
 

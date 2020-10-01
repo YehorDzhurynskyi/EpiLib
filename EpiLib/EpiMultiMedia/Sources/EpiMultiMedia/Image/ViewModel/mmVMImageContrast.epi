@@ -1,0 +1,5 @@
+class mmVMImageContrast : mmVMImageBase
+{
+    [WriteCallback]
+    epiS8 Contrast;
+};
