@@ -2,6 +2,7 @@
 
 #include "EpiwxWidgets/epiWXObjectConfigurationPanel.h"
 
+
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageContrast.h"
 
@@ -44,6 +45,7 @@ wxBEGIN_EVENT_TABLE(epiWXImageConfigurationDialog, wxDialog)
 wxEND_EVENT_TABLE()
 
 epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
+                                                             const epi::epiPropertyGrouping& grouping,
                                                              wxWindow* parent,
                                                              wxWindowID id,
                                                              const wxString& title,
@@ -66,7 +68,7 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
         }
     }
 
-    contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, this), wxSizerFlags().Expand());
+    contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, grouping, this), wxSizerFlags().Expand());
 
     sizer->Add(contentSizer, wxSizerFlags().Expand());
 
@@ -154,123 +156,41 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     {
         ImageToGrayScale();
     } break;
-    case ID_IMAGE_PANEL_CONTRAST:
+    case ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT:
     {
         epi::mmVMImageContrast vm;
         vm.SetImageSrc(&m_ImageTgt);
 
-        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Contrast"); dialog.ShowModal() == wxID_OK)
+        epi::epiPropertyGrouping grouping;
+        grouping
+            .AddGroup("Contrast")
+                .AddElement(epi::mmVMImageContrast::PID_ContrastR)
+                .AddElement(epi::mmVMImageContrast::PID_ContrastG)
+                .AddElement(epi::mmVMImageContrast::PID_ContrastB)
+                .SetIsReplicable(true)
+                .SetIsExclusiveWith("Contrast Stretching")
+                .FinishGroup()
+            .AddGroup("Contrast Stretching")
+                .AddElement(epi::mmVMImageContrast::PID_ContrastStretchR)
+                .AddElement(epi::mmVMImageContrast::PID_ContrastStretchG)
+                .AddElement(epi::mmVMImageContrast::PID_ContrastStretchB)
+                .SetIsReplicable(true)
+                .SetIsExclusiveWith("Contrast")
+                .FinishGroup();
+
+        if (epiWXImageConfigurationDialog dialog(vm, grouping, this, wxID_ANY, "Contrast Adjustment"); dialog.ShowModal() == wxID_OK)
         {
-            ImageContrast(vm.GetContrast());
+            ImageContrast(vm.GetContrastR(),
+                          vm.GetContrastG(),
+                          vm.GetContrastB());
+
+            ImageContrastStretch(vm.GetContrastStretchR().x,
+                                 vm.GetContrastStretchR().y,
+                                 vm.GetContrastStretchG().x,
+                                 vm.GetContrastStretchG().y,
+                                 vm.GetContrastStretchB().x,
+                                 vm.GetContrastStretchB().y);
         }
-    } break;
-    case ID_IMAGE_PANEL_CONTRAST_STRETCH:
-    {
-        const epiU8 contrastLower = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast lower value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
-                                                      "Contrast:",
-                                                      "Contrast",
-                                                      0,
-                                                      std::numeric_limits<epiU8>::min(),
-                                                      std::numeric_limits<epiU8>::max(),
-                                                      this));
-
-        const epiU8 contrastUpper = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast upper value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
-                                                       "Contrast:",
-                                                       "Contrast",
-                                                       0,
-                                                       std::numeric_limits<epiU8>::min(),
-                                                       std::numeric_limits<epiU8>::max(),
-                                                       this));
-
-        if (contrastLower >= contrastUpper)
-        {
-            wxMessageBox("Are you sure you want to quit the program?",
-                         "Error",
-                         wxOK | wxICON_ERROR,
-                         this);
-            break;
-        }
-
-        ImageContrastStretch(contrastLower, contrastUpper);
-    } break;
-    case ID_IMAGE_PANEL_CONTRAST_STRETCH_PER_CHANNEL:
-    {
-        const epiU8 contrastLowerR = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast red lower value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
-                                                       "Contrast:",
-                                                       "Contrast",
-                                                       0,
-                                                       std::numeric_limits<epiU8>::min(),
-                                                       std::numeric_limits<epiU8>::max(),
-                                                       this));
-
-        const epiU8 contrastUpperR = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast red upper value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
-                                                       "Contrast:",
-                                                       "Contrast",
-                                                       0,
-                                                       std::numeric_limits<epiU8>::min(),
-                                                       std::numeric_limits<epiU8>::max(),
-                                                       this));
-
-        if (contrastLowerR >= contrastUpperR)
-        {
-            wxMessageBox(fmt::format("Lower bound=`{}` should be strictly less than the upper bound=`{}`", contrastLowerR, contrastUpperR),
-                         "Error",
-                         wxOK | wxICON_ERROR,
-                         this);
-            break;
-        }
-
-        const epiU8 contrastLowerG = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast green lower value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
-                                                        "Contrast:",
-                                                        "Contrast",
-                                                        0,
-                                                        std::numeric_limits<epiU8>::min(),
-                                                        std::numeric_limits<epiU8>::max(),
-                                                        this));
-
-        const epiU8 contrastUpperG = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast green upper value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
-                                                        "Contrast:",
-                                                        "Contrast",
-                                                        0,
-                                                        std::numeric_limits<epiU8>::min(),
-                                                        std::numeric_limits<epiU8>::max(),
-                                                        this));
-
-        if (contrastLowerG >= contrastUpperG)
-        {
-            wxMessageBox(fmt::format("Lower bound=`{}` should be strictly less than the upper bound=`{}`", contrastLowerG, contrastUpperG),
-                         "Error",
-                         wxOK | wxICON_ERROR,
-                         this);
-            break;
-        }
-
-        const epiU8 contrastLowerB = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast blue lower value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
-                                                        "Contrast:",
-                                                        "Contrast",
-                                                        0,
-                                                        std::numeric_limits<epiU8>::min(),
-                                                        std::numeric_limits<epiU8>::max(),
-                                                        this));
-
-        const epiU8 contrastUpperB = static_cast<epiU8>(wxGetNumberFromUser(fmt::format("Set contrast blue upper value in range [{}..{}]", std::numeric_limits<epiU8>::min(), std::numeric_limits<epiU8>::max()),
-                                                        "Contrast:",
-                                                        "Contrast",
-                                                        0,
-                                                        std::numeric_limits<epiU8>::min(),
-                                                        std::numeric_limits<epiU8>::max(),
-                                                        this));
-
-        if (contrastLowerB >= contrastUpperB)
-        {
-            wxMessageBox(fmt::format("Lower bound=`{}` should be strictly less than the upper bound=`{}`", contrastLowerB, contrastUpperB),
-                         "Error",
-                         wxOK | wxICON_ERROR,
-                         this);
-            break;
-        }
-
-        ImageContrastStretch(contrastLowerR, contrastUpperR, contrastLowerG, contrastUpperG, contrastLowerB, contrastUpperB);
     } break;
     case ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE:
     {
@@ -285,9 +205,7 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE, wxT("&Convert to grayscale"));
     contextMenu.AppendSeparator();
-    contextMenu.Append(ID_IMAGE_PANEL_CONTRAST, wxT("&Contrast"));
-    contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_STRETCH, wxT("&Contrast stretch"));
-    contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_STRETCH_PER_CHANNEL, wxT("&Contrast stretch (per channel)"));
+    contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT, wxT("&Contrast Adjustment"));
     contextMenu.Append(ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE, wxT("&Histogram equalize"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_RESET, wxT("&Reset"));
@@ -334,16 +252,9 @@ void epiWXImagePanel::ImageScale(epiFloat factor)
     Refresh();
 }
 
-void epiWXImagePanel::ImageContrast(epiS8 contrast)
+void epiWXImagePanel::ImageContrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB)
 {
-    m_ImageTgt.Contrast(contrast);
-
-    Refresh();
-}
-
-void epiWXImagePanel::ImageContrastStretch(epiU8 lower, epiU8 upper)
-{
-    m_ImageTgt.ContrastStretch(lower, upper);
+    m_ImageTgt.Contrast(contrastR, contrastG, contrastB);
 
     Refresh();
 }

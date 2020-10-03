@@ -5,6 +5,7 @@
 #include <wx/slider.h>
 
 #include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/ObjectModel/epiPropertyGrouping.h"
 
 wxDECLARE_EVENT(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED, wxCommandEvent);
 
@@ -12,6 +13,7 @@ class epiWXObjectConfigurationPanel : public wxPanel
 {
 public:
     epiWXObjectConfigurationPanel(epi::Object& object, // TODO: ensure lifetime
+                                  const epi::epiPropertyGrouping& grouping,
                                   wxWindow* parent,
                                   wxWindowID id = wxID_ANY,
                                   const wxPoint& pos = wxDefaultPosition,

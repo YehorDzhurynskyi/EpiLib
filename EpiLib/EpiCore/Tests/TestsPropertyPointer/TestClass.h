@@ -5,6 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -2619,6 +2620,513 @@ public:
     {
         printf("foo\n");
     }
+};
+
+class TestClassCCC : public TestClassCC, public epiIPropertyChangedHandler
+{
+EPI_GENREGION_BEGIN(TestClassCCC)
+
+EPI_GENHIDDEN_TestClassCCC()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x7c13a45c};
+
+    enum TestClassCCC_PIDs
+    {
+        PID_CCCPrty0 = 0x4ce69802,
+        PID_CCCPrty1 = 0x3be1a894,
+        PID_CCCPrty2 = 0xa2e8f92e,
+        PID_CCCPrty3 = 0xd5efc9b8,
+        PID_CCCPrty4 = 0x4b8b5c1b,
+        PID_CCCPrty5 = 0x3c8c6c8d,
+        PID_CCCPrty6 = 0xa5853d37,
+        PID_CCCPrty7 = 0xd2820da1,
+        PID_CCCPrty8 = 0x423d1030,
+        PID_CCCPrty9 = 0x353a20a6,
+        PID_CCCPrty10 = 0x38269d4,
+        PID_CCCPrty11 = 0x74855942,
+        PID_CCCPrty12 = 0xed8c08f8,
+        PID_CCCPrty13 = 0x9a8b386e,
+        PID_CCCPrty14 = 0x4efadcd,
+        PID_CCCPrty15 = 0x73e89d5b,
+        PID_CCCPrty16 = 0xeae1cce1,
+        PID_CCCPrty17 = 0x9de6fc77,
+        PID_CCCPrty18 = 0xd59e1e6,
+        PID_CCCPrty19 = 0x7a5ed170,
+        PID_CCCPrty20 = 0x28af3a17,
+        PID_CCCPrty21 = 0x5fa80a81,
+        PID_CCCPrty22 = 0xc6a15b3b,
+        PID_CCCPrty23 = 0xb1a66bad,
+        PID_CCCPrty24 = 0x2fc2fe0e,
+        PID_CCCPrty25 = 0x58c5ce98,
+        PID_CCCPrty26 = 0xc1cc9f22,
+        PID_CCCPrty27 = 0xb6cbafb4,
+        PID_CCCPrty28 = 0x2674b225,
+        PID_CCCPrty29 = 0x517382b3,
+        PID_CCCPrty30 = 0x31b40b56,
+        PID_CCCPrty31 = 0x46b33bc0,
+        PID_CCCPrty32 = 0xdfba6a7a,
+        PID_CCCPrty33 = 0xa8bd5aec,
+        PID_CCCPrty34 = 0x36d9cf4f,
+        PID_CCCPrty35 = 0x41deffd9,
+        PID_CCCPrty36 = 0xd8d7ae63,
+        PID_CCCPrty37 = 0xafd09ef5,
+        PID_CCCPrty38 = 0x3f6f8364,
+        PID_CCCPrty39 = 0x4868b3f2,
+        PID_CCCPrty40 = 0x7ef59d91,
+        PID_CCCPrty41 = 0x9f2ad07,
+        PID_CCCPrty42 = 0x90fbfcbd,
+        PID_CCCPrty43 = 0xe7fccc2b,
+        PID_CCCPrtyVirtual0 = 0x35e720f2,
+        PID_CCCPrtyVirtual1 = 0x42e01064,
+        PID_CCCPrtyVirtual2 = 0xdbe941de,
+        PID_CCCPrtyVirtual3 = 0xacee7148,
+        PID_CCCPrtyVirtual4 = 0x328ae4eb,
+        PID_CCCPrtyVirtual5 = 0x458dd47d,
+        PID_CCCPrtyVirtual6 = 0xdc8485c7,
+        PID_CCCPrtyVirtual7 = 0xab83b551,
+        PID_CCCPrtyVirtual8 = 0x3b3ca8c0,
+        PID_CCCPrtyVirtual9 = 0x4c3b9856,
+        PID_CCCPrtyVirtual10 = 0xbe469a70,
+        PID_CCCPrtyVirtual11 = 0xc941aae6,
+        PID_CCCPrtyVirtual12 = 0x5048fb5c,
+        PID_CCCPrtyVirtual13 = 0x274fcbca,
+        PID_CCCPrtyVirtual14 = 0xb92b5e69,
+        PID_CCCPrtyVirtual15 = 0xce2c6eff,
+        PID_CCCPrtyVirtual16 = 0x57253f45,
+        PID_CCCPrtyVirtual17 = 0x20220fd3,
+        PID_CCCPrtyVirtual18 = 0xb09d1242,
+        PID_CCCPrtyVirtual19 = 0xc79a22d4,
+        PID_CCCPrtyVirtual20 = 0x956bc9b3,
+        PID_CCCPrtyVirtual21 = 0xe26cf925,
+        PID_CCCPrtyVirtual22 = 0x7b65a89f,
+        PID_CCCPrtyVirtual23 = 0xc629809,
+        PID_CCCPrtyVirtual24 = 0x92060daa,
+        PID_CCCPrtyVirtual25 = 0xe5013d3c,
+        PID_CCCPrtyVirtual26 = 0x7c086c86,
+        PID_CCCPrtyVirtual27 = 0xb0f5c10,
+        PID_CCCPrtyVirtual28 = 0x9bb04181,
+        PID_CCCPrtyVirtual29 = 0xecb77117,
+        PID_CCCPrtyVirtual30 = 0x8c70f8f2,
+        PID_CCCPrtyVirtual31 = 0xfb77c864,
+        PID_CCCPrtyVirtual32 = 0x627e99de,
+        PID_CCCPrtyVirtual33 = 0x1579a948,
+        PID_CCCPrtyVirtual34 = 0x8b1d3ceb,
+        PID_CCCPrtyVirtual35 = 0xfc1a0c7d,
+        PID_CCCPrtyVirtual36 = 0x65135dc7,
+        PID_CCCPrtyVirtual37 = 0x12146d51,
+        PID_CCCPrtyVirtual38 = 0x82ab70c0,
+        PID_CCCPrtyVirtual39 = 0xf5ac4056,
+        PID_CCCPrtyVirtual40 = 0xc3316e35,
+        PID_CCCPrtyVirtual41 = 0xb4365ea3,
+        PID_CCCPrtyVirtual42 = 0x2d3f0f19,
+        PID_CCCPrtyVirtual43 = 0x5a383f8f,
+        PID_CCCPrtyReadCallback0 = 0x233f699e,
+        PID_CCCPrtyReadCallback1 = 0x54385908,
+        PID_CCCPrtyReadCallback2 = 0xcd3108b2,
+        PID_CCCPrtyReadCallback3 = 0xba363824,
+        PID_CCCPrtyReadCallback4 = 0x2452ad87,
+        PID_CCCPrtyReadCallback5 = 0x53559d11,
+        PID_CCCPrtyReadCallback6 = 0xca5cccab,
+        PID_CCCPrtyReadCallback7 = 0xbd5bfc3d,
+        PID_CCCPrtyReadCallback8 = 0x2de4e1ac,
+        PID_CCCPrtyReadCallback9 = 0x5ae3d13a,
+        PID_CCCPrtyReadCallback10 = 0xfa546f4a,
+        PID_CCCPrtyReadCallback11 = 0x8d535fdc,
+        PID_CCCPrtyReadCallback12 = 0x145a0e66,
+        PID_CCCPrtyReadCallback13 = 0x635d3ef0,
+        PID_CCCPrtyReadCallback14 = 0xfd39ab53,
+        PID_CCCPrtyReadCallback15 = 0x8a3e9bc5,
+        PID_CCCPrtyReadCallback16 = 0x1337ca7f,
+        PID_CCCPrtyReadCallback17 = 0x6430fae9,
+        PID_CCCPrtyReadCallback18 = 0xf48fe778,
+        PID_CCCPrtyReadCallback19 = 0x8388d7ee,
+        PID_CCCPrtyReadCallback20 = 0xd1793c89,
+        PID_CCCPrtyReadCallback21 = 0xa67e0c1f,
+        PID_CCCPrtyReadCallback22 = 0x3f775da5,
+        PID_CCCPrtyReadCallback23 = 0x48706d33,
+        PID_CCCPrtyReadCallback24 = 0xd614f890,
+        PID_CCCPrtyReadCallback25 = 0xa113c806,
+        PID_CCCPrtyReadCallback26 = 0x381a99bc,
+        PID_CCCPrtyReadCallback27 = 0x4f1da92a,
+        PID_CCCPrtyReadCallback28 = 0xdfa2b4bb,
+        PID_CCCPrtyReadCallback29 = 0xa8a5842d,
+        PID_CCCPrtyReadCallback30 = 0xc8620dc8,
+        PID_CCCPrtyReadCallback31 = 0xbf653d5e,
+        PID_CCCPrtyReadCallback32 = 0x266c6ce4,
+        PID_CCCPrtyReadCallback33 = 0x516b5c72,
+        PID_CCCPrtyReadCallback34 = 0xcf0fc9d1,
+        PID_CCCPrtyReadCallback35 = 0xb808f947,
+        PID_CCCPrtyReadCallback36 = 0x2101a8fd,
+        PID_CCCPrtyReadCallback37 = 0x5606986b,
+        PID_CCCPrtyReadCallback38 = 0xc6b985fa,
+        PID_CCCPrtyReadCallback39 = 0xb1beb56c,
+        PID_CCCPrtyReadCallback40 = 0x87239b0f,
+        PID_CCCPrtyReadCallback41 = 0xf024ab99,
+        PID_CCCPrtyReadCallback42 = 0x692dfa23,
+        PID_CCCPrtyReadCallback43 = 0x1e2acab5,
+        PID_CCCPrtyWriteCallback0 = 0xf3dce8be,
+        PID_CCCPrtyWriteCallback1 = 0x84dbd828,
+        PID_CCCPrtyWriteCallback2 = 0x1dd28992,
+        PID_CCCPrtyWriteCallback3 = 0x6ad5b904,
+        PID_CCCPrtyWriteCallback4 = 0xf4b12ca7,
+        PID_CCCPrtyWriteCallback5 = 0x83b61c31,
+        PID_CCCPrtyWriteCallback6 = 0x1abf4d8b,
+        PID_CCCPrtyWriteCallback7 = 0x6db87d1d,
+        PID_CCCPrtyWriteCallback8 = 0xfd07608c,
+        PID_CCCPrtyWriteCallback9 = 0x8a00501a,
+        PID_CCCPrtyWriteCallback10 = 0xc1eaac03,
+        PID_CCCPrtyWriteCallback11 = 0xb6ed9c95,
+        PID_CCCPrtyWriteCallback12 = 0x2fe4cd2f,
+        PID_CCCPrtyWriteCallback13 = 0x58e3fdb9,
+        PID_CCCPrtyWriteCallback14 = 0xc687681a,
+        PID_CCCPrtyWriteCallback15 = 0xb180588c,
+        PID_CCCPrtyWriteCallback16 = 0x28890936,
+        PID_CCCPrtyWriteCallback17 = 0x5f8e39a0,
+        PID_CCCPrtyWriteCallback18 = 0xcf312431,
+        PID_CCCPrtyWriteCallback19 = 0xb83614a7,
+        PID_CCCPrtyWriteCallback20 = 0xeac7ffc0,
+        PID_CCCPrtyWriteCallback21 = 0x9dc0cf56,
+        PID_CCCPrtyWriteCallback22 = 0x4c99eec,
+        PID_CCCPrtyWriteCallback23 = 0x73ceae7a,
+        PID_CCCPrtyWriteCallback24 = 0xedaa3bd9,
+        PID_CCCPrtyWriteCallback25 = 0x9aad0b4f,
+        PID_CCCPrtyWriteCallback26 = 0x3a45af5,
+        PID_CCCPrtyWriteCallback27 = 0x74a36a63,
+        PID_CCCPrtyWriteCallback28 = 0xe41c77f2,
+        PID_CCCPrtyWriteCallback29 = 0x931b4764,
+        PID_CCCPrtyWriteCallback30 = 0xf3dcce81,
+        PID_CCCPrtyWriteCallback31 = 0x84dbfe17,
+        PID_CCCPrtyWriteCallback32 = 0x1dd2afad,
+        PID_CCCPrtyWriteCallback33 = 0x6ad59f3b,
+        PID_CCCPrtyWriteCallback34 = 0xf4b10a98,
+        PID_CCCPrtyWriteCallback35 = 0x83b63a0e,
+        PID_CCCPrtyWriteCallback36 = 0x1abf6bb4,
+        PID_CCCPrtyWriteCallback37 = 0x6db85b22,
+        PID_CCCPrtyWriteCallback38 = 0xfd0746b3,
+        PID_CCCPrtyWriteCallback39 = 0x8a007625,
+        PID_CCCPrtyWriteCallback40 = 0xbc9d5846,
+        PID_CCCPrtyWriteCallback41 = 0xcb9a68d0,
+        PID_CCCPrtyWriteCallback42 = 0x5293396a,
+        PID_CCCPrtyWriteCallback43 = 0x259409fc,
+        PID_COUNT = 176
+    };
+
+protected:
+    epiChar GetCCCPrtyVirtual0_Callback() const;
+    void SetCCCPrtyVirtual0_Callback(epiChar value);
+    epiWChar GetCCCPrtyVirtual1_Callback() const;
+    void SetCCCPrtyVirtual1_Callback(epiWChar value);
+    epiBool GetCCCPrtyVirtual2_Callback() const;
+    void SetCCCPrtyVirtual2_Callback(epiBool value);
+    epiByte GetCCCPrtyVirtual3_Callback() const;
+    void SetCCCPrtyVirtual3_Callback(epiByte value);
+    epiFloat GetCCCPrtyVirtual4_Callback() const;
+    void SetCCCPrtyVirtual4_Callback(epiFloat value);
+    epiDouble GetCCCPrtyVirtual5_Callback() const;
+    void SetCCCPrtyVirtual5_Callback(epiDouble value);
+    epiSize_t GetCCCPrtyVirtual6_Callback() const;
+    void SetCCCPrtyVirtual6_Callback(epiSize_t value);
+    epiU8 GetCCCPrtyVirtual7_Callback() const;
+    void SetCCCPrtyVirtual7_Callback(epiU8 value);
+    epiU16 GetCCCPrtyVirtual8_Callback() const;
+    void SetCCCPrtyVirtual8_Callback(epiU16 value);
+    epiU32 GetCCCPrtyVirtual9_Callback() const;
+    void SetCCCPrtyVirtual9_Callback(epiU32 value);
+    epiU64 GetCCCPrtyVirtual10_Callback() const;
+    void SetCCCPrtyVirtual10_Callback(epiU64 value);
+    epiS8 GetCCCPrtyVirtual11_Callback() const;
+    void SetCCCPrtyVirtual11_Callback(epiS8 value);
+    epiS16 GetCCCPrtyVirtual12_Callback() const;
+    void SetCCCPrtyVirtual12_Callback(epiS16 value);
+    epiS32 GetCCCPrtyVirtual13_Callback() const;
+    void SetCCCPrtyVirtual13_Callback(epiS32 value);
+    epiS64 GetCCCPrtyVirtual14_Callback() const;
+    void SetCCCPrtyVirtual14_Callback(epiS64 value);
+    const epiString& GetCCCPrtyVirtual15_Callback() const;
+    void SetCCCPrtyVirtual15_Callback(const epiString& value);
+    const epiWString& GetCCCPrtyVirtual16_Callback() const;
+    void SetCCCPrtyVirtual16_Callback(const epiWString& value);
+    const epiArray<epiS32>& GetCCCPrtyVirtual17_Callback() const;
+    void SetCCCPrtyVirtual17_Callback(const epiArray<epiS32>& value);
+    const epiPtrArray<epiS32>& GetCCCPrtyVirtual18_Callback() const;
+    void SetCCCPrtyVirtual18_Callback(const epiPtrArray<epiS32>& value);
+    const epiArray<epiString>& GetCCCPrtyVirtual19_Callback() const;
+    void SetCCCPrtyVirtual19_Callback(const epiArray<epiString>& value);
+    const epiPtrArray<epiString>& GetCCCPrtyVirtual20_Callback() const;
+    void SetCCCPrtyVirtual20_Callback(const epiPtrArray<epiString>& value);
+    const epiVec2f& GetCCCPrtyVirtual21_Callback() const;
+    void SetCCCPrtyVirtual21_Callback(const epiVec2f& value);
+    const epiVec2d& GetCCCPrtyVirtual22_Callback() const;
+    void SetCCCPrtyVirtual22_Callback(const epiVec2d& value);
+    const epiVec2s& GetCCCPrtyVirtual23_Callback() const;
+    void SetCCCPrtyVirtual23_Callback(const epiVec2s& value);
+    const epiVec2u& GetCCCPrtyVirtual24_Callback() const;
+    void SetCCCPrtyVirtual24_Callback(const epiVec2u& value);
+    const epiVec3f& GetCCCPrtyVirtual25_Callback() const;
+    void SetCCCPrtyVirtual25_Callback(const epiVec3f& value);
+    const epiVec3d& GetCCCPrtyVirtual26_Callback() const;
+    void SetCCCPrtyVirtual26_Callback(const epiVec3d& value);
+    const epiVec3s& GetCCCPrtyVirtual27_Callback() const;
+    void SetCCCPrtyVirtual27_Callback(const epiVec3s& value);
+    const epiVec3u& GetCCCPrtyVirtual28_Callback() const;
+    void SetCCCPrtyVirtual28_Callback(const epiVec3u& value);
+    const epiVec4f& GetCCCPrtyVirtual29_Callback() const;
+    void SetCCCPrtyVirtual29_Callback(const epiVec4f& value);
+    const epiVec4d& GetCCCPrtyVirtual30_Callback() const;
+    void SetCCCPrtyVirtual30_Callback(const epiVec4d& value);
+    const epiVec4s& GetCCCPrtyVirtual31_Callback() const;
+    void SetCCCPrtyVirtual31_Callback(const epiVec4s& value);
+    const epiVec4u& GetCCCPrtyVirtual32_Callback() const;
+    void SetCCCPrtyVirtual32_Callback(const epiVec4u& value);
+    const epiMat2x2f& GetCCCPrtyVirtual33_Callback() const;
+    void SetCCCPrtyVirtual33_Callback(const epiMat2x2f& value);
+    const epiMat3x3f& GetCCCPrtyVirtual34_Callback() const;
+    void SetCCCPrtyVirtual34_Callback(const epiMat3x3f& value);
+    const epiMat4x4f& GetCCCPrtyVirtual35_Callback() const;
+    void SetCCCPrtyVirtual35_Callback(const epiMat4x4f& value);
+    const epiComplexf& GetCCCPrtyVirtual36_Callback() const;
+    void SetCCCPrtyVirtual36_Callback(const epiComplexf& value);
+    const epiComplexd& GetCCCPrtyVirtual37_Callback() const;
+    void SetCCCPrtyVirtual37_Callback(const epiComplexd& value);
+    const epiRect2f& GetCCCPrtyVirtual38_Callback() const;
+    void SetCCCPrtyVirtual38_Callback(const epiRect2f& value);
+    const epiRect2d& GetCCCPrtyVirtual39_Callback() const;
+    void SetCCCPrtyVirtual39_Callback(const epiRect2d& value);
+    const epiRect2s& GetCCCPrtyVirtual40_Callback() const;
+    void SetCCCPrtyVirtual40_Callback(const epiRect2s& value);
+    const epiRect2u& GetCCCPrtyVirtual41_Callback() const;
+    void SetCCCPrtyVirtual41_Callback(const epiRect2u& value);
+    const InplaceClass& GetCCCPrtyVirtual42_Callback() const;
+    void SetCCCPrtyVirtual42_Callback(const InplaceClass& value);
+    const InplaceClass* GetCCCPrtyVirtual43_Callback() const;
+    void SetCCCPrtyVirtual43_Callback(InplaceClass* value);
+    epiChar GetCCCPrtyReadCallback0_Callback() const;
+    epiWChar GetCCCPrtyReadCallback1_Callback() const;
+    epiBool GetCCCPrtyReadCallback2_Callback() const;
+    epiByte GetCCCPrtyReadCallback3_Callback() const;
+    epiFloat GetCCCPrtyReadCallback4_Callback() const;
+    epiDouble GetCCCPrtyReadCallback5_Callback() const;
+    epiSize_t GetCCCPrtyReadCallback6_Callback() const;
+    epiU8 GetCCCPrtyReadCallback7_Callback() const;
+    epiU16 GetCCCPrtyReadCallback8_Callback() const;
+    epiU32 GetCCCPrtyReadCallback9_Callback() const;
+    epiU64 GetCCCPrtyReadCallback10_Callback() const;
+    epiS8 GetCCCPrtyReadCallback11_Callback() const;
+    epiS16 GetCCCPrtyReadCallback12_Callback() const;
+    epiS32 GetCCCPrtyReadCallback13_Callback() const;
+    epiS64 GetCCCPrtyReadCallback14_Callback() const;
+    const epiString& GetCCCPrtyReadCallback15_Callback() const;
+    const epiWString& GetCCCPrtyReadCallback16_Callback() const;
+    const epiArray<epiS32>& GetCCCPrtyReadCallback17_Callback() const;
+    const epiPtrArray<epiS32>& GetCCCPrtyReadCallback18_Callback() const;
+    const epiArray<epiString>& GetCCCPrtyReadCallback19_Callback() const;
+    const epiPtrArray<epiString>& GetCCCPrtyReadCallback20_Callback() const;
+    const epiVec2f& GetCCCPrtyReadCallback21_Callback() const;
+    const epiVec2d& GetCCCPrtyReadCallback22_Callback() const;
+    const epiVec2s& GetCCCPrtyReadCallback23_Callback() const;
+    const epiVec2u& GetCCCPrtyReadCallback24_Callback() const;
+    const epiVec3f& GetCCCPrtyReadCallback25_Callback() const;
+    const epiVec3d& GetCCCPrtyReadCallback26_Callback() const;
+    const epiVec3s& GetCCCPrtyReadCallback27_Callback() const;
+    const epiVec3u& GetCCCPrtyReadCallback28_Callback() const;
+    const epiVec4f& GetCCCPrtyReadCallback29_Callback() const;
+    const epiVec4d& GetCCCPrtyReadCallback30_Callback() const;
+    const epiVec4s& GetCCCPrtyReadCallback31_Callback() const;
+    const epiVec4u& GetCCCPrtyReadCallback32_Callback() const;
+    const epiMat2x2f& GetCCCPrtyReadCallback33_Callback() const;
+    const epiMat3x3f& GetCCCPrtyReadCallback34_Callback() const;
+    const epiMat4x4f& GetCCCPrtyReadCallback35_Callback() const;
+    const epiComplexf& GetCCCPrtyReadCallback36_Callback() const;
+    const epiComplexd& GetCCCPrtyReadCallback37_Callback() const;
+    const epiRect2f& GetCCCPrtyReadCallback38_Callback() const;
+    const epiRect2d& GetCCCPrtyReadCallback39_Callback() const;
+    const epiRect2s& GetCCCPrtyReadCallback40_Callback() const;
+    const epiRect2u& GetCCCPrtyReadCallback41_Callback() const;
+    const InplaceClass& GetCCCPrtyReadCallback42_Callback() const;
+    const InplaceClass* GetCCCPrtyReadCallback43_Callback() const;
+    void SetCCCPrtyWriteCallback0_Callback(epiChar value);
+    void SetCCCPrtyWriteCallback1_Callback(epiWChar value);
+    void SetCCCPrtyWriteCallback2_Callback(epiBool value);
+    void SetCCCPrtyWriteCallback3_Callback(epiByte value);
+    void SetCCCPrtyWriteCallback4_Callback(epiFloat value);
+    void SetCCCPrtyWriteCallback5_Callback(epiDouble value);
+    void SetCCCPrtyWriteCallback6_Callback(epiSize_t value);
+    void SetCCCPrtyWriteCallback7_Callback(epiU8 value);
+    void SetCCCPrtyWriteCallback8_Callback(epiU16 value);
+    void SetCCCPrtyWriteCallback9_Callback(epiU32 value);
+    void SetCCCPrtyWriteCallback10_Callback(epiU64 value);
+    void SetCCCPrtyWriteCallback11_Callback(epiS8 value);
+    void SetCCCPrtyWriteCallback12_Callback(epiS16 value);
+    void SetCCCPrtyWriteCallback13_Callback(epiS32 value);
+    void SetCCCPrtyWriteCallback14_Callback(epiS64 value);
+    void SetCCCPrtyWriteCallback15_Callback(const epiString& value);
+    void SetCCCPrtyWriteCallback16_Callback(const epiWString& value);
+    void SetCCCPrtyWriteCallback17_Callback(const epiArray<epiS32>& value);
+    void SetCCCPrtyWriteCallback18_Callback(const epiPtrArray<epiS32>& value);
+    void SetCCCPrtyWriteCallback19_Callback(const epiArray<epiString>& value);
+    void SetCCCPrtyWriteCallback20_Callback(const epiPtrArray<epiString>& value);
+    void SetCCCPrtyWriteCallback21_Callback(const epiVec2f& value);
+    void SetCCCPrtyWriteCallback22_Callback(const epiVec2d& value);
+    void SetCCCPrtyWriteCallback23_Callback(const epiVec2s& value);
+    void SetCCCPrtyWriteCallback24_Callback(const epiVec2u& value);
+    void SetCCCPrtyWriteCallback25_Callback(const epiVec3f& value);
+    void SetCCCPrtyWriteCallback26_Callback(const epiVec3d& value);
+    void SetCCCPrtyWriteCallback27_Callback(const epiVec3s& value);
+    void SetCCCPrtyWriteCallback28_Callback(const epiVec3u& value);
+    void SetCCCPrtyWriteCallback29_Callback(const epiVec4f& value);
+    void SetCCCPrtyWriteCallback30_Callback(const epiVec4d& value);
+    void SetCCCPrtyWriteCallback31_Callback(const epiVec4s& value);
+    void SetCCCPrtyWriteCallback32_Callback(const epiVec4u& value);
+    void SetCCCPrtyWriteCallback33_Callback(const epiMat2x2f& value);
+    void SetCCCPrtyWriteCallback34_Callback(const epiMat3x3f& value);
+    void SetCCCPrtyWriteCallback35_Callback(const epiMat4x4f& value);
+    void SetCCCPrtyWriteCallback36_Callback(const epiComplexf& value);
+    void SetCCCPrtyWriteCallback37_Callback(const epiComplexd& value);
+    void SetCCCPrtyWriteCallback38_Callback(const epiRect2f& value);
+    void SetCCCPrtyWriteCallback39_Callback(const epiRect2d& value);
+    void SetCCCPrtyWriteCallback40_Callback(const epiRect2s& value);
+    void SetCCCPrtyWriteCallback41_Callback(const epiRect2u& value);
+    void SetCCCPrtyWriteCallback42_Callback(const InplaceClass& value);
+    void SetCCCPrtyWriteCallback43_Callback(InplaceClass* value);
+
+protected:
+    epiChar m_CCCPrty0{'\0'};
+    epiWChar m_CCCPrty1{L'\0'};
+    epiBool m_CCCPrty2{false};
+    epiByte m_CCCPrty3{0};
+    epiFloat m_CCCPrty4{0.0f};
+    epiDouble m_CCCPrty5{0.0};
+    epiSize_t m_CCCPrty6{0};
+    epiU8 m_CCCPrty7{0};
+    epiU16 m_CCCPrty8{0};
+    epiU32 m_CCCPrty9{0};
+    epiU64 m_CCCPrty10{0};
+    epiS8 m_CCCPrty11{0};
+    epiS16 m_CCCPrty12{0};
+    epiS32 m_CCCPrty13{0};
+    epiS64 m_CCCPrty14{0};
+    epiString m_CCCPrty15{epiDEBUG_ONLY("Empty")};
+    epiWString m_CCCPrty16{epiDEBUG_ONLY(L"Empty")};
+    epiArray<epiS32> m_CCCPrty17{};
+    epiPtrArray<epiS32> m_CCCPrty18{};
+    epiArray<epiString> m_CCCPrty19{};
+    epiPtrArray<epiString> m_CCCPrty20{};
+    epiVec2f m_CCCPrty21{};
+    epiVec2d m_CCCPrty22{};
+    epiVec2s m_CCCPrty23{};
+    epiVec2u m_CCCPrty24{};
+    epiVec3f m_CCCPrty25{};
+    epiVec3d m_CCCPrty26{};
+    epiVec3s m_CCCPrty27{};
+    epiVec3u m_CCCPrty28{};
+    epiVec4f m_CCCPrty29{};
+    epiVec4d m_CCCPrty30{};
+    epiVec4s m_CCCPrty31{};
+    epiVec4u m_CCCPrty32{};
+    epiMat2x2f m_CCCPrty33{};
+    epiMat3x3f m_CCCPrty34{};
+    epiMat4x4f m_CCCPrty35{};
+    epiComplexf m_CCCPrty36{};
+    epiComplexd m_CCCPrty37{};
+    epiRect2f m_CCCPrty38{};
+    epiRect2d m_CCCPrty39{};
+    epiRect2s m_CCCPrty40{};
+    epiRect2u m_CCCPrty41{};
+    InplaceClass m_CCCPrty42{};
+    InplaceClass* m_CCCPrty43{nullptr};
+    epiChar m_CCCPrtyReadCallback0{'\0'};
+    epiWChar m_CCCPrtyReadCallback1{L'\0'};
+    epiBool m_CCCPrtyReadCallback2{false};
+    epiByte m_CCCPrtyReadCallback3{0};
+    epiFloat m_CCCPrtyReadCallback4{0.0f};
+    epiDouble m_CCCPrtyReadCallback5{0.0};
+    epiSize_t m_CCCPrtyReadCallback6{0};
+    epiU8 m_CCCPrtyReadCallback7{0};
+    epiU16 m_CCCPrtyReadCallback8{0};
+    epiU32 m_CCCPrtyReadCallback9{0};
+    epiU64 m_CCCPrtyReadCallback10{0};
+    epiS8 m_CCCPrtyReadCallback11{0};
+    epiS16 m_CCCPrtyReadCallback12{0};
+    epiS32 m_CCCPrtyReadCallback13{0};
+    epiS64 m_CCCPrtyReadCallback14{0};
+    epiString m_CCCPrtyReadCallback15{epiDEBUG_ONLY("Empty")};
+    epiWString m_CCCPrtyReadCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiArray<epiS32> m_CCCPrtyReadCallback17{};
+    epiPtrArray<epiS32> m_CCCPrtyReadCallback18{};
+    epiArray<epiString> m_CCCPrtyReadCallback19{};
+    epiPtrArray<epiString> m_CCCPrtyReadCallback20{};
+    epiVec2f m_CCCPrtyReadCallback21{};
+    epiVec2d m_CCCPrtyReadCallback22{};
+    epiVec2s m_CCCPrtyReadCallback23{};
+    epiVec2u m_CCCPrtyReadCallback24{};
+    epiVec3f m_CCCPrtyReadCallback25{};
+    epiVec3d m_CCCPrtyReadCallback26{};
+    epiVec3s m_CCCPrtyReadCallback27{};
+    epiVec3u m_CCCPrtyReadCallback28{};
+    epiVec4f m_CCCPrtyReadCallback29{};
+    epiVec4d m_CCCPrtyReadCallback30{};
+    epiVec4s m_CCCPrtyReadCallback31{};
+    epiVec4u m_CCCPrtyReadCallback32{};
+    epiMat2x2f m_CCCPrtyReadCallback33{};
+    epiMat3x3f m_CCCPrtyReadCallback34{};
+    epiMat4x4f m_CCCPrtyReadCallback35{};
+    epiComplexf m_CCCPrtyReadCallback36{};
+    epiComplexd m_CCCPrtyReadCallback37{};
+    epiRect2f m_CCCPrtyReadCallback38{};
+    epiRect2d m_CCCPrtyReadCallback39{};
+    epiRect2s m_CCCPrtyReadCallback40{};
+    epiRect2u m_CCCPrtyReadCallback41{};
+    InplaceClass m_CCCPrtyReadCallback42{};
+    InplaceClass* m_CCCPrtyReadCallback43{nullptr};
+    epiChar m_CCCPrtyWriteCallback0{'\0'};
+    epiWChar m_CCCPrtyWriteCallback1{L'\0'};
+    epiBool m_CCCPrtyWriteCallback2{false};
+    epiByte m_CCCPrtyWriteCallback3{0};
+    epiFloat m_CCCPrtyWriteCallback4{0.0f};
+    epiDouble m_CCCPrtyWriteCallback5{0.0};
+    epiSize_t m_CCCPrtyWriteCallback6{0};
+    epiU8 m_CCCPrtyWriteCallback7{0};
+    epiU16 m_CCCPrtyWriteCallback8{0};
+    epiU32 m_CCCPrtyWriteCallback9{0};
+    epiU64 m_CCCPrtyWriteCallback10{0};
+    epiS8 m_CCCPrtyWriteCallback11{0};
+    epiS16 m_CCCPrtyWriteCallback12{0};
+    epiS32 m_CCCPrtyWriteCallback13{0};
+    epiS64 m_CCCPrtyWriteCallback14{0};
+    epiString m_CCCPrtyWriteCallback15{epiDEBUG_ONLY("Empty")};
+    epiWString m_CCCPrtyWriteCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiArray<epiS32> m_CCCPrtyWriteCallback17{};
+    epiPtrArray<epiS32> m_CCCPrtyWriteCallback18{};
+    epiArray<epiString> m_CCCPrtyWriteCallback19{};
+    epiPtrArray<epiString> m_CCCPrtyWriteCallback20{};
+    epiVec2f m_CCCPrtyWriteCallback21{};
+    epiVec2d m_CCCPrtyWriteCallback22{};
+    epiVec2s m_CCCPrtyWriteCallback23{};
+    epiVec2u m_CCCPrtyWriteCallback24{};
+    epiVec3f m_CCCPrtyWriteCallback25{};
+    epiVec3d m_CCCPrtyWriteCallback26{};
+    epiVec3s m_CCCPrtyWriteCallback27{};
+    epiVec3u m_CCCPrtyWriteCallback28{};
+    epiVec4f m_CCCPrtyWriteCallback29{};
+    epiVec4d m_CCCPrtyWriteCallback30{};
+    epiVec4s m_CCCPrtyWriteCallback31{};
+    epiVec4u m_CCCPrtyWriteCallback32{};
+    epiMat2x2f m_CCCPrtyWriteCallback33{};
+    epiMat3x3f m_CCCPrtyWriteCallback34{};
+    epiMat4x4f m_CCCPrtyWriteCallback35{};
+    epiComplexf m_CCCPrtyWriteCallback36{};
+    epiComplexd m_CCCPrtyWriteCallback37{};
+    epiRect2f m_CCCPrtyWriteCallback38{};
+    epiRect2d m_CCCPrtyWriteCallback39{};
+    epiRect2s m_CCCPrtyWriteCallback40{};
+    epiRect2u m_CCCPrtyWriteCallback41{};
+    InplaceClass m_CCCPrtyWriteCallback42{};
+    InplaceClass* m_CCCPrtyWriteCallback43{nullptr};
+
+EPI_GENREGION_END(TestClassCCC)
+public:
+    void Reset() override;
 };
 
 EPI_NAMESPACE_END()

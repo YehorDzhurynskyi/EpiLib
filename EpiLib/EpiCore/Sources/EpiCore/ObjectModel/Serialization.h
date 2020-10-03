@@ -42,10 +42,22 @@ inline auto epiSerialize_Impl_Fetch(T& v)
     }
     else if constexpr (std::is_same_v<epiVec2f, T> || std::is_same_v<epiVec2d, T> ||
                        std::is_same_v<epiVec2s, T> || std::is_same_v<epiVec2u, T> ||
+                       std::is_same_v<epiVec2s8, T> || std::is_same_v<epiVec2u8, T> ||
+                       std::is_same_v<epiVec2s16, T> || std::is_same_v<epiVec2u16, T> ||
+                       std::is_same_v<epiVec2s32, T> || std::is_same_v<epiVec2u32, T> ||
+                       std::is_same_v<epiVec2s64, T> || std::is_same_v<epiVec2u64, T> ||
                        std::is_same_v<epiVec3f, T> || std::is_same_v<epiVec3d, T> ||
                        std::is_same_v<epiVec3s, T> || std::is_same_v<epiVec3u, T> ||
+                       std::is_same_v<epiVec3s8, T> || std::is_same_v<epiVec3u8, T> ||
+                       std::is_same_v<epiVec3s16, T> || std::is_same_v<epiVec3u16, T> ||
+                       std::is_same_v<epiVec3s32, T> || std::is_same_v<epiVec3u32, T> ||
+                       std::is_same_v<epiVec3s64, T> || std::is_same_v<epiVec3u64, T> ||
                        std::is_same_v<epiVec4f, T> || std::is_same_v<epiVec4d, T> ||
-                       std::is_same_v<epiVec4s, T> || std::is_same_v<epiVec4u, T>)
+                       std::is_same_v<epiVec4s, T> || std::is_same_v<epiVec4u, T> ||
+                       std::is_same_v<epiVec4s8, T> || std::is_same_v<epiVec4u8, T> ||
+                       std::is_same_v<epiVec4s16, T> || std::is_same_v<epiVec4u16, T> ||
+                       std::is_same_v<epiVec4s32, T> || std::is_same_v<epiVec4u32, T> ||
+                       std::is_same_v<epiVec4s64, T> || std::is_same_v<epiVec4u64, T>)
     {
         auto arr = json_t::array();
         for (int i = 0; i < T::length(); ++i)
@@ -148,10 +160,22 @@ inline void epiDeserialize_Impl_Fetch(T& v, const json_t& json)
     }
     else if constexpr (std::is_same_v<epiVec2f, T> || std::is_same_v<epiVec2d, T> ||
                        std::is_same_v<epiVec2s, T> || std::is_same_v<epiVec2u, T> ||
+                       std::is_same_v<epiVec2s8, T> || std::is_same_v<epiVec2u8, T> ||
+                       std::is_same_v<epiVec2s16, T> || std::is_same_v<epiVec2u16, T> ||
+                       std::is_same_v<epiVec2s32, T> || std::is_same_v<epiVec2u32, T> ||
+                       std::is_same_v<epiVec2s64, T> || std::is_same_v<epiVec2u64, T> ||
                        std::is_same_v<epiVec3f, T> || std::is_same_v<epiVec3d, T> ||
                        std::is_same_v<epiVec3s, T> || std::is_same_v<epiVec3u, T> ||
+                       std::is_same_v<epiVec3s8, T> || std::is_same_v<epiVec3u8, T> ||
+                       std::is_same_v<epiVec3s16, T> || std::is_same_v<epiVec3u16, T> ||
+                       std::is_same_v<epiVec3s32, T> || std::is_same_v<epiVec3u32, T> ||
+                       std::is_same_v<epiVec3s64, T> || std::is_same_v<epiVec3u64, T> ||
                        std::is_same_v<epiVec4f, T> || std::is_same_v<epiVec4d, T> ||
-                       std::is_same_v<epiVec4s, T> || std::is_same_v<epiVec4u, T>)
+                       std::is_same_v<epiVec4s, T> || std::is_same_v<epiVec4u, T> ||
+                       std::is_same_v<epiVec4s8, T> || std::is_same_v<epiVec4u8, T> ||
+                       std::is_same_v<epiVec4s16, T> || std::is_same_v<epiVec4u16, T> ||
+                       std::is_same_v<epiVec4s32, T> || std::is_same_v<epiVec4u32, T> ||
+                       std::is_same_v<epiVec4s64, T> || std::is_same_v<epiVec4u64, T>)
     {
         assert(json.size() == T::length());
         for (int i = 0; i < T::length(); ++i)

@@ -59,8 +59,7 @@ public:
     void HistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG, dSeries1Df& histogramB) const;
     void HistogramEqualize();
 
-    void Contrast(epiS8 contrast);
-    void ContrastStretch(epiU8 lower, epiU8 upper);
+    void Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB);
     void ContrastStretch(epiU8 lowerR,
                          epiU8 upperR,
                          epiU8 lowerG,
@@ -69,6 +68,7 @@ public:
                          epiU8 upperB);
 
     mmImage ToGrayScale() const;
+    mmImage ToR8G8B8() const;
 };
 
 EPI_NAMESPACE_END()

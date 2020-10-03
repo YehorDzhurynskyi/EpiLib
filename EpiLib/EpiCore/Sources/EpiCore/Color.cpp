@@ -69,7 +69,7 @@ epiBool Color::Validate() const
     return isValid;
 }
 
-Color Color::Contrast(epiS8 contrast) const
+Color Color::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB) const
 {
 #if 0 // TODO: investigate this filter
     Color color;
@@ -84,22 +84,17 @@ Color Color::Contrast(epiS8 contrast) const
 #else
     Color color;
 
-    const epiFloat f = (259.0f * (255.0f + contrast)) / (255.0f * (259.0f - contrast));
-    color.SetRu(std::clamp(static_cast<epiS32>(f * (GetRu() - 128) + 128), 0, 255));
-    color.SetGu(std::clamp(static_cast<epiS32>(f * (GetGu() - 128) + 128), 0, 255));
-    color.SetBu(std::clamp(static_cast<epiS32>(f * (GetBu() - 128) + 128), 0, 255));
+    const epiFloat fR = (259.0f * (255.0f + contrastR)) / (255.0f * (259.0f - contrastR));
+    const epiFloat fG = (259.0f * (255.0f + contrastG)) / (255.0f * (259.0f - contrastG));
+    const epiFloat fB = (259.0f * (255.0f + contrastB)) / (255.0f * (259.0f - contrastB));
+
+    color.SetRu(std::clamp(static_cast<epiS32>(fR * (GetRu() - 128) + 128), 0, 255));
+    color.SetGu(std::clamp(static_cast<epiS32>(fG * (GetGu() - 128) + 128), 0, 255));
+    color.SetBu(std::clamp(static_cast<epiS32>(fB * (GetBu() - 128) + 128), 0, 255));
     color.SetAu(GetAu());
 
     return color;
 #endif
-}
-
-Color Color::ContrastStretch(epiU8 lower, epiU8 upper) const
-{
-    epiAssert(lower < upper);
-
-    const epiU8 c = static_cast<epiU8>(std::clamp((255.0f / (upper - lower)) * (GetLumau() - lower), 0.0f, 255.0f));
-    return Color(c, c, c);
 }
 
 Color Color::ContrastStretch(epiU8 lowerR,
@@ -109,13 +104,13 @@ Color Color::ContrastStretch(epiU8 lowerR,
                              epiU8 lowerB,
                              epiU8 upperB) const
 {
-    epiAssert(lowerR < upperR);
-    epiAssert(lowerG < upperG);
-    epiAssert(lowerB < upperB);
+    epiAssert(lowerR <= upperR);
+    epiAssert(lowerG <= upperG);
+    epiAssert(lowerB <= upperB);
 
-    const epiU8 r = static_cast<epiU8>(std::clamp((255.0f / (upperR - lowerR)) * (GetRu() - lowerR), 0.0f, 255.0f));
-    const epiU8 g = static_cast<epiU8>(std::clamp((255.0f / (upperG - lowerG)) * (GetGu() - lowerG), 0.0f, 255.0f));
-    const epiU8 b = static_cast<epiU8>(std::clamp((255.0f / (upperB - lowerB)) * (GetBu() - lowerB), 0.0f, 255.0f));
+    const epiU8 r = static_cast<epiU8>(std::clamp((255.0f / std::max(1, upperR - lowerR)) * (GetRu() - lowerR), 0.0f, 255.0f));
+    const epiU8 g = static_cast<epiU8>(std::clamp((255.0f / std::max(1, upperG - lowerG)) * (GetGu() - lowerG), 0.0f, 255.0f));
+    const epiU8 b = static_cast<epiU8>(std::clamp((255.0f / std::max(1, upperB - lowerB)) * (GetBu() - lowerB), 0.0f, 255.0f));
 
     return Color(r, g, b);
 }

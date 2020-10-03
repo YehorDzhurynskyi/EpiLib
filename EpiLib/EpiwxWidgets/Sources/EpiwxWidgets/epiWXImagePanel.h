@@ -24,6 +24,7 @@ public:
 
 public:
     epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
+                                  const epi::epiPropertyGrouping& grouping,
                                   wxWindow* parent,
                                   wxWindowID id,
                                   const wxString& title,
@@ -49,9 +50,7 @@ public:
         ID_IMAGE_PANEL_RESET = wxID_HIGHEST + 1,
         ID_IMAGE_PANEL_FIT_TO_SCREEN,
         ID_IMAGE_PANEL_TO_GRAYSCALE,
-        ID_IMAGE_PANEL_CONTRAST,
-        ID_IMAGE_PANEL_CONTRAST_STRETCH,
-        ID_IMAGE_PANEL_CONTRAST_STRETCH_PER_CHANNEL,
+        ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT,
         ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE,
         ID_IMAGE_PANEL_HIGHEST
     };
@@ -76,8 +75,7 @@ public:
     void ImageFitToScreen();
     void ImageToGrayScale();
     void ImageScale(epiFloat factor = 1.0f);
-    void ImageContrast(epiS8 contrast);
-    void ImageContrastStretch(epiU8 lower, epiU8 upper);
+    void ImageContrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB);
     void ImageContrastStretch(epiU8 lowerR,
                               epiU8 upperR,
                               epiU8 lowerG,

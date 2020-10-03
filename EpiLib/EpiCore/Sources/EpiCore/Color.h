@@ -104,8 +104,7 @@ protected:
     epiBool Validate() const;
 
 public:
-    Color Contrast(epiS8 contrast) const;
-    Color ContrastStretch(epiU8 lower, epiU8 upper) const;
+    Color Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB) const;
     Color ContrastStretch(epiU8 lowerR,
                           epiU8 upperR,
                           epiU8 lowerG,

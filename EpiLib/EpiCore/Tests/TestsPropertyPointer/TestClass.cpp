@@ -106,6 +106,7 @@ EmitGlobals(BV)
 EmitGlobals(CV)
 EmitGlobals(BBV)
 EmitGlobals(CCV)
+EmitGlobals(CCCV)
 
 }
 
@@ -280,6 +281,7 @@ EmitCallbacks(B)
 EmitCallbacks(C)
 EmitCallbacks(BB)
 EmitCallbacks(CC)
+EmitCallbacks(CCC)
 
 void TestClassA::Reset()
 {
@@ -322,6 +324,15 @@ void TestClassCC::Reset()
     EmitReset(CCV)
     EmitReset(m_CCPrtyReadCallback)
     EmitReset(m_CCPrtyWriteCallback)
+}
+
+void TestClassCCC::Reset()
+{
+    super::Reset();
+
+    EmitReset(CCCV)
+    EmitReset(m_CCCPrtyReadCallback)
+    EmitReset(m_CCCPrtyWriteCallback)
 }
 
 EPI_NAMESPACE_END()

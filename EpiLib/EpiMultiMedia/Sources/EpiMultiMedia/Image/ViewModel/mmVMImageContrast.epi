@@ -1,5 +1,14 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
 class mmVMImageContrast : mmVMImageBase
 {
     [WriteCallback]
-    epiS8 Contrast;
+    {
+        epiS8 ContrastR;
+        epiS8 ContrastG;
+        epiS8 ContrastB;
+
+        epiVec2s8 ContrastStretchR;
+        epiVec2s8 ContrastStretchG;
+        epiVec2s8 ContrastStretchB;
+    }
 };

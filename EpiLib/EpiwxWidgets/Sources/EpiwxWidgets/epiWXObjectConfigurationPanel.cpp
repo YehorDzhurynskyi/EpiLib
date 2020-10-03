@@ -9,6 +9,7 @@
 wxDEFINE_EVENT(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED, wxCommandEvent);
 
 epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object, // TODO: ensure lifetime
+                                                             const epi::epiPropertyGrouping& grouping,
                                                              wxWindow* parent,
                                                              wxWindowID id,
                                                              const wxPoint& pos,
@@ -22,58 +23,65 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
 
     const epi::MetaClass& meta = m_Object.GetMetaClass();
     const epi::MetaClassData& metaData = meta.GetClassData();
-    for (const auto& prty : metaData)
+    for (const auto& group : grouping)
     {
-        if (epi::epiMetaTypeID typeID = prty.GetTypeID(); epi::MetaType::IsNumeric(typeID))
+        for (const auto& element : group)
         {
-            sizer->Add(new wxStaticText(this, wxID_ANY, prty.GetName()), wxSizerFlags().Right().Expand().CentreVertical());
-
-            wxControl* control = nullptr;
-            if (epi::MetaType::IsFloating(typeID))
+            const epi::epiMetaPropertyID prtyID = element.GetPrtyID();
+            if (const epi::MetaProperty* prty = metaData.GetPropertyBy(prtyID))
             {
-                wxSpinCtrlDouble* spin = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS | wxSP_WRAP);
-
-                // TODO: adjust for a specific type
-                spin->SetRange(std::numeric_limits<epiDouble>::min(), std::numeric_limits<epiDouble>::max());
-                spin->Bind(wxEVT_SPINCTRLDOUBLE, &epiWXObjectConfigurationPanel::OnSpinDoubleValueChanged, this); // TODO: figure out whether it should be unbonded
-
-                control = spin;
-            }
-            else if (typeID == epi::epiMetaTypeID_epiByte || typeID == epi::epiMetaTypeID_epiS8 || typeID == epi::epiMetaTypeID_epiU8)
-            {
-                epiS32 minValue = 0;
-                epiS32 maxValue = 0;
-                switch (typeID)
+                if (epi::epiMetaTypeID typeID = prty->GetTypeID(); epi::MetaType::IsNumeric(typeID))
                 {
-                case epi::epiMetaTypeID_epiByte: minValue = std::numeric_limits<epiByte>::min(); maxValue = std::numeric_limits<epiByte>::max(); break;
-                case epi::epiMetaTypeID_epiU8: minValue = std::numeric_limits<epiU8>::min(); maxValue = std::numeric_limits<epiU8>::max(); break;
-                case epi::epiMetaTypeID_epiS8: minValue = std::numeric_limits<epiS8>::min(); maxValue = std::numeric_limits<epiS8>::max(); break;
-                default: epiLogError("Unexpected typeID=`{}`", typeID); break;
+                    sizer->Add(new wxStaticText(this, wxID_ANY, prty->GetName()), wxSizerFlags().Right().Expand().CentreVertical().Proportion(1));
+
+                    wxControl* control = nullptr;
+                    if (epi::MetaType::IsFloating(typeID))
+                    {
+                        wxSpinCtrlDouble* spin = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS | wxSP_WRAP);
+
+                        // TODO: adjust for a specific type
+                        spin->SetRange(std::numeric_limits<epiDouble>::min(), std::numeric_limits<epiDouble>::max());
+                        spin->Bind(wxEVT_SPINCTRLDOUBLE, &epiWXObjectConfigurationPanel::OnSpinDoubleValueChanged, this); // TODO: figure out whether it should be unbonded
+
+                        control = spin;
+                    }
+                    else if (typeID == epi::epiMetaTypeID_epiByte || typeID == epi::epiMetaTypeID_epiS8 || typeID == epi::epiMetaTypeID_epiU8)
+                    {
+                        epiS32 minValue = 0;
+                        epiS32 maxValue = 0;
+                        switch (typeID)
+                        {
+                        case epi::epiMetaTypeID_epiByte: minValue = std::numeric_limits<epiByte>::min(); maxValue = std::numeric_limits<epiByte>::max(); break;
+                        case epi::epiMetaTypeID_epiU8: minValue = std::numeric_limits<epiU8>::min(); maxValue = std::numeric_limits<epiU8>::max(); break;
+                        case epi::epiMetaTypeID_epiS8: minValue = std::numeric_limits<epiS8>::min(); maxValue = std::numeric_limits<epiS8>::max(); break;
+                        default: epiLogError("Unexpected typeID=`{}`", typeID); break;
+                        }
+                        wxSlider* slider = new wxSlider(this, wxID_ANY, 0, minValue, maxValue, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+                        slider->Bind(wxEVT_SLIDER, &epiWXObjectConfigurationPanel::OnSliderValueChanged, this); // TODO: figure out whether it should be unbonded
+
+                        control = slider;
+                    }
+                    else
+                    {
+                        wxSpinCtrl* spin = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS | wxSP_WRAP);
+
+                        // TODO: adjust for a specific type
+                        spin->SetRange(std::numeric_limits<epiS32>::min(), std::numeric_limits<epiS32>::max());
+                        spin->Bind(wxEVT_SPINCTRL, &epiWXObjectConfigurationPanel::OnSpinValueChanged, this); // TODO: figure out whether it should be unbonded
+                        spin->Bind(wxEVT_TEXT, &epiWXObjectConfigurationPanel::OnSpinTextValueChanged, this); // TODO: figure out whether it should be unbonded
+
+                        control = spin;
+                    }
+
+                    if (control != nullptr)
+                    {
+                        epi::PropertyPointer* ptr = m_PrtyPointers.emplace_back(new epi::PropertyPointer());
+                        *ptr = epi::PropertyPointer::CreateFromProperty(m_Object, prty);
+                        control->SetClientData(ptr);
+
+                        sizer->Add(control, wxSizerFlags().Expand().CenterVertical().Proportion(2));
+                    }
                 }
-                wxSlider* slider = new wxSlider(this, wxID_ANY, 0, minValue, maxValue, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
-                slider->Bind(wxEVT_SLIDER, &epiWXObjectConfigurationPanel::OnSliderValueChanged, this); // TODO: figure out whether it should be unbonded
-
-                control = slider;
-            }
-            else
-            {
-                wxSpinCtrl* spin = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS | wxSP_WRAP);
-
-                // TODO: adjust for a specific type
-                spin->SetRange(std::numeric_limits<epiS32>::min(), std::numeric_limits<epiS32>::max());
-                spin->Bind(wxEVT_SPINCTRL, &epiWXObjectConfigurationPanel::OnSpinValueChanged, this); // TODO: figure out whether it should be unbonded
-                spin->Bind(wxEVT_TEXT, &epiWXObjectConfigurationPanel::OnSpinTextValueChanged, this); // TODO: figure out whether it should be unbonded
-
-                control = spin;
-            }
-
-            if (control != nullptr)
-            {
-                epi::PropertyPointer* ptr = m_PrtyPointers.emplace_back(new epi::PropertyPointer());
-                *ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
-                control->SetClientData(ptr);
-
-                sizer->Add(control, wxSizerFlags().Expand().CenterVertical());
             }
         }
     }

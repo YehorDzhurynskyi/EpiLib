@@ -35,10 +35,25 @@ using epiVec = glm::vec<N, T>;
 
 template<typename T>
 using epiVec2 = epiVec<2, T>;
+
+using epiSize2 = epiVec2<epiSize_t>;
+using epiSize2f = epiVec2<epiFloat>;
+using epiSize2d = epiVec2<epiDouble>;
+using epiSize2s = epiVec2<epiS32>;
+using epiSize2u = epiVec2<epiU32>;
+
 using epiVec2f = epiVec2<epiFloat>;
 using epiVec2d = epiVec2<epiDouble>;
 using epiVec2s = epiVec2<epiS32>;
 using epiVec2u = epiVec2<epiU32>;
+using epiVec2s8 = epiVec2<epiS8>;
+using epiVec2s16 = epiVec2<epiS16>;
+using epiVec2s32 = epiVec2<epiS32>;
+using epiVec2s64 = epiVec2<epiS64>;
+using epiVec2u8 = epiVec2<epiU8>;
+using epiVec2u16 = epiVec2<epiU16>;
+using epiVec2u32 = epiVec2<epiU32>;
+using epiVec2u64 = epiVec2<epiU64>;
 
 template<typename T>
 using epiVec3 = epiVec<3, T>;
@@ -46,6 +61,14 @@ using epiVec3f = epiVec3<epiFloat>;
 using epiVec3d = epiVec3<epiDouble>;
 using epiVec3s = epiVec3<epiS32>;
 using epiVec3u = epiVec3<epiU32>;
+using epiVec3s8 = epiVec3<epiS8>;
+using epiVec3s16 = epiVec3<epiS16>;
+using epiVec3s32 = epiVec3<epiS32>;
+using epiVec3s64 = epiVec3<epiS64>;
+using epiVec3u8 = epiVec3<epiU8>;
+using epiVec3u16 = epiVec3<epiU16>;
+using epiVec3u32 = epiVec3<epiU32>;
+using epiVec3u64 = epiVec3<epiU64>;
 
 template<typename T>
 using epiVec4 = epiVec<4, T>;
@@ -53,6 +76,14 @@ using epiVec4f = epiVec4<epiFloat>;
 using epiVec4d = epiVec4<epiDouble>;
 using epiVec4s = epiVec4<epiS32>;
 using epiVec4u = epiVec4<epiU32>;
+using epiVec4s8 = epiVec4<epiS8>;
+using epiVec4s16 = epiVec4<epiS16>;
+using epiVec4s32 = epiVec4<epiS32>;
+using epiVec4s64 = epiVec4<epiS64>;
+using epiVec4u8 = epiVec4<epiU8>;
+using epiVec4u16 = epiVec4<epiU16>;
+using epiVec4u32 = epiVec4<epiU32>;
+using epiVec4u64 = epiVec4<epiU64>;
 
 using epiMat2x2f = glm::mat2x2;
 using epiMat3x3f = glm::mat3x3;

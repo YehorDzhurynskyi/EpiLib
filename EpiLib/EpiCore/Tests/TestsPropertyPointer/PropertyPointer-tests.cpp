@@ -211,4 +211,11 @@ TEST(PropertyPointer, InheritedDoubleDepthDoubleInterface)
     TraverseProperties(obj);
 }
 
+TEST(PropertyPointer, InheritedDoubleDepthDoubleInterfaceSingleInterfaceWithMembers)
+{
+    TestClassCCC obj;
+
+    TraverseProperties(obj);
+}
+
 EPI_NAMESPACE_END()
