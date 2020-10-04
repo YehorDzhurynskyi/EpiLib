@@ -1,6 +1,8 @@
-#include "EpiCore/ObjectModel/PropertyPointer.h"
-
 #include "EpiwxWidgets/epiWXObjectConfigurationPanel.h"
+
+#include "EpiwxWidgets/epiWXSliderRange.h"
+
+#include "EpiCore/ObjectModel/PropertyPointer.h"
 
 #include <wx/sizer.h>
 #include <wx/stattext.h>
@@ -30,11 +32,11 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
             const epi::epiMetaPropertyID prtyID = element.GetPrtyID();
             if (const epi::MetaProperty* prty = metaData.GetPropertyBy(prtyID))
             {
+                sizer->Add(new wxStaticText(this, wxID_ANY, prty->GetName()), wxSizerFlags().Right().Expand().CentreVertical().Proportion(1));
+
+                wxWindow* control = nullptr;
                 if (epi::epiMetaTypeID typeID = prty->GetTypeID(); epi::MetaType::IsNumeric(typeID))
                 {
-                    sizer->Add(new wxStaticText(this, wxID_ANY, prty->GetName()), wxSizerFlags().Right().Expand().CentreVertical().Proportion(1));
-
-                    wxControl* control = nullptr;
                     if (epi::MetaType::IsFloating(typeID))
                     {
                         wxSpinCtrlDouble* spin = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS | wxSP_WRAP);
@@ -72,19 +74,24 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
 
                         control = spin;
                     }
-
-                    if (control != nullptr)
-                    {
-                        epi::PropertyPointer* ptr = m_PrtyPointers.emplace_back(new epi::PropertyPointer());
-                        *ptr = epi::PropertyPointer::CreateFromProperty(m_Object, prty);
-                        control->SetClientData(ptr);
-
-                        sizer->Add(control, wxSizerFlags().Expand().CenterVertical().Proportion(2));
-                    }
                 }
-                else if (typeID == epi::epiMetaTypeID_epiVec2s8)
+                else if (typeID == epi::epiMetaTypeID_epiVec2s8) // TODO: implement other types
                 {
+                    const epiS32 minValue = std::numeric_limits<epiS8>::min();
+                    const epiS32 maxValue = std::numeric_limits<epiS8>::max();
+                    epiWXSliderRange* slider = new epiWXSliderRange(this, wxID_ANY, 0, 0, minValue, maxValue);
+                    slider->Bind(wxEVT_SLIDER, &epiWXObjectConfigurationPanel::OnSliderRangeValueChanged, this); // TODO: figure out whether it should be unbonded
 
+                    control = slider;
+                }
+
+                if (control != nullptr)
+                {
+                    epi::PropertyPointer* ptr = m_PrtyPointers.emplace_back(new epi::PropertyPointer());
+                    *ptr = epi::PropertyPointer::CreateFromProperty(m_Object, prty);
+                    control->SetClientData(ptr);
+
+                    sizer->Add(control, wxSizerFlags().Expand().CenterVertical().Proportion(4));
                 }
             }
         }
@@ -138,6 +145,23 @@ void epiWXObjectConfigurationPanel::OnSliderValueChanged(wxCommandEvent& event)
         case epiMetaTypeID_epiByte: ptr->Set<epiByte>(slider->GetValue()); break;
         case epiMetaTypeID_epiU8: ptr->Set<epiU8>(slider->GetValue()); break;
         case epiMetaTypeID_epiS8: ptr->Set<epiS8>(slider->GetValue()); break;
+        default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
+        }
+    }
+
+    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
+}
+
+void epiWXObjectConfigurationPanel::OnSliderRangeValueChanged(wxCommandEvent& event)
+{
+    EPI_NAMESPACE_USING()
+
+    const epiWXSliderRange* slider = static_cast<const epiWXSliderRange*>(event.GetEventObject());
+    if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
+    {
+        switch (ptr->GetTypeID())
+        {
+        case epiMetaTypeID_epiVec2s8: ptr->Set<epiVec2s8>(epiVec2s8{ slider->GetValueLower(), slider->GetValueUpper()}); break;
         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
         }
     }

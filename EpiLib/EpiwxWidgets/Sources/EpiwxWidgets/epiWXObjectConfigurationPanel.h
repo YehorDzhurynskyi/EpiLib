@@ -25,6 +25,7 @@ public:
     void OnSpinTextValueChanged(wxCommandEvent& event);
     void OnSpinDoubleValueChanged(wxSpinDoubleEvent& event);
     void OnSliderValueChanged(wxCommandEvent& event);
+    void OnSliderRangeValueChanged(wxCommandEvent& event);
 
 protected:
     void OnSpinValueChanged_Internal(const wxSpinCtrl& spin);

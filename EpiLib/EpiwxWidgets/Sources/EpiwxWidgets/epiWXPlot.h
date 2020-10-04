@@ -28,6 +28,7 @@ public:
 
     void OnResize(wxSizeEvent& event);
     void OnPaint(wxPaintEvent& event);
+    void OnEraseBackground(wxEraseEvent& event);
     void OnIdle(wxIdleEvent& event);
     void OnMouse(wxMouseEvent& event);
 

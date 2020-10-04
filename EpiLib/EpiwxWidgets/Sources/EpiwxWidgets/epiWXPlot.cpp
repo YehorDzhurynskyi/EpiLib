@@ -20,6 +20,7 @@ EPI_NAMESPACE_USING()
 wxBEGIN_EVENT_TABLE(epiWXPlot, wxGLCanvas)
     EVT_SIZE(epiWXPlot::OnResize)
     EVT_PAINT(epiWXPlot::OnPaint)
+    EVT_ERASE_BACKGROUND(epiWXPlot::OnEraseBackground)
     EVT_IDLE(epiWXPlot::OnIdle)
     EVT_MOUSE_EVENTS(epiWXPlot::OnMouse)
 wxEND_EVENT_TABLE()
@@ -116,6 +117,11 @@ void epiWXPlot::OnResize(wxSizeEvent& event)
     }
 
     glViewport(0, 0, size.x, size.y);
+}
+
+void epiWXPlot::OnEraseBackground(wxEraseEvent& event)
+{
+    // NOTE: should reduce flickering
 }
 
 void epiWXPlot::OnPaint(wxPaintEvent& event)
