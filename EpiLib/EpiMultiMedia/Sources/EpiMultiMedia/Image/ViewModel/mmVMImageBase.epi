@@ -2,6 +2,9 @@
 class mmVMImageBase
 {
     # add `const`
+    [WriteCallback]
     mmImage* ImageSrc;
+
+    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
     mmImage ImageTgt;
 };

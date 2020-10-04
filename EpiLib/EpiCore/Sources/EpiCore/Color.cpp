@@ -108,9 +108,9 @@ Color Color::ContrastStretch(epiU8 lowerR,
     epiAssert(lowerG <= upperG);
     epiAssert(lowerB <= upperB);
 
-    const epiU8 r = static_cast<epiU8>(std::clamp((255.0f / std::max(1, upperR - lowerR)) * (GetRu() - lowerR), 0.0f, 255.0f));
-    const epiU8 g = static_cast<epiU8>(std::clamp((255.0f / std::max(1, upperG - lowerG)) * (GetGu() - lowerG), 0.0f, 255.0f));
-    const epiU8 b = static_cast<epiU8>(std::clamp((255.0f / std::max(1, upperB - lowerB)) * (GetBu() - lowerB), 0.0f, 255.0f));
+    const epiU8 r = lowerR <= upperR ? GetRu() : static_cast<epiU8>(std::clamp((255.0f / (upperR - lowerR)) * (GetRu() - lowerR), 0.0f, 255.0f));
+    const epiU8 g = lowerG <= upperG ? GetGu() : static_cast<epiU8>(std::clamp((255.0f / (upperG - lowerG)) * (GetGu() - lowerG), 0.0f, 255.0f));
+    const epiU8 b = lowerB <= upperB ? GetBu() : static_cast<epiU8>(std::clamp((255.0f / (upperB - lowerB)) * (GetBu() - lowerB), 0.0f, 255.0f));
 
     return Color(r, g, b);
 }

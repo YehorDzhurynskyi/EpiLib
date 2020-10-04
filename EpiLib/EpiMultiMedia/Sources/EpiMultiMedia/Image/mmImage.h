@@ -59,7 +59,9 @@ public:
     void HistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG, dSeries1Df& histogramB) const;
     void HistogramEqualize();
 
+    void Contrast(epiS8 contrast);
     void Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB);
+    void ContrastStretch(epiU8 lower, epiU8 upper);
     void ContrastStretch(epiU8 lowerR,
                          epiU8 upperR,
                          epiU8 lowerG,
@@ -68,7 +70,14 @@ public:
                          epiU8 upperB);
 
     mmImage ToGrayScale() const;
+    mmImage ToGrayScaleR() const;
+    mmImage ToGrayScaleG() const;
+    mmImage ToGrayScaleB() const;
     mmImage ToR8G8B8() const;
+
+protected:
+    mmImage GrayScaleToGrayScale() const;
+    mmImage R8G8B8ToGrayScale(epiS32 strideR, epiS32 strideG, epiS32 strideB) const;
 };
 
 EPI_NAMESPACE_END()

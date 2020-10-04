@@ -27,10 +27,17 @@ public:
     };
 
 protected:
+    void SetImageSrc_Callback(mmImage* value);
+    mmImage GetImageTgt_Callback() const;
+
+protected:
     mmImage* m_ImageSrc{nullptr};
-    mmImage m_ImageTgt{};
 
 EPI_GENREGION_END(mmVMImageBase)
+
+protected:
+    virtual void SetImageSrc_Internal(mmImage* imageSrc) = 0;
+    virtual mmImage GetImageTgt_Internal() const = 0;
 };
 
 EPI_NAMESPACE_END()

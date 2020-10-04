@@ -21,13 +21,16 @@ public:
 
     enum mmVMImageContrast_PIDs
     {
+        PID_ImageR = 0xabdaab02,
+        PID_ImageG = 0xc6074fe9,
+        PID_ImageB = 0xb66dbb66,
         PID_ContrastR = 0xdbee98fe,
         PID_ContrastG = 0xb6337c15,
         PID_ContrastB = 0xc659889a,
         PID_ContrastStretchR = 0x7b917e66,
         PID_ContrastStretchG = 0x164c9a8d,
         PID_ContrastStretchB = 0x66266e02,
-        PID_COUNT = 6
+        PID_COUNT = 9
     };
 
 protected:
@@ -39,6 +42,9 @@ protected:
     void SetContrastStretchB_Callback(const epiVec2s8& value);
 
 protected:
+    mmImage m_ImageR{};
+    mmImage m_ImageG{};
+    mmImage m_ImageB{};
     epiS8 m_ContrastR{0};
     epiS8 m_ContrastG{0};
     epiS8 m_ContrastB{0};
@@ -47,6 +53,10 @@ protected:
     epiVec2s8 m_ContrastStretchB{};
 
 EPI_GENREGION_END(mmVMImageContrast)
+
+protected:
+    void SetImageSrc_Internal(mmImage* imageSrc) override;
+    mmImage GetImageTgt_Internal() const override;
 };
 
 EPI_NAMESPACE_END()

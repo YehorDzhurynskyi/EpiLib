@@ -82,6 +82,10 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                         sizer->Add(control, wxSizerFlags().Expand().CenterVertical().Proportion(2));
                     }
                 }
+                else if (typeID == epi::epiMetaTypeID_epiVec2s8)
+                {
+
+                }
             }
         }
     }

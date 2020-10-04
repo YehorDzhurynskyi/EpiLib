@@ -62,7 +62,7 @@ void mmImage::HistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG
         histogramB[i] = 0.0f;
     }
 
-    const epiArray<epiByte>& data = GetData();
+    const epiArray<epiU8>& data = GetData();
     epiAssert(data.Size() % 3 == 0);
     for (epiU32 i = 0; i < data.Size() / 3; ++i)
     {
@@ -134,7 +134,7 @@ void mmImage::HistogramEqualize()
             epiAssert(0.0f <= hCompB[i] && hCompB[i] <= 255.0f);
         }
 
-        epiArray<epiByte>& data = GetData();
+        epiArray<epiU8>& data = GetData();
         epiAssert(data.Size() % 3 == 0);
         for (epiU32 i = 0; i < data.Size() / 3; ++i)
         {
@@ -146,6 +146,11 @@ void mmImage::HistogramEqualize()
     }
 }
 
+void mmImage::Contrast(epiS8 contrast)
+{
+    Contrast(contrast, contrast, contrast);
+}
+
 void mmImage::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB)
 {
     switch (GetPixelFormat())
@@ -154,7 +159,7 @@ void mmImage::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB)
     {
         if (contrastR == contrastG && contrastG == contrastB)
         {
-            epiArray<epiByte>& data = GetData();
+            epiArray<epiU8>& data = GetData();
             for (epiU32 i = 0; i < data.Size(); ++i)
             {
                 data[i] = Color(data[i], data[i], data[i]).Contrast(contrastR, contrastG, contrastB).GetLumau();
@@ -163,7 +168,7 @@ void mmImage::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB)
         else
         {
             *this = ToR8G8B8();
-            epiArray<epiByte>& data = GetData();
+            epiArray<epiU8>& data = GetData();
             for (epiU32 i = 0; i < data.Size() / 3; ++i)
             {
                 const Color color = Color(data[i * 3 + 0], data[i * 3 + 1], data[i * 3 + 2]).Contrast(contrastR, contrastG, contrastB);
@@ -176,7 +181,7 @@ void mmImage::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB)
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        epiArray<epiByte>& data = GetData();
+        epiArray<epiU8>& data = GetData();
         epiAssert(data.Size() % 3 == 0);
         for (epiU32 i = 0; i < data.Size() / 3; ++i)
         {
@@ -187,6 +192,11 @@ void mmImage::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB)
         }
     } break;
     }
+}
+
+void mmImage::ContrastStretch(epiU8 lower, epiU8 upper)
+{
+    ContrastStretch(lower, upper, lower, upper, lower, upper);
 }
 
 void mmImage::ContrastStretch(epiU8 lowerR,
@@ -207,7 +217,7 @@ void mmImage::ContrastStretch(epiU8 lowerR,
         if (lowerR == lowerG && lowerG == lowerB &&
             upperR == upperG && upperG == upperB)
         {
-            epiArray<epiByte>& data = GetData();
+            epiArray<epiU8>& data = GetData();
             for (epiU32 i = 0; i < data.Size(); ++i)
             {
                 data[i] = Color(data[i], data[i], data[i]).ContrastStretch(lowerR, upperR, lowerG, upperG, lowerB, upperB).GetLumau();
@@ -216,7 +226,7 @@ void mmImage::ContrastStretch(epiU8 lowerR,
         else
         {
             *this = ToR8G8B8();
-            epiArray<epiByte>& data = GetData();
+            epiArray<epiU8>& data = GetData();
             for (epiU32 i = 0; i < data.Size() / 3; ++i)
             {
                 const Color color = Color(data[i * 3 + 0], data[i * 3 + 1], data[i * 3 + 2]).ContrastStretch(lowerR, upperR, lowerG, upperG, lowerB, upperB);
@@ -229,7 +239,7 @@ void mmImage::ContrastStretch(epiU8 lowerR,
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        epiArray<epiByte>& data = GetData();
+        epiArray<epiU8>& data = GetData();
         epiAssert(data.Size() % 3 == 0);
         for (epiU32 i = 0; i < data.Size() / 3; ++i)
         {
@@ -245,36 +255,114 @@ void mmImage::ContrastStretch(epiU8 lowerR,
 
 mmImage mmImage::ToGrayScale() const
 {
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return GrayScaleToGrayScale();
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return R8G8B8ToGrayScale(0, 1, 2);
+    } break;
+    }
+
+    // TODO: retrieve string representation
+    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
+    return mmImage{};
+}
+
+mmImage mmImage::ToGrayScaleR() const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return GrayScaleToGrayScale();
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return R8G8B8ToGrayScale(0, 0, 0);
+    } break;
+    }
+
+    // TODO: retrieve string representation
+    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
+    return mmImage{};
+}
+
+mmImage mmImage::ToGrayScaleG() const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return GrayScaleToGrayScale();
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return R8G8B8ToGrayScale(1, 1, 1);
+    } break;
+    }
+
+    // TODO: retrieve string representation
+    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
+    return mmImage{};
+}
+
+mmImage mmImage::ToGrayScaleB() const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return GrayScaleToGrayScale();
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return R8G8B8ToGrayScale(2, 2, 2);
+    } break;
+    }
+
+    // TODO: retrieve string representation
+    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
+    return mmImage{};
+}
+
+mmImage mmImage::GrayScaleToGrayScale() const
+{
     mmImage to;
     to.SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
     to.SetWidth(GetWidth());
     to.SetHeight(GetHeight());
 
-    switch (GetPixelFormat())
-    {
-    case mmImagePixelFormat::GRAYSCALE:
-    {
-        const epiArray<epiByte>& fromData = GetData();
-        epiArray<epiByte>& toData = to.GetData();
+    const epiArray<epiU8>& fromData = GetData();
+    epiArray<epiU8>& toData = to.GetData();
 
-        toData.Resize(fromData.Size());
-        for (epiU32 i = 0; i < fromData.Size(); ++i)
-        {
-            toData[i] = fromData[i];
-        }
-    } break;
-    case mmImagePixelFormat::R8G8B8:
+    toData.Resize(fromData.Size());
+    for (epiU32 i = 0; i < fromData.Size(); ++i)
     {
-        const epiArray<epiByte>& fromData = GetData();
-        epiArray<epiByte>& toData = to.GetData();
-        epiAssert(fromData.Size() % 3 == 0);
+        toData[i] = fromData[i];
+    }
 
-        toData.Resize(fromData.Size() / 3);
-        for (epiU32 i = 0; i < toData.Size(); ++i)
-        {
-            toData[i] = Color(fromData[i * 3 + 0], fromData[i * 3 + 1], fromData[i * 3 + 2]).GetLumau();
-        }
-    } break;
+    return to;
+}
+
+mmImage mmImage::R8G8B8ToGrayScale(epiS32 strideR, epiS32 strideG, epiS32 strideB) const
+{
+    mmImage to;
+    to.SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
+    to.SetWidth(GetWidth());
+    to.SetHeight(GetHeight());
+
+    const epiArray<epiU8>& fromData = GetData();
+    epiArray<epiU8>& toData = to.GetData();
+    epiAssert(fromData.Size() % 3 == 0);
+
+    toData.Resize(fromData.Size() / 3);
+    for (epiU32 i = 0; i < toData.Size(); ++i)
+    {
+        toData[i] = Color(fromData[i * 3 + strideR], fromData[i * 3 + strideG], fromData[i * 3 + strideB]).GetLumau();
     }
 
     return to;
@@ -291,8 +379,8 @@ mmImage mmImage::ToR8G8B8() const
     {
     case mmImagePixelFormat::R8G8B8:
     {
-        const epiArray<epiByte>& fromData = GetData();
-        epiArray<epiByte>& toData = to.GetData();
+        const epiArray<epiU8>& fromData = GetData();
+        epiArray<epiU8>& toData = to.GetData();
 
         toData.Resize(fromData.Size());
         for (epiU32 i = 0; i < fromData.Size(); ++i)
@@ -302,8 +390,8 @@ mmImage mmImage::ToR8G8B8() const
 } break;
     case mmImagePixelFormat::GRAYSCALE:
     {
-        const epiArray<epiByte>& fromData = GetData();
-        epiArray<epiByte>& toData = to.GetData();
+        const epiArray<epiU8>& fromData = GetData();
+        epiArray<epiU8>& toData = to.GetData();
 
         toData.Resize(fromData.Size() * 3);
         for (epiU32 i = 0; i < toData.Size() / 3; ++i)

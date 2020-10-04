@@ -122,20 +122,50 @@ static constexpr epiMetaTypeID epiMetaTypeID_epiS64 = epiHashCompileTime(epiS64)
 static constexpr epiMetaTypeID epiMetaTypeID_epiArray = epiHashCompileTime(epiArray);
 static constexpr epiMetaTypeID epiMetaTypeID_epiPtrArray = epiHashCompileTime(epiPtrArray);
 
+static constexpr epiMetaTypeID epiMetaTypeID_epiSize2 = epiHashCompileTime(epiSize2);
+static constexpr epiMetaTypeID epiMetaTypeID_epiSize2f = epiHashCompileTime(epiSize2f);
+static constexpr epiMetaTypeID epiMetaTypeID_epiSize2d = epiHashCompileTime(epiSize2d);
+static constexpr epiMetaTypeID epiMetaTypeID_epiSize2s = epiHashCompileTime(epiSize2s);
+static constexpr epiMetaTypeID epiMetaTypeID_epiSize2u = epiHashCompileTime(epiSize2u);
+
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec2f = epiHashCompileTime(epiVec2f);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec2d = epiHashCompileTime(epiVec2d);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec2s = epiHashCompileTime(epiVec2s);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2s8 = epiHashCompileTime(epiVec2s8);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2s16 = epiHashCompileTime(epiVec2s16);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2s32 = epiHashCompileTime(epiVec2s32);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2s64 = epiHashCompileTime(epiVec2s64);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec2u = epiHashCompileTime(epiVec2u);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2u8 = epiHashCompileTime(epiVec2u8);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2u16 = epiHashCompileTime(epiVec2u16);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2u32 = epiHashCompileTime(epiVec2u32);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec2u64 = epiHashCompileTime(epiVec2u64);
 
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec3f = epiHashCompileTime(epiVec3f);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec3d = epiHashCompileTime(epiVec3d);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec3s = epiHashCompileTime(epiVec3s);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3s8 = epiHashCompileTime(epiVec3s8);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3s16 = epiHashCompileTime(epiVec3s16);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3s32 = epiHashCompileTime(epiVec3s32);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3s64 = epiHashCompileTime(epiVec3s64);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec3u = epiHashCompileTime(epiVec3u);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3u8 = epiHashCompileTime(epiVec3u8);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3u16 = epiHashCompileTime(epiVec3u16);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3u32 = epiHashCompileTime(epiVec3u32);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec3u64 = epiHashCompileTime(epiVec3u64);
 
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec4f = epiHashCompileTime(epiVec4f);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec4d = epiHashCompileTime(epiVec4d);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec4s = epiHashCompileTime(epiVec4s);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4s8 = epiHashCompileTime(epiVec4s8);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4s16 = epiHashCompileTime(epiVec4s16);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4s32 = epiHashCompileTime(epiVec4s32);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4s64 = epiHashCompileTime(epiVec4s64);
 static constexpr epiMetaTypeID epiMetaTypeID_epiVec4u = epiHashCompileTime(epiVec4u);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4u8 = epiHashCompileTime(epiVec4u8);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4u16 = epiHashCompileTime(epiVec4u16);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4u32 = epiHashCompileTime(epiVec4u32);
+static constexpr epiMetaTypeID epiMetaTypeID_epiVec4u64 = epiHashCompileTime(epiVec4u64);
 
 static constexpr epiMetaTypeID epiMetaTypeID_epiMat2x2f = epiHashCompileTime(epiMat2x2f);
 static constexpr epiMetaTypeID epiMetaTypeID_epiMat3x3f = epiHashCompileTime(epiMat3x3f);
@@ -292,18 +322,47 @@ constexpr epiBool MetaType::IsMultiDimensionalInplace(epiMetaTypeID typeID)
 {
     switch (typeID)
     {
+    case epiMetaTypeID_epiSize2:
+    case epiMetaTypeID_epiSize2f:
+    case epiMetaTypeID_epiSize2d:
+    case epiMetaTypeID_epiSize2s:
+    case epiMetaTypeID_epiSize2u:
     case epiMetaTypeID_epiVec2f:
     case epiMetaTypeID_epiVec2d:
     case epiMetaTypeID_epiVec2s:
+    case epiMetaTypeID_epiVec2s8:
+    case epiMetaTypeID_epiVec2s16:
+    case epiMetaTypeID_epiVec2s32:
+    case epiMetaTypeID_epiVec2s64:
     case epiMetaTypeID_epiVec2u:
+    case epiMetaTypeID_epiVec2u8:
+    case epiMetaTypeID_epiVec2u16:
+    case epiMetaTypeID_epiVec2u32:
+    case epiMetaTypeID_epiVec2u64:
     case epiMetaTypeID_epiVec3f:
     case epiMetaTypeID_epiVec3d:
     case epiMetaTypeID_epiVec3s:
+    case epiMetaTypeID_epiVec3s8:
+    case epiMetaTypeID_epiVec3s16:
+    case epiMetaTypeID_epiVec3s32:
+    case epiMetaTypeID_epiVec3s64:
     case epiMetaTypeID_epiVec3u:
+    case epiMetaTypeID_epiVec3u8:
+    case epiMetaTypeID_epiVec3u16:
+    case epiMetaTypeID_epiVec3u32:
+    case epiMetaTypeID_epiVec3u64:
     case epiMetaTypeID_epiVec4f:
     case epiMetaTypeID_epiVec4d:
     case epiMetaTypeID_epiVec4s:
+    case epiMetaTypeID_epiVec4s8:
+    case epiMetaTypeID_epiVec4s16:
+    case epiMetaTypeID_epiVec4s32:
+    case epiMetaTypeID_epiVec4s64:
     case epiMetaTypeID_epiVec4u:
+    case epiMetaTypeID_epiVec4u8:
+    case epiMetaTypeID_epiVec4u16:
+    case epiMetaTypeID_epiVec4u32:
+    case epiMetaTypeID_epiVec4u64:
     case epiMetaTypeID_epiMat2x2f:
     case epiMetaTypeID_epiMat3x3f:
     case epiMetaTypeID_epiMat4x4f:
@@ -418,18 +477,47 @@ constexpr epiBool MetaType::IsMultiDimensional()
 template<typename T>
 constexpr epiBool MetaType::IsMultiDimensionalInplace()
 {
-    if constexpr (std::is_same_v<epiVec2f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2f)); return true; }
+    if constexpr (std::is_same_v<epiSize2, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiSize2)); return true; }
+    else if constexpr (std::is_same_v<epiSize2f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiSize2f)); return true; }
+    else if constexpr (std::is_same_v<epiSize2d, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiSize2d)); return true; }
+    else if constexpr (std::is_same_v<epiSize2s, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiSize2s)); return true; }
+    else if constexpr (std::is_same_v<epiSize2u, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiSize2u)); return true; }
+    else if constexpr (std::is_same_v<epiVec2f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2f)); return true; }
     else if constexpr (std::is_same_v<epiVec2d, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2d)); return true; }
     else if constexpr (std::is_same_v<epiVec2s, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2s)); return true; }
+    else if constexpr (std::is_same_v<epiVec2s8, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2s8)); return true; }
+    else if constexpr (std::is_same_v<epiVec2s16, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2s16)); return true; }
+    else if constexpr (std::is_same_v<epiVec2s32, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2s32)); return true; }
+    else if constexpr (std::is_same_v<epiVec2s64, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2s64)); return true; }
     else if constexpr (std::is_same_v<epiVec2u, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2u)); return true; }
+    else if constexpr (std::is_same_v<epiVec2u8, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2u8)); return true; }
+    else if constexpr (std::is_same_v<epiVec2u16, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2u16)); return true; }
+    else if constexpr (std::is_same_v<epiVec2u32, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2u32)); return true; }
+    else if constexpr (std::is_same_v<epiVec2u64, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec2u64)); return true; }
     else if constexpr (std::is_same_v<epiVec3f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3f)); return true; }
     else if constexpr (std::is_same_v<epiVec3d, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3d)); return true; }
     else if constexpr (std::is_same_v<epiVec3s, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3s)); return true; }
+    else if constexpr (std::is_same_v<epiVec3s8, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3s8)); return true; }
+    else if constexpr (std::is_same_v<epiVec3s16, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3s16)); return true; }
+    else if constexpr (std::is_same_v<epiVec3s32, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3s32)); return true; }
+    else if constexpr (std::is_same_v<epiVec3s64, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3s64)); return true; }
     else if constexpr (std::is_same_v<epiVec3u, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3u)); return true; }
+    else if constexpr (std::is_same_v<epiVec3u8, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3u8)); return true; }
+    else if constexpr (std::is_same_v<epiVec3u16, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3u16)); return true; }
+    else if constexpr (std::is_same_v<epiVec3u32, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3u32)); return true; }
+    else if constexpr (std::is_same_v<epiVec3u64, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec3u64)); return true; }
     else if constexpr (std::is_same_v<epiVec4f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4f)); return true; }
     else if constexpr (std::is_same_v<epiVec4d, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4d)); return true; }
     else if constexpr (std::is_same_v<epiVec4s, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4s)); return true; }
+    else if constexpr (std::is_same_v<epiVec4s8, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4s8)); return true; }
+    else if constexpr (std::is_same_v<epiVec4s16, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4s16)); return true; }
+    else if constexpr (std::is_same_v<epiVec4s32, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4s32)); return true; }
+    else if constexpr (std::is_same_v<epiVec4s64, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4s64)); return true; }
     else if constexpr (std::is_same_v<epiVec4u, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4u)); return true; }
+    else if constexpr (std::is_same_v<epiVec4u8, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4u8)); return true; }
+    else if constexpr (std::is_same_v<epiVec4u16, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4u16)); return true; }
+    else if constexpr (std::is_same_v<epiVec4u32, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4u32)); return true; }
+    else if constexpr (std::is_same_v<epiVec4u64, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiVec4u64)); return true; }
     else if constexpr (std::is_same_v<epiMat2x2f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiMat2x2f)); return true; }
     else if constexpr (std::is_same_v<epiMat3x3f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiMat3x3f)); return true; }
     else if constexpr (std::is_same_v<epiMat4x4f, T>) { static_assert(IsMultiDimensionalInplace(epiMetaTypeID_epiMat4x4f)); return true; }
