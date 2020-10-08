@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 
 void mmVMImageContrast::SetContrastR_Callback(epiS8 value)
 {
-    if (m_ContrastR != value)
+    if (GetContrastR() != value)
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -15,16 +15,35 @@ void mmVMImageContrast::SetContrastR_Callback(epiS8 value)
             imageR.Contrast(value);
 
             SetImageR(imageR);
+
+            if (GetIsContrastSynchronized())
+            {
+                mmImage imageG = image->ToGrayScaleG();
+                imageG.Contrast(value);
+
+                SetImageG(imageG);
+
+                epiPropertyChangedCheckAndTrigger(ContrastG, value);
+                epiPropertyChangedCheckAndTrigger(ContrastStretchG, epiVec2u8{});
+
+                mmImage imageB = image->ToGrayScaleB();
+                imageB.Contrast(value);
+
+                SetImageB(imageB);
+
+                epiPropertyChangedCheckAndTrigger(ContrastB, value);
+                epiPropertyChangedCheckAndTrigger(ContrastStretchB, epiVec2u8{});
+            }
         }
     }
 
     epiPropertyChangedCheckAndTrigger(ContrastR, value);
-    epiPropertyChangedCheckAndTrigger(ContrastStretchR, epiVec2s8{});
+    epiPropertyChangedCheckAndTrigger(ContrastStretchR, epiVec2u8{});
 }
 
 void mmVMImageContrast::SetContrastG_Callback(epiS8 value)
 {
-    if (m_ContrastG != value)
+    if (GetContrastG() != value)
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -32,16 +51,35 @@ void mmVMImageContrast::SetContrastG_Callback(epiS8 value)
             imageG.Contrast(value);
 
             SetImageG(imageG);
+
+            if (GetIsContrastSynchronized())
+            {
+                mmImage imageR = image->ToGrayScaleR();
+                imageR.Contrast(value);
+
+                SetImageR(imageR);
+
+                epiPropertyChangedCheckAndTrigger(ContrastR, value);
+                epiPropertyChangedCheckAndTrigger(ContrastStretchR, epiVec2u8{});
+
+                mmImage imageB = image->ToGrayScaleB();
+                imageB.Contrast(value);
+
+                SetImageB(imageB);
+
+                epiPropertyChangedCheckAndTrigger(ContrastB, value);
+                epiPropertyChangedCheckAndTrigger(ContrastStretchB, epiVec2u8{});
+            }
         }
     }
 
     epiPropertyChangedCheckAndTrigger(ContrastG, value);
-    epiPropertyChangedCheckAndTrigger(ContrastStretchG, epiVec2s8{});
+    epiPropertyChangedCheckAndTrigger(ContrastStretchG, epiVec2u8{});
 }
 
 void mmVMImageContrast::SetContrastB_Callback(epiS8 value)
 {
-    if (m_ContrastB != value)
+    if (GetContrastB() != value)
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -49,16 +87,40 @@ void mmVMImageContrast::SetContrastB_Callback(epiS8 value)
             imageB.Contrast(value);
 
             SetImageB(imageB);
+
+            if (GetIsContrastSynchronized())
+            {
+                mmImage imageR = image->ToGrayScaleR();
+                imageR.Contrast(value);
+
+                SetImageR(imageR);
+
+                epiPropertyChangedCheckAndTrigger(ContrastR, value);
+                epiPropertyChangedCheckAndTrigger(ContrastStretchR, epiVec2u8{});
+
+                mmImage imageG = image->ToGrayScaleG();
+                imageG.Contrast(value);
+
+                SetImageG(imageG);
+
+                epiPropertyChangedCheckAndTrigger(ContrastG, value);
+                epiPropertyChangedCheckAndTrigger(ContrastStretchG, epiVec2u8{});
+            }
         }
     }
 
     epiPropertyChangedCheckAndTrigger(ContrastB, value);
-    epiPropertyChangedCheckAndTrigger(ContrastStretchB, epiVec2s8{});
+    epiPropertyChangedCheckAndTrigger(ContrastStretchB, epiVec2u8{});
 }
 
-void mmVMImageContrast::SetContrastStretchR_Callback(const epiVec2s8& value)
+void mmVMImageContrast::SetIsContrastSynchronized_Callback(epiBool value)
 {
-    if (m_ContrastStretchR != value)
+    epiPropertyChangedCheckAndTrigger(IsContrastSynchronized, value);
+}
+
+void mmVMImageContrast::SetContrastStretchR_Callback(const epiVec2u8& value)
+{
+    if (GetContrastStretchR() != value)
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -66,6 +128,25 @@ void mmVMImageContrast::SetContrastStretchR_Callback(const epiVec2s8& value)
             imageR.ContrastStretch(value.x, value.y);
 
             SetImageR(imageR);
+
+            if (GetIsContrastStretchSynchronized())
+            {
+                mmImage imageG = image->ToGrayScaleG();
+                imageG.ContrastStretch(value.x, value.y);
+
+                SetImageG(imageG);
+
+                epiPropertyChangedCheckAndTrigger(ContrastStretchG, value);
+                epiPropertyChangedCheckAndTrigger(ContrastG, epiS8{});
+
+                mmImage imageB = image->ToGrayScaleB();
+                imageB.ContrastStretch(value.x, value.y);
+
+                SetImageB(imageB);
+
+                epiPropertyChangedCheckAndTrigger(ContrastStretchB, value);
+                epiPropertyChangedCheckAndTrigger(ContrastB, epiS8{});
+            }
         }
     }
 
@@ -73,9 +154,9 @@ void mmVMImageContrast::SetContrastStretchR_Callback(const epiVec2s8& value)
     epiPropertyChangedCheckAndTrigger(ContrastR, epiS8{});
 }
 
-void mmVMImageContrast::SetContrastStretchG_Callback(const epiVec2s8& value)
+void mmVMImageContrast::SetContrastStretchG_Callback(const epiVec2u8& value)
 {
-    if (m_ContrastStretchG != value)
+    if (GetContrastStretchG() != value)
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -83,6 +164,25 @@ void mmVMImageContrast::SetContrastStretchG_Callback(const epiVec2s8& value)
             imageG.ContrastStretch(value.x, value.y);
 
             SetImageG(imageG);
+
+            if (GetIsContrastStretchSynchronized())
+            {
+                mmImage imageR = image->ToGrayScaleR();
+                imageR.ContrastStretch(value.x, value.y);
+
+                SetImageR(imageR);
+
+                epiPropertyChangedCheckAndTrigger(ContrastStretchR, value);
+                epiPropertyChangedCheckAndTrigger(ContrastR, epiS8{});
+
+                mmImage imageB = image->ToGrayScaleB();
+                imageB.ContrastStretch(value.x, value.y);
+
+                SetImageB(imageB);
+
+                epiPropertyChangedCheckAndTrigger(ContrastStretchB, value);
+                epiPropertyChangedCheckAndTrigger(ContrastB, epiS8{});
+            }
         }
     }
 
@@ -90,9 +190,9 @@ void mmVMImageContrast::SetContrastStretchG_Callback(const epiVec2s8& value)
     epiPropertyChangedCheckAndTrigger(ContrastG, epiS8{});
 }
 
-void mmVMImageContrast::SetContrastStretchB_Callback(const epiVec2s8& value)
+void mmVMImageContrast::SetContrastStretchB_Callback(const epiVec2u8& value)
 {
-    if (m_ContrastStretchB != value)
+    if (GetContrastStretchB() != value)
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -100,11 +200,35 @@ void mmVMImageContrast::SetContrastStretchB_Callback(const epiVec2s8& value)
             imageB.ContrastStretch(value.x, value.y);
 
             SetImageB(imageB);
+
+            if (GetIsContrastStretchSynchronized())
+            {
+                mmImage imageR = image->ToGrayScaleR();
+                imageR.ContrastStretch(value.x, value.y);
+
+                SetImageR(imageR);
+
+                epiPropertyChangedCheckAndTrigger(ContrastStretchR, value);
+                epiPropertyChangedCheckAndTrigger(ContrastR, epiS8{});
+
+                mmImage imageG = image->ToGrayScaleG();
+                imageG.ContrastStretch(value.x, value.y);
+
+                SetImageG(imageG);
+
+                epiPropertyChangedCheckAndTrigger(ContrastStretchG, value);
+                epiPropertyChangedCheckAndTrigger(ContrastG, epiS8{});
+            }
         }
     }
 
     epiPropertyChangedCheckAndTrigger(ContrastStretchB, value);
     epiPropertyChangedCheckAndTrigger(ContrastB, epiS8{});
+}
+
+void mmVMImageContrast::SetIsContrastStretchSynchronized_Callback(epiBool value)
+{
+    epiPropertyChangedCheckAndTrigger(IsContrastStretchSynchronized, value);
 }
 
 void mmVMImageContrast::SetImageSrc_Internal(mmImage* imageSrc)

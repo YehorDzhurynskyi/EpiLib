@@ -85,7 +85,9 @@ public:
     void SetBorderWidth(epiU32 width);
 
     epiS32 GetValueLower() const;
+    void SetValueLower(epiS32 value);
     epiS32 GetValueUpper() const;
+    void SetValueUpper(epiS32 value);
 
     epiS32 GetMin() const;
     epiS32 GetMax() const;

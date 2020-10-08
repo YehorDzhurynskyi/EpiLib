@@ -24,7 +24,6 @@ public:
 
 public:
     epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
-                                  const epi::epiPropertyGrouping& grouping,
                                   wxWindow* parent,
                                   wxWindowID id,
                                   const wxString& title,

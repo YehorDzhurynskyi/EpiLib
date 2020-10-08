@@ -18,11 +18,13 @@ EPI_NAMESPACE_BEGIN()
 class epiIPropertyChangedHandler
 {
 public:
-    using PropertyChangedCallback = void (epiIPropertyChangedHandler::*)();
+    using PropertyChangedCallback = std::function<void(void)>;
 
 public:
-    void Register(epiIPropertyChangedHandler& self, epiMetaPropertyID propertyID, PropertyChangedCallback callback);
-    void Unregister(epiIPropertyChangedHandler& self, epiMetaPropertyID propertyID);
+    void PropertyChangedRegister(epiMetaPropertyID propertyID, PropertyChangedCallback callback, epiIPropertyChangedHandler& target);
+    void PropertyChangedUnregister(epiMetaPropertyID propertyID, epiIPropertyChangedHandler& target);
+    void PropertyChangedRegister(epiMetaPropertyID propertyID, PropertyChangedCallback callback);
+    void PropertyChangedUnregister(epiMetaPropertyID propertyID);
 
     void PropertyChangedTrigger(epiMetaPropertyID propertyID);
 

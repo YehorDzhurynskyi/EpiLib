@@ -2,18 +2,28 @@
 
 EPI_NAMESPACE_BEGIN()
 
-void epiIPropertyChangedHandler::Register(epiIPropertyChangedHandler& self, epiMetaPropertyID propertyID, PropertyChangedCallback callback)
+void epiIPropertyChangedHandler::PropertyChangedRegister(epiMetaPropertyID propertyID, PropertyChangedCallback callback, epiIPropertyChangedHandler& target)
 {
-    epiAssert(m_PropertyChangedListeners[&self].find(propertyID) == m_PropertyChangedListeners[&self].end());
+    epiAssert(m_PropertyChangedListeners[&target].find(propertyID) == m_PropertyChangedListeners[&target].end());
 
-    m_PropertyChangedListeners[&self][propertyID] = callback;
+    m_PropertyChangedListeners[&target][propertyID] = callback;
 }
 
-void epiIPropertyChangedHandler::Unregister(epiIPropertyChangedHandler& self, epiMetaPropertyID propertyID)
+void epiIPropertyChangedHandler::PropertyChangedUnregister(epiMetaPropertyID propertyID, epiIPropertyChangedHandler& target)
 {
-    epiAssert(m_PropertyChangedListeners[&self].find(propertyID) != m_PropertyChangedListeners[&self].end());
+    epiAssert(m_PropertyChangedListeners[&target].find(propertyID) != m_PropertyChangedListeners[&target].end());
 
-    m_PropertyChangedListeners[&self].erase(propertyID);
+    m_PropertyChangedListeners[&target].erase(propertyID);
+}
+
+void epiIPropertyChangedHandler::PropertyChangedRegister(epiMetaPropertyID propertyID, PropertyChangedCallback callback)
+{
+    PropertyChangedRegister(propertyID, callback, *this);
+}
+
+void epiIPropertyChangedHandler::PropertyChangedUnregister(epiMetaPropertyID propertyID)
+{
+    PropertyChangedUnregister(propertyID, *this);
 }
 
 void epiIPropertyChangedHandler::PropertyChangedTrigger(epiMetaPropertyID propertyID)
@@ -22,8 +32,8 @@ void epiIPropertyChangedHandler::PropertyChangedTrigger(epiMetaPropertyID proper
     {
         if (auto callbackIt = callbacks.find(propertyID); callbackIt != callbacks.end())
         {
-            auto callback = callbackIt->second;
-            (listener->*callback)();
+            const auto callback = callbackIt->second;
+            callback();
         }
     }
 }

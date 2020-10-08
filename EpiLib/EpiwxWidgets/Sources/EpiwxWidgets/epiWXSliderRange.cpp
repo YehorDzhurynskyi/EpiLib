@@ -77,15 +77,15 @@ void epiWXSliderRangeThumb::SetPosition(const wxPoint& position)
 
     if (other.IsThumbLower())
     {
-        positionX = std::max(otherPosition.x + other.GetSize().x / 2 + GetSize().x / 2, position.x);
+        positionX = std::max(otherPosition.x + other.GetSize().x / 2 + GetSize().x / 2, positionX);
     }
     else
     {
-        positionX = std::min(otherPosition.x - other.GetSize().x / 2 - GetSize().x / 2, position.x);
+        positionX = std::min(otherPosition.x - other.GetSize().x / 2 - GetSize().x / 2, positionX);
     }
 
-    positionX = std::clamp(position.x, GetMin(), GetMax());
-    const epiFloat fraction = Value2Fraction(position.x, GetMin(), GetMax());
+    positionX = std::clamp(positionX, GetMin(), GetMax());
+    const epiFloat fraction = Value2Fraction(positionX, GetMin(), GetMax());
     SetValue(Fraction2Value(fraction, m_Parent->GetMin(), m_Parent->GetMax()));
 }
 
@@ -107,11 +107,12 @@ epiS32 epiWXSliderRangeThumb::GetValue() const
 epiBool epiWXSliderRangeThumb::IsMouseOver(const wxPoint& mousePosition) const
 {
     const wxPoint position = GetPosition();
+
     return
-        position.x - GetSize().x / 2 >= mousePosition.x &&
-        position.x + GetSize().x / 2 <= mousePosition.x &&
-        position.y - GetSize().y / 2 >= mousePosition.y &&
-        position.y + GetSize().y / 2 <= mousePosition.y;
+        mousePosition.x >= position.x - GetSize().x / 2 &&
+        mousePosition.x <= position.x + GetSize().x / 2 &&
+        mousePosition.y >= position.y - GetSize().y / 2 &&
+        mousePosition.y <= position.y + GetSize().y / 2;
 }
 
 epiBool epiWXSliderRangeThumb::GetDragged() const
@@ -307,15 +308,15 @@ void epiWXSliderRange::OnMouseDown(wxMouseEvent& event)
     }
 
     const wxPoint mousePosition = event.GetPosition();
-    if (epiWXSliderRangeThumb& thumbLower = GetThumbLower(); thumbLower.IsMouseOver(mousePosition))
-    {
-        thumbLower.SetDragged(true);
-        thumbLower.SetMouseOver(false);
-    }
-    else if (epiWXSliderRangeThumb& thumbUpper = GetThumbUpper(); thumbUpper.IsMouseOver(mousePosition))
+    if (epiWXSliderRangeThumb& thumbUpper = GetThumbUpper(); thumbUpper.IsMouseOver(mousePosition))
     {
         thumbUpper.SetDragged(true);
         thumbUpper.SetMouseOver(false);
+    }
+    else if (epiWXSliderRangeThumb& thumbLower = GetThumbLower(); thumbLower.IsMouseOver(mousePosition))
+    {
+        thumbLower.SetDragged(true);
+        thumbLower.SetMouseOver(false);
     }
 
     SetValueFromMousePosition(mousePosition);
@@ -407,14 +408,14 @@ void epiWXSliderRange::OnMouseEnter(wxMouseEvent& event)
     }
 
     const wxPoint mousePosition = event.GetPosition();
-    if (epiWXSliderRangeThumb& thumbLower = GetThumbLower(); thumbLower.IsMouseOver(mousePosition))
-    {
-        thumbLower.SetMouseOver(true);
-        Refresh();
-    }
-    else if (epiWXSliderRangeThumb& thumbUpper = GetThumbUpper(); thumbUpper.IsMouseOver(mousePosition))
+    if (epiWXSliderRangeThumb& thumbUpper = GetThumbUpper(); thumbUpper.IsMouseOver(mousePosition))
     {
         thumbUpper.SetMouseOver(true);
+        Refresh();
+    }
+    else if (epiWXSliderRangeThumb& thumbLower = GetThumbLower(); thumbLower.IsMouseOver(mousePosition))
+    {
+        thumbLower.SetMouseOver(true);
         Refresh();
     }
 }
@@ -512,9 +513,19 @@ epiS32 epiWXSliderRange::GetValueLower() const
     return GetThumbLower().GetValue();
 }
 
+void epiWXSliderRange::SetValueLower(epiS32 value)
+{
+    GetThumbLower().SetValue(value);
+}
+
 epiS32 epiWXSliderRange::GetValueUpper() const
 {
     return GetThumbUpper().GetValue();
+}
+
+void epiWXSliderRange::SetValueUpper(epiS32 value)
+{
+    GetThumbUpper().SetValue(value);
 }
 
 epiS32 epiWXSliderRange::GetMin() const

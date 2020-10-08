@@ -45,7 +45,6 @@ wxBEGIN_EVENT_TABLE(epiWXImageConfigurationDialog, wxDialog)
 wxEND_EVENT_TABLE()
 
 epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
-                                                             const epi::epiPropertyGrouping& grouping,
                                                              wxWindow* parent,
                                                              wxWindowID id,
                                                              const wxString& title,
@@ -68,7 +67,7 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
         }
     }
 
-    contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, grouping, this), wxSizerFlags().Expand());
+    contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, this), wxSizerFlags().Expand());
 
     sizer->Add(contentSizer, wxSizerFlags().Expand());
 
@@ -161,24 +160,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         epi::mmVMImageContrast vm;
         vm.SetImageSrc(&m_ImageTgt);
 
-        epi::epiPropertyGrouping grouping;
-        grouping
-            .AddGroup("Contrast")
-                .AddElement(epi::mmVMImageContrast::PID_ContrastR)
-                .AddElement(epi::mmVMImageContrast::PID_ContrastG)
-                .AddElement(epi::mmVMImageContrast::PID_ContrastB)
-                .SetIsReplicable(true)
-                .SetIsExclusiveWith("Contrast Stretching")
-                .FinishGroup()
-            .AddGroup("Contrast Stretching")
-                .AddElement(epi::mmVMImageContrast::PID_ContrastStretchR)
-                .AddElement(epi::mmVMImageContrast::PID_ContrastStretchG)
-                .AddElement(epi::mmVMImageContrast::PID_ContrastStretchB)
-                .SetIsReplicable(true)
-                .SetIsExclusiveWith("Contrast")
-                .FinishGroup();
-
-        if (epiWXImageConfigurationDialog dialog(vm, grouping, this, wxID_ANY, "Contrast Adjustment"); dialog.ShowModal() == wxID_OK)
+        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Contrast Adjustment"); dialog.ShowModal() == wxID_OK)
         {
             ImageContrast(vm.GetContrastR(),
                           vm.GetContrastG(),

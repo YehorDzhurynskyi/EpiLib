@@ -225,6 +225,11 @@ public:
     auto crbegin() const -> typename std::vector<MetaProperty>::const_reverse_iterator { return m_Properties.crbegin(); }
     auto crend() const -> typename std::vector<MetaProperty>::const_reverse_iterator { return m_Properties.crend(); }
 
+    auto beginPID_PIDX() -> typename std::map<epiMetaPropertyID, epiS32>::iterator { return m_ToIndexTable.begin(); }
+    auto endPID_PIDX() -> typename std::map<epiMetaPropertyID, epiS32>::iterator { return m_ToIndexTable.end(); }
+    auto beginPID_PIDX() const -> typename std::map<epiMetaPropertyID, epiS32>::const_iterator { return m_ToIndexTable.cbegin(); }
+    auto endPID_PIDX() const -> typename std::map<epiMetaPropertyID, epiS32>::const_iterator { return m_ToIndexTable.cend(); }
+
 protected:
     std::vector<MetaProperty> m_Properties;
     std::map<epiMetaPropertyID, epiS32> m_ToIndexTable;

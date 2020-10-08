@@ -206,9 +206,9 @@ void mmImage::ContrastStretch(epiU8 lowerR,
                               epiU8 lowerB,
                               epiU8 upperB)
 {
-    epiAssert(lowerR <= upperR);
-    epiAssert(lowerG <= upperG);
-    epiAssert(lowerB <= upperB);
+    if (lowerR >= upperR) epiLogWarn("lowerR=`{}` >= upperR=`{}`", lowerR, upperR);
+    if (lowerG >= upperG) epiLogWarn("lowerG=`{}` >= upperG=`{}`", lowerG, upperG);
+    if (lowerB >= upperB) epiLogWarn("lowerB=`{}` >= upperB=`{}`", lowerB, upperB);
 
     switch (GetPixelFormat())
     {

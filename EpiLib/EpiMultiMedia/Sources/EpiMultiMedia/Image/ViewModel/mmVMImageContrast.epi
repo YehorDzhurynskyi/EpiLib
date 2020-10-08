@@ -10,9 +10,11 @@ class mmVMImageContrast : mmVMImageBase
         epiS8 ContrastR;
         epiS8 ContrastG;
         epiS8 ContrastB;
+        epiBool IsContrastSynchronized;
 
-        epiVec2s8 ContrastStretchR;
-        epiVec2s8 ContrastStretchG;
-        epiVec2s8 ContrastStretchB;
+        epiVec2u8 ContrastStretchR;
+        epiVec2u8 ContrastStretchG;
+        epiVec2u8 ContrastStretchB;
+        epiBool IsContrastStretchSynchronized;
     }
 };
