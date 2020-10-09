@@ -19,8 +19,62 @@ class Color
 
         [ReadOnly]
         {
+            epiFloat Minf;
+            epiU8 Minu;
+
+            epiFloat Maxf;
+            epiU8 Maxu;
+
+            epiFloat Huef;
+            epiU8 Hueu;
+
             epiFloat Lumaf;
             epiU8 Lumau;
+
+            epiFloat Luma601f;
+            epiU8 Luma601u;
+
+            epiFloat Luma240f;
+            epiU8 Luma240u;
+
+            epiFloat Luma709f;
+            epiU8 Luma709u;
+
+            epiFloat Luma2020f;
+            epiU8 Luma2020u;
+
+            epiFloat Brightnessf;
+            epiU8 Brightnessu;
+
+            epiFloat Lightnessf;
+            epiU8 Lightnessu;
+
+            epiFloat Intensityf;
+            epiU8 Intensityu;
+
+            epiFloat Chromaf;
+            epiU8 Chromau;
+
+            epiFloat SaturationBf;
+            epiU8 SaturationBu;
+
+            epiFloat SaturationLf;
+            epiU8 SaturationLu;
+
+            epiFloat SaturationIf;
+            epiU8 SaturationIu;
+
+            [ReadCallback(SuppressRef=true)]
+            {
+                epiVec3f HSBf;
+                epiVec3u8 HSBu;
+
+                epiVec3f HSLf;
+                epiVec3u8 HSLu;
+
+                epiVec3f HSIf;
+                epiVec3u8 HSIu;
+            }
         }
     }
 

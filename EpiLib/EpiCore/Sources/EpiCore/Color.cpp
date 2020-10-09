@@ -54,6 +54,36 @@ Color::Color(epiU8 r, epiU8 g, epiU8 b)
 {
 }
 
+Color Color::FromHSB(const epiVec3f& hsb)
+{
+    if (hsb.y == 0.0f)
+    {
+        return Color(hsb.z, hsb.z, hsb.z);
+    }
+
+    const epiS32 i = static_cast<epiS32>(hsb.x * 6.0f);
+    const epiFloat f = (hsb.x * 6.0f) - i;
+    const epiFloat p = hsb.z * (1.0f - hsb.y);
+    const epiFloat q = hsb.z * (1.0f - hsb.y * f);
+    const epiFloat t = hsb.z * (1.0f - hsb.y * (1.0f - f));
+
+    switch (i % 6)
+    {
+    case 0: return Color(hsb.z, t, p);
+    case 1: return Color(q, hsb.z, p);
+    case 2: return Color(p, hsb.z, t);
+    case 3: return Color(p, q, hsb.z);
+    case 4: return Color(t, p, hsb.z);
+    case 5: return Color(hsb.z, p, q);
+    default: epiLogError("Couldn't be here! Invalid i=`{}`!", i); return Color{};
+    }
+}
+
+Color Color::FromHSB(const epiVec3u8& hsb)
+{
+    return FromHSB(epiVec3f(hsb.x / 255.0f, hsb.y / 255.0f, hsb.z / 255.0f));
+}
+
 // TODO: create an interface IValidation with `epiBool IValidate()` & `epiBool IValidate_Callback()`
 // methods and call on each accessor method, declare IValidate as a wrapper for IValidate_Callback
 // and soround IValidation with EPI_DEBUG
@@ -281,14 +311,239 @@ void Color::SetBGR24_Callback(epiU32 value)
     Validate();
 }
 
+epiFloat Color::GetMinf_Callback() const
+{
+    return std::min({GetRf(), GetGf(), GetBf()});
+}
+
+epiU8 Color::GetMinu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetMinf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetMaxf_Callback() const
+{
+    return std::max({GetRf(), GetGf(), GetBf()});
+}
+
+epiU8 Color::GetMaxu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetMaxf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetHuef_Callback() const
+{
+    const epiFloat chroma = GetChromaf();
+    if (chroma == 0.0f)
+    {
+        return 0.0f;
+    }
+
+    epiFloat h = 0.0f;
+
+    const epiFloat max = GetMaxf();
+    const epiFloat min = GetMinf();
+
+    const epiFloat cR = (max - GetRf()) / chroma;
+    const epiFloat cG = (max - GetGf()) / chroma;
+    const epiFloat cB = (max - GetBf()) / chroma;
+
+    if (epiEqual(GetRf(), max))
+    {
+        h = cB - cG;
+    }
+    else if (epiEqual(GetGf(), max))
+    {
+        h = 2.0f + cR - cB;
+    }
+    else
+    {
+        h = 4.0f + cG - cR;
+    }
+
+    h /= 6.0f;
+    if (h < 0)
+    {
+        h += 1.0f;
+    }
+
+    return h;
+}
+
+epiU8 Color::GetHueu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetHuef(), 0.0f, 1.0f) * 255.0f);
+}
+
 epiFloat Color::GetLumaf_Callback() const
 {
-    return GetRf() * 0.299f + GetGf() * 0.587f + GetBf() * 0.114f;
+    return GetLuma601f();
 }
 
 epiU8 Color::GetLumau_Callback() const
 {
-    return static_cast<epiU8>(GetLumaf() * 255.0f);
+    return GetLuma601u();
+}
+
+epiFloat Color::GetLuma601f_Callback() const
+{
+    return GetRf() * 0.299f + GetGf() * 0.587f + GetBf() * 0.114f;
+}
+
+epiU8 Color::GetLuma601u_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetLuma601f(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetLuma240f_Callback() const
+{
+    return GetRf() * 0.212f + GetGf() * 0.701f + GetBf() * 0.087f;
+}
+
+epiU8 Color::GetLuma240u_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetLuma240f(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetLuma709f_Callback() const
+{
+    return GetRf() * 0.2126f + GetGf() * 0.7152f + GetBf() * 0.0722f;
+}
+
+epiU8 Color::GetLuma709u_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetLuma709f(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetLuma2020f_Callback() const
+{
+    return GetRf() * 0.2627f + GetGf() * 0.6780f + GetBf() * 0.0593f;
+}
+
+epiU8 Color::GetLuma2020u_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetLuma2020f(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetBrightnessf_Callback() const
+{
+    return GetMaxf();
+}
+
+epiU8 Color::GetBrightnessu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetBrightnessf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetLightnessf_Callback() const
+{
+    return 0.5f * (GetMaxf() + GetMinf());
+}
+
+epiU8 Color::GetLightnessu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetLightnessf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetIntensityf_Callback() const
+{
+    return (GetRf() + GetGf() + GetBf()) / 3.0f;
+}
+
+epiU8 Color::GetIntensityu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetIntensityf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetChromaf_Callback() const
+{
+    return GetMaxf() - GetMinf();
+}
+
+epiU8 Color::GetChromau_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetChromaf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetSaturationBf_Callback() const
+{
+    const epiFloat b = GetBrightnessf();
+    return b != 0.0f ? GetChromaf() / b : 0.0f;
+}
+
+epiU8 Color::GetSaturationBu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetSaturationBf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetSaturationLf_Callback() const
+{
+    const epiFloat l = GetLightnessf();
+    return l != 0.0f && l != 1.0f ? GetChromaf() / (1.0f - std::abs(2.0f * l - 1.0f)) : 0.0f;
+}
+
+epiU8 Color::GetSaturationLu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetSaturationLf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiFloat Color::GetSaturationIf_Callback() const
+{
+    const epiFloat i = GetIntensityf();
+    return i != 0.0f ? 1.0f - (GetMinf() / i) : 0.0f;
+}
+
+epiU8 Color::GetSaturationIu_Callback() const
+{
+    return static_cast<epiU8>(std::clamp(GetSaturationIf(), 0.0f, 1.0f) * 255.0f);
+}
+
+epiVec3f Color::GetHSBf_Callback() const
+{
+    return epiVec3f{GetHuef(), GetSaturationBf(), GetBrightnessf()};
+}
+
+epiVec3u8 Color::GetHSBu_Callback() const
+{
+    const epiVec3f hsb = GetHSBf();
+    return epiVec3u8
+    {
+        static_cast<epiU8>(std::clamp(hsb.x, 0.0f, 1.0f) * 255.0f),
+        static_cast<epiU8>(std::clamp(hsb.y, 0.0f, 1.0f) * 255.0f),
+        static_cast<epiU8>(std::clamp(hsb.z, 0.0f, 1.0f) * 255.0f)
+    };
+}
+
+epiVec3f Color::GetHSLf_Callback() const
+{
+    return epiVec3f{GetHuef(), GetSaturationLf(), GetLightnessf()};
+}
+
+epiVec3u8 Color::GetHSLu_Callback() const
+{
+    const epiVec3f hsl = GetHSLf();
+    return epiVec3u8
+    {
+        static_cast<epiU8>(std::clamp(hsl.x, 0.0f, 1.0f) * 255.0f),
+        static_cast<epiU8>(std::clamp(hsl.y, 0.0f, 1.0f) * 255.0f),
+        static_cast<epiU8>(std::clamp(hsl.z, 0.0f, 1.0f) * 255.0f)
+    };
+}
+
+epiVec3f Color::GetHSIf_Callback() const
+{
+    return epiVec3f{GetHuef(), GetSaturationIf(), GetIntensityf()};
+}
+
+epiVec3u8 Color::GetHSIu_Callback() const
+{
+    const epiVec3f hsi = GetHSIf();
+    return epiVec3u8
+    {
+        static_cast<epiU8>(std::clamp(hsi.x, 0.0f, 1.0f) * 255.0f),
+        static_cast<epiU8>(std::clamp(hsi.y, 0.0f, 1.0f) * 255.0f),
+        static_cast<epiU8>(std::clamp(hsi.z, 0.0f, 1.0f) * 255.0f)
+    };
 }
 
 const epiVec4f& Color::GetColor_Callback() const
