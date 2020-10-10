@@ -5,23 +5,46 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void mmVMImageHSB::SetHue_Callback(epiS8 value)
+void mmVMImageHSB::SetHue_Callback(epiS32 value)
 {
+    if (!epiEqual(GetHue(), value))
+    {
+        if (mmImage* image = GetImageSrc())
+        {
+            mmImage imageH = image->ToGrayScaleHue();
+            imageH.ShiftRotate(value);
+
+            SetImageHue(imageH);
+        }
+    }
+
     epiPropertyChangedCheckAndTrigger(Hue, value);
 }
 
-void mmVMImageHSB::SetSaturation_Callback(epiS8 value)
+void mmVMImageHSB::SetSaturation_Callback(epiS32 value)
 {
+    if (!epiEqual(GetSaturation(), value))
+    {
+        if (mmImage* image = GetImageSrc())
+        {
+            mmImage imageS = image->ToGrayScaleSaturationB();
+            imageS.Shift(value);
+
+            SetImageSaturation(imageS);
+        }
+    }
+
     epiPropertyChangedCheckAndTrigger(Saturation, value);
 }
 
-void mmVMImageHSB::SetBrightness_Callback(epiS8 value)
+void mmVMImageHSB::SetBrightness_Callback(epiS32 value)
 {
     if (!epiEqual(GetBrightness(), value))
     {
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageB = image->ToGrayScaleBrightness();
+            imageB.Shift(value);
 
             SetImageBrightness(imageB);
         }
@@ -35,7 +58,7 @@ void mmVMImageHSB::SetImageSrc_Internal(mmImage* imageSrc)
     if (mmImage* image = GetImageSrc())
     {
         SetImageHue(image->ToGrayScaleHue());
-        SetImageSaturation(image->ToGrayScaleSaturation());
+        SetImageSaturation(image->ToGrayScaleSaturationB());
         SetImageBrightness(image->ToGrayScaleBrightness());
     }
 }

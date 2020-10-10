@@ -5,6 +5,7 @@
 
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageContrast.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageHSB.h"
 
 #include <wx/dcclient.h>
 #include <wx/menu.h>
@@ -151,9 +152,80 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     {
         ImageFitToScreen();
     } break;
-    case ID_IMAGE_PANEL_TO_GRAYSCALE:
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_MIN:
     {
-        ImageToGrayScale();
+        m_ImageTgt = m_ImageTgt.ToGrayScaleMin();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_MAX:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleMax();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_HUE:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleHue();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleLuma();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA601:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleLuma601();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA240:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleLuma240();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA709:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleLuma709();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA2020:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleLuma2020();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_BRIGHTNESS:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleBrightness();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_LIGHTNESS:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleLightness();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_INTENSITY:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleIntensity();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_CHROMA:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleChroma();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONB:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleSaturationB();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONL:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleSaturationL();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONI:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleSaturationI();
+        Refresh();
     } break;
     case ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT:
     {
@@ -162,21 +234,25 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
 
         if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Contrast Adjustment"); dialog.ShowModal() == wxID_OK)
         {
-            ImageContrast(vm.GetContrastR(),
-                          vm.GetContrastG(),
-                          vm.GetContrastB());
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
+        }
+    } break;
+    case ID_IMAGE_PANEL_HSB_ADJUSTMENT:
+    {
+        epi::mmVMImageHSB vm;
+        vm.SetImageSrc(&m_ImageTgt);
 
-            ImageContrastStretch(vm.GetContrastStretchR().x,
-                                 vm.GetContrastStretchR().y,
-                                 vm.GetContrastStretchG().x,
-                                 vm.GetContrastStretchG().y,
-                                 vm.GetContrastStretchB().x,
-                                 vm.GetContrastStretchB().y);
+        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "HSB Adjustment"); dialog.ShowModal() == wxID_OK)
+        {
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
         }
     } break;
     case ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE:
     {
-        ImageHistogramEqualize();
+        m_ImageTgt.HistogramEqualize();
+        Refresh();
     } break;
     }
 }
@@ -185,9 +261,24 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
 {
     contextMenu.Append(ID_IMAGE_PANEL_FIT_TO_SCREEN, wxT("&Fit to screen"));
     contextMenu.AppendSeparator();
-    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE, wxT("&Convert to grayscale"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_MIN, wxT("&Convert to grayscale (Min)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_MAX, wxT("&Convert to grayscale (Max)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_HUE, wxT("&Convert to grayscale (Hue)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA, wxT("&Convert to grayscale (Luma)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA601, wxT("&Convert to grayscale (Luma601)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA240, wxT("&Convert to grayscale (Luma240)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA709, wxT("&Convert to grayscale (Luma709)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA2020, wxT("&Convert to grayscale (Luma2020)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_BRIGHTNESS, wxT("&Convert to grayscale (Brightness)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_LIGHTNESS, wxT("&Convert to grayscale (Lightness)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_INTENSITY, wxT("&Convert to grayscale (Intensity)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_CHROMA, wxT("&Convert to grayscale (Chroma)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONB, wxT("&Convert to grayscale (SaturationB)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONL, wxT("&Convert to grayscale (SaturationL)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONI, wxT("&Convert to grayscale (SaturationI)"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT, wxT("&Contrast Adjustment"));
+    contextMenu.Append(ID_IMAGE_PANEL_HSB_ADJUSTMENT, wxT("&HSB(HSV) Adjustment"));
     contextMenu.Append(ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE, wxT("&Histogram equalize"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_RESET, wxT("&Reset"));
@@ -219,43 +310,10 @@ void epiWXImagePanel::ImageFitToScreen()
     ImageScale(scaleFactor);
 }
 
-void epiWXImagePanel::ImageToGrayScale()
-{
-    m_ImageTgt = m_ImageTgt.ToGrayScale();
-
-    Refresh();
-}
-
 void epiWXImagePanel::ImageScale(epiFloat factor)
 {
     // TODO: clamp `sizeScaled` instead of `m_ScaleFactor`
     m_ScaleFactor = std::clamp(factor, 0.0001f, 100.0f);
-
-    Refresh();
-}
-
-void epiWXImagePanel::ImageContrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB)
-{
-    m_ImageTgt.Contrast(contrastR, contrastG, contrastB);
-
-    Refresh();
-}
-
-void epiWXImagePanel::ImageContrastStretch(epiU8 lowerR,
-                                           epiU8 upperR,
-                                           epiU8 lowerG,
-                                           epiU8 upperG,
-                                           epiU8 lowerB,
-                                           epiU8 upperB)
-{
-    m_ImageTgt.ContrastStretch(lowerR, upperR, lowerG, upperG, lowerB, upperB);
-
-    Refresh();
-}
-
-void epiWXImagePanel::ImageHistogramEqualize()
-{
-    m_ImageTgt.HistogramEqualize();
 
     Refresh();
 }

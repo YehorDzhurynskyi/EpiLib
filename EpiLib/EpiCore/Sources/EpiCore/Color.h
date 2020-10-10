@@ -183,6 +183,8 @@ public:
                           epiU8 upperG,
                           epiU8 lowerB,
                           epiU8 upperB) const;
+    Color Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const;
+    Color ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const;
 
     Color& operator+=(const Color& rhs);
     Color& operator*=(const Color& rhs);

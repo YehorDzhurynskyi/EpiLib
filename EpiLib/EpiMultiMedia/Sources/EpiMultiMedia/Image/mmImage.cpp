@@ -346,6 +346,34 @@ void mmImage::Shift(epiS32 shift)
 
 void mmImage::Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB)
 {
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        *this = ConvertTo(*this,
+                          mmImagePixelFormat::GRAYSCALE,
+                          &Color::GetLumau,
+                          epiVec3s{0, 0, 0},
+                          epiVec3s{0, 0, 0},
+                          &Color::Shift,
+                          shiftR,
+                          shiftG,
+                          shiftB);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        *this = ConvertTo(*this,
+                          mmImagePixelFormat::R8G8B8,
+                          get,
+                          epiVec3s{0, 1, 2},
+                          epiVec3s{0, 1, 2},
+                          &Color::Shift,
+                          shiftR,
+                          shiftG,
+                          shiftB);
+    } break;
+    }
 }
 
 void mmImage::ShiftRotate(epiS32 shift)
@@ -355,133 +383,137 @@ void mmImage::ShiftRotate(epiS32 shift)
 
 void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB)
 {
-}
-
-mmImage mmImage::ToGrayScale() const
-{
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetLumau);
+        *this = ConvertTo(*this,
+                          mmImagePixelFormat::GRAYSCALE,
+                          &Color::GetLumau,
+                          epiVec3s{0, 0, 0},
+                          epiVec3s{0, 0, 0},
+                          &Color::ShiftRotate,
+                          shiftR,
+                          shiftG,
+                          shiftB);
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetLumau, epiVec3s{0, 1, 2});
+        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        *this = ConvertTo(*this,
+                          mmImagePixelFormat::R8G8B8,
+                          get,
+                          epiVec3s{0, 1, 2},
+                          epiVec3s{0, 1, 2},
+                          &Color::ShiftRotate,
+                          shiftR,
+                          shiftG,
+                          shiftB);
     } break;
     }
-
-    // TODO: retrieve string representation
-    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
-    return mmImage{};
 }
 
 mmImage mmImage::ToGrayScaleR() const
 {
-    switch (GetPixelFormat())
-    {
-    case mmImagePixelFormat::GRAYSCALE:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetRu);
-    } break;
-    case mmImagePixelFormat::R8G8B8:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetRu, epiVec3s{0, 0, 0});
-    } break;
-    }
-
-    // TODO: retrieve string representation
-    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
-    return mmImage{};
+    return ToGrayScale_Internal(&Color::GetRu);
 }
 
 mmImage mmImage::ToGrayScaleG() const
 {
-    switch (GetPixelFormat())
-    {
-    case mmImagePixelFormat::GRAYSCALE:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetGu);
-    } break;
-    case mmImagePixelFormat::R8G8B8:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetGu, epiVec3s{1, 1, 1});
-    } break;
-    }
-
-    // TODO: retrieve string representation
-    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
-    return mmImage{};
+    return ToGrayScale_Internal(&Color::GetGu);
 }
 
 mmImage mmImage::ToGrayScaleB() const
 {
-    switch (GetPixelFormat())
-    {
-    case mmImagePixelFormat::GRAYSCALE:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetBu);
-    } break;
-    case mmImagePixelFormat::R8G8B8:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetBu, epiVec3s{2, 2, 2});
-    } break;
-    }
+    return ToGrayScale_Internal(&Color::GetBu);
+}
 
-    // TODO: retrieve string representation
-    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
-    return mmImage{};
+mmImage mmImage::ToGrayScaleMin() const
+{
+    return ToGrayScale_Internal(&Color::GetMinu);
+}
+
+mmImage mmImage::ToGrayScaleMax() const
+{
+    return ToGrayScale_Internal(&Color::GetMaxu);
 }
 
 mmImage mmImage::ToGrayScaleHue() const
 {
-    switch (GetPixelFormat())
-    {
-    case mmImagePixelFormat::GRAYSCALE:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetHueu);
-    } break;
-    case mmImagePixelFormat::R8G8B8:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetHueu, epiVec3s{0, 1, 2});
-    } break;
-    }
-
-    // TODO: retrieve string representation
-    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
-    return mmImage{};
+    return ToGrayScale_Internal(&Color::GetHueu);
 }
 
-mmImage mmImage::ToGrayScaleSaturation() const
+mmImage mmImage::ToGrayScaleLuma() const
 {
-    switch (GetPixelFormat())
-    {
-    case mmImagePixelFormat::GRAYSCALE:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetSaturationBu);
-    } break;
-    case mmImagePixelFormat::R8G8B8:
-    {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetSaturationBu, epiVec3s{0, 1, 2});
-    } break;
-    }
+    return ToGrayScale_Internal(&Color::GetLumau);
+}
 
-    // TODO: retrieve string representation
-    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
-    return mmImage{};
+mmImage mmImage::ToGrayScaleLuma601() const
+{
+    return ToGrayScale_Internal(&Color::GetLuma601u);
+}
+
+mmImage mmImage::ToGrayScaleLuma240() const
+{
+    return ToGrayScale_Internal(&Color::GetLuma240u);
+}
+
+mmImage mmImage::ToGrayScaleLuma709() const
+{
+    return ToGrayScale_Internal(&Color::GetLuma709u);
+}
+
+mmImage mmImage::ToGrayScaleLuma2020() const
+{
+    return ToGrayScale_Internal(&Color::GetLuma2020u);
 }
 
 mmImage mmImage::ToGrayScaleBrightness() const
 {
+    return ToGrayScale_Internal(&Color::GetBrightnessu);
+}
+
+mmImage mmImage::ToGrayScaleLightness() const
+{
+    return ToGrayScale_Internal(&Color::GetLightnessu);
+}
+
+mmImage mmImage::ToGrayScaleIntensity() const
+{
+    return ToGrayScale_Internal(&Color::GetIntensityu);
+}
+
+mmImage mmImage::ToGrayScaleChroma() const
+{
+    return ToGrayScale_Internal(&Color::GetChromau);
+}
+
+mmImage mmImage::ToGrayScaleSaturationB() const
+{
+    return ToGrayScale_Internal(&Color::GetSaturationBu);
+}
+
+mmImage mmImage::ToGrayScaleSaturationL() const
+{
+    return ToGrayScale_Internal(&Color::GetSaturationLu);
+}
+
+mmImage mmImage::ToGrayScaleSaturationI() const
+{
+    return ToGrayScale_Internal(&Color::GetSaturationIu);
+}
+
+mmImage mmImage::ToGrayScale_Internal(epiU8(Color::*get)() const) const
+{
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetBrightnessu);
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, get);
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetBrightnessu, epiVec3s{0, 1, 2});
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, get, epiVec3s{0, 1, 2});
     } break;
     }
 

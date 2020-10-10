@@ -48,8 +48,23 @@ public:
     {
         ID_IMAGE_PANEL_RESET = wxID_HIGHEST + 1,
         ID_IMAGE_PANEL_FIT_TO_SCREEN,
-        ID_IMAGE_PANEL_TO_GRAYSCALE,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_MIN,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_MAX,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_HUE,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA601,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA240,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA709,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_LUMA2020,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_BRIGHTNESS,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_LIGHTNESS,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_INTENSITY,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_CHROMA,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONB,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONL,
+        ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONI,
         ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT,
+        ID_IMAGE_PANEL_HSB_ADJUSTMENT,
         ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE,
         ID_IMAGE_PANEL_HIGHEST
     };
@@ -72,16 +87,7 @@ public:
 
     void ImageReset();
     void ImageFitToScreen();
-    void ImageToGrayScale();
     void ImageScale(epiFloat factor = 1.0f);
-    void ImageContrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB);
-    void ImageContrastStretch(epiU8 lowerR,
-                              epiU8 upperR,
-                              epiU8 lowerG,
-                              epiU8 upperG,
-                              epiU8 lowerB,
-                              epiU8 upperB);
-    void ImageHistogramEqualize();
 
     const epi::mmImage& GetImage() const;
     epi::mmImage& GetImage();

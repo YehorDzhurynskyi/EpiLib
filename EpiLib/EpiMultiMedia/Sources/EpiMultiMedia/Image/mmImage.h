@@ -77,14 +77,29 @@ public:
     void ShiftRotate(epiS32 shift);
     void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB);
 
-    mmImage ToGrayScale() const;
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;
     mmImage ToGrayScaleB() const;
+    mmImage ToGrayScaleMin() const;
+    mmImage ToGrayScaleMax() const;
     mmImage ToGrayScaleHue() const;
-    mmImage ToGrayScaleSaturation() const;
+    mmImage ToGrayScaleLuma() const;
+    mmImage ToGrayScaleLuma601() const;
+    mmImage ToGrayScaleLuma240() const;
+    mmImage ToGrayScaleLuma709() const;
+    mmImage ToGrayScaleLuma2020() const;
     mmImage ToGrayScaleBrightness() const;
+    mmImage ToGrayScaleLightness() const;
+    mmImage ToGrayScaleIntensity() const;
+    mmImage ToGrayScaleChroma() const;
+    mmImage ToGrayScaleSaturationB() const;
+    mmImage ToGrayScaleSaturationL() const;
+    mmImage ToGrayScaleSaturationI() const;
+
     mmImage ToR8G8B8() const;
+
+protected:
+    mmImage ToGrayScale_Internal(epiU8 (Color::*get)() const) const;
 };
 
 EPI_NAMESPACE_END()

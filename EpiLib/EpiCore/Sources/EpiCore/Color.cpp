@@ -141,6 +141,38 @@ Color Color::ContrastStretch(epiU8 lowerR,
     return Color(r, g, b);
 }
 
+Color Color::Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const
+{
+    const epiU8 r = std::clamp(shiftR + GetRu(), 0, 255);
+    const epiU8 g = std::clamp(shiftG + GetGu(), 0, 255);
+    const epiU8 b = std::clamp(shiftB + GetBu(), 0, 255);
+
+    return Color(r, g, b);
+}
+
+Color Color::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const
+{
+    epiS32 r = (shiftR + GetRu()) % 256;
+    if (r < 0)
+    {
+        r += 255;
+    }
+
+    epiS32 g = (shiftG + GetGu()) % 256;
+    if (g < 0)
+    {
+        g += 255;
+    }
+
+    epiS32 b = (shiftB + GetBu()) % 256;
+    if (b < 0)
+    {
+        b += 255;
+    }
+
+    return Color(r, g, b);
+}
+
 epiU8 Color::GetRu_Callback() const
 {
     return static_cast<epiU8>(m_Color.r * 255.0f);

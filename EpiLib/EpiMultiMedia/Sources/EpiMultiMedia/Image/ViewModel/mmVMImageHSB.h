@@ -31,17 +31,17 @@ public:
     };
 
 protected:
-    void SetHue_Callback(epiS8 value);
-    void SetSaturation_Callback(epiS8 value);
-    void SetBrightness_Callback(epiS8 value);
+    void SetHue_Callback(epiS32 value);
+    void SetSaturation_Callback(epiS32 value);
+    void SetBrightness_Callback(epiS32 value);
 
 protected:
     mmImage m_ImageHue{};
     mmImage m_ImageSaturation{};
     mmImage m_ImageBrightness{};
-    epiS8 m_Hue{0};
-    epiS8 m_Saturation{0};
-    epiS8 m_Brightness{0};
+    epiS32 m_Hue{0};
+    epiS32 m_Saturation{0};
+    epiS32 m_Brightness{0};
 
 EPI_GENREGION_END(mmVMImageHSB)
 

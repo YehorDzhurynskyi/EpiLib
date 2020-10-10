@@ -7,8 +7,8 @@ class mmVMImageHSB : mmVMImageBase
 
     [WriteCallback]
     {
-        epiS8 Hue;
-        epiS8 Saturation;
-        epiS8 Brightness;
+        epiS32 Hue;
+        epiS32 Saturation;
+        epiS32 Brightness;
     }
 };
