@@ -428,6 +428,11 @@ mmImage mmImage::ToGrayScaleB() const
     return ToGrayScale_Internal(&Color::GetBu);
 }
 
+mmImage mmImage::ToGrayScaleA() const
+{
+    return ToGrayScale_Internal(&Color::GetAu);
+}
+
 mmImage mmImage::ToGrayScaleMin() const
 {
     return ToGrayScale_Internal(&Color::GetMinu);

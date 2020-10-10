@@ -80,6 +80,7 @@ public:
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;
     mmImage ToGrayScaleB() const;
+    mmImage ToGrayScaleA() const;
     mmImage ToGrayScaleMin() const;
     mmImage ToGrayScaleMax() const;
     mmImage ToGrayScaleHue() const;

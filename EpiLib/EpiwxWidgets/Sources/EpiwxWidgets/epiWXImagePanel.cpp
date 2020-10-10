@@ -152,6 +152,22 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     {
         ImageFitToScreen();
     } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_R:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleR();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_G:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleG();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_B:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleB();
+    } break;
+    case ID_IMAGE_PANEL_TO_GRAYSCALE_A:
+    {
+        m_ImageTgt = m_ImageTgt.ToGrayScaleA();
+    } break;
     case ID_IMAGE_PANEL_TO_GRAYSCALE_MIN:
     {
         m_ImageTgt = m_ImageTgt.ToGrayScaleMin();
@@ -261,6 +277,10 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
 {
     contextMenu.Append(ID_IMAGE_PANEL_FIT_TO_SCREEN, wxT("&Fit to screen"));
     contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_R, wxT("&Convert to grayscale (R)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_G, wxT("&Convert to grayscale (G)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_B, wxT("&Convert to grayscale (B)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_A, wxT("&Convert to grayscale (A)"));
     contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_MIN, wxT("&Convert to grayscale (Min)"));
     contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_MAX, wxT("&Convert to grayscale (Max)"));
     contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_HUE, wxT("&Convert to grayscale (Hue)"));
