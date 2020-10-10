@@ -23,6 +23,9 @@ add_library(EpiMultimedia
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageContrast.epi
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageContrast.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageContrast.cpp
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageHSB.epi
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageHSB.h
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageHSB.cpp
 
     Sources/EpiMultimedia/Resource/mmResourceManager.h
     Sources/EpiMultimedia/Resource/mmResourceManager.cpp

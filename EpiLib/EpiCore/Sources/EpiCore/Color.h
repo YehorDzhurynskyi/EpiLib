@@ -171,10 +171,6 @@ public:
 public:
     static Color FromHSB(const epiVec3f& hsb);
     static Color FromHSB(const epiVec3u8& hsb);
-    static Color FromHSL(const epiVec3f& hsl);
-    static Color FromHSL(const epiVec3u8& hsl);
-    static Color FromHSI(const epiVec3f& hsi);
-    static Color FromHSI(const epiVec3u8& hsi);
 
 protected:
     epiBool Validate() const;

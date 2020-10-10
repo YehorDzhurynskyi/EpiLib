@@ -3,7 +3,69 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/mmImage.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiCore/Color.h"
+namespace
+{
+
+EPI_NAMESPACE_USING()
+
+// TODO: add c++20 ranges
+template<typename Transform = Color(Color::*)() const, typename ...TransformArgs>
+mmImage ConvertTo(const mmImage& from,
+                  mmImagePixelFormat fmt,
+                  epiU8(Color::*get[3])() const,
+                  const epiVec3s& strideFrom = {},
+                  const epiVec3s& strideTo = {},
+                  Transform&& transform = nullptr,
+                  TransformArgs&& ...transformArgs)
+{
+    mmImage to;
+    to.SetPixelFormat(fmt);
+    to.SetWidth(from.GetWidth());
+    to.SetHeight(from.GetHeight());
+
+    const epiU32 fromChannels = mmImage::ChannelsOf(from.GetPixelFormat());
+    const epiArray<epiU8>& fromData = from.GetData();
+
+    epiArray<epiU8>& toData = to.GetData();
+    const epiU32 toChannels = mmImage::ChannelsOf(fmt);
+
+    epiAssert(fromData.Size() % fromChannels == 0);
+
+    toData.Resize(fromData.Size() / (fromChannels / static_cast<epiFloat>(toChannels)));
+    for (epiU32 i = 0; i < toData.Size() / toChannels; ++i)
+    {
+        Color color(fromData[i * fromChannels + strideFrom.x],
+                    fromData[i * fromChannels + strideFrom.y],
+                    fromData[i * fromChannels + strideFrom.z]);
+
+        if (transform != nullptr)
+        {
+            color = (color.*transform)(std::forward<TransformArgs>(transformArgs)...);
+        }
+
+        for (epiU32 c = 0; c < toChannels; ++c)
+        {
+            toData[i * toChannels + strideTo[c]] = (color.*get[c])();
+        }
+    }
+
+    return to;
+}
+
+template<typename Transform = Color(Color::*)() const, typename ...TransformArgs>
+mmImage ConvertTo(const mmImage& from,
+                  mmImagePixelFormat fmt,
+                  epiU8(Color::*get)() const,
+                  const epiVec3s& strideFrom = {},
+                  const epiVec3s& strideTo = {},
+                  Transform&& transform = nullptr,
+                  TransformArgs&& ...transformArgs)
+{
+    epiU8(Color::*callbacks[3])() const {get, get, get};
+    return ConvertTo(from, fmt, callbacks, strideFrom, strideTo, transform, std::forward<TransformArgs>(transformArgs)...);
+}
+
+}
 
 EPI_NAMESPACE_BEGIN()
 
@@ -13,6 +75,15 @@ epiU32 mmImage::BitDepthOf(mmImagePixelFormat fmt)
     {
     case mmImagePixelFormat::R8G8B8: return 24;
     case mmImagePixelFormat::GRAYSCALE: return 8;
+    }
+}
+
+epiU32 mmImage::ChannelsOf(mmImagePixelFormat fmt)
+{
+    switch (fmt)
+    {
+    case mmImagePixelFormat::R8G8B8: return 3;
+    case mmImagePixelFormat::GRAYSCALE: return 1;
     }
 }
 
@@ -253,17 +324,35 @@ void mmImage::ContrastStretch(epiU8 lowerR,
     }
 }
 
+void mmImage::Shift(epiS32 shift)
+{
+    Shift(shift, shift, shift);
+}
+
+void mmImage::Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB)
+{
+}
+
+void mmImage::ShiftRotate(epiS32 shift)
+{
+    ShiftRotate(shift, shift, shift);
+}
+
+void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB)
+{
+}
+
 mmImage mmImage::ToGrayScale() const
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        return GrayScaleToGrayScale();
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetLumau);
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return R8G8B8ToGrayScale(0, 1, 2);
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetLumau, epiVec3s{0, 1, 2});
     } break;
     }
 
@@ -278,11 +367,11 @@ mmImage mmImage::ToGrayScaleR() const
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        return GrayScaleToGrayScale();
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetRu);
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return R8G8B8ToGrayScale(0, 0, 0);
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetRu, epiVec3s{0, 0, 0});
     } break;
     }
 
@@ -297,11 +386,11 @@ mmImage mmImage::ToGrayScaleG() const
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        return GrayScaleToGrayScale();
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetGu);
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return R8G8B8ToGrayScale(1, 1, 1);
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetGu, epiVec3s{1, 1, 1});
     } break;
     }
 
@@ -316,11 +405,11 @@ mmImage mmImage::ToGrayScaleB() const
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        return GrayScaleToGrayScale();
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetBu);
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return R8G8B8ToGrayScale(2, 2, 2);
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetBu, epiVec3s{2, 2, 2});
     } break;
     }
 
@@ -329,43 +418,61 @@ mmImage mmImage::ToGrayScaleB() const
     return mmImage{};
 }
 
-mmImage mmImage::GrayScaleToGrayScale() const
+mmImage mmImage::ToGrayScaleHue() const
 {
-    mmImage to;
-    to.SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
-    to.SetWidth(GetWidth());
-    to.SetHeight(GetHeight());
-
-    const epiArray<epiU8>& fromData = GetData();
-    epiArray<epiU8>& toData = to.GetData();
-
-    toData.Resize(fromData.Size());
-    for (epiU32 i = 0; i < fromData.Size(); ++i)
+    switch (GetPixelFormat())
     {
-        toData[i] = fromData[i];
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetHueu);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetHueu, epiVec3s{0, 1, 2});
+    } break;
     }
 
-    return to;
+    // TODO: retrieve string representation
+    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
+    return mmImage{};
 }
 
-mmImage mmImage::R8G8B8ToGrayScale(epiS32 strideR, epiS32 strideG, epiS32 strideB) const
+mmImage mmImage::ToGrayScaleSaturation() const
 {
-    mmImage to;
-    to.SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
-    to.SetWidth(GetWidth());
-    to.SetHeight(GetHeight());
-
-    const epiArray<epiU8>& fromData = GetData();
-    epiArray<epiU8>& toData = to.GetData();
-    epiAssert(fromData.Size() % 3 == 0);
-
-    toData.Resize(fromData.Size() / 3);
-    for (epiU32 i = 0; i < toData.Size(); ++i)
+    switch (GetPixelFormat())
     {
-        toData[i] = Color(fromData[i * 3 + strideR], fromData[i * 3 + strideG], fromData[i * 3 + strideB]).GetLumau();
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetSaturationBu);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetSaturationBu, epiVec3s{0, 1, 2});
+    } break;
     }
 
-    return to;
+    // TODO: retrieve string representation
+    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
+    return mmImage{};
+}
+
+mmImage mmImage::ToGrayScaleBrightness() const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetBrightnessu);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, &Color::GetBrightnessu, epiVec3s{0, 1, 2});
+    } break;
+    }
+
+    // TODO: retrieve string representation
+    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
+    return mmImage{};
 }
 
 mmImage mmImage::ToR8G8B8() const

@@ -6,6 +6,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiMultimedia/mmMediaBase.h"
 
+#include "EpiCore/Color.h"
+
 #include "EpiData/Series/dSeries1Df.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -51,6 +53,7 @@ EPI_GENREGION_END(mmImage)
 
 public:
     static epiU32 BitDepthOf(mmImagePixelFormat fmt);
+    static epiU32 ChannelsOf(mmImagePixelFormat fmt);
 
 public:
     mmImage Duplicate() const; // TODO: replace with auto-generated method
@@ -69,15 +72,19 @@ public:
                          epiU8 lowerB,
                          epiU8 upperB);
 
+    void Shift(epiS32 shift);
+    void Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB);
+    void ShiftRotate(epiS32 shift);
+    void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB);
+
     mmImage ToGrayScale() const;
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;
     mmImage ToGrayScaleB() const;
+    mmImage ToGrayScaleHue() const;
+    mmImage ToGrayScaleSaturation() const;
+    mmImage ToGrayScaleBrightness() const;
     mmImage ToR8G8B8() const;
-
-protected:
-    mmImage GrayScaleToGrayScale() const;
-    mmImage R8G8B8ToGrayScale(epiS32 strideR, epiS32 strideG, epiS32 strideB) const;
 };
 
 EPI_NAMESPACE_END()

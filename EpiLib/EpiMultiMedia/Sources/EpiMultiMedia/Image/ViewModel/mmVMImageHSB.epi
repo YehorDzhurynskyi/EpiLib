@@ -1,0 +1,14 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageHSB : mmVMImageBase
+{
+    mmImage ImageHue;
+    mmImage ImageSaturation;
+    mmImage ImageBrightness;
+
+    [WriteCallback]
+    {
+        epiS8 Hue;
+        epiS8 Saturation;
+        epiS8 Brightness;
+    }
+};
