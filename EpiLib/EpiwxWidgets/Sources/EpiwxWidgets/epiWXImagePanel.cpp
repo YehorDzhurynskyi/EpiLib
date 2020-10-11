@@ -303,6 +303,65 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt.HistogramEqualize();
         Refresh();
     } break;
+    case ID_IMAGE_PANEL_SMOOTH:
+    {
+        cv::Mat kernel(11, 11, CV_32FC1);
+        for (epiS32 i = 0; i < 121; ++i)
+        {
+            kernel.at<epiFloat>(i) = 1.0f / 121.0f;
+        }
+
+        m_ImageTgt.ConvolveWith(kernel);
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_EDGE_DETECTION:
+    {
+        cv::Mat kernel(3, 3, CV_32FC1);
+        kernel.at<epiFloat>(0, 0) = -1.0f;
+        kernel.at<epiFloat>(0, 1) = -1.0f;
+        kernel.at<epiFloat>(0, 2) = -1.0f;
+        kernel.at<epiFloat>(1, 0) = -1.0f;
+        kernel.at<epiFloat>(1, 1) = +8.0f;
+        kernel.at<epiFloat>(1, 2) = -1.0f;
+        kernel.at<epiFloat>(2, 0) = -1.0f;
+        kernel.at<epiFloat>(2, 1) = -1.0f;
+        kernel.at<epiFloat>(2, 2) = -1.0f;
+
+        m_ImageTgt.ConvolveWith(kernel);
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_EDGE_DETECTION_VERTICAL:
+    {
+        cv::Mat kernel(3, 3, CV_32FC1);
+        kernel.at<epiFloat>(0, 0) = -1.0f;
+        kernel.at<epiFloat>(0, 1) = +0.0f;
+        kernel.at<epiFloat>(0, 2) = +1.0f;
+        kernel.at<epiFloat>(1, 0) = -2.0f;
+        kernel.at<epiFloat>(1, 1) = +0.0f;
+        kernel.at<epiFloat>(1, 2) = +2.0f;
+        kernel.at<epiFloat>(2, 0) = -1.0f;
+        kernel.at<epiFloat>(2, 1) = +0.0f;
+        kernel.at<epiFloat>(2, 2) = +1.0f;
+
+        m_ImageTgt.ConvolveWith(kernel);
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_EDGE_DETECTION_HORIZONTAL:
+    {
+        cv::Mat kernel(3, 3, CV_32FC1);
+        kernel.at<epiFloat>(0, 0) = -1.0f;
+        kernel.at<epiFloat>(0, 1) = -2.0f;
+        kernel.at<epiFloat>(0, 2) = -1.0f;
+        kernel.at<epiFloat>(1, 0) = +0.0f;
+        kernel.at<epiFloat>(1, 1) = +0.0f;
+        kernel.at<epiFloat>(1, 2) = +0.0f;
+        kernel.at<epiFloat>(2, 0) = +1.0f;
+        kernel.at<epiFloat>(2, 1) = +2.0f;
+        kernel.at<epiFloat>(2, 2) = +1.0f;
+
+        m_ImageTgt.ConvolveWith(kernel);
+        Refresh();
+    } break;
     }
 }
 
@@ -336,6 +395,11 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT, wxT("&Contrast Adjustment"));
     contextMenu.Append(ID_IMAGE_PANEL_HSB_ADJUSTMENT, wxT("&HSB(HSV) Adjustment"));
     contextMenu.Append(ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE, wxT("&Histogram equalize"));
+    contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_SMOOTH, wxT("&Smooth"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION, wxT("&Edge Detection"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_VERTICAL, wxT("&Edge Detection (Vertically)"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_HORIZONTAL, wxT("&Edge Detection (Horizontally)"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_RESET, wxT("&Reset"));
 }

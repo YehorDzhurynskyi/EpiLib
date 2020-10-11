@@ -551,6 +551,133 @@ void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB)
     }
 }
 
+void mmImage::ConvolveWith(const cv::Mat& kernel)
+{
+    ConvolveWith(kernel, kernel, kernel);
+}
+
+void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB)
+{
+    epiAssert(kernelR.channels() == 1);
+    epiAssert(kernelG.channels() == 1);
+    epiAssert(kernelB.channels() == 1);
+    epiAssert(kernelR.depth() == CV_32F);
+    epiAssert(kernelG.depth() == CV_32F);
+    epiAssert(kernelB.depth() == CV_32F);
+
+    // TODO: implement different out of bounds handling
+    auto getPixel = [this, w = static_cast<epiS32>(GetWidth()), h = static_cast<epiS32>(GetHeight())](epiS32 r, epiS32 c, epiS32 channel) -> epiU8&
+    {
+        const epiU32 channels = ChannelsOf(GetPixelFormat());
+        const epiU32 x = channels * std::clamp(c, 0, w - 1) + channel;
+        const epiU32 y = std::clamp(r, 0, h - 1);
+
+        return GetData()[x + y * GetPitch()];
+    };
+
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        const epiBool areEqualKernelRG = kernelR.rows == kernelG.rows &&
+                                         kernelR.cols == kernelG.cols &&
+                                         std::equal(kernelR.begin<epiFloat>(),
+                                                    kernelR.end<epiFloat>(),
+                                                    kernelG.begin<epiFloat>(),
+                                                    kernelG.end<epiFloat>(),
+                                                    [](epiFloat lhs, epiFloat rhs)
+        {
+            return epiEqual(lhs, rhs);
+        });
+
+        const epiBool areEqualKernelGB = kernelG.rows == kernelB.rows &&
+                                         kernelG.cols == kernelB.cols &&
+                                         std::equal(kernelG.begin<epiFloat>(),
+                                                    kernelG.end<epiFloat>(),
+                                                    kernelB.begin<epiFloat>(),
+                                                    kernelB.end<epiFloat>(),
+                                                    [](epiFloat lhs, epiFloat rhs)
+        {
+            return epiEqual(lhs, rhs);
+        });
+
+        if (areEqualKernelRG && areEqualKernelGB)
+        {
+            for (epiS32 r = 0; r < GetHeight(); ++r)
+            {
+                for (epiS32 c = 0; c < GetWidth(); ++c)
+                {
+                    epiFloat sum = 0;
+                    for (epiS32 kR = 0; kR < kernelR.rows; ++kR)
+                    {
+                        for (epiS32 kC = 0; kC < kernelR.cols; ++kC)
+                        {
+                            const epiU8 pix = getPixel(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0);
+                            const epiFloat pixKernel = kernelR.at<epiFloat>(kR, kC);
+
+                            sum += pix * pixKernel;
+                        }
+                    }
+                    getPixel(r, c, 0) = static_cast<epiU8>(std::clamp(sum, 0.0f, 255.0f));
+                }
+            }
+            break;
+        }
+        else
+        {
+            *this = ToR8G8B8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8:
+    {
+        for (epiS32 r = 0; r < GetHeight(); ++r)
+        {
+            for (epiS32 c = 0; c < GetWidth(); ++c)
+            {
+                epiFloat sumR = 0;
+                for (epiS32 kR = 0; kR < kernelR.rows; ++kR)
+                {
+                    for (epiS32 kC = 0; kC < kernelR.cols; ++kC)
+                    {
+                        const epiU8 pix = getPixel(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0);
+                        const epiFloat pixKernel = kernelR.at<epiFloat>(kR, kC);
+
+                        sumR += pix * pixKernel;
+                    }
+                }
+                getPixel(r, c, 0) = static_cast<epiU8>(std::clamp(sumR, 0.0f, 255.0f));
+
+                epiFloat sumG = 0;
+                for (epiS32 kR = 0; kR < kernelG.rows; ++kR)
+                {
+                    for (epiS32 kC = 0; kC < kernelG.cols; ++kC)
+                    {
+                        const epiU8 pix = getPixel(r + kR - kernelG.rows / 2, c + kC - kernelG.cols / 2, 1);
+                        const epiFloat pixKernel = kernelG.at<epiFloat>(kR, kC);
+
+                        sumG += pix * pixKernel;
+                    }
+                }
+                getPixel(r, c, 1) = static_cast<epiU8>(std::clamp(sumG, 0.0f, 255.0f));
+
+                epiFloat sumB = 0;
+                for (epiS32 kR = 0; kR < kernelB.rows; ++kR)
+                {
+                    for (epiS32 kC = 0; kC < kernelB.cols; ++kC)
+                    {
+                        const epiU8 pix = getPixel(r + kR - kernelB.rows / 2, c + kC - kernelB.cols / 2, 2);
+                        const epiFloat pixKernel = kernelB.at<epiFloat>(kR, kC);
+
+                        sumB += pix * pixKernel;
+                    }
+                }
+                getPixel(r, c, 2) = static_cast<epiU8>(std::clamp(sumB, 0.0f, 255.0f));
+            }
+        }
+    } break;
+    }
+}
+
 mmImage mmImage::ToGrayScaleR() const
 {
     return ToGrayScale_Internal(&Color::GetRu);
@@ -710,6 +837,11 @@ void mmImage::SetPixelFormat_Callback(mmImagePixelFormat value)
 {
     m_PixelFormat = value;
     m_BitDepth = mmImage::BitDepthOf(value);
+}
+
+epiSize_t mmImage::GetPitch_Callback() const
+{
+    return ChannelsOf(GetPixelFormat()) * GetWidth();
 }
 
 EPI_NAMESPACE_END()

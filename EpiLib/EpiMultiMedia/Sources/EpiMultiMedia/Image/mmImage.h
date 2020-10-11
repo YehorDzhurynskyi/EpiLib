@@ -10,6 +10,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiData/Series/dSeries1Df.h"
 
+#include <opencv2/core.hpp>
+
 EPI_NAMESPACE_BEGIN()
 
 enum class mmImagePixelFormat : epiS32
@@ -34,18 +36,21 @@ public:
         PID_BitDepth = 0x7d479868,
         PID_Width = 0x4ddb6a2b,
         PID_Height = 0xf2e1e039,
+        PID_Pitch = 0xe65e91dd,
         PID_Data = 0xdc15c5d,
         PID_PixelFormat = 0xc9797cbb,
-        PID_COUNT = 5
+        PID_COUNT = 6
     };
 
 protected:
+    epiSize_t GetPitch_Callback() const;
     void SetPixelFormat_Callback(mmImagePixelFormat value);
 
 protected:
     epiU32 m_BitDepth{0};
     epiSize_t m_Width{0};
     epiSize_t m_Height{0};
+    epiSize_t m_Pitch{0};
     epiArray<epiU8> m_Data{};
     mmImagePixelFormat m_PixelFormat{};
 
@@ -81,6 +86,9 @@ public:
     void Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB);
     void ShiftRotate(epiS32 shift);
     void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB);
+
+    void ConvolveWith(const cv::Mat& kernel);
+    void ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB);
 
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;
