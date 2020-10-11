@@ -6,6 +6,8 @@
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageContrast.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageHSB.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageThreshold.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageGamma.h"
 
 #include <wx/dcclient.h>
 #include <wx/menu.h>
@@ -155,18 +157,22 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     case ID_IMAGE_PANEL_TO_GRAYSCALE_R:
     {
         m_ImageTgt = m_ImageTgt.ToGrayScaleR();
+        Refresh();
     } break;
     case ID_IMAGE_PANEL_TO_GRAYSCALE_G:
     {
         m_ImageTgt = m_ImageTgt.ToGrayScaleG();
+        Refresh();
     } break;
     case ID_IMAGE_PANEL_TO_GRAYSCALE_B:
     {
         m_ImageTgt = m_ImageTgt.ToGrayScaleB();
+        Refresh();
     } break;
     case ID_IMAGE_PANEL_TO_GRAYSCALE_A:
     {
         m_ImageTgt = m_ImageTgt.ToGrayScaleA();
+        Refresh();
     } break;
     case ID_IMAGE_PANEL_TO_GRAYSCALE_MIN:
     {
@@ -243,6 +249,33 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt = m_ImageTgt.ToGrayScaleSaturationI();
         Refresh();
     } break;
+    case ID_IMAGE_PANEL_TO_NEGATIVE:
+    {
+        m_ImageTgt.Negative();
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_THRESHOLD:
+    {
+        epi::mmVMImageThreshold vm;
+        vm.SetImageSrc(&m_ImageTgt);
+
+        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Thresholding"); dialog.ShowModal() == wxID_OK)
+        {
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
+        }
+    } break;
+    case ID_IMAGE_PANEL_GAMMA_CORRECTION:
+    {
+        epi::mmVMImageGamma vm;
+        vm.SetImageSrc(&m_ImageTgt);
+
+        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Gamma Correction"); dialog.ShowModal() == wxID_OK)
+        {
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
+        }
+    } break;
     case ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT:
     {
         epi::mmVMImageContrast vm;
@@ -296,7 +329,10 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONB, wxT("&Convert to grayscale (SaturationB)"));
     contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONL, wxT("&Convert to grayscale (SaturationL)"));
     contextMenu.Append(ID_IMAGE_PANEL_TO_GRAYSCALE_SATURATIONI, wxT("&Convert to grayscale (SaturationI)"));
+    contextMenu.Append(ID_IMAGE_PANEL_TO_NEGATIVE, wxT("&Convert to negative"));
     contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_THRESHOLD, wxT("&Thresholding"));
+    contextMenu.Append(ID_IMAGE_PANEL_GAMMA_CORRECTION, wxT("&Gamma Correction"));
     contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT, wxT("&Contrast Adjustment"));
     contextMenu.Append(ID_IMAGE_PANEL_HSB_ADJUSTMENT, wxT("&HSB(HSV) Adjustment"));
     contextMenu.Append(ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE, wxT("&Histogram equalize"));

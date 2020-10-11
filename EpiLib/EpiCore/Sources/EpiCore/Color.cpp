@@ -99,6 +99,25 @@ epiBool Color::Validate() const
     return isValid;
 }
 
+Color Color::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB) const
+{
+    const epiU8 r = GetRu();
+    const epiU8 g = GetGu();
+    const epiU8 b = GetBu();
+
+    return Color(r >= thrR ? r : 0, g >= thrG ? g : 0, b >= thrB ? b : 0);
+}
+
+Color Color::Negative() const
+{
+    return Color(255 - GetRu(), 255 - GetGu(), 255 - GetBu());
+}
+
+Color Color::Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB) const
+{
+    return Color(std::pow(GetRf(), 1.0f / gammaR), std::pow(GetGf(), 1.0f / gammaG), std::pow(GetBf(), 1.0f / gammaB));
+}
+
 Color Color::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB) const
 {
 #if 0 // TODO: investigate this filter

@@ -1,0 +1,15 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageThreshold : mmVMImageBase
+{
+    mmImage ImageR;
+    mmImage ImageG;
+    mmImage ImageB;
+
+    [WriteCallback]
+    {
+        epiU8 ThresholdR;
+        epiU8 ThresholdG;
+        epiU8 ThresholdB;
+        epiBool IsThresholdSynchronized;
+    }
+};

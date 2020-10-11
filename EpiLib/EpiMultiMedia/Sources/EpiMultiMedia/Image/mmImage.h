@@ -62,6 +62,11 @@ public:
     void HistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG, dSeries1Df& histogramB) const;
     void HistogramEqualize();
 
+    void Threshold(epiU8 thr);
+    void Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB);
+    void Negative();
+    void Gamma(epiFloat gamma);
+    void Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB);
     void Contrast(epiS8 contrast);
     void Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB);
     void ContrastStretch(epiU8 lower, epiU8 upper);

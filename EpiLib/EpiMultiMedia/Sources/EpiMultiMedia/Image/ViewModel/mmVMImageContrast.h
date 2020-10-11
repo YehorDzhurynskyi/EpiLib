@@ -60,6 +60,9 @@ protected:
 
 EPI_GENREGION_END(mmVMImageContrast)
 
+public:
+    mmVMImageContrast();
+
 protected:
     void SetImageSrc_Internal(mmImage* imageSrc) override;
     mmImage GetImageTgt_Internal() const override;

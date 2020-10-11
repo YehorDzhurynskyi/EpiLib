@@ -5,9 +5,15 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+mmVMImageContrast::mmVMImageContrast()
+{
+    SetIsContrastSynchronized(true);
+    SetIsContrastStretchSynchronized(true);
+}
+
 void mmVMImageContrast::SetContrastR_Callback(epiS8 value)
 {
-    if (GetContrastR() != value)
+    if (!epiEqual(GetContrastR(), value))
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -43,7 +49,7 @@ void mmVMImageContrast::SetContrastR_Callback(epiS8 value)
 
 void mmVMImageContrast::SetContrastG_Callback(epiS8 value)
 {
-    if (GetContrastG() != value)
+    if (!epiEqual(GetContrastG(), value))
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -79,7 +85,7 @@ void mmVMImageContrast::SetContrastG_Callback(epiS8 value)
 
 void mmVMImageContrast::SetContrastB_Callback(epiS8 value)
 {
-    if (GetContrastB() != value)
+    if (!epiEqual(GetContrastB(), value))
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -120,7 +126,7 @@ void mmVMImageContrast::SetIsContrastSynchronized_Callback(epiBool value)
 
 void mmVMImageContrast::SetContrastStretchR_Callback(const epiVec2u8& value)
 {
-    if (GetContrastStretchR() != value)
+    if (!epiEqual(GetContrastStretchR(), value))
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -156,7 +162,7 @@ void mmVMImageContrast::SetContrastStretchR_Callback(const epiVec2u8& value)
 
 void mmVMImageContrast::SetContrastStretchG_Callback(const epiVec2u8& value)
 {
-    if (GetContrastStretchG() != value)
+    if (!epiEqual(GetContrastStretchG(), value))
     {
         if (mmImage* image = GetImageSrc())
         {
@@ -192,7 +198,7 @@ void mmVMImageContrast::SetContrastStretchG_Callback(const epiVec2u8& value)
 
 void mmVMImageContrast::SetContrastStretchB_Callback(const epiVec2u8& value)
 {
-    if (GetContrastStretchB() != value)
+    if (!epiEqual(GetContrastStretchB(), value))
     {
         if (mmImage* image = GetImageSrc())
         {

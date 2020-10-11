@@ -1,0 +1,15 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageGamma : mmVMImageBase
+{
+    mmImage ImageR;
+    mmImage ImageG;
+    mmImage ImageB;
+
+    [WriteCallback]
+    {
+        epiFloat GammaR;
+        epiFloat GammaG;
+        epiFloat GammaB;
+        epiBool IsGammaSynchronized;
+    }
+};

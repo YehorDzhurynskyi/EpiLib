@@ -176,6 +176,9 @@ protected:
     epiBool Validate() const;
 
 public:
+    Color Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB) const;
+    Color Negative() const;
+    Color Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB) const;
     Color Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB) const;
     Color ContrastStretch(epiU8 lowerR,
                           epiU8 upperR,

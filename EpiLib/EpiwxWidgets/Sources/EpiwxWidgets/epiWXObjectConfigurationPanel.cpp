@@ -42,7 +42,22 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
 
                 // TODO: adjust for a specific type
                 spin->SetRange(std::numeric_limits<epiDouble>::min(), std::numeric_limits<epiDouble>::max());
+                spin->SetIncrement(0.1);
                 spin->Bind(wxEVT_SPINCTRLDOUBLE, &epiWXObjectConfigurationPanel::OnSpinDoubleValueChanged, this); // TODO: figure out whether it should be unbonded
+                propertyChangedHandler.PropertyChangedRegister(prtyID, [spin]()
+                {
+                    if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(spin->GetClientData()))
+                    {
+                        switch (ptr->GetTypeID())
+                        {
+                        case epi::epiMetaTypeID_epiFloat: spin->SetValue(ptr->Get<epiFloat>()); break;
+                        case epi::epiMetaTypeID_epiDouble: spin->SetValue(ptr->Get<epiDouble>()); break;
+                        default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
+                        }
+
+                        spin->Refresh();
+                    }
+                });
 
                 control = spin;
             }
@@ -154,9 +169,10 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
             epi::PropertyPointer* ptr = m_PrtyPointers.emplace_back(new epi::PropertyPointer());
             *ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
             control->SetClientData(ptr);
+            propertyChangedHandler.PropertyChangedTrigger(prtyID);
 
             sizer->Add(new wxStaticText(this, wxID_ANY, prty.GetName()), wxSizerFlags().Right().Expand().CentreVertical().Proportion(1));
-            sizer->Add(control, wxSizerFlags().Expand().CenterVertical().Proportion(4));
+            sizer->Add(control, wxSizerFlags().Expand().CenterVertical().Proportion(2));
         }
     }
 
