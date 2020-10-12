@@ -50,7 +50,6 @@ protected:
     epiU32 m_BitDepth{0};
     epiSize_t m_Width{0};
     epiSize_t m_Height{0};
-    epiSize_t m_Pitch{0};
     epiArray<epiU8> m_Data{};
     mmImagePixelFormat m_PixelFormat{};
 
@@ -89,6 +88,11 @@ public:
 
     void ConvolveWith(const cv::Mat& kernel);
     void ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB);
+
+    mmImage Crop(const epiRect2u& crop) const;
+
+    epiU8& At(epiU32 r, epiU32 c, epiU32 channel);
+    epiU8 At(epiU32 r, epiU32 c, epiU32 channel) const;
 
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;

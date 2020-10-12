@@ -362,6 +362,17 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt.ConvolveWith(kernel);
         Refresh();
     } break;
+    case ID_IMAGE_PANEL_CROP:
+    {
+        epiRect2u crop;
+        crop.Left = 50;
+        crop.Right = m_ImageTgt.GetWidth() - 50;
+        crop.Bottom = 50;
+        crop.Top = m_ImageTgt.GetHeight() - 50;
+
+        m_ImageTgt = m_ImageTgt.Crop(crop);
+        Refresh();
+    } break;
     }
 }
 
@@ -400,6 +411,8 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION, wxT("&Edge Detection"));
     contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_VERTICAL, wxT("&Edge Detection (Vertically)"));
     contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_HORIZONTAL, wxT("&Edge Detection (Horizontally)"));
+    contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_CROP, wxT("&Crop"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_RESET, wxT("&Reset"));
 }

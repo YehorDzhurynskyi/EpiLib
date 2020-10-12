@@ -565,16 +565,6 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
     epiAssert(kernelG.depth() == CV_32F);
     epiAssert(kernelB.depth() == CV_32F);
 
-    // TODO: implement different out of bounds handling
-    auto getPixel = [this, w = static_cast<epiS32>(GetWidth()), h = static_cast<epiS32>(GetHeight())](epiS32 r, epiS32 c, epiS32 channel) -> epiU8&
-    {
-        const epiU32 channels = ChannelsOf(GetPixelFormat());
-        const epiU32 x = channels * std::clamp(c, 0, w - 1) + channel;
-        const epiU32 y = std::clamp(r, 0, h - 1);
-
-        return GetData()[x + y * GetPitch()];
-    };
-
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
@@ -612,13 +602,13 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
                     {
                         for (epiS32 kC = 0; kC < kernelR.cols; ++kC)
                         {
-                            const epiU8 pix = getPixel(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0);
+                            const epiU8 pix = At(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0);
                             const epiFloat pixKernel = kernelR.at<epiFloat>(kR, kC);
 
                             sum += pix * pixKernel;
                         }
                     }
-                    getPixel(r, c, 0) = static_cast<epiU8>(std::clamp(sum, 0.0f, 255.0f));
+                    At(r, c, 0) = static_cast<epiU8>(std::clamp(sum, 0.0f, 255.0f));
                 }
             }
             break;
@@ -639,43 +629,108 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
                 {
                     for (epiS32 kC = 0; kC < kernelR.cols; ++kC)
                     {
-                        const epiU8 pix = getPixel(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0);
+                        const epiU8 pix = At(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0);
                         const epiFloat pixKernel = kernelR.at<epiFloat>(kR, kC);
 
                         sumR += pix * pixKernel;
                     }
                 }
-                getPixel(r, c, 0) = static_cast<epiU8>(std::clamp(sumR, 0.0f, 255.0f));
+                At(r, c, 0) = static_cast<epiU8>(std::clamp(sumR, 0.0f, 255.0f));
 
                 epiFloat sumG = 0;
                 for (epiS32 kR = 0; kR < kernelG.rows; ++kR)
                 {
                     for (epiS32 kC = 0; kC < kernelG.cols; ++kC)
                     {
-                        const epiU8 pix = getPixel(r + kR - kernelG.rows / 2, c + kC - kernelG.cols / 2, 1);
+                        const epiU8 pix = At(r + kR - kernelG.rows / 2, c + kC - kernelG.cols / 2, 1);
                         const epiFloat pixKernel = kernelG.at<epiFloat>(kR, kC);
 
                         sumG += pix * pixKernel;
                     }
                 }
-                getPixel(r, c, 1) = static_cast<epiU8>(std::clamp(sumG, 0.0f, 255.0f));
+                At(r, c, 1) = static_cast<epiU8>(std::clamp(sumG, 0.0f, 255.0f));
 
                 epiFloat sumB = 0;
                 for (epiS32 kR = 0; kR < kernelB.rows; ++kR)
                 {
                     for (epiS32 kC = 0; kC < kernelB.cols; ++kC)
                     {
-                        const epiU8 pix = getPixel(r + kR - kernelB.rows / 2, c + kC - kernelB.cols / 2, 2);
+                        const epiU8 pix = At(r + kR - kernelB.rows / 2, c + kC - kernelB.cols / 2, 2);
                         const epiFloat pixKernel = kernelB.at<epiFloat>(kR, kC);
 
                         sumB += pix * pixKernel;
                     }
                 }
-                getPixel(r, c, 2) = static_cast<epiU8>(std::clamp(sumB, 0.0f, 255.0f));
+                At(r, c, 2) = static_cast<epiU8>(std::clamp(sumB, 0.0f, 255.0f));
             }
         }
     } break;
     }
+}
+
+mmImage mmImage::Crop(const epiRect2u& crop) const
+{
+    const epiS32 cX1 = crop.Left;
+    const epiS32 cY1 = std::min(static_cast<epiS32>(crop.Bottom + crop.GetHeight()), static_cast<epiS32>(GetHeight()));
+    const epiS32 cX2 = std::min(static_cast<epiS32>(crop.Left + crop.GetWidth()), static_cast<epiS32>(GetWidth()));
+    const epiS32 cY2 = crop.Bottom;
+
+    if (cX1 == cX2 || cY1 == cY2)
+    {
+        return mmImage{};
+    }
+
+    epiAssert(cY1 > cY2);
+    epiAssert(cX1 < cX2);
+
+    mmImage image;
+    image.SetPixelFormat(GetPixelFormat());
+    image.SetWidth(cX2 - cX1);
+    image.SetHeight(cY1 - cY2);
+
+    epiArray<epiU8>& data = image.GetData();
+    data.Resize(image.GetHeight() * image.GetPitch());
+    for (epiS32 r = 0, cR = cY2; cR < cY1; ++cR, ++r)
+    {
+        const epiS32 rr = image.GetHeight() - 1 - r;
+        const epiS32 cRR = GetHeight() - 1 - cR;
+
+        for (epiS32 c = 0, cC = cX1; cC < cX2; ++cC, ++c)
+        {
+            for (epiS32 ch = 0; ch < ChannelsOf(image.GetPixelFormat()); ++ch)
+            {
+                image.At(rr, c, ch) = At(cRR, cC, ch);
+            }
+        }
+    }
+
+    return image;
+}
+
+epiU8& mmImage::At(epiU32 r, epiU32 c, epiU32 channel)
+{
+    // TODO: implement different out of bounds handling
+    const epiU32 w = static_cast<epiU32>(GetWidth());
+    const epiU32 h = static_cast<epiU32>(GetHeight());
+
+    const epiU32 channels = ChannelsOf(GetPixelFormat());
+    const epiU32 x = channels * std::clamp(c, 0u, w - 1) + channel;
+    const epiU32 y = std::clamp(r, 0u, h - 1);
+
+    return GetData()[x + y * GetPitch()];
+}
+
+epiU8 mmImage::At(epiU32 r, epiU32 c, epiU32 channel) const
+{
+    // TODO: implement different out of bounds handling
+    const epiU32 w = static_cast<epiU32>(GetWidth());
+    const epiU32 h = static_cast<epiU32>(GetHeight());
+
+    const epiU32 channels = ChannelsOf(GetPixelFormat());
+    const epiU32 x = channels * std::clamp(c, 0u, w - 1) + channel;
+    const epiU32 y = std::clamp(r, 0u, h - 1);
+
+    return GetData()[x + y * GetPitch()];
 }
 
 mmImage mmImage::ToGrayScaleR() const

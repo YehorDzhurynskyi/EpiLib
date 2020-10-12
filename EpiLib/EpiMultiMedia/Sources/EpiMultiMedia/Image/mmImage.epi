@@ -14,7 +14,7 @@ class mmImage : mmMediaBase
         epiSize_t Width;
         epiSize_t Height;
 
-        [ReadOnly, ReadCallback]
+        [Virtual, ReadOnly, ReadCallback]
         epiSize_t Pitch;
 
         # TODO: implement, property grid can't handle it properly
