@@ -303,18 +303,56 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt.HistogramEqualize();
         Refresh();
     } break;
-    case ID_IMAGE_PANEL_SMOOTH:
+    case ID_IMAGE_PANEL_MEAN_FILTER:
     {
         cv::Mat kernel(11, 11, CV_32FC1);
-        for (epiS32 i = 0; i < 121; ++i)
+        for (epiS32 i = 0; i < kernel.rows * kernel.cols; ++i)
         {
-            kernel.at<epiFloat>(i) = 1.0f / 121.0f;
+            kernel.at<epiFloat>(i) = 1.0f;
+        }
+        kernel /= static_cast<epiFloat>(kernel.rows* kernel.cols);
+
+        m_ImageTgt.ConvolveWith(kernel);
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_MEDIAN_FILTER:
+    {
+        // TODO: implement
+    } break;
+    case ID_IMAGE_PANEL_SHARPENING_FILTER:
+    {
+        cv::Mat kernel(3, 3, CV_32FC1);
+        kernel.at<epiFloat>(0, 0) = +0.0f;
+        kernel.at<epiFloat>(0, 1) = +1.0f;
+        kernel.at<epiFloat>(0, 2) = +0.0f;
+        kernel.at<epiFloat>(1, 0) = +1.0f;
+        kernel.at<epiFloat>(1, 1) = -4.0f;
+        kernel.at<epiFloat>(1, 2) = +1.0f;
+        kernel.at<epiFloat>(2, 0) = +0.0f;
+        kernel.at<epiFloat>(2, 1) = +1.0f;
+        kernel.at<epiFloat>(2, 2) = +0.0f;
+
+        m_ImageTgt.ConvolveWith(kernel);
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_GAUSSIAN_BLUR_FILTER:
+    {
+        const epiS32 g = 4;
+        cv::Mat kernel(11, 11, CV_32FC1);
+        for (epiS32 r = 0; r < kernel.rows; ++r)
+        {
+            const epiS32 y = r - kernel.rows / 2;
+            for (epiS32 c = 0; c < kernel.cols; ++c)
+            {
+                const epiS32 x = c - kernel.cols / 2;
+                kernel.at<epiFloat>(c, r) = std::exp(-(x * x + y * y) / (2.0f * g * g)) / (2.0f * M_PI * g * g);
+            }
         }
 
         m_ImageTgt.ConvolveWith(kernel);
         Refresh();
     } break;
-    case ID_IMAGE_PANEL_EDGE_DETECTION:
+    case ID_IMAGE_PANEL_EDGE_DETECTION_FILTER:
     {
         cv::Mat kernel(3, 3, CV_32FC1);
         kernel.at<epiFloat>(0, 0) = -1.0f;
@@ -330,7 +368,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt.ConvolveWith(kernel);
         Refresh();
     } break;
-    case ID_IMAGE_PANEL_EDGE_DETECTION_VERTICAL:
+    case ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_VERTICAL_FILTER:
     {
         cv::Mat kernel(3, 3, CV_32FC1);
         kernel.at<epiFloat>(0, 0) = -1.0f;
@@ -346,7 +384,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt.ConvolveWith(kernel);
         Refresh();
     } break;
-    case ID_IMAGE_PANEL_EDGE_DETECTION_HORIZONTAL:
+    case ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_HORIZONTAL_FILTER:
     {
         cv::Mat kernel(3, 3, CV_32FC1);
         kernel.at<epiFloat>(0, 0) = -1.0f;
@@ -405,12 +443,15 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_GAMMA_CORRECTION, wxT("&Gamma Correction"));
     contextMenu.Append(ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT, wxT("&Contrast Adjustment"));
     contextMenu.Append(ID_IMAGE_PANEL_HSB_ADJUSTMENT, wxT("&HSB(HSV) Adjustment"));
-    contextMenu.Append(ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE, wxT("&Histogram equalize"));
     contextMenu.AppendSeparator();
-    contextMenu.Append(ID_IMAGE_PANEL_SMOOTH, wxT("&Smooth"));
-    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION, wxT("&Edge Detection"));
-    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_VERTICAL, wxT("&Edge Detection (Vertically)"));
-    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_HORIZONTAL, wxT("&Edge Detection (Horizontally)"));
+    contextMenu.Append(ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE, wxT("&Histogram equalize"));
+    contextMenu.Append(ID_IMAGE_PANEL_MEAN_FILTER, wxT("&Mean Filter"));
+    contextMenu.Append(ID_IMAGE_PANEL_MEDIAN_FILTER, wxT("&Median Filter"));
+    contextMenu.Append(ID_IMAGE_PANEL_SHARPENING_FILTER, wxT("&Sharpening Filter"));
+    contextMenu.Append(ID_IMAGE_PANEL_GAUSSIAN_BLUR_FILTER, wxT("&Gaussian Blur Filter"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_FILTER, wxT("&Edge Detection Filter"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_VERTICAL_FILTER, wxT("&Edge Detection Filter (Sober Vertically)"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_HORIZONTAL_FILTER, wxT("&Edge Detection Filter (Sober Horizontally)"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_CROP, wxT("&Crop"));
     contextMenu.AppendSeparator();

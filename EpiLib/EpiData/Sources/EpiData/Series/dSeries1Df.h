@@ -5,6 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiData/Series/dSeriesBase.h"
+#include "EpiData/Series/dSeries1Dc.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -57,6 +58,10 @@ public:
     void Clear();
 
     epiFloat& PushBack(epiFloat && value = epiFloat());
+
+    dSeries1Dc DFT() const;
+    static dSeries1Df IDFT(const dSeries1Dc& series);
+    static dSeries1Df IDFT(const dSeries1Dc& series, epiSize_t N);
 
     epiFloat At(epiS32 index) const;
     epiFloat& At(epiS32 index);
