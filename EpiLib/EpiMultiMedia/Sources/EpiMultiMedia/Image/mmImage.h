@@ -9,6 +9,7 @@ EPI_GENREGION_END(include)
 #include "EpiCore/Color.h"
 
 #include "EpiData/Series/dSeries1Df.h"
+#include "EpiData/Series/dSeries2Dc.h"
 
 #include <opencv2/core.hpp>
 
@@ -90,6 +91,8 @@ public:
     void ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB);
 
     mmImage Crop(const epiRect2u& crop) const;
+
+    dSeries2Dc DFT() const;
 
     epiU8& At(epiU32 r, epiU32 c, epiU32 channel);
     epiU8 At(epiU32 r, epiU32 c, epiU32 channel) const;

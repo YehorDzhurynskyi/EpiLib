@@ -63,8 +63,9 @@ dSeries1Dc dSeries1Df::DFT() const
         epiComplexf& sum = X.PushBack();
         for (epiS32 n = 0; n < N; ++n)
         {
+            const epiFloat kN = (k * n) / static_cast<epiFloat>(N);
             const epiFloat y = At(n);
-            const epiComplexf s = std::exp(2.0f * M_PI * k * n / N * 1i);
+            const epiComplexf s = std::exp(2.0f * M_PI * kN * 1i);
 
             sum += y * std::conj(s);
         }

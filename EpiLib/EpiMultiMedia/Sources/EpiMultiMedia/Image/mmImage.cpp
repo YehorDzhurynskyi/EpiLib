@@ -707,6 +707,50 @@ mmImage mmImage::Crop(const epiRect2u& crop) const
     return image;
 }
 
+dSeries2Dc mmImage::DFT() const
+{
+    using namespace std::complex_literals;
+
+    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
+
+    dSeries2Dc X;
+
+    const epiSize_t M = GetHeight();
+    const epiSize_t N = GetWidth();
+
+    if (M == 0 || N == 0)
+    {
+        return X;
+    }
+
+    const epiSize_t M2 = M;
+    const epiSize_t N2 = N / 2 + 1;
+    X.Resize(M2 * N2);
+    X.SetWidth(N2);
+
+    for (epiS32 k = 0; k < M2; ++k)
+    {
+        for (epiS32 l = 0; l < N2; ++l)
+        {
+            epiComplexf& sum = (X.At(k, l) = {});
+            for (epiS32 r = 0; r < M; ++r)
+            {
+                const epiFloat kM = (k * r) / static_cast<epiFloat>(M);
+                for (epiS32 c = 0; c < N; ++c)
+                {
+                    const epiFloat lN = (l * c) / static_cast<epiFloat>(N);
+                    const epiFloat y = At(r, c, 0);
+                    const epiComplexf s = std::exp(2.0f * M_PI * (kM + lN) * 1i);
+
+                    sum += y * std::conj(s);
+                }
+            }
+        }
+    }
+
+    return X;
+}
+
 epiU8& mmImage::At(epiU32 r, epiU32 c, epiU32 channel)
 {
     // TODO: implement different out of bounds handling

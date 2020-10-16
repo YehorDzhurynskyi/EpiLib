@@ -19,7 +19,7 @@
 
 #define epiArrLen(_V) (sizeof(_V) / sizeof(_V[0]))
 
-#define epiFloatingEqTolerance() 1.0e-5f
+#define epiFloatingEqTolerance() 5.0e-5f
 #define epiFloatingEqEx(_a, _b, _t) (std::abs((_a) - (_b)) < (_t))
 #define epiFloatingEq(_a, _b) epiFloatingEqEx(_a, _b, epiFloatingEqTolerance())
 

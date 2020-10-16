@@ -64,7 +64,6 @@ epi_extern_add(opencv
         opencv_objdetect
         opencv_photo
         opencv_stitching
-        opencv_ts
         opencv_video
         opencv_videoio
 )

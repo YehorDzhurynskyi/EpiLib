@@ -12,6 +12,9 @@ add_library(EpiData
     Sources/EpiData/Series/dSeries1Dc.epi
     Sources/EpiData/Series/dSeries1Dc.h
     Sources/EpiData/Series/dSeries1Dc.cpp
+    Sources/EpiData/Series/dSeries2Dc.epi
+    Sources/EpiData/Series/dSeries2Dc.h
+    Sources/EpiData/Series/dSeries2Dc.cpp
 
     Sources/EpiData/Series/dSeriesY.epi
     Sources/EpiData/Series/dSeriesY.h
