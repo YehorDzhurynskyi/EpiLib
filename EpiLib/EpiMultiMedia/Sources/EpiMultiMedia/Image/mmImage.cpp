@@ -14,9 +14,9 @@ using ColorGetCallback = epiU8(Color::*)() const;
 template<typename Transform = Color(Color::*)() const, typename ...TransformArgs>
 mmImage ConvertTo(const mmImage& from,
                   mmImagePixelFormat toFmt,
-                  ColorGetCallback get[3],
-                  const epiVec3s& strideFrom = {},
-                  const epiVec3s& strideTo = {},
+                  ColorGetCallback get[4],
+                  const epiVec4s& strideFrom = {},
+                  const epiVec4s& strideTo = {},
                   Transform&& transform = nullptr,
                   TransformArgs&& ...transformArgs)
 {
@@ -38,7 +38,8 @@ mmImage ConvertTo(const mmImage& from,
     {
         Color color(fromData[i * fromChannels + strideFrom.x],
                     fromData[i * fromChannels + strideFrom.y],
-                    fromData[i * fromChannels + strideFrom.z]);
+                    fromData[i * fromChannels + strideFrom.z],
+                    fromData[i * fromChannels + strideFrom.w]);
 
         if (transform != nullptr)
         {
@@ -57,13 +58,28 @@ mmImage ConvertTo(const mmImage& from,
 template<typename Transform = Color(Color::*)() const, typename ...TransformArgs>
 mmImage ConvertTo(const mmImage& from,
                   mmImagePixelFormat toFmt,
-                  ColorGetCallback get,
-                  const epiVec3s& strideFrom = {},
-                  const epiVec3s& strideTo = {},
+                  ColorGetCallback getR,
+                  ColorGetCallback getG,
+                  ColorGetCallback getB,
+                  const epiVec4s& strideFrom = {},
+                  const epiVec4s& strideTo = {},
                   Transform&& transform = nullptr,
                   TransformArgs&& ...transformArgs)
 {
-    ColorGetCallback getcallbacks[3]{get, get, get};
+    ColorGetCallback getcallbacks[4]{getR, getG, getB, nullptr};
+    return ConvertTo(from, toFmt, getcallbacks, strideFrom, strideTo, transform, std::forward<TransformArgs>(transformArgs)...);
+}
+
+template<typename Transform = Color(Color::*)() const, typename ...TransformArgs>
+mmImage ConvertTo(const mmImage& from,
+                  mmImagePixelFormat toFmt,
+                  ColorGetCallback get,
+                  const epiVec4s& strideFrom = {},
+                  const epiVec4s& strideTo = {},
+                  Transform&& transform = nullptr,
+                  TransformArgs&& ...transformArgs)
+{
+    ColorGetCallback getcallbacks[4]{get, nullptr, nullptr, nullptr};
     return ConvertTo(from, toFmt, getcallbacks, strideFrom, strideTo, transform, std::forward<TransformArgs>(transformArgs)...);
 }
 
@@ -73,11 +89,7 @@ EPI_NAMESPACE_BEGIN()
 
 epiU32 mmImage::BitDepthOf(mmImagePixelFormat fmt)
 {
-    switch (fmt)
-    {
-    case mmImagePixelFormat::R8G8B8: return 24;
-    case mmImagePixelFormat::GRAYSCALE: return 8;
-    }
+    return ChannelsOf(fmt) * 8;
 }
 
 epiU32 mmImage::ChannelsOf(mmImagePixelFormat fmt)
@@ -85,6 +97,7 @@ epiU32 mmImage::ChannelsOf(mmImagePixelFormat fmt)
     switch (fmt)
     {
     case mmImagePixelFormat::R8G8B8: return 3;
+    case mmImagePixelFormat::R8G8B8A8: return 4;
     case mmImagePixelFormat::GRAYSCALE: return 1;
     }
 }
@@ -101,11 +114,8 @@ mmImage mmImage::Duplicate() const
     return image;
 }
 
-void mmImage::Histogram(dSeries1Df& histogram) const
+void mmImage::Histogram(dSeries1Df& histogram, epiU8(Color::*get)() const) const
 {
-    // TODO: adapt for any pixelformat
-    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
-
     histogram.Resize(256);
 
     for (epiU32 i = 0; i < 256; ++i)
@@ -113,35 +123,13 @@ void mmImage::Histogram(dSeries1Df& histogram) const
         histogram[i] = 0.0f;
     }
 
-    for (const epiU8& x : GetData())
+    for (epiS32 r = 0; r < GetHeight(); ++r)
     {
-        histogram[x] += 1.0f;
-    }
-}
-
-void mmImage::HistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG, dSeries1Df& histogramB) const
-{
-    // TODO: adapt for any pixelformat
-    epiAssert(GetPixelFormat() == mmImagePixelFormat::R8G8B8);
-
-    histogramR.Resize(256);
-    histogramG.Resize(256);
-    histogramB.Resize(256);
-
-    for (epiU32 i = 0; i < 256; ++i)
-    {
-        histogramR[i] = 0.0f;
-        histogramG[i] = 0.0f;
-        histogramB[i] = 0.0f;
-    }
-
-    const epiArray<epiU8>& data = GetData();
-    epiAssert(data.Size() % 3 == 0);
-    for (epiU32 i = 0; i < data.Size() / 3; ++i)
-    {
-        histogramR[data[i * 3 + 0]] += 1.0f;
-        histogramG[data[i * 3 + 1]] += 1.0f;
-        histogramB[data[i * 3 + 2]] += 1.0f;
+        for (epiS32 c = 0; c < GetWidth(); ++c)
+        {
+            const Color color = At(r, c);
+            histogram[(color.*get)()] += 1.0f;
+        }
     }
 }
 
@@ -152,7 +140,7 @@ void mmImage::HistogramEqualize()
     case mmImagePixelFormat::GRAYSCALE:
     {
         dSeries1Df histogram;
-        Histogram(histogram);
+        Histogram(histogram, &Color::GetLumau);
 
         const epiFloat hSum = std::accumulate(histogram.begin(), histogram.end(), 0.0f);
 
@@ -179,7 +167,9 @@ void mmImage::HistogramEqualize()
         dSeries1Df histogramG;
         dSeries1Df histogramB;
 
-        HistogramPerChannel(histogramR, histogramG, histogramB);
+        Histogram(histogramR, &Color::GetRu);
+        Histogram(histogramG, &Color::GetGu);
+        Histogram(histogramB, &Color::GetBu);
 
         const epiFloat hSumR = std::accumulate(histogramR.begin(), histogramR.end(), 0.0f);
         const epiFloat hSumG = std::accumulate(histogramG.begin(), histogramG.end(), 0.0f);
@@ -219,55 +209,66 @@ void mmImage::HistogramEqualize()
     }
 }
 
-void mmImage::Threshold(epiU8 thr)
-{
-    Threshold(thr, thr, thr);
-}
-
-void mmImage::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB)
+void mmImage::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA)
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        if (thrR == thrG && thrG == thrB)
+        if (thrR == thrG && thrG == thrB && thrA == 0)
         {
             *this = ConvertTo(*this,
                               mmImagePixelFormat::GRAYSCALE,
                               &Color::GetLumau,
-                              epiVec3s{0, 0, 0},
-                              epiVec3s{0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
                               &Color::Threshold,
                               thrR,
                               thrG,
-                              thrB);
+                              thrB,
+                              thrA);
+            break;
         }
         else
         {
-            ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
-            *this = ConvertTo(ToR8G8B8(),
-                              mmImagePixelFormat::R8G8B8,
-                              get,
-                              epiVec3s{0, 1, 2},
-                              epiVec3s{0, 1, 2},
-                              &Color::Threshold,
-                              thrR,
-                              thrG,
-                              thrB);
+            *this = ToR8G8B8();
         }
-    } break;
+    }
     case mmImagePixelFormat::R8G8B8:
     {
-        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        if (thrA == 0)
+        {
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8,
                           get,
-                          epiVec3s{0, 1, 2},
-                          epiVec3s{0, 1, 2},
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
                           &Color::Threshold,
                           thrR,
                           thrG,
-                          thrB);
+                          thrB,
+                          thrA);
+            break;
+        }
+        else
+        {
+            *this = ToR8G8B8A8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        *this = ConvertTo(*this,
+                          mmImagePixelFormat::R8G8B8A8,
+                          get,
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
+                          &Color::Threshold,
+                          thrR,
+                          thrG,
+                          thrB,
+                          thrA);
     } break;
     }
 }
@@ -279,135 +280,165 @@ void mmImage::Negative()
     case mmImagePixelFormat::GRAYSCALE:
     {
         *this = ConvertTo(*this,
-                            mmImagePixelFormat::GRAYSCALE,
-                            &Color::GetLumau,
-                            epiVec3s{0, 0, 0},
-                            epiVec3s{0, 0, 0},
-                            &Color::Negative);
+                          mmImagePixelFormat::GRAYSCALE,
+                          &Color::GetLumau,
+                          epiVec4s{0, 0, 0, 0},
+                          epiVec4s{0, 0, 0, 0},
+                          &Color::Negative);
 
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8,
+                          &Color::GetRu,
+                          &Color::GetGu,
+                          &Color::GetBu,
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
+                          &Color::Negative);
+    } break;
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        *this = ConvertTo(*this,
+                          mmImagePixelFormat::R8G8B8A8,
                           get,
-                          epiVec3s{0, 1, 2},
-                          epiVec3s{0, 1, 2},
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
                           &Color::Negative);
     } break;
     }
 }
 
-void mmImage::Gamma(epiFloat gamma)
-{
-    Gamma(gamma, gamma, gamma);
-}
-
-void mmImage::Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB)
+void mmImage::Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB, epiFloat gammaA)
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        if (epiEqual(gammaR, gammaG) && epiEqual(gammaG, gammaB))
+        if (epiEqual(gammaR, gammaG) && epiEqual(gammaG, gammaB) && epiEqual(gammaA, 1.0f))
         {
             *this = ConvertTo(*this,
                               mmImagePixelFormat::GRAYSCALE,
                               &Color::GetLumau,
-                              epiVec3s{0, 0, 0},
-                              epiVec3s{0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
                               &Color::Gamma,
                               gammaR,
                               gammaG,
-                              gammaB);
+                              gammaB,
+                              gammaA);
+            break;
         }
         else
         {
-            ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
-            *this = ConvertTo(ToR8G8B8(),
+            *this = ToR8G8B8();
+        }
+    };
+    case mmImagePixelFormat::R8G8B8:
+    {
+        if (epiEqual(gammaA, 1.0f))
+        {
+            *this = ConvertTo(*this,
                               mmImagePixelFormat::R8G8B8,
-                              get,
-                              epiVec3s{0, 1, 2},
-                              epiVec3s{0, 1, 2},
+                              &Color::GetRu,
+                              &Color::GetGu,
+                              &Color::GetBu,
+                              epiVec4s{0, 1, 2, 3},
+                              epiVec4s{0, 1, 2, 3},
                               &Color::Gamma,
                               gammaR,
                               gammaG,
-                              gammaB);
+                              gammaB,
+                              gammaA);
+            break;
         }
-    } break;
-    case mmImagePixelFormat::R8G8B8:
+        else
+        {
+            *this = ToR8G8B8A8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
-                          mmImagePixelFormat::R8G8B8,
+                          mmImagePixelFormat::R8G8B8A8,
                           get,
-                          epiVec3s{0, 1, 2},
-                          epiVec3s{0, 1, 2},
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
                           &Color::Gamma,
                           gammaR,
                           gammaG,
-                          gammaB);
+                          gammaB,
+                          gammaA);
     } break;
     }
 }
 
-void mmImage::Contrast(epiS8 contrast)
-{
-    Contrast(contrast, contrast, contrast);
-}
-
-void mmImage::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB)
+void mmImage::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB, epiS8 contrastA)
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        if (contrastR == contrastG && contrastG == contrastB)
+        if (contrastR == contrastG && contrastG == contrastB && contrastA == 0)
         {
             *this = ConvertTo(*this,
                               mmImagePixelFormat::GRAYSCALE,
                               &Color::GetLumau,
-                              epiVec3s{0, 0, 0},
-                              epiVec3s{0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
                               &Color::Contrast,
                               contrastR,
                               contrastG,
-                              contrastB);
+                              contrastB,
+                              contrastA);
+            break;
         }
         else
         {
-            ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
-            *this = ConvertTo(ToR8G8B8(),
+            *this = ToR8G8B8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8:
+    {
+        if (contrastA == 0)
+        {
+            *this = ConvertTo(*this,
                               mmImagePixelFormat::R8G8B8,
-                              get,
-                              epiVec3s{0, 1, 2},
-                              epiVec3s{0, 1, 2},
+                              &Color::GetRu,
+                              &Color::GetGu,
+                              &Color::GetBu,
+                              epiVec4s{0, 1, 2, 3},
+                              epiVec4s{0, 1, 2, 3},
                               &Color::Contrast,
                               contrastR,
                               contrastG,
-                              contrastB);
+                              contrastB,
+                              contrastA);
+            break;
         }
-    } break;
-    case mmImagePixelFormat::R8G8B8:
+        else
+        {
+            *this = ToR8G8B8A8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
-                          mmImagePixelFormat::R8G8B8,
+                          mmImagePixelFormat::R8G8B8A8,
                           get,
-                          epiVec3s{0, 1, 2},
-                          epiVec3s{0, 1, 2},
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
                           &Color::Contrast,
                           contrastR,
                           contrastG,
-                          contrastB);
+                          contrastB,
+                          contrastA);
     } break;
     }
-}
-
-void mmImage::ContrastStretch(epiU8 lower, epiU8 upper)
-{
-    ContrastStretch(lower, upper, lower, upper, lower, upper);
 }
 
 void mmImage::ContrastStretch(epiU8 lowerR,
@@ -415,147 +446,249 @@ void mmImage::ContrastStretch(epiU8 lowerR,
                               epiU8 lowerG,
                               epiU8 upperG,
                               epiU8 lowerB,
-                              epiU8 upperB)
+                              epiU8 upperB,
+                              epiU8 lowerA,
+                              epiU8 upperA)
 {
     if (lowerR >= upperR) epiLogWarn("lowerR=`{}` >= upperR=`{}`", lowerR, upperR);
     if (lowerG >= upperG) epiLogWarn("lowerG=`{}` >= upperG=`{}`", lowerG, upperG);
     if (lowerB >= upperB) epiLogWarn("lowerB=`{}` >= upperB=`{}`", lowerB, upperB);
+    if (lowerA >= upperA) epiLogWarn("lowerA=`{}` >= upperA=`{}`", lowerA, upperA);
 
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
         if (lowerR == lowerG && lowerG == lowerB &&
-            upperR == upperG && upperG == upperB)
+            upperR == upperG && upperG == upperB &&
+            lowerA == 0 && upperA == 0)
         {
             *this = ConvertTo(*this,
                               mmImagePixelFormat::GRAYSCALE,
                               &Color::GetLumau,
-                              epiVec3s{0, 0, 0},
-                              epiVec3s{0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
                               &Color::ContrastStretch,
                               lowerR,
                               upperR,
                               lowerG,
                               upperG,
                               lowerB,
-                              upperB);
+                              upperB,
+                              lowerA,
+                              upperA);
+            break;
         }
         else
         {
-            ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
-            *this = ConvertTo(ToR8G8B8(),
+            *this = ToR8G8B8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8:
+    {
+        if (lowerA == 0 && upperA == 0)
+        {
+            *this = ConvertTo(*this,
                               mmImagePixelFormat::R8G8B8,
-                              get,
-                              epiVec3s{0, 1, 2},
-                              epiVec3s{0, 1, 2},
+                              &Color::GetRu,
+                              &Color::GetGu,
+                              &Color::GetBu,
+                              epiVec4s{0, 1, 2, 3},
+                              epiVec4s{0, 1, 2, 3},
                               &Color::ContrastStretch,
                               lowerR,
                               upperR,
                               lowerG,
                               upperG,
                               lowerB,
-                              upperB);
+                              upperB,
+                              lowerA,
+                              upperA);
+            break;
         }
-    } break;
-    case mmImagePixelFormat::R8G8B8:
+        else
+        {
+            *this = ToR8G8B8A8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
-                          mmImagePixelFormat::R8G8B8,
+                          mmImagePixelFormat::R8G8B8A8,
                           get,
-                          epiVec3s{0, 1, 2},
-                          epiVec3s{0, 1, 2},
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
                           &Color::ContrastStretch,
                           lowerR,
                           upperR,
                           lowerG,
                           upperG,
                           lowerB,
-                          upperB);
+                          upperB,
+                          lowerA,
+                          upperA);
     } break;
     }
 }
 
-void mmImage::Shift(epiS32 shift)
-{
-    Shift(shift, shift, shift);
-}
-
-void mmImage::Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB)
+void mmImage::Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA)
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        *this = ConvertTo(*this,
-                          mmImagePixelFormat::GRAYSCALE,
-                          &Color::GetLumau,
-                          epiVec3s{0, 0, 0},
-                          epiVec3s{0, 0, 0},
-                          &Color::Shift,
-                          shiftR,
-                          shiftG,
-                          shiftB);
-    } break;
+        if (shiftR == shiftG && shiftG == shiftB && shiftA == 0)
+        {
+            *this = ConvertTo(*this,
+                              mmImagePixelFormat::GRAYSCALE,
+                              &Color::GetLumau,
+                              epiVec4s{0, 0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
+                              &Color::Shift,
+                              shiftR,
+                              shiftG,
+                              shiftB,
+                              shiftA);
+            break;
+        }
+        else
+        {
+            *this = ToR8G8B8();
+        }
+    }
     case mmImagePixelFormat::R8G8B8:
     {
-        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        if (shiftA == 0)
+        {
+            *this = ConvertTo(*this,
+                              mmImagePixelFormat::R8G8B8,
+                              &Color::GetRu,
+                              &Color::GetGu,
+                              &Color::GetBu,
+                              epiVec4s{0, 1, 2, 3},
+                              epiVec4s{0, 1, 2, 3},
+                              &Color::Shift,
+                              shiftR,
+                              shiftG,
+                              shiftB,
+                              shiftA);
+            break;
+        }
+        else
+        {
+            *this = ToR8G8B8A8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
-                          mmImagePixelFormat::R8G8B8,
+                          mmImagePixelFormat::R8G8B8A8,
                           get,
-                          epiVec3s{0, 1, 2},
-                          epiVec3s{0, 1, 2},
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
                           &Color::Shift,
                           shiftR,
                           shiftG,
-                          shiftB);
+                          shiftB,
+                          shiftA);
     } break;
     }
 }
 
-void mmImage::ShiftRotate(epiS32 shift)
-{
-    ShiftRotate(shift, shift, shift);
-}
-
-void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB)
+void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA)
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        *this = ConvertTo(*this,
-                          mmImagePixelFormat::GRAYSCALE,
-                          &Color::GetLumau,
-                          epiVec3s{0, 0, 0},
-                          epiVec3s{0, 0, 0},
-                          &Color::ShiftRotate,
-                          shiftR,
-                          shiftG,
-                          shiftB);
-    } break;
+        if (shiftR == shiftG && shiftG == shiftB && shiftA == 0)
+        {
+            *this = ConvertTo(*this,
+                              mmImagePixelFormat::GRAYSCALE,
+                              &Color::GetLumau,
+                              epiVec4s{0, 0, 0, 0},
+                              epiVec4s{0, 0, 0, 0},
+                              &Color::ShiftRotate,
+                              shiftR,
+                              shiftG,
+                              shiftB,
+                              shiftA);
+            break;
+        }
+        else
+        {
+            *this = ToR8G8B8();
+        }
+    }
     case mmImagePixelFormat::R8G8B8:
     {
-        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        if (shiftA == 0)
+        {
+            *this = ConvertTo(*this,
+                              mmImagePixelFormat::R8G8B8,
+                              &Color::GetRu,
+                              &Color::GetGu,
+                              &Color::GetBu,
+                              epiVec4s{0, 1, 2, 3},
+                              epiVec4s{0, 1, 2, 3},
+                              &Color::ShiftRotate,
+                              shiftR,
+                              shiftG,
+                              shiftB,
+                              shiftA);
+            break;
+        }
+        else
+        {
+            *this = ToR8G8B8A8();
+        }
+    }
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
-                          mmImagePixelFormat::R8G8B8,
+                          mmImagePixelFormat::R8G8B8A8,
                           get,
-                          epiVec3s{0, 1, 2},
-                          epiVec3s{0, 1, 2},
+                          epiVec4s{0, 1, 2, 3},
+                          epiVec4s{0, 1, 2, 3},
                           &Color::ShiftRotate,
                           shiftR,
                           shiftG,
-                          shiftB);
+                          shiftB,
+                          shiftA);
     } break;
     }
 }
 
 void mmImage::ConvolveWith(const cv::Mat& kernel)
 {
-    ConvolveWith(kernel, kernel, kernel);
+    epiAssert(kernel.channels() == 1);
+    epiAssert(kernel.depth() == CV_32F);
+    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
+
+    for (epiS32 r = 0; r < GetHeight(); ++r)
+    {
+        for (epiS32 c = 0; c < GetWidth(); ++c)
+        {
+            epiFloat sum = 0;
+            for (epiS32 kR = 0; kR < kernel.rows; ++kR)
+            {
+                for (epiS32 kC = 0; kC < kernel.cols; ++kC)
+                {
+                    const epiU8 pix = At(r + kR - kernel.rows / 2, c + kC - kernel.cols / 2, 0);
+                    const epiFloat pixKernel = kernel.at<epiFloat>(kR, kC);
+
+                    sum += pix * pixKernel;
+                }
+            }
+            At(r, c, 0) = static_cast<epiU8>(std::clamp(sum, 0.0f, 255.0f));
+        }
+    }
 }
 
+#if 0
 void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB)
 {
     epiAssert(kernelR.channels() == 1);
@@ -667,6 +800,7 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
     } break;
     }
 }
+#endif
 
 mmImage mmImage::Crop(const epiRect2u& crop) const
 {
@@ -705,6 +839,52 @@ mmImage mmImage::Crop(const epiRect2u& crop) const
     }
 
     return image;
+}
+
+void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint)
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        if (colorTint.GetRu() == colorTint.GetGu() && colorTint.GetGu() == colorTint.GetBu() && colorTint.GetAu() == 0xff)
+        {
+            for (epiS32 r = 0; r < image.GetHeight(); ++r)
+            {
+                for (epiS32 c = 0; c < image.GetWidth(); ++c)
+                {
+                    const Color color = image.At(r, c) * colorTint;
+
+                    At(r - shift.y, c + shift.x, 0) = color.GetLumau();
+                }
+            }
+
+            break;
+        }
+        else if (colorTint.GetAu() == 0xff)
+        {
+            *this = ToR8G8B8();
+        }
+        else
+        {
+            *this = ToR8G8B8A8();
+        }
+    };
+    case mmImagePixelFormat::R8G8B8:
+    {
+        for(epiS32 r = 0; r < image.GetHeight(); ++r)
+        {
+            for (epiS32 c = 0; c < image.GetWidth(); ++c)
+            {
+                const Color color = image.At(r, c) * colorTint;
+
+                At(r + shift.y, c + shift.x, 0) = color.GetRu();
+                At(r + shift.y, c + shift.x, 1) = color.GetGu();
+                At(r + shift.y, c + shift.x, 2) = color.GetBu();
+            }
+        }
+    } break;
+    }
 }
 
 dSeries2Dc mmImage::DFT() const
@@ -753,13 +933,12 @@ dSeries2Dc mmImage::DFT() const
 
 epiU8& mmImage::At(epiU32 r, epiU32 c, epiU32 channel)
 {
-    // TODO: implement different out of bounds handling
     const epiU32 w = static_cast<epiU32>(GetWidth());
     const epiU32 h = static_cast<epiU32>(GetHeight());
 
     const epiU32 channels = ChannelsOf(GetPixelFormat());
-    const epiU32 x = channels * std::clamp(c, 0u, w - 1) + channel;
-    const epiU32 y = std::clamp(r, 0u, h - 1);
+    const epiU32 x = channels * c + channel;
+    const epiU32 y = r;
 
     return GetData()[x + y * GetPitch()];
 }
@@ -775,6 +954,23 @@ epiU8 mmImage::At(epiU32 r, epiU32 c, epiU32 channel) const
     const epiU32 y = std::clamp(r, 0u, h - 1);
 
     return GetData()[x + y * GetPitch()];
+}
+
+Color mmImage::At(epiU32 r, epiU32 c) const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        const epiU8 x = At(r, c, 0);
+        return Color(x, x, x);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return Color(At(r, c, 0), At(r, c, 1), At(r, c, 2));
+    } break;
+    break;
+    }
 }
 
 mmImage mmImage::ToGrayScaleR() const
@@ -882,7 +1078,7 @@ mmImage mmImage::ToGrayScale_Internal(epiU8(Color::*get)() const) const
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, get, epiVec3s{0, 1, 2});
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, get, epiVec4s{0, 1, 2, 3});
     } break;
     }
 
@@ -895,22 +1091,51 @@ mmImage mmImage::ToR8G8B8() const
 {
     switch (GetPixelFormat())
     {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return ConvertTo(*this,
+                         mmImagePixelFormat::R8G8B8,
+                         &Color::GetLumau,
+                         epiVec4s{0, 0, 0, 0},
+                         epiVec4s{0, 1, 2, 3});
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    {
+        return ConvertTo(*this,
+                         mmImagePixelFormat::R8G8B8,
+                         &Color::GetRu,
+                         &Color::GetGu,
+                         &Color::GetBu,
+                         epiVec4s{0, 1, 2, 3},
+                         epiVec4s{0, 1, 2, 3});
+    } break;
+    }
+
+    // TODO: retrieve string representation
+    epiLogError("Unhandled pixel fmt=`{}` while converting image", GetPixelFormat());
+    return mmImage{};
+}
+
+mmImage mmImage::ToR8G8B8A8() const
+{
+    switch (GetPixelFormat())
+    {
     case mmImagePixelFormat::R8G8B8:
     {
         ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
         return ConvertTo(*this,
                          mmImagePixelFormat::R8G8B8,
                          get,
-                         epiVec3s{0, 1, 2},
-                         epiVec3s{0, 1, 2});
+                         epiVec4s{0, 1, 2, 3},
+                         epiVec4s{0, 1, 2, 3});
     } break;
     case mmImagePixelFormat::GRAYSCALE:
     {
         return ConvertTo(*this,
                          mmImagePixelFormat::R8G8B8,
                          &Color::GetLumau,
-                         epiVec3s{0, 0, 0},
-                         epiVec3s{0, 1, 2});
+                         epiVec4s{0, 0, 0, 0},
+                         epiVec4s{0, 1, 2, 3});
     } break;
     }
 

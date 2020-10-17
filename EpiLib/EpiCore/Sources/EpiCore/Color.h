@@ -176,18 +176,20 @@ protected:
     epiBool Validate() const;
 
 public:
-    Color Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB) const;
+    Color Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA = 0) const;
     Color Negative() const;
-    Color Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB) const;
-    Color Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB) const;
+    Color Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB, epiFloat gammaA = 1.0f) const;
+    Color Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB, epiS8 contrastA = 0) const;
     Color ContrastStretch(epiU8 lowerR,
                           epiU8 upperR,
                           epiU8 lowerG,
                           epiU8 upperG,
                           epiU8 lowerB,
-                          epiU8 upperB) const;
-    Color Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const;
-    Color ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const;
+                          epiU8 upperB,
+                          epiU8 lowerA = 0,
+                          epiU8 upperA = 0) const;
+    Color Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0) const;
+    Color ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0) const;
 
     Color& operator+=(const Color& rhs);
     Color& operator*=(const Color& rhs);

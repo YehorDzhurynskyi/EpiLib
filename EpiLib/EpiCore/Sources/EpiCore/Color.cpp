@@ -99,13 +99,14 @@ epiBool Color::Validate() const
     return isValid;
 }
 
-Color Color::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB) const
+Color Color::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA) const
 {
     const epiU8 r = GetRu();
     const epiU8 g = GetGu();
     const epiU8 b = GetBu();
+    const epiU8 a = GetAu();
 
-    return Color(r >= thrR ? r : 0, g >= thrG ? g : 0, b >= thrB ? b : 0);
+    return Color(r >= thrR ? r : 0, g >= thrG ? g : 0, b >= thrB ? b : 0, a >= thrA ? a : 0);
 }
 
 Color Color::Negative() const
@@ -113,12 +114,15 @@ Color Color::Negative() const
     return Color(255 - GetRu(), 255 - GetGu(), 255 - GetBu());
 }
 
-Color Color::Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB) const
+Color Color::Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB, epiFloat gammaA) const
 {
-    return Color(std::pow(GetRf(), 1.0f / gammaR), std::pow(GetGf(), 1.0f / gammaG), std::pow(GetBf(), 1.0f / gammaB));
+    return Color(std::pow(GetRf(), 1.0f / gammaR),
+                 std::pow(GetGf(), 1.0f / gammaG),
+                 std::pow(GetBf(), 1.0f / gammaB),
+                 std::pow(GetAf(), 1.0f / gammaA));
 }
 
-Color Color::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB) const
+Color Color::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB, epiS8 contrastA) const
 {
 #if 0 // TODO: investigate this filter
     Color color;
@@ -136,11 +140,12 @@ Color Color::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB) const
     const epiFloat fR = (259.0f * (255.0f + contrastR)) / (255.0f * (259.0f - contrastR));
     const epiFloat fG = (259.0f * (255.0f + contrastG)) / (255.0f * (259.0f - contrastG));
     const epiFloat fB = (259.0f * (255.0f + contrastB)) / (255.0f * (259.0f - contrastB));
+    const epiFloat fA = (259.0f * (255.0f + contrastA)) / (255.0f * (259.0f - contrastA));
 
     color.SetRu(std::clamp(static_cast<epiS32>(fR * (GetRu() - 128) + 128), 0, 255));
     color.SetGu(std::clamp(static_cast<epiS32>(fG * (GetGu() - 128) + 128), 0, 255));
     color.SetBu(std::clamp(static_cast<epiS32>(fB * (GetBu() - 128) + 128), 0, 255));
-    color.SetAu(GetAu());
+    color.SetAu(std::clamp(static_cast<epiS32>(fA * (GetAu() - 128) + 128), 0, 255));
 
     return color;
 #endif
@@ -151,25 +156,29 @@ Color Color::ContrastStretch(epiU8 lowerR,
                              epiU8 lowerG,
                              epiU8 upperG,
                              epiU8 lowerB,
-                             epiU8 upperB) const
+                             epiU8 upperB,
+                             epiU8 lowerA,
+                             epiU8 upperA) const
 {
     const epiU8 r = lowerR >= upperR ? GetRu() : static_cast<epiU8>(std::clamp((255.0f / (upperR - lowerR)) * (GetRu() - lowerR), 0.0f, 255.0f));
     const epiU8 g = lowerG >= upperG ? GetGu() : static_cast<epiU8>(std::clamp((255.0f / (upperG - lowerG)) * (GetGu() - lowerG), 0.0f, 255.0f));
     const epiU8 b = lowerB >= upperB ? GetBu() : static_cast<epiU8>(std::clamp((255.0f / (upperB - lowerB)) * (GetBu() - lowerB), 0.0f, 255.0f));
+    const epiU8 a = lowerA >= upperA ? GetAu() : static_cast<epiU8>(std::clamp((255.0f / (upperA - lowerA)) * (GetAu() - lowerA), 0.0f, 255.0f));
 
-    return Color(r, g, b);
+    return Color(r, g, b, a);
 }
 
-Color Color::Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const
+Color Color::Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA) const
 {
     const epiU8 r = std::clamp(shiftR + GetRu(), 0, 255);
     const epiU8 g = std::clamp(shiftG + GetGu(), 0, 255);
     const epiU8 b = std::clamp(shiftB + GetBu(), 0, 255);
+    const epiU8 a = std::clamp(shiftA + GetAu(), 0, 255);
 
-    return Color(r, g, b);
+    return Color(r, g, b, a);
 }
 
-Color Color::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const
+Color Color::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA) const
 {
     epiS32 r = (shiftR + GetRu()) % 256;
     if (r < 0)
@@ -189,7 +198,13 @@ Color Color::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB) const
         b += 255;
     }
 
-    return Color(r, g, b);
+    epiS32 a = (shiftA + GetAu()) % 256;
+    if (a < 0)
+    {
+        a += 255;
+    }
+
+    return Color(r, g, b, a);
 }
 
 epiU8 Color::GetRu_Callback() const

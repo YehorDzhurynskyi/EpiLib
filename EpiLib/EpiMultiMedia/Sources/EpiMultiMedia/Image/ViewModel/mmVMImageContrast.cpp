@@ -18,14 +18,14 @@ void mmVMImageContrast::SetContrastR_Callback(epiS8 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageR = image->ToGrayScaleR();
-            imageR.Contrast(value);
+            imageR.Contrast(value, value, value);
 
             SetImageR(imageR);
 
             if (GetIsContrastSynchronized())
             {
                 mmImage imageG = image->ToGrayScaleG();
-                imageG.Contrast(value);
+                imageG.Contrast(value, value, value);
 
                 SetImageG(imageG);
 
@@ -33,7 +33,7 @@ void mmVMImageContrast::SetContrastR_Callback(epiS8 value)
                 epiPropertyChangedCheckAndTrigger(ContrastStretchG, epiVec2u8{});
 
                 mmImage imageB = image->ToGrayScaleB();
-                imageB.Contrast(value);
+                imageB.Contrast(value, value, value);
 
                 SetImageB(imageB);
 
@@ -54,14 +54,14 @@ void mmVMImageContrast::SetContrastG_Callback(epiS8 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageG = image->ToGrayScaleG();
-            imageG.Contrast(value);
+            imageG.Contrast(value, value, value);
 
             SetImageG(imageG);
 
             if (GetIsContrastSynchronized())
             {
                 mmImage imageR = image->ToGrayScaleR();
-                imageR.Contrast(value);
+                imageR.Contrast(value, value, value);
 
                 SetImageR(imageR);
 
@@ -69,7 +69,7 @@ void mmVMImageContrast::SetContrastG_Callback(epiS8 value)
                 epiPropertyChangedCheckAndTrigger(ContrastStretchR, epiVec2u8{});
 
                 mmImage imageB = image->ToGrayScaleB();
-                imageB.Contrast(value);
+                imageB.Contrast(value, value, value);
 
                 SetImageB(imageB);
 
@@ -90,14 +90,14 @@ void mmVMImageContrast::SetContrastB_Callback(epiS8 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageB = image->ToGrayScaleB();
-            imageB.Contrast(value);
+            imageB.Contrast(value, value, value);
 
             SetImageB(imageB);
 
             if (GetIsContrastSynchronized())
             {
                 mmImage imageR = image->ToGrayScaleR();
-                imageR.Contrast(value);
+                imageR.Contrast(value, value, value);
 
                 SetImageR(imageR);
 
@@ -105,7 +105,7 @@ void mmVMImageContrast::SetContrastB_Callback(epiS8 value)
                 epiPropertyChangedCheckAndTrigger(ContrastStretchR, epiVec2u8{});
 
                 mmImage imageG = image->ToGrayScaleG();
-                imageG.Contrast(value);
+                imageG.Contrast(value, value, value);
 
                 SetImageG(imageG);
 
@@ -131,14 +131,14 @@ void mmVMImageContrast::SetContrastStretchR_Callback(const epiVec2u8& value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageR = image->ToGrayScaleR();
-            imageR.ContrastStretch(value.x, value.y);
+            imageR.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
             SetImageR(imageR);
 
             if (GetIsContrastStretchSynchronized())
             {
                 mmImage imageG = image->ToGrayScaleG();
-                imageG.ContrastStretch(value.x, value.y);
+                imageG.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
                 SetImageG(imageG);
 
@@ -146,7 +146,7 @@ void mmVMImageContrast::SetContrastStretchR_Callback(const epiVec2u8& value)
                 epiPropertyChangedCheckAndTrigger(ContrastG, epiS8{});
 
                 mmImage imageB = image->ToGrayScaleB();
-                imageB.ContrastStretch(value.x, value.y);
+                imageB.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
                 SetImageB(imageB);
 
@@ -167,14 +167,14 @@ void mmVMImageContrast::SetContrastStretchG_Callback(const epiVec2u8& value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageG = image->ToGrayScaleG();
-            imageG.ContrastStretch(value.x, value.y);
+            imageG.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
             SetImageG(imageG);
 
             if (GetIsContrastStretchSynchronized())
             {
                 mmImage imageR = image->ToGrayScaleR();
-                imageR.ContrastStretch(value.x, value.y);
+                imageR.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
                 SetImageR(imageR);
 
@@ -182,7 +182,7 @@ void mmVMImageContrast::SetContrastStretchG_Callback(const epiVec2u8& value)
                 epiPropertyChangedCheckAndTrigger(ContrastR, epiS8{});
 
                 mmImage imageB = image->ToGrayScaleB();
-                imageB.ContrastStretch(value.x, value.y);
+                imageB.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
                 SetImageB(imageB);
 
@@ -203,14 +203,14 @@ void mmVMImageContrast::SetContrastStretchB_Callback(const epiVec2u8& value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageB = image->ToGrayScaleB();
-            imageB.ContrastStretch(value.x, value.y);
+            imageB.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
             SetImageB(imageB);
 
             if (GetIsContrastStretchSynchronized())
             {
                 mmImage imageR = image->ToGrayScaleR();
-                imageR.ContrastStretch(value.x, value.y);
+                imageR.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
                 SetImageR(imageR);
 
@@ -218,7 +218,7 @@ void mmVMImageContrast::SetContrastStretchB_Callback(const epiVec2u8& value)
                 epiPropertyChangedCheckAndTrigger(ContrastR, epiS8{});
 
                 mmImage imageG = image->ToGrayScaleG();
-                imageG.ContrastStretch(value.x, value.y);
+                imageG.ContrastStretch(value.x, value.y, value.x, value.y, value.x, value.y);
 
                 SetImageG(imageG);
 

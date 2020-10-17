@@ -42,7 +42,6 @@ epiFloat& dSeries1Df::PushBack(epiFloat&& value)
     return GetData().PushBack(std::move(value));
 }
 
-
 using namespace std::complex_literals;
 
 dSeries1Dc dSeries1Df::DFT() const

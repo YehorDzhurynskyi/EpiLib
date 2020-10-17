@@ -17,21 +17,21 @@ void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageR = image->ToGrayScaleR();
-            imageR.Threshold(value);
+            imageR.Threshold(value, value, value);
 
             SetImageR(imageR);
 
             if (GetIsThresholdSynchronized())
             {
                 mmImage imageG = image->ToGrayScaleG();
-                imageG.Threshold(value);
+                imageG.Threshold(value, value, value);
 
                 SetImageG(imageG);
 
                 epiPropertyChangedCheckAndTrigger(ThresholdG, value);
 
                 mmImage imageB = image->ToGrayScaleB();
-                imageB.Threshold(value);
+                imageB.Threshold(value, value, value);
 
                 SetImageB(imageB);
 
@@ -50,21 +50,21 @@ void mmVMImageThreshold::SetThresholdG_Callback(epiU8 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageG = image->ToGrayScaleG();
-            imageG.Threshold(value);
+            imageG.Threshold(value, value, value);
 
             SetImageG(imageG);
 
             if (GetIsThresholdSynchronized())
             {
                 mmImage imageR = image->ToGrayScaleR();
-                imageR.Threshold(value);
+                imageR.Threshold(value, value, value);
 
                 SetImageR(imageR);
 
                 epiPropertyChangedCheckAndTrigger(ThresholdR, value);
 
                 mmImage imageB = image->ToGrayScaleB();
-                imageB.Threshold(value);
+                imageB.Threshold(value, value, value);
 
                 SetImageB(imageB);
 
@@ -83,21 +83,21 @@ void mmVMImageThreshold::SetThresholdB_Callback(epiU8 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageB = image->ToGrayScaleB();
-            imageB.Threshold(value);
+            imageB.Threshold(value, value, value);
 
             SetImageB(imageB);
 
             if (GetIsThresholdSynchronized())
             {
                 mmImage imageR = image->ToGrayScaleR();
-                imageR.Threshold(value);
+                imageR.Threshold(value, value, value);
 
                 SetImageR(imageR);
 
                 epiPropertyChangedCheckAndTrigger(ThresholdR, value);
 
                 mmImage imageG = image->ToGrayScaleG();
-                imageG.Threshold(value);
+                imageG.Threshold(value, value, value);
 
                 SetImageG(imageG);
 

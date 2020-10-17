@@ -19,7 +19,8 @@ enum class mmImagePixelFormat : epiS32
 {
 EPI_GENREGION_BEGIN(mmImagePixelFormat)
     R8G8B8 = 0,
-    GRAYSCALE = 1
+    R8G8B8A8 = 1,
+    GRAYSCALE = 2
 EPI_GENREGION_END(mmImagePixelFormat)
 };
 
@@ -63,39 +64,36 @@ public:
 public:
     mmImage Duplicate() const; // TODO: replace with auto-generated method
 
-    void Histogram(dSeries1Df& histogram) const;
-    void HistogramPerChannel(dSeries1Df& histogramR, dSeries1Df& histogramG, dSeries1Df& histogramB) const;
+    void Histogram(dSeries1Df& histogram, epiU8 (Color::*get)() const) const;
     void HistogramEqualize();
 
-    void Threshold(epiU8 thr);
-    void Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB);
+    void Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA = 0);
     void Negative();
-    void Gamma(epiFloat gamma);
-    void Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB);
-    void Contrast(epiS8 contrast);
-    void Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB);
-    void ContrastStretch(epiU8 lower, epiU8 upper);
+    void Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB, epiFloat gammaA = 1.0f);
+    void Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB, epiS8 contrastA = 0);
     void ContrastStretch(epiU8 lowerR,
                          epiU8 upperR,
                          epiU8 lowerG,
                          epiU8 upperG,
                          epiU8 lowerB,
-                         epiU8 upperB);
+                         epiU8 upperB,
+                         epiU8 lowerA = 0,
+                         epiU8 upperA = 0);
 
-    void Shift(epiS32 shift);
-    void Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB);
-    void ShiftRotate(epiS32 shift);
-    void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB);
+    void Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
+    void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
 
     void ConvolveWith(const cv::Mat& kernel);
-    void ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB);
 
     mmImage Crop(const epiRect2u& crop) const;
+
+    void Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint = Color(1.0f, 1.0f, 1.0f, 1.0f));
 
     dSeries2Dc DFT() const;
 
     epiU8& At(epiU32 r, epiU32 c, epiU32 channel);
     epiU8 At(epiU32 r, epiU32 c, epiU32 channel) const;
+    Color At(epiU32 r, epiU32 c) const;
 
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;
@@ -118,6 +116,7 @@ public:
     mmImage ToGrayScaleSaturationI() const;
 
     mmImage ToR8G8B8() const;
+    mmImage ToR8G8B8A8() const;
 
 protected:
     mmImage ToGrayScale_Internal(epiU8 (Color::*get)() const) const;

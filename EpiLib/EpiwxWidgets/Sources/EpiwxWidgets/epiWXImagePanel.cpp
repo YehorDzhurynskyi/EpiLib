@@ -2,12 +2,13 @@
 
 #include "EpiwxWidgets/epiWXObjectConfigurationPanel.h"
 
-
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageContrast.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageHSB.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageThreshold.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageGamma.h"
+
+#include "EpiData/Series/dSeries2Dc.h"
 
 #include <wx/dcclient.h>
 #include <wx/menu.h>
@@ -411,6 +412,49 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt = m_ImageTgt.Crop(crop);
         Refresh();
     } break;
+    case ID_IMAGE_PANEL_DFT_MAGNITUDE:
+    {
+        const epi::dSeries2Dc series = m_ImageTgt.DFT();
+
+        epi::mmImage dft;
+        dft.SetPixelFormat(epi::mmImagePixelFormat::GRAYSCALE);
+        dft.SetWidth(series.GetWidth());
+        dft.SetHeight(series.GetHeight());
+        dft.GetData().Resize(dft.GetPitch() * dft.GetHeight());
+
+        const auto itMax = std::max_element(series.begin(), series.end(), [](const epiComplexf& lhs, const epiComplexf& rhs)
+        {
+            return std::abs(lhs) < std::abs(rhs);
+        });
+        const epiFloat max = itMax != series.end() ? std::abs(*itMax) : 1.0f;
+
+        for (epiS32 r = 0; r < series.GetHeight(); ++r)
+        {
+            for (epiS32 c = 0; c < series.GetWidth(); ++c)
+            {
+                dft.GetData()[c + r * series.GetWidth()] = series.AtAbs(r, c) / max;
+            }
+        }
+
+        // TODO: open another image view
+        m_ImageTgt = dft;
+        Refresh();
+    } break;
+    case ID_IMAGE_PANEL_DFT_PHASE:
+    {
+    } break;
+    case ID_IMAGE_PANEL_SUPER_COOL_EFFECT:
+    {
+        const epi::mmImage r = m_ImageTgt.ToGrayScaleR();
+
+        m_ImageTgt = m_ImageTgt.ToGrayScaleLuma();
+        m_ImageTgt.ContrastStretch(0, 0, 0, 0, 0, 50);
+        m_ImageTgt.Contrast(87, -92, 0);
+
+        m_ImageTgt.Overlap(r, epiVec2s{-30, 10}, epi::Color(1.0f, 0.0f, 0.0f, 1.0f));
+
+        Refresh();
+    } break;
     }
 }
 
@@ -454,6 +498,11 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_HORIZONTAL_FILTER, wxT("&Edge Detection Filter (Sober Horizontally)"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_CROP, wxT("&Crop"));
+    contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_DFT_MAGNITUDE, wxT("&DFT (Magnitude)"));
+    contextMenu.Append(ID_IMAGE_PANEL_DFT_PHASE, wxT("&DFT (Phase)"));
+    contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_SUPER_COOL_EFFECT, wxT("&Super Cool Effect"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_RESET, wxT("&Reset"));
 }

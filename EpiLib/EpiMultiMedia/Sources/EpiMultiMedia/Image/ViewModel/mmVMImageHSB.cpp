@@ -12,7 +12,7 @@ void mmVMImageHSB::SetHue_Callback(epiS32 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageH = image->ToGrayScaleHue();
-            imageH.ShiftRotate(value);
+            imageH.ShiftRotate(value, value, value);
 
             SetImageHue(imageH);
         }
@@ -28,7 +28,7 @@ void mmVMImageHSB::SetSaturation_Callback(epiS32 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageS = image->ToGrayScaleSaturationB();
-            imageS.Shift(value);
+            imageS.Shift(value, value, value);
 
             SetImageSaturation(imageS);
         }
@@ -44,7 +44,7 @@ void mmVMImageHSB::SetBrightness_Callback(epiS32 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageB = image->ToGrayScaleBrightness();
-            imageB.Shift(value);
+            imageB.Shift(value, value, value);
 
             SetImageBrightness(imageB);
         }

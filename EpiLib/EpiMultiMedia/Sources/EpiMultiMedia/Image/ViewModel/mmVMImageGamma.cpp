@@ -20,21 +20,21 @@ void mmVMImageGamma::SetGammaR_Callback(epiFloat value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageR = image->ToGrayScaleR();
-            imageR.Gamma(value);
+            imageR.Gamma(value, value, value);
 
             SetImageR(imageR);
 
             if (GetIsGammaSynchronized())
             {
                 mmImage imageG = image->ToGrayScaleG();
-                imageG.Gamma(value);
+                imageG.Gamma(value, value, value);
 
                 SetImageG(imageG);
 
                 epiPropertyChangedCheckAndTrigger(GammaG, value);
 
                 mmImage imageB = image->ToGrayScaleB();
-                imageB.Gamma(value);
+                imageB.Gamma(value, value, value);
 
                 SetImageB(imageB);
 
@@ -53,21 +53,21 @@ void mmVMImageGamma::SetGammaG_Callback(epiFloat value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageG = image->ToGrayScaleG();
-            imageG.Gamma(value);
+            imageG.Gamma(value, value, value);
 
             SetImageG(imageG);
 
             if (GetIsGammaSynchronized())
             {
                 mmImage imageR = image->ToGrayScaleR();
-                imageR.Gamma(value);
+                imageR.Gamma(value, value, value);
 
                 SetImageR(imageR);
 
                 epiPropertyChangedCheckAndTrigger(GammaR, value);
 
                 mmImage imageB = image->ToGrayScaleB();
-                imageB.Gamma(value);
+                imageB.Gamma(value, value, value);
 
                 SetImageB(imageB);
 
@@ -86,21 +86,21 @@ void mmVMImageGamma::SetGammaB_Callback(epiFloat value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageB = image->ToGrayScaleB();
-            imageB.Gamma(value);
+            imageB.Gamma(value, value, value);
 
             SetImageB(imageB);
 
             if (GetIsGammaSynchronized())
             {
                 mmImage imageR = image->ToGrayScaleR();
-                imageR.Gamma(value);
+                imageR.Gamma(value, value, value);
 
                 SetImageR(imageR);
 
                 epiPropertyChangedCheckAndTrigger(GammaR, value);
 
                 mmImage imageG = image->ToGrayScaleG();
-                imageG.Gamma(value);
+                imageG.Gamma(value, value, value);
 
                 SetImageG(imageG);
 
