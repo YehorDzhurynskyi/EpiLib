@@ -24,6 +24,18 @@ EPI_GENREGION_BEGIN(mmImagePixelFormat)
 EPI_GENREGION_END(mmImagePixelFormat)
 };
 
+enum class mmImageEdgeHandling : epiS32
+{
+EPI_GENREGION_BEGIN(mmImageEdgeHandling)
+    Error = 0,
+    Zero = 1,
+    FF = 2,
+    Extend = 3,
+    Wrap = 4,
+    Mirror = 5
+EPI_GENREGION_END(mmImageEdgeHandling)
+};
+
 class mmImage : public mmMediaBase
 {
 EPI_GENREGION_BEGIN(mmImage)
@@ -58,8 +70,8 @@ protected:
 EPI_GENREGION_END(mmImage)
 
 public:
-    static epiU32 BitDepthOf(mmImagePixelFormat fmt);
-    static epiU32 ChannelsOf(mmImagePixelFormat fmt);
+    static constexpr epiU32 BitDepthOf(mmImagePixelFormat fmt);
+    static constexpr epiU32 ChannelsOf(mmImagePixelFormat fmt);
 
 public:
     mmImage Duplicate() const; // TODO: replace with auto-generated method
@@ -83,17 +95,18 @@ public:
     void Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
     void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
 
-    void ConvolveWith(const cv::Mat& kernel);
+    void ConvolveWith(const cv::Mat& kernel, mmImageEdgeHandling edge = mmImageEdgeHandling::Extend);
+    void ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB, mmImageEdgeHandling edge = mmImageEdgeHandling::Extend);
 
-    mmImage Crop(const epiRect2u& crop) const;
+    mmImage Crop(const epiRect2u& crop, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
 
     void Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint = Color(1.0f, 1.0f, 1.0f, 1.0f));
 
     dSeries2Dc DFT() const;
 
-    epiU8& At(epiU32 r, epiU32 c, epiU32 channel);
-    epiU8 At(epiU32 r, epiU32 c, epiU32 channel) const;
-    Color At(epiU32 r, epiU32 c) const;
+    epiU8& At(epiS32 r, epiS32 c, epiU32 channel);
+    epiU8 At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) const;
+    Color At(epiS32 r, epiS32 c, mmImageEdgeHandling edge) const;
 
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;

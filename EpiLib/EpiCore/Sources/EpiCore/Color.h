@@ -8,6 +8,22 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+enum class ColorBlending : epiS32
+{
+EPI_GENREGION_BEGIN(ColorBlending)
+    Zero = 0,
+    One = 1,
+    SourceColor = 2,
+    OneMinusSourceColor = 3,
+    DestinationColor = 4,
+    OneMinusDestinationColor = 5,
+    SourceAlpha = 6,
+    OneMinusSourceAlpha = 7,
+    DestinationAlpha = 8,
+    OneMinusDestinationAlpha = 9
+EPI_GENREGION_END(ColorBlending)
+};
+
 class Color final : public Object
 {
 EPI_GENREGION_BEGIN(Color)
@@ -132,8 +148,6 @@ protected:
     epiVec3u8 GetHSLu_Callback() const;
     epiVec3f GetHSIf_Callback() const;
     epiVec3u8 GetHSIu_Callback() const;
-    const epiVec4f& GetColor_Callback() const;
-    void SetColor_Callback(const epiVec4f& value);
 
 protected:
     epiVec4f m_Color{};
@@ -190,6 +204,10 @@ public:
                           epiU8 upperA = 0) const;
     Color Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0) const;
     Color ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0) const;
+
+    Color Blend(const Color& colorSrc,
+                ColorBlending blendingSrc = ColorBlending::SourceAlpha,
+                ColorBlending blendingDst = ColorBlending::OneMinusSourceAlpha) const;
 
     Color& operator+=(const Color& rhs);
     Color& operator*=(const Color& rhs);

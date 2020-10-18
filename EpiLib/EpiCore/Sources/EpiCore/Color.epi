@@ -1,3 +1,17 @@
+enum ColorBlending
+{
+    Zero,
+    One,
+    SourceColor,
+    OneMinusSourceColor,
+    DestinationColor,
+    OneMinusDestinationColor,
+    SourceAlpha,
+    OneMinusSourceAlpha,
+    DestinationAlpha,
+    OneMinusDestinationAlpha
+};
+
 class Color
 {
     [Virtual]
@@ -78,6 +92,5 @@ class Color
         }
     }
 
-    [ReadCallback, WriteCallback]
     epiVec4f Color;
 };

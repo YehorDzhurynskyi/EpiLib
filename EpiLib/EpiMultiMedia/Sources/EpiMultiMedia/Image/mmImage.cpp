@@ -36,10 +36,29 @@ mmImage ConvertTo(const mmImage& from,
     toData.Resize(fromData.Size() / (fromChannels / static_cast<epiFloat>(toChannels)));
     for (epiU32 i = 0; i < toData.Size() / toChannels; ++i)
     {
-        Color color(fromData[i * fromChannels + strideFrom.x],
-                    fromData[i * fromChannels + strideFrom.y],
-                    fromData[i * fromChannels + strideFrom.z],
-                    fromData[i * fromChannels + strideFrom.w]);
+        Color color;
+        switch (from.GetPixelFormat())
+        {
+        case mmImagePixelFormat::GRAYSCALE:
+        {
+            const epiU8 col = fromData[i];
+
+            color.SetRu(col);
+            color.SetGu(col);
+            color.SetBu(col);
+        } break;
+        case mmImagePixelFormat::R8G8B8:
+        {
+            color.SetAu(0xff);
+        }
+        case mmImagePixelFormat::R8G8B8A8:
+        {
+            for (epiU32 c = 0; c < fromChannels; ++c)
+            {
+                color.GetColor()[c] = fromData[i * fromChannels + strideFrom[c]] / 255.0f;
+            }
+        }
+        }
 
         if (transform != nullptr)
         {
@@ -79,7 +98,7 @@ mmImage ConvertTo(const mmImage& from,
                   Transform&& transform = nullptr,
                   TransformArgs&& ...transformArgs)
 {
-    ColorGetCallback getcallbacks[4]{get, nullptr, nullptr, nullptr};
+    ColorGetCallback getcallbacks[4]{get, get, get, get};
     return ConvertTo(from, toFmt, getcallbacks, strideFrom, strideTo, transform, std::forward<TransformArgs>(transformArgs)...);
 }
 
@@ -87,12 +106,12 @@ mmImage ConvertTo(const mmImage& from,
 
 EPI_NAMESPACE_BEGIN()
 
-epiU32 mmImage::BitDepthOf(mmImagePixelFormat fmt)
+constexpr epiU32 mmImage::BitDepthOf(mmImagePixelFormat fmt)
 {
     return ChannelsOf(fmt) * 8;
 }
 
-epiU32 mmImage::ChannelsOf(mmImagePixelFormat fmt)
+constexpr epiU32 mmImage::ChannelsOf(mmImagePixelFormat fmt)
 {
     switch (fmt)
     {
@@ -127,7 +146,7 @@ void mmImage::Histogram(dSeries1Df& histogram, epiU8(Color::*get)() const) const
     {
         for (epiS32 c = 0; c < GetWidth(); ++c)
         {
-            const Color color = At(r, c);
+            const Color color = At(r, c, mmImageEdgeHandling::Error);
             histogram[(color.*get)()] += 1.0f;
         }
     }
@@ -662,34 +681,12 @@ void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 sh
     }
 }
 
-void mmImage::ConvolveWith(const cv::Mat& kernel)
+void mmImage::ConvolveWith(const cv::Mat& kernel, mmImageEdgeHandling edge)
 {
-    epiAssert(kernel.channels() == 1);
-    epiAssert(kernel.depth() == CV_32F);
-    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
-
-    for (epiS32 r = 0; r < GetHeight(); ++r)
-    {
-        for (epiS32 c = 0; c < GetWidth(); ++c)
-        {
-            epiFloat sum = 0;
-            for (epiS32 kR = 0; kR < kernel.rows; ++kR)
-            {
-                for (epiS32 kC = 0; kC < kernel.cols; ++kC)
-                {
-                    const epiU8 pix = At(r + kR - kernel.rows / 2, c + kC - kernel.cols / 2, 0);
-                    const epiFloat pixKernel = kernel.at<epiFloat>(kR, kC);
-
-                    sum += pix * pixKernel;
-                }
-            }
-            At(r, c, 0) = static_cast<epiU8>(std::clamp(sum, 0.0f, 255.0f));
-        }
-    }
+    ConvolveWith(kernel, kernel, kernel, edge);
 }
 
-#if 0
-void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB)
+void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB, mmImageEdgeHandling edge)
 {
     epiAssert(kernelR.channels() == 1);
     epiAssert(kernelG.channels() == 1);
@@ -735,7 +732,7 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
                     {
                         for (epiS32 kC = 0; kC < kernelR.cols; ++kC)
                         {
-                            const epiU8 pix = At(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0);
+                            const epiU8 pix = At(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0, edge);
                             const epiFloat pixKernel = kernelR.at<epiFloat>(kR, kC);
 
                             sum += pix * pixKernel;
@@ -752,6 +749,7 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
         }
     }
     case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
     {
         for (epiS32 r = 0; r < GetHeight(); ++r)
         {
@@ -762,7 +760,7 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
                 {
                     for (epiS32 kC = 0; kC < kernelR.cols; ++kC)
                     {
-                        const epiU8 pix = At(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0);
+                        const epiU8 pix = At(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0, edge);
                         const epiFloat pixKernel = kernelR.at<epiFloat>(kR, kC);
 
                         sumR += pix * pixKernel;
@@ -775,7 +773,7 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
                 {
                     for (epiS32 kC = 0; kC < kernelG.cols; ++kC)
                     {
-                        const epiU8 pix = At(r + kR - kernelG.rows / 2, c + kC - kernelG.cols / 2, 1);
+                        const epiU8 pix = At(r + kR - kernelG.rows / 2, c + kC - kernelG.cols / 2, 1, edge);
                         const epiFloat pixKernel = kernelG.at<epiFloat>(kR, kC);
 
                         sumG += pix * pixKernel;
@@ -788,7 +786,7 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
                 {
                     for (epiS32 kC = 0; kC < kernelB.cols; ++kC)
                     {
-                        const epiU8 pix = At(r + kR - kernelB.rows / 2, c + kC - kernelB.cols / 2, 2);
+                        const epiU8 pix = At(r + kR - kernelB.rows / 2, c + kC - kernelB.cols / 2, 2, edge);
                         const epiFloat pixKernel = kernelB.at<epiFloat>(kR, kC);
 
                         sumB += pix * pixKernel;
@@ -800,9 +798,8 @@ void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const
     } break;
     }
 }
-#endif
 
-mmImage mmImage::Crop(const epiRect2u& crop) const
+mmImage mmImage::Crop(const epiRect2u& crop, mmImageEdgeHandling edge) const
 {
     const epiS32 cX1 = crop.Left;
     const epiS32 cY1 = std::min(static_cast<epiS32>(crop.Bottom + crop.GetHeight()), static_cast<epiS32>(GetHeight()));
@@ -833,7 +830,7 @@ mmImage mmImage::Crop(const epiRect2u& crop) const
         {
             for (epiS32 ch = 0; ch < ChannelsOf(image.GetPixelFormat()); ++ch)
             {
-                image.At(rr, c, ch) = At(cRR, cC, ch);
+                image.At(rr, c, ch) = At(cRR, cC, ch, edge);
             }
         }
     }
@@ -853,7 +850,7 @@ void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& 
             {
                 for (epiS32 c = 0; c < image.GetWidth(); ++c)
                 {
-                    const Color color = image.At(r, c) * colorTint;
+                    const Color color = image.At(r, c, mmImageEdgeHandling::Error) * colorTint;
 
                     At(r - shift.y, c + shift.x, 0) = color.GetLumau();
                 }
@@ -861,26 +858,36 @@ void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& 
 
             break;
         }
-        else if (colorTint.GetAu() == 0xff)
+        else
         {
             *this = ToR8G8B8();
         }
-        else
-        {
-            *this = ToR8G8B8A8();
-        }
-    };
+    }
     case mmImagePixelFormat::R8G8B8:
     {
-        for(epiS32 r = 0; r < image.GetHeight(); ++r)
+        for (epiS32 r = 0; r < image.GetHeight(); ++r)
         {
+            const epiS32 rr = r - shift.y;
+            if (rr != std::clamp(rr, 0, static_cast<epiS32>(GetHeight() - 1)))
+            {
+                continue;
+            }
+
             for (epiS32 c = 0; c < image.GetWidth(); ++c)
             {
-                const Color color = image.At(r, c) * colorTint;
+                const epiS32 cc = c + shift.x;
+                if (cc != std::clamp(cc, 0, static_cast<epiS32>(GetWidth() - 1)))
+                {
+                    continue;
+                }
 
-                At(r + shift.y, c + shift.x, 0) = color.GetRu();
-                At(r + shift.y, c + shift.x, 1) = color.GetGu();
-                At(r + shift.y, c + shift.x, 2) = color.GetBu();
+                const Color colorSrc = image.At(r, c, mmImageEdgeHandling::Error) * colorTint;
+                const Color colorDst = At(rr, cc, mmImageEdgeHandling::Error);
+                const Color color = colorDst.Blend(colorSrc);
+
+                At(rr, cc, 0) = color.GetRu();
+                At(rr, cc, 1) = color.GetGu();
+                At(rr, cc, 2) = color.GetBu();
             }
         }
     } break;
@@ -919,7 +926,7 @@ dSeries2Dc mmImage::DFT() const
                 for (epiS32 c = 0; c < N; ++c)
                 {
                     const epiFloat lN = (l * c) / static_cast<epiFloat>(N);
-                    const epiFloat y = At(r, c, 0);
+                    const epiFloat y = At(r, c, 0, mmImageEdgeHandling::Error);
                     const epiComplexf s = std::exp(2.0f * M_PI * (kM + lN) * 1i);
 
                     sum += y * std::conj(s);
@@ -931,43 +938,124 @@ dSeries2Dc mmImage::DFT() const
     return X;
 }
 
-epiU8& mmImage::At(epiU32 r, epiU32 c, epiU32 channel)
+epiU8& mmImage::At(epiS32 r, epiS32 c, epiU32 channel)
 {
-    const epiU32 w = static_cast<epiU32>(GetWidth());
-    const epiU32 h = static_cast<epiU32>(GetHeight());
+    const epiS32 w = static_cast<epiS32>(GetWidth());
+    const epiS32 h = static_cast<epiS32>(GetHeight());
 
     const epiU32 channels = ChannelsOf(GetPixelFormat());
-    const epiU32 x = channels * c + channel;
-    const epiU32 y = r;
+    const epiS32 x = channels * c + channel;
+    const epiS32 y = r;
+
+#ifdef EPI_DEBUG
+    if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
+    {
+        epiLogFatal("`r={}` should be in range [{}..{}], `c={}` should be in range [{}..{}]", r, 0, h - 1, c, 0, w - 1);
+    }
+#endif // EPI_DEBUG
 
     return GetData()[x + y * GetPitch()];
 }
 
-epiU8 mmImage::At(epiU32 r, epiU32 c, epiU32 channel) const
+epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) const
 {
     // TODO: implement different out of bounds handling
-    const epiU32 w = static_cast<epiU32>(GetWidth());
-    const epiU32 h = static_cast<epiU32>(GetHeight());
+    const epiS32 w = static_cast<epiS32>(GetWidth());
+    const epiS32 h = static_cast<epiS32>(GetHeight());
 
     const epiU32 channels = ChannelsOf(GetPixelFormat());
-    const epiU32 x = channels * std::clamp(c, 0u, w - 1) + channel;
-    const epiU32 y = std::clamp(r, 0u, h - 1);
 
-    return GetData()[x + y * GetPitch()];
+    epiU32 x = 0;
+    epiU32 y = 0;
+    switch (edge)
+    {
+    case mmImageEdgeHandling::Error:
+    {
+        if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
+        {
+            epiLogError("`r={}` should be in range [{}..{}], `c={}` should be in range [{}..{}]", r, 0, h - 1, c, 0, w - 1);
+            return 0;
+        }
+
+        x = c;
+        y = r;
+    } break;
+    case mmImageEdgeHandling::Zero:
+    {
+        if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
+        {
+            return 0;
+        }
+
+        x = c;
+        y = r;
+    } break;
+    case mmImageEdgeHandling::FF:
+    {
+        if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
+        {
+            return 0xff;
+        }
+
+        x = c;
+        y = r;
+    } break;
+    case mmImageEdgeHandling::Extend:
+    {
+        x = std::clamp(c, 0, w - 1);
+        y = std::clamp(r, 0, h - 1);
+    } break;
+    case mmImageEdgeHandling::Wrap:
+    {
+        if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
+        {
+            c = c < 0 ? (w - 1) + c - 1 : c - (w - 1) - 1;
+        }
+
+        if (const epiS32 rr = std::clamp(r, 0, h - 1); rr != r)
+        {
+            r = r < 0 ? (h - 1) + r - 1 : r - (h - 1) - 1;
+        }
+
+        x = c;
+        y = r;
+    } break;
+    case mmImageEdgeHandling::Mirror:
+    {
+        if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
+        {
+            c = c < 0 ? cc - c - 1 : (w - 1) - (cc - (w - 1)) + 1;
+        }
+
+        if (const epiS32 rr = std::clamp(r, 0, h - 1); rr != r)
+        {
+            r = r < 0 ? rr - r - 1 : (h - 1) - (rr - (h - 1)) + 1;
+        }
+
+        x = c;
+        y = r;
+    } break;
+    }
+
+    return GetData()[channels * x + channel + y * GetPitch()];
 }
 
-Color mmImage::At(epiU32 r, epiU32 c) const
+Color mmImage::At(epiS32 r, epiS32 c, mmImageEdgeHandling edge) const
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        const epiU8 x = At(r, c, 0);
+        const epiU8 x = At(r, c, 0, edge);
         return Color(x, x, x);
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return Color(At(r, c, 0), At(r, c, 1), At(r, c, 2));
+        return Color(At(r, c, 0, edge), At(r, c, 1, edge), At(r, c, 2, edge));
+    } break;
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        return Color(At(r, c, 0, edge), At(r, c, 1, edge), At(r, c, 2, edge), At(r, c, 3, edge));
     } break;
     break;
     }
@@ -1080,6 +1168,11 @@ mmImage mmImage::ToGrayScale_Internal(epiU8(Color::*get)() const) const
     {
         return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, get, epiVec4s{0, 1, 2, 3});
     } break;
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+         // TODO: consider alpha channel
+        return ConvertTo(*this, mmImagePixelFormat::GRAYSCALE, get, epiVec4s{0, 1, 2, 3});
+    } break;
     }
 
     // TODO: retrieve string representation
@@ -1109,6 +1202,15 @@ mmImage mmImage::ToR8G8B8() const
                          epiVec4s{0, 1, 2, 3},
                          epiVec4s{0, 1, 2, 3});
     } break;
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        return ConvertTo(*this,
+                         mmImagePixelFormat::R8G8B8,
+                         get,
+                         epiVec4s{0, 1, 2, 3},
+                         epiVec4s{0, 1, 2, 3});
+    } break;
     }
 
     // TODO: retrieve string representation
@@ -1120,21 +1222,30 @@ mmImage mmImage::ToR8G8B8A8() const
 {
     switch (GetPixelFormat())
     {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return ConvertTo(*this,
+                         mmImagePixelFormat::R8G8B8A8,
+                         &Color::GetLumau,
+                         epiVec4s{0, 0, 0, 0},
+                         epiVec4s{0, 1, 2, 3});
+    } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        ColorGetCallback get[3]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
         return ConvertTo(*this,
-                         mmImagePixelFormat::R8G8B8,
+                         mmImagePixelFormat::R8G8B8A8,
                          get,
                          epiVec4s{0, 1, 2, 3},
                          epiVec4s{0, 1, 2, 3});
     } break;
-    case mmImagePixelFormat::GRAYSCALE:
+    case mmImagePixelFormat::R8G8B8A8:
     {
+        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         return ConvertTo(*this,
-                         mmImagePixelFormat::R8G8B8,
-                         &Color::GetLumau,
-                         epiVec4s{0, 0, 0, 0},
+                         mmImagePixelFormat::R8G8B8A8,
+                         get,
+                         epiVec4s{0, 1, 2, 3},
                          epiVec4s{0, 1, 2, 3});
     } break;
     }

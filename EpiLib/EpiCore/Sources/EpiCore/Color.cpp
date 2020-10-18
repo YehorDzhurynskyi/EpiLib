@@ -207,6 +207,44 @@ Color Color::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shi
     return Color(r, g, b, a);
 }
 
+Color Color::Blend(const Color& colorSrc, ColorBlending blendingSrc, ColorBlending blendingDst) const
+{
+    auto factor = [&](ColorBlending blending, epiS32 channel)
+    {
+        switch (blending)
+        {
+        case ColorBlending::Zero: return 0.0f;
+        case ColorBlending::One: return 1.0f;
+        case ColorBlending::SourceColor: return colorSrc.GetColor()[channel];
+        case ColorBlending::OneMinusSourceColor: return 1.0f - colorSrc.GetColor()[channel];
+        case ColorBlending::DestinationColor: return GetColor()[channel];
+        case ColorBlending::OneMinusDestinationColor: return 1.0f - GetColor()[channel];
+        case ColorBlending::SourceAlpha: return colorSrc.GetAf();
+        case ColorBlending::OneMinusSourceAlpha: return 1.0f - colorSrc.GetAf();
+        case ColorBlending::DestinationAlpha: return GetAf();
+        case ColorBlending::OneMinusDestinationAlpha: return 1.0f - GetAf();
+        }
+
+        // TODO: get string representation
+        epiLogError("Unrecognized blending mode was provided=`{}`", blending);
+        return 0.0f;
+    };
+
+    const epiFloat fSrcR = factor(blendingSrc, 0);
+    const epiFloat fDstR = factor(blendingDst, 0);
+    const epiFloat fSrcG = factor(blendingSrc, 1);
+    const epiFloat fDstG = factor(blendingDst, 1);
+    const epiFloat fSrcB = factor(blendingSrc, 2);
+    const epiFloat fDstB = factor(blendingDst, 2);
+    const epiFloat fSrcA = factor(blendingSrc, 3);
+    const epiFloat fDstA = factor(blendingDst, 3);
+
+    return Color(colorSrc.GetRf() * fSrcR + GetRf() * fDstR,
+                 colorSrc.GetGf() * fSrcG + GetGf() * fDstG,
+                 colorSrc.GetBf() * fSrcB + GetBf() * fDstB,
+                 colorSrc.GetAf() * fSrcA + GetAf() * fDstA);
+}
+
 epiU8 Color::GetRu_Callback() const
 {
     return static_cast<epiU8>(m_Color.r * 255.0f);
@@ -610,18 +648,6 @@ epiVec3u8 Color::GetHSIu_Callback() const
         static_cast<epiU8>(std::clamp(hsi.y, 0.0f, 1.0f) * 255.0f),
         static_cast<epiU8>(std::clamp(hsi.z, 0.0f, 1.0f) * 255.0f)
     };
-}
-
-const epiVec4f& Color::GetColor_Callback() const
-{
-    Validate();
-    return m_Color;
-}
-
-void Color::SetColor_Callback(const epiVec4f& value)
-{
-    m_Color = value;
-    Validate();
 }
 
 Color& Color::operator+=(const Color& rhs)

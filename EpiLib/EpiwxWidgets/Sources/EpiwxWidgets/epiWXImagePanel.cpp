@@ -443,15 +443,55 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     case ID_IMAGE_PANEL_DFT_PHASE:
     {
     } break;
-    case ID_IMAGE_PANEL_SUPER_COOL_EFFECT:
+    case ID_IMAGE_PANEL_PRESET_EFFECT0:
     {
-        const epi::mmImage r = m_ImageTgt.ToGrayScaleR();
+        epi::mmImage r = m_ImageTgt.ToGrayScaleR();
 
         m_ImageTgt = m_ImageTgt.ToGrayScaleLuma();
         m_ImageTgt.ContrastStretch(0, 0, 0, 0, 0, 50);
         m_ImageTgt.Contrast(87, -92, 0);
 
-        m_ImageTgt.Overlap(r, epiVec2s{-30, 10}, epi::Color(1.0f, 0.0f, 0.0f, 1.0f));
+        {
+            cv::Mat kernelIdentity(3, 3, CV_32FC1);
+            kernelIdentity.at<epiFloat>(0, 0) = 0.0f;
+            kernelIdentity.at<epiFloat>(0, 1) = 0.0f;
+            kernelIdentity.at<epiFloat>(0, 2) = 0.0f;
+            kernelIdentity.at<epiFloat>(1, 0) = 0.0f;
+            kernelIdentity.at<epiFloat>(1, 1) = 1.0f;
+            kernelIdentity.at<epiFloat>(1, 2) = 0.0f;
+            kernelIdentity.at<epiFloat>(2, 0) = 0.0f;
+            kernelIdentity.at<epiFloat>(2, 1) = 0.0f;
+            kernelIdentity.at<epiFloat>(2, 2) = 0.0f;
+
+            cv::Mat kernel(3, 3, CV_32FC1);
+            kernel.at<epiFloat>(0, 0) = -1.0f;
+            kernel.at<epiFloat>(0, 1) = +0.0f;
+            kernel.at<epiFloat>(0, 2) = +1.0f;
+            kernel.at<epiFloat>(1, 0) = -2.0f;
+            kernel.at<epiFloat>(1, 1) = +0.0f;
+            kernel.at<epiFloat>(1, 2) = +2.0f;
+            kernel.at<epiFloat>(2, 0) = -1.0f;
+            kernel.at<epiFloat>(2, 1) = +0.0f;
+            kernel.at<epiFloat>(2, 2) = +1.0f;
+
+            m_ImageTgt.ConvolveWith(kernel, kernelIdentity, kernelIdentity);
+        }
+
+        {
+            cv::Mat kernel(5, 5, CV_32FC1);
+            for (epiS32 i = 0; i < kernel.rows * kernel.cols; ++i)
+            {
+                kernel.at<epiFloat>(i) = 1.0f;
+            }
+            kernel /= static_cast<epiFloat>(kernel.rows * kernel.cols);
+
+            m_ImageTgt.ConvolveWith(kernel);
+            r.ConvolveWith(kernel);
+        }
+
+        m_ImageTgt.Overlap(r, epiVec2s{0, 0}, epi::Color(1.0f, 0.0f, 0.0f, 0.25f));
+        m_ImageTgt.Overlap(r, epiVec2s{-15, -5}, epi::Color(1.0f, 0.0f, 0.0f, 0.1f));
+        m_ImageTgt.Overlap(r, epiVec2s{-30, -10}, epi::Color(1.0f, 0.0f, 0.0f, 0.005f));
 
         Refresh();
     } break;
@@ -502,7 +542,7 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_DFT_MAGNITUDE, wxT("&DFT (Magnitude)"));
     contextMenu.Append(ID_IMAGE_PANEL_DFT_PHASE, wxT("&DFT (Phase)"));
     contextMenu.AppendSeparator();
-    contextMenu.Append(ID_IMAGE_PANEL_SUPER_COOL_EFFECT, wxT("&Super Cool Effect"));
+    contextMenu.Append(ID_IMAGE_PANEL_PRESET_EFFECT0, wxT("&Effect Preset #0"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_RESET, wxT("&Reset"));
 }
