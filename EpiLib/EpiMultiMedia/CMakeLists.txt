@@ -32,6 +32,12 @@ add_library(EpiMultimedia
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageThreshold.epi
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageThreshold.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageThreshold.cpp
+    Sources/EpiMultimedia/Image/Provider/mmImageProviderBase.epi
+    Sources/EpiMultimedia/Image/Provider/mmImageProviderBase.h
+    Sources/EpiMultimedia/Image/Provider/mmImageProviderBase.cpp
+    Sources/EpiMultimedia/Image/Provider/mmImageProviderInMemory.epi
+    Sources/EpiMultimedia/Image/Provider/mmImageProviderInMemory.h
+    Sources/EpiMultimedia/Image/Provider/mmImageProviderInMemory.cpp
 
     Sources/EpiMultimedia/Resource/mmResourceManager.h
     Sources/EpiMultimedia/Resource/mmResourceManager.cpp

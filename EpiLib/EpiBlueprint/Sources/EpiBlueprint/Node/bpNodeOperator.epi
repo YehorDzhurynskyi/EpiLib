@@ -1,0 +1,8 @@
+class bpNodeOperator : bpNodeBase
+{
+    # TODO: [Owner]
+    {
+        epiPtrArray<bpNodeBase> Input;
+        epiPtrArray<bpNodeBase> Output;
+    }
+};

@@ -1,0 +1,4 @@
+class mmImageProviderInMemory : mmImageProviderBase
+{
+    mmImage* Image;
+};

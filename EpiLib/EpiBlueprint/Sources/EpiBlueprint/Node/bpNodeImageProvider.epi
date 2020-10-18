@@ -1,0 +1,5 @@
+class bpNodeImageProvider : bpNodeBase
+{
+    # TODO: [Owner]
+    mmImageProviderBase* ImageProvider;
+};

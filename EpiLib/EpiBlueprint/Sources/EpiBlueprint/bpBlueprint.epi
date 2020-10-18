@@ -1,0 +1,5 @@
+class bpBlueprint
+{
+    # TODO: [Owner]
+    epiPtrArray<bpNodeBase> Nodes;
+};
