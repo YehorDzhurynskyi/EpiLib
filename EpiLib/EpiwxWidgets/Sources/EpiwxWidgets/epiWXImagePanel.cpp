@@ -447,6 +447,9 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     {
         epi::mmImage r = m_ImageTgt.ToGrayScaleR();
 
+        epi::mmImage intensity = m_ImageTgt.ToGrayScaleIntensity();
+        intensity.Threshold(175, 175, 175);
+
         m_ImageTgt = m_ImageTgt.ToGrayScaleLuma();
         m_ImageTgt.ContrastStretch(0, 0, 0, 0, 0, 50);
         m_ImageTgt.Contrast(87, -92, 0);
@@ -489,6 +492,8 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
             r.ConvolveWith(kernel);
         }
 
+        // TODO: consider intesity as an application mask
+        m_ImageTgt.Overlap(intensity, epiVec2s{0, 0}, epi::Color(0.0f, 0.5f, 0.8f, 0.15f));
         m_ImageTgt.Overlap(r, epiVec2s{0, 0}, epi::Color(1.0f, 0.0f, 0.0f, 0.25f));
         m_ImageTgt.Overlap(r, epiVec2s{-15, -5}, epi::Color(1.0f, 0.0f, 0.0f, 0.1f));
         m_ImageTgt.Overlap(r, epiVec2s{-30, -10}, epi::Color(1.0f, 0.0f, 0.0f, 0.005f));
