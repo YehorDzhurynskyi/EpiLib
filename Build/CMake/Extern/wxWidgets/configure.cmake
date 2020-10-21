@@ -1,1 +1,1 @@
-set(wxUSE_STL ON CACHE BOOL "")
+set(wxUSE_STL ON)

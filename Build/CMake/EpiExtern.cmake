@@ -1,5 +1,9 @@
 include(ExternalProject)
 
+if (POLICY CMP0077)
+    cmake_policy(SET CMP0077 NEW)
+endif (POLICY CMP0077)
+
 function(epi_extern_add EXTERN)
     cmake_parse_arguments(EXTERN
         "DONT_ADD_SUBDIRECTORY"

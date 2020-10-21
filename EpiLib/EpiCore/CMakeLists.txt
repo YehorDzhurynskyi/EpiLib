@@ -63,6 +63,7 @@ epi_extern_add(spdlog)
 epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
 epi_extern_add(fmt)
+epi_extern_add(cpu_features)
 
 configure_file(Sources/EpiCore/epi_config.h.in Sources/EpiCore/epi_config.h)
 
@@ -112,6 +113,7 @@ target_link_libraries(EpiCore
         nlohmann_json
         glm
         fmt
+        cpu_features
         exprtk
 )
 

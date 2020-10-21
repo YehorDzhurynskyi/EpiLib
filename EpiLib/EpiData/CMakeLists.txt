@@ -27,6 +27,8 @@ add_library(EpiData
 get_target_property(EpiData_SOURCES EpiData SOURCES)
 epi_pack_sources(${EpiData_SOURCES})
 
+epi_extern_add(fftw3f)
+
 target_include_directories(EpiData
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
@@ -36,6 +38,7 @@ target_include_directories(EpiData
 target_link_libraries(EpiData
     PUBLIC
         EpiCore
+        fftw3f
 )
 
 epi_module_register(EpiData

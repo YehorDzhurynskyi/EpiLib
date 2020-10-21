@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 2.8.2)
+
+project(fftw3f-download NONE)
+
+include(ExternalProject)
+ExternalProject_Add(fftw3f
+    GIT_REPOSITORY      https://github.com/FFTW/fftw3
+    GIT_TAG             fftw-3.3.8
+    SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/src"
+    BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/build"
+
+    GIT_SHALLOW         1
+    GIT_PROGRESS        1
+
+    CONFIGURE_COMMAND   ""
+    BUILD_COMMAND       ""
+    INSTALL_COMMAND     ""
+    TEST_COMMAND        ""
+)
