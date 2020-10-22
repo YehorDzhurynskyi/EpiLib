@@ -15,6 +15,17 @@ PropertyPointer PropertyPointer::CreateFromProperty(Object& self, const MetaProp
     return ptr;
 }
 
+PropertyPointer PropertyPointer::CreateFromProperty(const Object& self, const MetaProperty* property)
+{
+    PropertyPointer ptr;
+    ptr.m_Meta = property;
+    ptr.m_Form = Form::PropertyConst;
+    ptr.m_TypeID = ptr.m_Meta->GetTypeID();
+    ptr.m_SelfConst = &self;
+
+    return ptr;
+}
+
 PropertyPointer PropertyPointer::CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx)
 {
     PropertyPointer ptr;
@@ -26,6 +37,88 @@ PropertyPointer PropertyPointer::CreateFromArray(epiBaseArray& self, epiMetaType
     return ptr;
 }
 
+epiString PropertyPointer::GetValueString(epiS32 style) const
+{
+    switch (GetTypeID())
+    {
+    case epiMetaTypeID_epiBool:
+    {
+        if (style & PropertyPointerValueStringStyle_Boolean_ON_OFF)
+        {
+            return Get<epiBool>() ? "ON" : "OFF";
+        }
+        else if (style & PropertyPointerValueStringStyle_Boolean_True_False)
+        {
+            return Get<epiBool>() ? "True" : "False";
+        }
+        else if (style & PropertyPointerValueStringStyle_Boolean_Enabled_Disabled)
+        {
+            return Get<epiBool>() ? "Enabled" : "Disabled";
+        }
+
+        return std::to_string(Get<epiBool>());
+    }
+    case epiMetaTypeID_epiS32: return std::to_string(Get<epiS32>());
+    case epiMetaTypeID_epiSize_t:
+    {
+        if (style & PropertyPointerValueStringStyle_Size_Repr_Bytes)
+        {
+            epiSize_t value = Get<epiSize_t>();
+            if (value == 0)
+            {
+                return "0 Bytes";
+            }
+
+            epiString str;
+            str.reserve(64);
+
+            const epiChar* kOrder[]
+            {
+                "Bytes",
+                "KB",
+                "MB",
+                "GB",
+                "TB"
+            };
+
+            epiS32 order = 0;
+            do
+            {
+                const epiSize_t rest = value % 1024;
+                if (rest != 0)
+                {
+                    if (!str.empty())
+                    {
+                        str = ' ' + str;
+                    }
+
+                    str = std::to_string(rest) + ' ' + kOrder[order] + str;
+                }
+
+                value = (value - rest) / 1024;
+            }
+            while (value > 0 && (++order + 1) < epiArrLen(kOrder));
+
+            return str;
+        }
+
+        return std::to_string(Get<epiSize_t>());
+    }
+    case epiMetaTypeID_epiString:
+    {
+        if (style & PropertyPointerValueStringStyle_String_Quoted)
+        {
+            return '`' + Get<epiString>() + '`';
+        }
+
+        return Get<epiString>();
+    }
+    default: epiAssert(!"Implement");
+    }
+
+    return "";
+}
+
 epiBool PropertyPointer::IsReadable() const
 {
     return m_Form == Form::ArrayElem || m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.WriteOnly;
@@ -33,7 +126,7 @@ epiBool PropertyPointer::IsReadable() const
 
 epiBool PropertyPointer::IsWritable() const
 {
-    return m_Form == Form::ArrayElem || m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.ReadOnly;
+    return m_Form != Form::PropertyConst && (m_Form == Form::ArrayElem || m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.ReadOnly);
 }
 
 epiMetaTypeID PropertyPointer::GetTypeID() const

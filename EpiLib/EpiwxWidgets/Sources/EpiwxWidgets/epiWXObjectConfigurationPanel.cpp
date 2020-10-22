@@ -31,7 +31,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
     const epi::MetaClassData& metaData = meta.GetClassData();
     for (const auto& prty : metaData)
     {
-        const epiHash_t prtyID = epiHash(prty.GetName());
+        const epiHash_t prtyID = prty.GetPID();
 
         wxWindow* control = nullptr;
         if (epi::epiMetaTypeID typeID = prty.GetTypeID(); epi::MetaType::IsNumeric(typeID))

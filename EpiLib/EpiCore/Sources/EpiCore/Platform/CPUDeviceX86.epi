@@ -1,0 +1,135 @@
+enum CPUDeviceX86Microarchitecture
+{
+    Unknown,
+    IntelCore,
+    IntelPenryn,
+    IntelNehalem,
+    IntelAtomBonnell,
+    IntelWestmere,
+    IntelSandybridge,
+    IntelIvybridge,
+    IntelAtomSilvermont,
+    IntelHaswell,
+    IntelBroadwell,
+    IntelSkyLake,
+    IntelAtomGoldmont,
+    IntelKabyLake,
+    IntelCoffeeLake,
+    IntelWhiskeyLake,
+    IntelCannonLake,
+    IntelIceLake,
+    IntelTigerLake,
+    IntelSapphireRapids,
+    AMDHammer,
+    AMDK10,
+    AMDBobcat,
+    AMDBulldozer,
+    AMDJaguar,
+    AMDZen
+};
+
+enum CPUDeviceX86CacheType
+{
+    Null,
+    Data,
+    Instruction,
+    Unified,
+    TLB,
+    DTLB,
+    STLB,
+    Prefetch
+};
+
+class CPUDeviceX86CacheLevelInfo
+{
+    epiS32 Level;
+    CPUDeviceX86CacheType CacheType = CPUDeviceX86CacheType::Null;
+    epiSize_t CacheSize;
+    epiS32 Ways;
+    epiSize_t LineSize;
+    epiS32 TLBEntries;
+    epiS32 Partitioning;
+};
+
+class CPUDeviceX86CacheInfo
+{
+    epiArray<CPUDeviceX86CacheLevelInfo> Levels;
+};
+
+class CPUDeviceX86 : CPUDeviceBase
+{
+    CPUDeviceX86CacheInfo CacheInfo;
+
+    [Virtual, ReadOnly]
+    {
+        epiS32 Family;
+        epiS32 Model;
+        epiS32 Stepping;
+
+        [ReadCallback(SuppressRef=true)]
+        epiString Vendor;
+
+        CPUDeviceX86Microarchitecture Microarchitecture;
+
+        epiBool FPU;
+        epiBool TSC;
+        epiBool CX8;
+        epiBool CLFSH;
+        epiBool MMX;
+        epiBool AES;
+        epiBool ERMS;
+        epiBool F16C;
+        epiBool FMA4;
+        epiBool FMA3;
+        epiBool VAES;
+        epiBool VPCLMULQDQ;
+        epiBool BMI1;
+        epiBool HLE;
+        epiBool BMI2;
+        epiBool RTM;
+        epiBool RDSEED;
+        epiBool CLFLUSHOPT;
+        epiBool CLWB;
+        epiBool SSE;
+        epiBool SSE2;
+        epiBool SSE3;
+        epiBool SSSE3;
+        epiBool SSE4_1;
+        epiBool SSE4_2;
+        epiBool SSE4A;
+        epiBool AVX;
+        epiBool AVX2;
+        epiBool AVX512F;
+        epiBool AVX512CD;
+        epiBool AVX512ER;
+        epiBool AVX512PF;
+        epiBool AVX512BW;
+        epiBool AVX512DQ;
+        epiBool AVX512VL;
+        epiBool AVX512IFMA;
+        epiBool AVX512VBMI;
+        epiBool AVX512VBMI2;
+        epiBool AVX512VNNI;
+        epiBool AVX512BITALG;
+        epiBool AVX512VPOPCNTDQ;
+        epiBool AVX512_4VNNIW;
+        epiBool AVX512_4VBMI2;
+        epiBool AVX512_SECOND_FMA;
+        epiBool AVX512_4FMAPS;
+        epiBool AVX512_BF16;
+        epiBool AVX512_VP2INTERSECT;
+        epiBool AMX_BF16;
+        epiBool AMX_TILE;
+        epiBool AMX_INT8;
+        epiBool PCLMULQDQ;
+        epiBool SMX;
+        epiBool SGX;
+        epiBool CX16;
+        epiBool SHA;
+        epiBool POPCNT;
+        epiBool MOVBE;
+        epiBool RDRND;
+        epiBool DCA;
+        epiBool SS;
+    }
+};

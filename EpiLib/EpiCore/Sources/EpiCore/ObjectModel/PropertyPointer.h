@@ -2,7 +2,18 @@
 
 #include "MetaObject.h"
 
+
 EPI_NAMESPACE_BEGIN()
+
+enum PropertyPointerValueStringStyle
+{
+    PropertyPointerValueStringStyle_None = 0,
+    PropertyPointerValueStringStyle_String_Quoted = (1 << 1),
+    PropertyPointerValueStringStyle_Boolean_ON_OFF = (1 << 2),
+    PropertyPointerValueStringStyle_Boolean_True_False = (1 << 3),
+    PropertyPointerValueStringStyle_Boolean_Enabled_Disabled = (1 << 4),
+    PropertyPointerValueStringStyle_Size_Repr_Bytes = (1 << 5)
+};
 
 template<typename T>
 using PropertyPointerGet_t = std::conditional_t<MetaType::IsFundamental<T>() || MetaType::IsPointer<T>(), T, T&>;
@@ -15,7 +26,10 @@ class PropertyPointer final
 {
 public:
     static PropertyPointer CreateFromProperty(Object& self, const MetaProperty* property);
+    static PropertyPointer CreateFromProperty(const Object& self, const MetaProperty* property);
     static PropertyPointer CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx);
+
+    epiString GetValueString(epiS32 style = 0) const;
 
     template<typename T>
     PropertyPointerGet_t<T> Get() const;
@@ -53,6 +67,12 @@ protected:
 
         struct
         {
+            const MetaProperty* m_Meta;
+            const Object* m_SelfConst;
+        };
+
+        struct
+        {
             void* m_ValueAddr;
             size_t m_SizeOf;
         };
@@ -62,6 +82,7 @@ protected:
     {
         None,
         Property,
+        PropertyConst,
         ArrayElem
     };
 
@@ -142,7 +163,7 @@ void* PropertyPointer::Get_Static() const
             static_assert(false, "Unexpected type id");
         }
     }
-    else if (m_Form == Form::Property)
+    else if (m_Form == Form::Property || m_Form == Form::PropertyConst)
     {
         void* addr = (epiByte*)m_Self + (size_t)m_Meta->m_PtrRead;
         if (m_Meta->m_Flags.ReadCallback)

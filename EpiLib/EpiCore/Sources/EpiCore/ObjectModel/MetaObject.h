@@ -44,6 +44,7 @@ public:
     epiBool IsValid() const;
     epiBool HasNested() const;
 
+    epiMetaPropertyID GetPID() const;
     epiMetaTypeID GetTypeID() const;
     epiMetaTypeID GetNestedTypeID() const;
     Flags GetFlags() const;

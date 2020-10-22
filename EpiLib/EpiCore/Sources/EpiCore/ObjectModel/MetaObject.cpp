@@ -18,6 +18,11 @@ epiBool MetaProperty::HasNested() const
     return m_NestedTypeID != epiMetaTypeID_None;
 }
 
+epiMetaPropertyID MetaProperty::GetPID() const
+{
+    return epiHash(GetName());
+}
+
 epiMetaTypeID MetaProperty::GetTypeID() const
 {
     assert(IsValid());

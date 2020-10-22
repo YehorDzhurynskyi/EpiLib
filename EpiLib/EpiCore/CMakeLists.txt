@@ -21,6 +21,12 @@ add_library(EpiCore
     Sources/EpiCore/Platform/DisplayDevice.epi
     Sources/EpiCore/Platform/DisplayDevice.h
     Sources/EpiCore/Platform/DisplayDevice.cpp
+    Sources/EpiCore/Platform/CPUDeviceBase.epi
+    Sources/EpiCore/Platform/CPUDeviceBase.h
+    Sources/EpiCore/Platform/CPUDeviceBase.cpp
+    Sources/EpiCore/Platform/CPUDeviceX86.epi
+    Sources/EpiCore/Platform/CPUDeviceX86.h
+    Sources/EpiCore/Platform/CPUDeviceX86.cpp
 
     Sources/EpiCore/Expression.h
     Sources/EpiCore/Expression.cpp
