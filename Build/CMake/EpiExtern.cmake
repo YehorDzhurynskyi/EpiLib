@@ -1,10 +1,7 @@
 include(ExternalProject)
 
-if (POLICY CMP0077)
-    cmake_policy(SET CMP0077 NEW)
-endif (POLICY CMP0077)
-
 function(epi_extern_add EXTERN)
+
     cmake_parse_arguments(EXTERN
         "DONT_ADD_SUBDIRECTORY"
         ""
@@ -49,6 +46,7 @@ function(epi_extern_add EXTERN)
     endif ()
 
     if (NOT EXTERN_DONT_ADD_SUBDIRECTORY)
+        set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
         add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
                          "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
                          EXCLUDE_FROM_ALL)

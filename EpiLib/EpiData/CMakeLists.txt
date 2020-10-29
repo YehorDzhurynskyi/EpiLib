@@ -29,10 +29,14 @@ epi_pack_sources(${EpiData_SOURCES})
 
 epi_extern_add(fftw3f)
 
+# TODO: fix
+get_target_property(FFTW3F_SOURCE_DIR fftw3f SOURCE_DIR)
+
 target_include_directories(EpiData
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
+        ${FFTW3F_SOURCE_DIR}/api
 )
 
 target_link_libraries(EpiData

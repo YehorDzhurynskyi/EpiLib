@@ -1,6 +1,8 @@
 # TODO: check whether platform support this
-set(ENABLE_AVX2 ON)
+# set(ENABLE_AVX2 ON)
 set(BUILD_SHARED_LIBS OFF)
 set(BUILD_TESTS OFF)
 set(ENABLE_FLOAT ON)
+set(ENABLE_THREADS ON)
+set(WITH_COMBINED_THREADS ON)
 set(DISABLE_FORTRAN ON)

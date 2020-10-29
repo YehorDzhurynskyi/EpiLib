@@ -1,19 +1,70 @@
 cmake_minimum_required(VERSION 2.8.2)
 
-project(fftw3f-download NONE)
+project(fftw3f-extern NONE)
 
 include(ExternalProject)
+
+# TODO: disable unnecessary libraries considering `COMPONENTS` parameter of `epi_extern_add` function
+# TODO: configure `FFTW3_ARGS` considering `TOOLCAHIN`, `ARCH`, `OS` etc
+# TODO: compile in `Release` mode
+
+set(FFTW3_ARGS
+    --host=x86_64-w64-mingw32
+    --build=x86_64-linux-gnu
+#    --enable-shared
+#    --disable-static
+    --enable-static
+    --disable-shared
+    --enable-float
+    --disable-fortran
+    --disable-doc
+    --enable-threads
+    --with-combined-threads
+    --disable-alloca
+    --with-our-malloc
+    --with-windows-f77-mangling
+
+    #--extra-cflags="-DFFTW_DLL"
+    #--extra-cxxflags="/MDd"
+)
+string(JOIN " " FFTW3_ARGS ${FFTW3_ARGS})
+
+set(FFTW3_SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/src")
+set(FFTW3_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/build" CACHE PATH "" FORCE)
+
+if (WIN32)
+    execute_process(COMMAND bash -c "wslpath -a ${CMAKE_CURRENT_BINARY_DIR}/fftw3f/src"
+        RESULT_VARIABLE COMMAND_STATUS
+        OUTPUT_VARIABLE FFTW3_SOURCE_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if (COMMAND_STATUS)
+        message(FATAL_ERROR "fftw3f `wslpath` command has failed: ${COMMAND_STATUS}")
+    endif ()
+
+    execute_process(COMMAND bash -c "wslpath -a ${FFTW3_BUILD_DIR}"
+        RESULT_VARIABLE COMMAND_STATUS
+        OUTPUT_VARIABLE FFTW3_BUILD_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if (COMMAND_STATUS)
+        message(FATAL_ERROR "fftw3f `wslpath` command has failed: ${COMMAND_STATUS}")
+    endif ()
+endif (WIN32)
+
 ExternalProject_Add(fftw3f
-    GIT_REPOSITORY      https://github.com/FFTW/fftw3
-    GIT_TAG             fftw-3.3.8
     SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/src"
     BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/build"
+    TMP_DIR             "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/tmp"
+    STAMP_DIR           "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/stamp"
+    DOWNLOAD_DIR        "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/download"
+    INSTALL_DIR         "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/install"
+    LOG_DIR             "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/log"
 
-    GIT_SHALLOW         1
-    GIT_PROGRESS        1
-
-    CONFIGURE_COMMAND   ""
-    BUILD_COMMAND       ""
+    DOWNLOAD_COMMAND    C:/Windows/sysnative/bash.exe -c "git clone --progress --depth 1 --branch fftw-3.3.8 https://github.com/FFTW/fftw3 '${FFTW3_SOURCE_DIR}'"
+    CONFIGURE_COMMAND   C:/Windows/sysnative/bash.exe -c "cd '${FFTW3_SOURCE_DIR}' && sh bootstrap.sh ${FFTW3_ARGS} --prefix='${FFTW3_BUILD_DIR}'"
+    BUILD_COMMAND       C:/Windows/sysnative/bash.exe -c "cd '${FFTW3_SOURCE_DIR}' && make -j12 && make distclean"
     INSTALL_COMMAND     ""
-    TEST_COMMAND        ""
 )

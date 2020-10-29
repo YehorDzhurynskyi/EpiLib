@@ -60,6 +60,6 @@ ExternalProject_Add(FFmpeg
 
     DOWNLOAD_COMMAND    C:/Windows/sysnative/bash.exe -c "git clone --progress --depth 1 --branch n4.3.1 https://github.com/FFmpeg/FFmpeg.git '${FFMPEG_SOURCE_DIR}'"
     CONFIGURE_COMMAND   C:/Windows/sysnative/bash.exe -c "cd '${FFMPEG_SOURCE_DIR}' && ./configure ${FFMPEG_ARGS} --prefix='${FFMPEG_BUILD_DIR}'"
-    BUILD_COMMAND       C:/Windows/sysnative/bash.exe -c "cd '${FFMPEG_SOURCE_DIR}' && make && find . -name *.d -type f -delete"
+    BUILD_COMMAND       C:/Windows/sysnative/bash.exe -c "cd '${FFMPEG_SOURCE_DIR}' && make -j12 && find . -name *.d -type f -delete"
     INSTALL_COMMAND     C:/Windows/sysnative/bash.exe -c "cd '${FFMPEG_SOURCE_DIR}' && make install"
 )

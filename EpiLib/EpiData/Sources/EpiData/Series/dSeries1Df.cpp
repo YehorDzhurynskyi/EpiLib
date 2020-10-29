@@ -5,6 +5,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiData/Series/dSeries1Dc.h"
 
+#include <fftw3.h>
+
 EPI_NAMESPACE_BEGIN()
 
 dSeries1Df::dSeries1Df(std::initializer_list<epiFloat> list)
@@ -46,6 +48,7 @@ using namespace std::complex_literals;
 
 dSeries1Dc dSeries1Df::DFT() const
 {
+#if 0
     dSeries1Dc X;
 
     const epiSize_t N = GetSize();
@@ -71,6 +74,37 @@ dSeries1Dc dSeries1Df::DFT() const
     }
 
     return X;
+#else
+    dSeries1Dc X;
+
+    const epiSize_t N = GetSize();
+    if (N == 0)
+    {
+        return X;
+    }
+
+    epiFloat* in = fftwf_alloc_real(N);
+    X.GetData().Resize((N / 2) + 1);
+
+    fftwf_complex* out = reinterpret_cast<fftwf_complex*>(X.GetData().data());
+    fftwf_plan p = fftwf_plan_dft_r2c_1d(N, in, out, FFTW_EXHAUSTIVE | FFTW_WISDOM_ONLY);
+    if (p == nullptr)
+    {
+        p = fftwf_plan_dft_r2c_1d(N, in, out, FFTW_EXHAUSTIVE);
+    }
+
+    if (p != nullptr)
+    {
+        memcpy(in, GetData().data(), GetSize() * sizeof(epiFloat));
+
+        fftwf_execute(p);
+        fftwf_destroy_plan(p);
+    }
+
+    fftwf_free(in);
+
+    return X;
+#endif
 }
 
 dSeries1Df dSeries1Df::IDFT(const dSeries1Dc& series)
