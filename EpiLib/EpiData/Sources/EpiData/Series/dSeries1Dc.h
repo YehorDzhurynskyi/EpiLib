@@ -8,6 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+class dSeries1Df;
 class dSeries1Dc : public dSeriesBase
 {
 EPI_GENREGION_BEGIN(dSeries1Dc)
@@ -42,6 +43,9 @@ public:
     void Clear();
 
     epiComplexf& PushBack(epiComplexf&& value = epiComplexf());
+
+    dSeries1Df DFT_C2R() const;
+    dSeries1Df DFT_C2R(epiSize_t N) const;
 
     epiFloat AtAbs(epiS32 index) const;
     epiFloat AtTheta(epiS32 index) const;

@@ -10,6 +10,7 @@
 #define EPI_NAMESPACE_USING() using namespace epi;
 
 #define epiAssert(_x, _msg) assert(_x && "Function (" __FUNCTION__ "):" #_msg)
+#define epiAssertStatic(_x) static_assert(_x)
 #define epiExpect(_x, _msg) assert(_x && "Function (" __FUNCTION__ "):" #_msg)
 #define epiValidate(_x, _msg) isValid = isValid && (_x); epiExpect(_x, _msg)
 

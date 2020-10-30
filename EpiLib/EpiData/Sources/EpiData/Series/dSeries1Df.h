@@ -59,9 +59,7 @@ public:
 
     epiFloat& PushBack(epiFloat && value = epiFloat());
 
-    dSeries1Dc DFT() const;
-    static dSeries1Df IDFT(const dSeries1Dc& series);
-    static dSeries1Df IDFT(const dSeries1Dc& series, epiSize_t N);
+    dSeries1Dc DFT_R2C() const;
 
     epiFloat At(epiS32 index) const;
     epiFloat& At(epiS32 index);
