@@ -9,6 +9,7 @@
 #include "EpiMultimedia/Image/ViewModel/mmVMImageGamma.h"
 
 #include "EpiData/Series/dSeries2Dc.h"
+#include "EpiData/Series/dSeries2Df.h"
 
 #include <wx/dcclient.h>
 #include <wx/menu.h>
@@ -414,7 +415,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     } break;
     case ID_IMAGE_PANEL_DFT_MAGNITUDE:
     {
-        const epi::dSeries2Dc series = m_ImageTgt.DFT();
+        const epi::dSeries2Dc series = m_ImageTgt.ToSeries2Df().DFT_R2C();
 
         epi::mmImage dft;
         dft.SetPixelFormat(epi::mmImagePixelFormat::GRAYSCALE);

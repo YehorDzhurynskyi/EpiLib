@@ -1,24 +1,24 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiData/Series/dSeries2Dc.hxx"
+#include "EpiData/Series/dSeries2Df.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiData/Series/dSeriesBase.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class dSeries2Df;
-class dSeries2Dc : public dSeriesBase
+class dSeries2Dc;
+class dSeries2Df : public dSeriesBase
 {
-EPI_GENREGION_BEGIN(dSeries2Dc)
+EPI_GENREGION_BEGIN(dSeries2Df)
 
-EPI_GENHIDDEN_dSeries2Dc()
+EPI_GENHIDDEN_dSeries2Df()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xf347fcd2};
+    constexpr static epiMetaTypeID TypeID{0x832d085d};
 
-    enum dSeries2Dc_PIDs
+    enum dSeries2Df_PIDs
     {
         PID_Data = 0xdc15c5d,
         PID_IsEmpty = 0xae6d7566,
@@ -34,10 +34,10 @@ protected:
     epiSize_t GetHeight_Callback() const;
 
 protected:
-    epiArray<epiComplexf> m_Data{};
+    epiArray<epiFloat> m_Data{};
     epiSize_t m_Width{0};
 
-EPI_GENREGION_END(dSeries2Dc)
+EPI_GENREGION_END(dSeries2Df)
 
 public:
     using value_type = typename decltype(m_Data)::value_type;
@@ -54,31 +54,28 @@ public:
     using const_reverse_iterator = typename decltype(m_Data)::const_reverse_iterator;
 
 public:
-    dSeries2Dc() = default;
-    dSeries2Dc(std::initializer_list<epiComplexf> list, epiSize_t width);
+    dSeries2Df() = default;
+    dSeries2Df(std::initializer_list<epiFloat> list, epiSize_t width);
 
     void Reserve(epiSize_t capacity);
     void Resize(epiSize_t size);
     void Clear();
 
-    epiComplexf& PushBack(epiComplexf&& value = epiComplexf());
+    epiFloat& PushBack(epiFloat&& value = epiFloat());
+    void push_back(epiFloat value);
 
-    dSeries2Df DFT_C2R() const;
-    dSeries2Df DFT_C2R(epiSize_t N, epiSize_t M) const;
+    dSeries2Dc DFT_R2C() const;
 
-    epiFloat AtAbs(epiS32 r, epiS32 c) const;
-    epiFloat AtTheta(epiS32 r, epiS32 c) const;
+    epiFloat At(epiS32 index) const;
+    epiFloat& At(epiS32 index);
+    epiFloat At(epiS32 r, epiS32 c) const;
+    epiFloat& At(epiS32 r, epiS32 c);
 
-    const epiComplexf& At(epiS32 index) const;
-    epiComplexf& At(epiS32 index);
-    const epiComplexf& At(epiS32 r, epiS32 c) const;
-    epiComplexf& At(epiS32 r, epiS32 c);
+    epiFloat operator[](epiS32 index) const;
+    epiFloat& operator[](epiS32 index);
 
-    const epiComplexf& operator[](epiS32 index) const;
-    epiComplexf& operator[](epiS32 index);
-
-    friend epiBool operator==(const dSeries2Dc& lhs, const dSeries2Dc& rhs);
-    friend epiBool operator!=(const dSeries2Dc& lhs, const dSeries2Dc& rhs);
+    friend epiBool operator==(const dSeries2Df& lhs, const dSeries2Df& rhs);
+    friend epiBool operator!=(const dSeries2Df& lhs, const dSeries2Df& rhs);
 
     auto begin() -> typename iterator { return m_Data.begin(); }
     auto end() -> typename iterator { return m_Data.end(); }

@@ -1,16 +1,17 @@
 #include <gtest/gtest.h>
 
 #include "EpiData/Series/dSeries1Df.h"
+#include "EpiData/Series/dSeries1Dc.h"
 
 EPI_NAMESPACE_BEGIN()
 
-TEST(DFT_R2C, Empty)
+TEST(dSeries1Df, DFT_R2C_Empty)
 {
     const dSeries1Dc X = dSeries1Df({}).DFT_R2C();
     EXPECT_EQ(X.GetSize(), 0);
 }
 
-TEST(DFT_R2C, DCComponent)
+TEST(dSeries1Df, DFT_R2C_DCComponent)
 {
     const epiComplexf expectedValue[]{{ 4.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f }};
     const epiFloat expectedAbs[]{4.0f, 0.0f, 0.0f};
@@ -30,7 +31,7 @@ TEST(DFT_R2C, DCComponent)
     }
 }
 
-TEST(DFT_R2C, NElements1)
+TEST(dSeries1Df, DFT_R2C_NElements1)
 {
     const epiComplexf expectedValue[]{{1.0f, 0.0f}};
     const epiFloat expectedAbs[]{1.0f};
@@ -50,7 +51,7 @@ TEST(DFT_R2C, NElements1)
     }
 }
 
-TEST(DFT_R2C, NElements2)
+TEST(dSeries1Df, DFT_R2C_NElements2)
 {
     const epiComplexf expectedValue[]{{ 3.0f, 0.0f }, { -1.0f, 0.0f }};
     const epiFloat expectedAbs[]{3.0f, 1.0f};
@@ -70,7 +71,7 @@ TEST(DFT_R2C, NElements2)
     }
 }
 
-TEST(DFT_R2C, NElements3)
+TEST(dSeries1Df, DFT_R2C_NElements3)
 {
     const epiComplexf expectedValue[]{{ 6.0f, 0.0f }, { -1.5f, 0.8660254f }};
     const epiFloat expectedAbs[]{6.0f, 1.73205081f};
@@ -90,7 +91,7 @@ TEST(DFT_R2C, NElements3)
     }
 }
 
-TEST(DFT_R2C, SequencePositive)
+TEST(dSeries1Df, DFT_R2C_SequencePositive)
 {
     const epiComplexf expectedValue[]{{ 10.0f, 0.0f }, { -2.0f, 2.0f }, { -2.0f, 0.0f }};
     const epiFloat expectedAbs[]{10.0f, 2.0f * std::sqrt(2.0f), 2.0f};
@@ -110,7 +111,7 @@ TEST(DFT_R2C, SequencePositive)
     }
 }
 
-TEST(DFT_R2C, SequenceNegative)
+TEST(dSeries1Df, DFT_R2C_SequenceNegative)
 {
     const epiComplexf expectedValue[]{{ -10.0f, 0.0f }, { 2.0f, -2.0f }, { 2.0f, 0.0f }};
     const epiFloat expectedAbs[]{10.0f, 2.0f * std::sqrt(2.0f), 2.0f};
@@ -130,7 +131,7 @@ TEST(DFT_R2C, SequenceNegative)
     }
 }
 
-TEST(DFT_R2C, SequencePositiveNegative)
+TEST(dSeries1Df, DFT_R2C_SequencePositiveNegative)
 {
     const epiComplexf expectedValue[]{{ 4.0f, 0.0f }, { 4.14459608f, 0.05189464f }, { 3.65010441f, 13.94691472f }, { -13.29470049f, -3.19857416f }};
     const epiFloat expectedAbs[]{4.0f, 4.14492096f, 14.41664637f, 13.67406076f};
@@ -150,13 +151,66 @@ TEST(DFT_R2C, SequencePositiveNegative)
     }
 }
 
-TEST(DFT_C2R, Empty)
+TEST(dSeries1Dc, Theta)
+{
+    // NOTE: ref https://en.wikipedia.org/wiki/Atan2
+
+    const epiComplexf c[]{
+        { 1.0f, 1.0f },
+        { 1.0f, -1.0f },
+        { 1.0f, 0.0f },
+        { -1.0f, 0.0f },
+        { -1.0f, 1.0f },
+        { -1.0f, -1.0f },
+        { 0.0f, 1.0f },
+        { 0.0f, -1.0f },
+        { 0.0f, 0.0f },
+        { 2.6e-15f, 0.0f },
+        { 0.0f, 2.6e-15f },
+        { -2.6e-15f, 0.0f },
+        { 0.0f, -2.6e-15f },
+        { 1.3e-7f, 0.0f },
+        { 0.0f, 1.3e-7f },
+        { -1.3e-7f, 0.0f },
+        { 0.0f, -1.3e-7f }
+    };
+
+    const epiFloat expected[]{
+        std::atan(1.0f / 1.0f),
+        std::atan(-1.0f / 1.0f),
+        std::atan(0.0f / 1.0f),
+        std::atan(0.0f / -1.0f) + M_PI,
+        std::atan(1.0f / -1.0f) + M_PI,
+        std::atan(-1.0f / -1.0f) - M_PI,
+        M_PI_2,
+        -M_PI_2,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f
+    };
+
+    ASSERT_EQ(epiArrLen(c), epiArrLen(expected));
+
+    for (epiU32 i = 0; i < epiArrLen(c); ++i)
+    {
+        const epiFloat theta = dSeries1Dc{c[i]}.AtTheta(0);
+        EXPECT_NEAR(theta, expected[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries1Dc, DFT_C2R_Empty)
 {
     const dSeries1Df y = dSeries1Dc({}).DFT_C2R();
     EXPECT_EQ(y.GetSize(), 0);
 }
 
-TEST(DFT_C2R, DCComponent)
+TEST(dSeries1Dc, DFT_C2R_DCComponent)
 {
     const epiFloat expectedValue[]{1.0f, 1.0f, 1.0f, 1.0f};
 
@@ -170,7 +224,7 @@ TEST(DFT_C2R, DCComponent)
     }
 }
 
-TEST(DFT_C2R, NElements1)
+TEST(dSeries1Dc, DFT_C2R_NElements1)
 {
     const epiFloat expectedValue[]{1.0f};
 
@@ -184,7 +238,7 @@ TEST(DFT_C2R, NElements1)
     }
 }
 
-TEST(DFT_C2R, NElements2)
+TEST(dSeries1Dc, DFT_C2R_NElements2)
 {
     const epiFloat expectedValue[]{1.0f, 2.0f};
 
@@ -198,7 +252,7 @@ TEST(DFT_C2R, NElements2)
     }
 }
 
-TEST(DFT_C2R, NElements3)
+TEST(dSeries1Dc, DFT_C2R_NElements3)
 {
     const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f};
 
@@ -212,7 +266,7 @@ TEST(DFT_C2R, NElements3)
     }
 }
 
-TEST(DFT_C2R, SequencePositive)
+TEST(dSeries1Dc, DFT_C2R_SequencePositive)
 {
     const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f};
 
@@ -226,7 +280,7 @@ TEST(DFT_C2R, SequencePositive)
     }
 }
 
-TEST(DFT_C2R, SequenceNegative)
+TEST(dSeries1Dc, DFT_C2R_SequenceNegative)
 {
     const epiFloat expectedValue[]{-1.0f, -2.0f, -3.0f, -4.0f};
 
@@ -240,7 +294,7 @@ TEST(DFT_C2R, SequenceNegative)
     }
 }
 
-TEST(DFT_C2R, SequencePositiveNegative)
+TEST(dSeries1Dc, DFT_C2R_SequencePositiveNegative)
 {
     const epiFloat expectedValue[]{-1.0f, 1.0f, -2.0f, 5.0f, -3.0f, -4.0f, 8.0f};
 
@@ -254,7 +308,7 @@ TEST(DFT_C2R, SequencePositiveNegative)
     }
 }
 
-TEST(DFT_R2C_to_DFT_C2R, NElements100)
+TEST(dSeries1Df_dSeries1Dc, DFT_R2C_to_DFT_C2R_NElements100)
 {
     constexpr epiSize_t kN = 100;
 
@@ -270,7 +324,7 @@ TEST(DFT_R2C_to_DFT_C2R, NElements100)
     ASSERT_EQ(series, resultSeries);
 }
 
-TEST(DFT_R2C_to_DFT_C2R, NElements101)
+TEST(dSeries1Df_dSeries1Dc, DFT_R2C_to_DFT_C2R_NElements101)
 {
     constexpr epiSize_t kN = 101;
 

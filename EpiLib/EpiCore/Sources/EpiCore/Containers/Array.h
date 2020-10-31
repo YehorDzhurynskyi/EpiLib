@@ -168,6 +168,11 @@ public:
 
     friend epiBool operator==(const epiArray<T>& lhs, const epiArray<T>& rhs)
     {
+        if (&lhs == &rhs)
+        {
+            return true;
+        }
+
         if (lhs.GetSize() != rhs.GetSize())
         {
             return false;

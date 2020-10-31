@@ -8,6 +8,9 @@ add_library(EpiData
     Sources/EpiData/Series/dSeries1Df.epi
     Sources/EpiData/Series/dSeries1Df.h
     Sources/EpiData/Series/dSeries1Df.cpp
+    Sources/EpiData/Series/dSeries2Df.epi
+    Sources/EpiData/Series/dSeries2Df.h
+    Sources/EpiData/Series/dSeries2Df.cpp
 
     Sources/EpiData/Series/dSeries1Dc.epi
     Sources/EpiData/Series/dSeries1Dc.h

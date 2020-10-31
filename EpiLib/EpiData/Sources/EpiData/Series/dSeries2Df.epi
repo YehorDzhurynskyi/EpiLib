@@ -1,0 +1,13 @@
+class dSeries2Df : dSeriesBase
+{
+    epiArray<epiFloat> Data;
+
+    [Virtual, ReadOnly]
+    {
+        epiBool IsEmpty;
+        epiSize_t Size;
+        epiSize_t Height;
+    }
+
+    epiSize_t Width;
+};

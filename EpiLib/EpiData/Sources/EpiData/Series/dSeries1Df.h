@@ -5,10 +5,10 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiData/Series/dSeriesBase.h"
-#include "EpiData/Series/dSeries1Dc.h"
 
 EPI_NAMESPACE_BEGIN()
 
+class dSeries1Dc;
 class dSeries1Df : public dSeriesBase
 {
 EPI_GENREGION_BEGIN(dSeries1Df)

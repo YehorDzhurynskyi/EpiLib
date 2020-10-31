@@ -36,6 +36,7 @@ EPI_GENREGION_BEGIN(mmImageEdgeHandling)
 EPI_GENREGION_END(mmImageEdgeHandling)
 };
 
+class dSeries2Df;
 class mmImage : public mmMediaBase
 {
 EPI_GENREGION_BEGIN(mmImage)
@@ -74,6 +75,9 @@ public:
     static constexpr epiU32 ChannelsOf(mmImagePixelFormat fmt);
 
 public:
+    mmImage() = default;
+    mmImage(const dSeries2Df& series);
+
     mmImage Duplicate() const; // TODO: replace with auto-generated method
 
     void Histogram(dSeries1Df& histogram, epiU8 (Color::*get)() const) const;
@@ -102,11 +106,12 @@ public:
 
     void Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint = Color(1.0f, 1.0f, 1.0f, 1.0f));
 
-    dSeries2Dc DFT() const;
-
     epiU8& At(epiS32 r, epiS32 c, epiU32 channel);
     epiU8 At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) const;
     Color At(epiS32 r, epiS32 c, mmImageEdgeHandling edge) const;
+
+    operator dSeries2Df() const;
+    dSeries2Df ToSeries2Df() const;
 
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;

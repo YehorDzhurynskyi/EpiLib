@@ -3,6 +3,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/mmImage.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiData/Series/dSeries2Df.h"
+
 namespace
 {
 
@@ -105,6 +107,31 @@ mmImage ConvertTo(const mmImage& from,
 }
 
 EPI_NAMESPACE_BEGIN()
+
+mmImage::mmImage(const dSeries2Df& series)
+{
+    SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
+    SetWidth(series.GetWidth());
+    SetHeight(series.GetHeight());
+    GetData().Resize(series.GetWidth() * series.GetHeight());
+
+    const auto& [minIt, maxIt] = std::minmax_element(series.begin(), series.end());
+    if (minIt != series.end() && maxIt != series.end())
+    {
+        const epiFloat min = *minIt;
+        const epiFloat max = *maxIt;
+
+        epiU32 i = 0;
+        for (epiU8& v : GetData())
+        {
+            v = static_cast<epiU8>(255.0f * ((series.At(i++) - min) / (max - min)));
+        }
+    }
+    else
+    {
+        epiLogWarn("Invalid `Series2Df` while converting `Series2Df` to `mmImage`: Couldn't determine min, max elements!");
+    }
+}
 
 constexpr epiU32 mmImage::BitDepthOf(mmImagePixelFormat fmt)
 {
@@ -894,50 +921,6 @@ void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& 
     }
 }
 
-dSeries2Dc mmImage::DFT() const
-{
-    using namespace std::complex_literals;
-
-    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
-
-    dSeries2Dc X;
-
-    const epiSize_t M = GetHeight();
-    const epiSize_t N = GetWidth();
-
-    if (M == 0 || N == 0)
-    {
-        return X;
-    }
-
-    const epiSize_t M2 = M;
-    const epiSize_t N2 = N / 2 + 1;
-    X.Resize(M2 * N2);
-    X.SetWidth(N2);
-
-    for (epiS32 k = 0; k < M2; ++k)
-    {
-        for (epiS32 l = 0; l < N2; ++l)
-        {
-            epiComplexf& sum = (X.At(k, l) = {});
-            for (epiS32 r = 0; r < M; ++r)
-            {
-                const epiFloat kM = (k * r) / static_cast<epiFloat>(M);
-                for (epiS32 c = 0; c < N; ++c)
-                {
-                    const epiFloat lN = (l * c) / static_cast<epiFloat>(N);
-                    const epiFloat y = At(r, c, 0, mmImageEdgeHandling::Error);
-                    const epiComplexf s = std::exp(2.0f * M_PI * (kM + lN) * 1i);
-
-                    sum += y * std::conj(s);
-                }
-            }
-        }
-    }
-
-    return X;
-}
-
 epiU8& mmImage::At(epiS32 r, epiS32 c, epiU32 channel)
 {
     const epiS32 w = static_cast<epiS32>(GetWidth());
@@ -1059,6 +1042,27 @@ Color mmImage::At(epiS32 r, epiS32 c, mmImageEdgeHandling edge) const
     } break;
     break;
     }
+}
+
+mmImage::operator dSeries2Df() const
+{
+    return ToSeries2Df();
+}
+
+dSeries2Df mmImage::ToSeries2Df() const
+{
+    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
+
+    dSeries2Df y;
+    y.SetWidth(GetWidth());
+    y.Reserve(GetWidth() * GetHeight());
+
+    std::transform(GetData().begin(), GetData().end(), std::back_inserter(y), [](epiU8 v)
+    {
+        return static_cast<epiFloat>(v);
+    });
+
+    return y;
 }
 
 mmImage mmImage::ToGrayScaleR() const

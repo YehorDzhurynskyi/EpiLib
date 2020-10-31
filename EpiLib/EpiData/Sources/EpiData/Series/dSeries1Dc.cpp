@@ -29,6 +29,11 @@ void dSeries1Dc::Reserve(epiSize_t capacity)
     GetData().Reserve(capacity);
 }
 
+void dSeries1Dc::Resize(epiSize_t size)
+{
+    GetData().Resize(size);
+}
+
 void dSeries1Dc::Clear()
 {
     GetData().Clear();
@@ -42,10 +47,6 @@ epiComplexf& dSeries1Dc::PushBack(epiComplexf&& value)
 dSeries1Df dSeries1Dc::DFT_C2R() const
 {
     const epiSize_t N = GetSize();
-    if (N == 0)
-    {
-        return dSeries1Df{};
-    }
 
     return DFT_C2R((N - 1) * 2);
 }
@@ -103,7 +104,7 @@ dSeries1Df dSeries1Dc::DFT_C2R(epiSize_t N) const
     fftwf_complex* in = fftwf_alloc_complex(N2);
     y.GetData().Resize(N);
 
-    epiFloat* out = reinterpret_cast<epiFloat*>(y.GetData().data());
+    epiFloat* out = y.GetData().data();
     fftwf_plan p = fftwf_plan_dft_c2r_1d(N, in, out, FFTW_EXHAUSTIVE | FFTW_WISDOM_ONLY);
     if (p == nullptr)
     {
@@ -116,6 +117,7 @@ dSeries1Df dSeries1Dc::DFT_C2R(epiSize_t N) const
 
         fftwf_execute(p);
 
+        // TODO: optimize
         for (epiFloat& v : y)
         {
             v /= N;
@@ -172,6 +174,16 @@ const epiComplexf& dSeries1Dc::operator[](epiS32 index) const
 epiComplexf& dSeries1Dc::operator[](epiS32 index)
 {
     return At(index);
+}
+
+epiBool operator==(const dSeries1Dc& lhs, const dSeries1Dc& rhs)
+{
+    return lhs.GetData() == rhs.GetData();
+}
+
+epiBool operator!=(const dSeries1Dc& lhs, const dSeries1Dc& rhs)
+{
+    return !(operator==(lhs, rhs));
 }
 
 EPI_NAMESPACE_END()

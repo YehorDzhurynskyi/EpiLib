@@ -84,7 +84,7 @@ dSeries1Dc dSeries1Df::DFT_R2C() const
     }
 
     epiFloat* in = fftwf_alloc_real(N);
-    X.GetData().Resize((N / 2) + 1);
+    X.Resize(N / 2 + 1);
 
     // TODO: use SIMD
     fftwf_complex* out = reinterpret_cast<fftwf_complex*>(X.GetData().data());
