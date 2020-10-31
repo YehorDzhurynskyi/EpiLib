@@ -73,7 +73,9 @@ dSeries2Df dSeries2Dc::DFT_C2R(epiSize_t N, epiSize_t M) const
 {
     dSeries2Df y;
 
-    if (M == 0 || N == 0)
+    const epiSize_t MN = M * N;
+
+    if (MN == 0)
     {
         return y;
     }
@@ -84,10 +86,10 @@ dSeries2Df dSeries2Dc::DFT_C2R(epiSize_t N, epiSize_t M) const
     epiAssert(M2 == M && N2 == N / 2 + 1);
     epiAssertStatic(sizeof(fftwf_complex) == sizeof(epiComplexf));
 
-    y.Resize(M * N);
+    y.Resize(MN);
     y.SetWidth(N);
 
-    fftwf_complex* in = fftwf_alloc_complex(M * N);
+    fftwf_complex* in = fftwf_alloc_complex(MN);
 
     epiFloat* out = y.GetData().data();
     fftwf_plan p = fftwf_plan_dft_c2r_2d(M, N, in, out, FFTW_EXHAUSTIVE | FFTW_WISDOM_ONLY);
@@ -105,7 +107,7 @@ dSeries2Df dSeries2Dc::DFT_C2R(epiSize_t N, epiSize_t M) const
         // TODO: optimize
         for (epiFloat& v : y)
         {
-            v /= N;
+            v /= MN;
         }
 
         // TODO: figure out whether plan should be destroyed, so it can be reused via `wisdom` mechanism
@@ -117,14 +119,14 @@ dSeries2Df dSeries2Dc::DFT_C2R(epiSize_t N, epiSize_t M) const
     return y;
 }
 
-epiFloat dSeries2Dc::AtAbs(epiS32 r, epiS32 c) const
+epiFloat dSeries2Dc::AtAbs(epiS32 index) const
 {
-    return std::abs(At(r, c));
+    return std::abs(At(index));
 }
 
-epiFloat dSeries2Dc::AtTheta(epiS32 r, epiS32 c) const
+epiFloat dSeries2Dc::AtTheta(epiS32 index) const
 {
-    epiComplexf com = At(r, c);
+    epiComplexf com = At(index);
     if (epiFloatingEqEx(com.real(), 0.0f, 5.0e-3f))
     {
         com.real(0.0f);
@@ -136,6 +138,16 @@ epiFloat dSeries2Dc::AtTheta(epiS32 r, epiS32 c) const
     }
 
     return std::arg(com);
+}
+
+epiFloat dSeries2Dc::AtAbs(epiS32 r, epiS32 c) const
+{
+    return AtAbs(c + r * GetWidth());
+}
+
+epiFloat dSeries2Dc::AtTheta(epiS32 r, epiS32 c) const
+{
+    return AtTheta(c + r * GetWidth());
 }
 
 const epiComplexf& dSeries2Dc::At(epiS32 index) const

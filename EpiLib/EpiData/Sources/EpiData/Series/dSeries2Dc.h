@@ -66,6 +66,8 @@ public:
     dSeries2Df DFT_C2R() const;
     dSeries2Df DFT_C2R(epiSize_t N, epiSize_t M) const;
 
+    epiFloat AtAbs(epiS32 index) const;
+    epiFloat AtTheta(epiS32 index) const;
     epiFloat AtAbs(epiS32 r, epiS32 c) const;
     epiFloat AtTheta(epiS32 r, epiS32 c) const;
 
