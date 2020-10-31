@@ -86,9 +86,8 @@ dSeries1Dc dSeries1Df::DFT_R2C() const
     epiFloat* in = fftwf_alloc_real(N);
     X.GetData().Resize((N / 2) + 1);
 
+    // TODO: use SIMD
     fftwf_complex* out = reinterpret_cast<fftwf_complex*>(X.GetData().data());
-
-// TODO: finish    EPI_AVX2_ONLY(epiAssert(fftwf_alignment_of(in) == 16 && fftwf_alignment_of(out) == 16));
 
     fftwf_plan p = fftwf_plan_dft_r2c_1d(N, in, out, FFTW_EXHAUSTIVE | FFTW_WISDOM_ONLY);
     if (p == nullptr)

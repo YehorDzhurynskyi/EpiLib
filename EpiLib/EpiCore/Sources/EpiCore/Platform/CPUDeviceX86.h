@@ -6,7 +6,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/Platform/CPUDeviceBase.h"
 
-#include "cpuinfo_x86.h"
+#include <cpuinfo_x86.h>
 
 EPI_NAMESPACE_BEGIN()
 

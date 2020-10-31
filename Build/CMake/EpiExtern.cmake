@@ -3,7 +3,7 @@ include(ExternalProject)
 function(epi_extern_add EXTERN)
 
     cmake_parse_arguments(EXTERN
-        "DONT_ADD_SUBDIRECTORY"
+        "DONT_ADD_SUBDIRECTORY;IMPORTED"
         ""
         "COMPONENTS"
         ${ARGN}
@@ -29,7 +29,7 @@ function(epi_extern_add EXTERN)
     )
 
     if (COMMAND_STATUS)
-        message(FATAL_ERROR "CMake step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
+        message(FATAL_ERROR "Configuration step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
     endif ()
 
     execute_process(COMMAND ${CMAKE_COMMAND} --build .
@@ -45,41 +45,79 @@ function(epi_extern_add EXTERN)
         include("${EXTERN_DIR}/configure.cmake")
     endif ()
 
-    if (NOT EXTERN_DONT_ADD_SUBDIRECTORY)
-        set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-        add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
-                         "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
-                         EXCLUDE_FROM_ALL)
-    endif ()
-
-    if (EXISTS "${EXTERN_DIR}/target.cmake")
-        include("${EXTERN_DIR}/target.cmake")
-    endif ()
-
-    list(LENGTH EXTERN_COMPONENTS EXTERN_COMPONENTS_LENGTH)
-    if (NOT EXTERN_COMPONENTS_LENGTH EQUAL 0)
-        if (TARGET ${EXTERN})
-            message(FATAL_ERROR "`${EXTERN}` is already defined, but it's implied to be an interface library!")
+    if (NOT EXTERN_IMPORTED)
+        if (NOT EXTERN_DONT_ADD_SUBDIRECTORY)
+            set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+            add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
+                             "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
+                             EXCLUDE_FROM_ALL)
         endif ()
 
-        foreach (COMPONENT ${EXTERN_COMPONENTS})
-            if (NOT TARGET ${COMPONENT})
-                message(FATAL_ERROR "`${COMPONENT}` such component of `${EXTERN}` doesn't exists!")
+        if (EXISTS "${EXTERN_DIR}/target.cmake")
+            include("${EXTERN_DIR}/target.cmake")
+        endif ()
+
+        list(LENGTH EXTERN_COMPONENTS EXTERN_COMPONENTS_LENGTH)
+        if (NOT EXTERN_COMPONENTS_LENGTH EQUAL 0)
+            if (TARGET ${EXTERN})
+                message(FATAL_ERROR "`${EXTERN}` is already defined, but it's implied to be an interface library!")
             endif ()
 
-            epi_module_register(${COMPONENT} EXTERN
-                FOLDER "EpiLib/Extern"
+            foreach (COMPONENT ${EXTERN_COMPONENTS})
+                if (NOT TARGET ${COMPONENT})
+                    message(FATAL_ERROR "`${COMPONENT}` such component of `${EXTERN}` doesn't exists!")
+                endif ()
+
+                epi_module_register(${COMPONENT} EXTERN
+                    FOLDER "EpiLib/Extern"
+                )
+            endforeach ()
+
+            add_library(${EXTERN} INTERFACE)
+            target_link_libraries(${EXTERN}
+                INTERFACE
+                    ${EXTERN_COMPONENTS}
             )
-        endforeach ()
+        endif ()
 
-        add_library(${EXTERN} INTERFACE)
-        target_link_libraries(${EXTERN}
-            INTERFACE
-                ${EXTERN_COMPONENTS}
+        epi_module_register(${EXTERN} EXTERN
+            FOLDER "EpiLib/Extern"
         )
-    endif ()
+    else()
+        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
+            RESULT_VARIABLE COMMAND_STATUS
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
+        )
 
-    epi_module_register(${EXTERN} EXTERN
-        FOLDER "EpiLib/Extern"
-    )
+        if (COMMAND_STATUS)
+            message(FATAL_ERROR "Configuration step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
+        endif()
+
+        execute_process(COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build" --config Release
+            RESULT_VARIABLE COMMAND_STATUS
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
+        )
+
+        if (COMMAND_STATUS)
+            message(FATAL_ERROR "Build step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
+        endif()
+
+        execute_process(COMMAND ${CMAKE_COMMAND} --install "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build" --config Release --prefix "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install"
+            RESULT_VARIABLE COMMAND_STATUS
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
+        )
+
+        if (COMMAND_STATUS)
+            message(FATAL_ERROR "Install step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
+        endif()
+
+        find_library(EXTERN_LIBRARY ${EXTERN} PATHS "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install/lib" REQUIRED)
+
+        add_library(epiimported::${EXTERN} INTERFACE IMPORTED)
+        set_target_properties(epiimported::${EXTERN}
+            PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install/include"
+                INTERFACE_LINK_LIBRARIES ${EXTERN_LIBRARY}
+        )
+    endif()
 endfunction()

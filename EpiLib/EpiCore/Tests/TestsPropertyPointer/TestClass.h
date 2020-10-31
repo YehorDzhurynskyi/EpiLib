@@ -30,7 +30,7 @@ public:
 protected:
     epiS32 m_InplacePrty0{0};
     epiFloat m_InplacePrty1{0.0f};
-    epiString m_InplacePrty2{epiDEBUG_ONLY("Empty")};
+    epiString m_InplacePrty2{EPI_BUILD_DEBUG_ONLY("Empty")};
     epiRect2f m_InplacePrty3{};
 
 EPI_GENREGION_END(InplaceClass)
@@ -444,8 +444,8 @@ protected:
     epiS16 m_APrty12{0};
     epiS32 m_APrty13{0};
     epiS64 m_APrty14{0};
-    epiString m_APrty15{epiDEBUG_ONLY("Empty")};
-    epiWString m_APrty16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_APrty15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_APrty16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_APrty17{};
     epiPtrArray<epiS32> m_APrty18{};
     epiArray<epiString> m_APrty19{};
@@ -488,8 +488,8 @@ protected:
     epiS16 m_APrtyReadCallback12{0};
     epiS32 m_APrtyReadCallback13{0};
     epiS64 m_APrtyReadCallback14{0};
-    epiString m_APrtyReadCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_APrtyReadCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_APrtyReadCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_APrtyReadCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_APrtyReadCallback17{};
     epiPtrArray<epiS32> m_APrtyReadCallback18{};
     epiArray<epiString> m_APrtyReadCallback19{};
@@ -532,8 +532,8 @@ protected:
     epiS16 m_APrtyWriteCallback12{0};
     epiS32 m_APrtyWriteCallback13{0};
     epiS64 m_APrtyWriteCallback14{0};
-    epiString m_APrtyWriteCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_APrtyWriteCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_APrtyWriteCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_APrtyWriteCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_APrtyWriteCallback17{};
     epiPtrArray<epiS32> m_APrtyWriteCallback18{};
     epiArray<epiString> m_APrtyWriteCallback19{};
@@ -952,8 +952,8 @@ protected:
     epiS16 m_BPrty12{0};
     epiS32 m_BPrty13{0};
     epiS64 m_BPrty14{0};
-    epiString m_BPrty15{epiDEBUG_ONLY("Empty")};
-    epiWString m_BPrty16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_BPrty15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_BPrty16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_BPrty17{};
     epiPtrArray<epiS32> m_BPrty18{};
     epiArray<epiString> m_BPrty19{};
@@ -996,8 +996,8 @@ protected:
     epiS16 m_BPrtyReadCallback12{0};
     epiS32 m_BPrtyReadCallback13{0};
     epiS64 m_BPrtyReadCallback14{0};
-    epiString m_BPrtyReadCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_BPrtyReadCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_BPrtyReadCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_BPrtyReadCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_BPrtyReadCallback17{};
     epiPtrArray<epiS32> m_BPrtyReadCallback18{};
     epiArray<epiString> m_BPrtyReadCallback19{};
@@ -1040,8 +1040,8 @@ protected:
     epiS16 m_BPrtyWriteCallback12{0};
     epiS32 m_BPrtyWriteCallback13{0};
     epiS64 m_BPrtyWriteCallback14{0};
-    epiString m_BPrtyWriteCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_BPrtyWriteCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_BPrtyWriteCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_BPrtyWriteCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_BPrtyWriteCallback17{};
     epiPtrArray<epiS32> m_BPrtyWriteCallback18{};
     epiArray<epiString> m_BPrtyWriteCallback19{};
@@ -1466,8 +1466,8 @@ protected:
     epiS16 m_CPrty12{0};
     epiS32 m_CPrty13{0};
     epiS64 m_CPrty14{0};
-    epiString m_CPrty15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CPrty16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CPrty15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CPrty16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CPrty17{};
     epiPtrArray<epiS32> m_CPrty18{};
     epiArray<epiString> m_CPrty19{};
@@ -1510,8 +1510,8 @@ protected:
     epiS16 m_CPrtyReadCallback12{0};
     epiS32 m_CPrtyReadCallback13{0};
     epiS64 m_CPrtyReadCallback14{0};
-    epiString m_CPrtyReadCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CPrtyReadCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CPrtyReadCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CPrtyReadCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CPrtyReadCallback17{};
     epiPtrArray<epiS32> m_CPrtyReadCallback18{};
     epiArray<epiString> m_CPrtyReadCallback19{};
@@ -1554,8 +1554,8 @@ protected:
     epiS16 m_CPrtyWriteCallback12{0};
     epiS32 m_CPrtyWriteCallback13{0};
     epiS64 m_CPrtyWriteCallback14{0};
-    epiString m_CPrtyWriteCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CPrtyWriteCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CPrtyWriteCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CPrtyWriteCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CPrtyWriteCallback17{};
     epiPtrArray<epiS32> m_CPrtyWriteCallback18{};
     epiArray<epiString> m_CPrtyWriteCallback19{};
@@ -1979,8 +1979,8 @@ protected:
     epiS16 m_BBPrty12{0};
     epiS32 m_BBPrty13{0};
     epiS64 m_BBPrty14{0};
-    epiString m_BBPrty15{epiDEBUG_ONLY("Empty")};
-    epiWString m_BBPrty16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_BBPrty15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_BBPrty16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_BBPrty17{};
     epiPtrArray<epiS32> m_BBPrty18{};
     epiArray<epiString> m_BBPrty19{};
@@ -2023,8 +2023,8 @@ protected:
     epiS16 m_BBPrtyReadCallback12{0};
     epiS32 m_BBPrtyReadCallback13{0};
     epiS64 m_BBPrtyReadCallback14{0};
-    epiString m_BBPrtyReadCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_BBPrtyReadCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_BBPrtyReadCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_BBPrtyReadCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_BBPrtyReadCallback17{};
     epiPtrArray<epiS32> m_BBPrtyReadCallback18{};
     epiArray<epiString> m_BBPrtyReadCallback19{};
@@ -2067,8 +2067,8 @@ protected:
     epiS16 m_BBPrtyWriteCallback12{0};
     epiS32 m_BBPrtyWriteCallback13{0};
     epiS64 m_BBPrtyWriteCallback14{0};
-    epiString m_BBPrtyWriteCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_BBPrtyWriteCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_BBPrtyWriteCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_BBPrtyWriteCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_BBPrtyWriteCallback17{};
     epiPtrArray<epiS32> m_BBPrtyWriteCallback18{};
     epiArray<epiString> m_BBPrtyWriteCallback19{};
@@ -2493,8 +2493,8 @@ protected:
     epiS16 m_CCPrty12{0};
     epiS32 m_CCPrty13{0};
     epiS64 m_CCPrty14{0};
-    epiString m_CCPrty15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CCPrty16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CCPrty15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CCPrty16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CCPrty17{};
     epiPtrArray<epiS32> m_CCPrty18{};
     epiArray<epiString> m_CCPrty19{};
@@ -2537,8 +2537,8 @@ protected:
     epiS16 m_CCPrtyReadCallback12{0};
     epiS32 m_CCPrtyReadCallback13{0};
     epiS64 m_CCPrtyReadCallback14{0};
-    epiString m_CCPrtyReadCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CCPrtyReadCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CCPrtyReadCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CCPrtyReadCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CCPrtyReadCallback17{};
     epiPtrArray<epiS32> m_CCPrtyReadCallback18{};
     epiArray<epiString> m_CCPrtyReadCallback19{};
@@ -2581,8 +2581,8 @@ protected:
     epiS16 m_CCPrtyWriteCallback12{0};
     epiS32 m_CCPrtyWriteCallback13{0};
     epiS64 m_CCPrtyWriteCallback14{0};
-    epiString m_CCPrtyWriteCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CCPrtyWriteCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CCPrtyWriteCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CCPrtyWriteCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CCPrtyWriteCallback17{};
     epiPtrArray<epiS32> m_CCPrtyWriteCallback18{};
     epiArray<epiString> m_CCPrtyWriteCallback19{};
@@ -3006,8 +3006,8 @@ protected:
     epiS16 m_CCCPrty12{0};
     epiS32 m_CCCPrty13{0};
     epiS64 m_CCCPrty14{0};
-    epiString m_CCCPrty15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CCCPrty16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CCCPrty15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CCCPrty16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CCCPrty17{};
     epiPtrArray<epiS32> m_CCCPrty18{};
     epiArray<epiString> m_CCCPrty19{};
@@ -3050,8 +3050,8 @@ protected:
     epiS16 m_CCCPrtyReadCallback12{0};
     epiS32 m_CCCPrtyReadCallback13{0};
     epiS64 m_CCCPrtyReadCallback14{0};
-    epiString m_CCCPrtyReadCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CCCPrtyReadCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CCCPrtyReadCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CCCPrtyReadCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CCCPrtyReadCallback17{};
     epiPtrArray<epiS32> m_CCCPrtyReadCallback18{};
     epiArray<epiString> m_CCCPrtyReadCallback19{};
@@ -3094,8 +3094,8 @@ protected:
     epiS16 m_CCCPrtyWriteCallback12{0};
     epiS32 m_CCCPrtyWriteCallback13{0};
     epiS64 m_CCCPrtyWriteCallback14{0};
-    epiString m_CCCPrtyWriteCallback15{epiDEBUG_ONLY("Empty")};
-    epiWString m_CCCPrtyWriteCallback16{epiDEBUG_ONLY(L"Empty")};
+    epiString m_CCCPrtyWriteCallback15{EPI_BUILD_DEBUG_ONLY("Empty")};
+    epiWString m_CCCPrtyWriteCallback16{EPI_BUILD_DEBUG_ONLY(L"Empty")};
     epiArray<epiS32> m_CCCPrtyWriteCallback17{};
     epiPtrArray<epiS32> m_CCCPrtyWriteCallback18{};
     epiArray<epiString> m_CCCPrtyWriteCallback19{};

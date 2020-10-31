@@ -107,6 +107,12 @@ target_precompile_headers(EpiCore
         [["EpiCore/Containers/Array.h"]]
 )
 
+target_compile_definitions(EpiCore
+    PUBLIC
+        $<$<CONFIG:Debug>:EPI_BUILD_DEBUG>
+        $<$<CONFIG:Release>:EPI_BUILD_RELEASE>
+)
+
 target_include_directories(EpiCore
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>

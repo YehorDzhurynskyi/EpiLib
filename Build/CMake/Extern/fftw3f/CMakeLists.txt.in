@@ -11,8 +11,6 @@ include(ExternalProject)
 set(FFTW3_ARGS
     --host=x86_64-w64-mingw32
     --build=x86_64-linux-gnu
-#    --enable-shared
-#    --disable-static
     --enable-static
     --disable-shared
     --enable-float
@@ -23,10 +21,24 @@ set(FFTW3_ARGS
     --disable-alloca
     --with-our-malloc
     --with-windows-f77-mangling
-
-    #--extra-cflags="-DFFTW_DLL"
-    #--extra-cxxflags="/MDd"
 )
+
+if (@EPI_CPU_X86_FEATURE_SSE@)
+    list(APPEND FFTW3_ARGS --enable-sse)
+endif()
+
+if (@EPI_CPU_X86_FEATURE_SSE2@)
+    list(APPEND FFTW3_ARGS --enable-sse2)
+endif()
+
+if (@EPI_CPU_X86_FEATURE_AVX@)
+    list(APPEND FFTW3_ARGS --enable-avx)
+endif()
+
+if (@EPI_CPU_X86_FEATURE_AVX2@)
+    list(APPEND FFTW3_ARGS --enable-avx2)
+endif()
+
 string(JOIN " " FFTW3_ARGS ${FFTW3_ARGS})
 
 set(FFTW3_SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/fftw3f/src")

@@ -38,7 +38,7 @@ public:
     };
 
 protected:
-    epiString m_URL{epiDEBUG_ONLY("Empty")};
+    epiString m_URL{EPI_BUILD_DEBUG_ONLY("Empty")};
     mmResourceStatus m_Status{mmResourceStatus::Empty};
     epiPtrArray<mmMediaBase> m_Media{};
 
