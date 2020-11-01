@@ -36,6 +36,8 @@ EPI_GENREGION_BEGIN(mmImageEdgeHandling)
 EPI_GENREGION_END(mmImageEdgeHandling)
 };
 
+using mmImageGetColorValueCallback = epiU8(Color::*)() const;
+
 class dSeries2Df;
 class mmImage : public mmMediaBase
 {
@@ -80,7 +82,7 @@ public:
 
     mmImage Duplicate() const; // TODO: replace with auto-generated method
 
-    dSeries1Df Histogram(epiU8 (Color::*get)() const) const;
+    dSeries1Df Histogram(mmImageGetColorValueCallback get = &Color::GetLumau) const;
     void HistogramEqualize();
 
     void Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA = 0);
@@ -108,13 +110,13 @@ public:
 
     epiU8& At(epiS32 index, epiU32 channel);
     epiU8& At(epiS32 r, epiS32 c, epiU32 channel);
-    epiU8 At(epiS32 index, epiU32 channel, mmImageEdgeHandling edge) const;
-    epiU8 At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) const;
-    Color At(epiS32 index, mmImageEdgeHandling edge) const;
-    Color At(epiS32 r, epiS32 c, mmImageEdgeHandling edge) const;
+    epiU8 At(epiS32 index, epiU32 channel, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
+    epiU8 At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
+    Color At(epiS32 index, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
+    Color At(epiS32 r, epiS32 c, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
 
     operator dSeries2Df() const;
-    dSeries2Df ToSeries2Df() const;
+    dSeries2Df ToSeries2Df(mmImageGetColorValueCallback get = &Color::GetLumau) const;
 
     mmImage ToGrayScaleR() const;
     mmImage ToGrayScaleG() const;
@@ -140,7 +142,7 @@ public:
     mmImage ToR8G8B8A8() const;
 
 protected:
-    mmImage ToGrayScale_Internal(epiU8 (Color::*get)() const) const;
+    mmImage ToGrayScale_Internal(mmImageGetColorValueCallback get) const;
 };
 
 EPI_NAMESPACE_END()

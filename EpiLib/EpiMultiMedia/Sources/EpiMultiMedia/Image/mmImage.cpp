@@ -10,13 +10,11 @@ namespace
 
 EPI_NAMESPACE_USING()
 
-using ColorGetCallback = epiU8(Color::*)() const;
-
 // TODO: add c++20 ranges
 template<typename Transform = Color(Color::*)() const, typename ...TransformArgs>
 mmImage ConvertTo(const mmImage& from,
                   mmImagePixelFormat toFmt,
-                  ColorGetCallback get[4],
+                  mmImageGetColorValueCallback get[4],
                   const epiVec4s& strideFrom = {},
                   const epiVec4s& strideTo = {},
                   Transform&& transform = nullptr,
@@ -79,28 +77,28 @@ mmImage ConvertTo(const mmImage& from,
 template<typename Transform = Color(Color::*)() const, typename ...TransformArgs>
 mmImage ConvertTo(const mmImage& from,
                   mmImagePixelFormat toFmt,
-                  ColorGetCallback getR,
-                  ColorGetCallback getG,
-                  ColorGetCallback getB,
+                  mmImageGetColorValueCallback getR,
+                  mmImageGetColorValueCallback getG,
+                  mmImageGetColorValueCallback getB,
                   const epiVec4s& strideFrom = {},
                   const epiVec4s& strideTo = {},
                   Transform&& transform = nullptr,
                   TransformArgs&& ...transformArgs)
 {
-    ColorGetCallback getcallbacks[4]{getR, getG, getB, nullptr};
+    mmImageGetColorValueCallback getcallbacks[4]{getR, getG, getB, nullptr};
     return ConvertTo(from, toFmt, getcallbacks, strideFrom, strideTo, transform, std::forward<TransformArgs>(transformArgs)...);
 }
 
 template<typename Transform = Color(Color::*)() const, typename ...TransformArgs>
 mmImage ConvertTo(const mmImage& from,
                   mmImagePixelFormat toFmt,
-                  ColorGetCallback get,
+                  mmImageGetColorValueCallback get,
                   const epiVec4s& strideFrom = {},
                   const epiVec4s& strideTo = {},
                   Transform&& transform = nullptr,
                   TransformArgs&& ...transformArgs)
 {
-    ColorGetCallback getcallbacks[4]{get, get, get, get};
+    mmImageGetColorValueCallback getcallbacks[4]{get, get, get, get};
     return ConvertTo(from, toFmt, getcallbacks, strideFrom, strideTo, transform, std::forward<TransformArgs>(transformArgs)...);
 }
 
@@ -160,24 +158,9 @@ mmImage mmImage::Duplicate() const
     return image;
 }
 
-dSeries1Df mmImage::Histogram(epiU8(Color::*get)() const) const
+dSeries1Df mmImage::Histogram(mmImageGetColorValueCallback get) const
 {
-    dSeries1Df histogram;
-    histogram.Resize(256);
-
-    // TODO: optimize
-    for (epiU32 i = 0; i < 256; ++i)
-    {
-        histogram[i] = 0.0f;
-    }
-
-    for (epiS32 i = 0; i < GetWidth() * GetHeight(); ++i)
-    {
-        const Color color = At(i, mmImageEdgeHandling::Error);
-        histogram[(color.*get)()] += 1.0f;
-    }
-
-    return histogram;
+    return ToSeries2Df(get).Histogram(256);
 }
 
 void mmImage::HistogramEqualize()
@@ -280,7 +263,7 @@ void mmImage::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA)
     {
         if (thrA == 0)
         {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+            mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8,
                           get,
@@ -300,7 +283,7 @@ void mmImage::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA)
     }
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8A8,
                           get,
@@ -342,7 +325,7 @@ void mmImage::Negative()
     } break;
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8A8,
                           get,
@@ -403,7 +386,7 @@ void mmImage::Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB, epiFloat 
     }
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8A8,
                           get,
@@ -468,7 +451,7 @@ void mmImage::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB, epiS8 
     }
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8A8,
                           get,
@@ -555,7 +538,7 @@ void mmImage::ContrastStretch(epiU8 lowerR,
     }
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8A8,
                           get,
@@ -624,7 +607,7 @@ void mmImage::Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA)
     }
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8A8,
                           get,
@@ -689,7 +672,7 @@ void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 sh
     }
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         *this = ConvertTo(*this,
                           mmImagePixelFormat::R8G8B8A8,
                           get,
@@ -873,7 +856,7 @@ void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& 
             {
                 for (epiS32 c = 0; c < image.GetWidth(); ++c)
                 {
-                    const Color color = image.At(r, c, mmImageEdgeHandling::Error) * colorTint;
+                    const Color color = image.At(r, c) * colorTint;
 
                     At(r - shift.y, c + shift.x, 0) = color.GetLumau();
                 }
@@ -904,7 +887,7 @@ void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& 
                     continue;
                 }
 
-                const Color colorSrc = image.At(r, c, mmImageEdgeHandling::Error) * colorTint;
+                const Color colorSrc = image.At(r, c) * colorTint;
                 const Color colorDst = At(rr, cc, mmImageEdgeHandling::Error);
                 const Color color = colorDst.Blend(colorSrc);
 
@@ -1072,18 +1055,18 @@ mmImage::operator dSeries2Df() const
     return ToSeries2Df();
 }
 
-dSeries2Df mmImage::ToSeries2Df() const
+dSeries2Df mmImage::ToSeries2Df(mmImageGetColorValueCallback get) const
 {
-    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
-
     dSeries2Df y;
     y.SetWidth(GetWidth());
     y.Reserve(GetWidth() * GetHeight());
 
-    std::transform(GetData().begin(), GetData().end(), std::back_inserter(y), [](epiU8 v)
+    for (epiU32 i = 0; i < GetData().GetSize(); ++i)
     {
-        return static_cast<epiFloat>(v);
-    });
+        const Color color = At(i);
+        y[i] = static_cast<epiFloat>((color.*get)());
+
+    }
 
     return y;
 }
@@ -1183,7 +1166,7 @@ mmImage mmImage::ToGrayScaleSaturationI() const
     return ToGrayScale_Internal(&Color::GetSaturationIu);
 }
 
-mmImage mmImage::ToGrayScale_Internal(epiU8(Color::*get)() const) const
+mmImage mmImage::ToGrayScale_Internal(mmImageGetColorValueCallback get) const
 {
     switch (GetPixelFormat())
     {
@@ -1231,7 +1214,7 @@ mmImage mmImage::ToR8G8B8() const
     } break;
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         return ConvertTo(*this,
                          mmImagePixelFormat::R8G8B8,
                          get,
@@ -1259,7 +1242,7 @@ mmImage mmImage::ToR8G8B8A8() const
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
         return ConvertTo(*this,
                          mmImagePixelFormat::R8G8B8A8,
                          get,
@@ -1268,7 +1251,7 @@ mmImage mmImage::ToR8G8B8A8() const
     } break;
     case mmImagePixelFormat::R8G8B8A8:
     {
-        ColorGetCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         return ConvertTo(*this,
                          mmImagePixelFormat::R8G8B8A8,
                          get,
