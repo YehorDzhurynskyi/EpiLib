@@ -1,11 +1,7 @@
-class dSeries2Dc : dSeriesBase
+class dSeries2Dc : dSeriesc
 {
-    epiArray<epiComplexf> Data;
-
     [Virtual, ReadOnly]
     {
-        epiBool IsEmpty;
-        epiSize_t Size;
         epiSize_t Height;
     }
 

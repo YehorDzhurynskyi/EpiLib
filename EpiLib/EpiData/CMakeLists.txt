@@ -5,6 +5,9 @@ add_library(EpiData
     Sources/EpiData/Series/dSeriesBase.h
     Sources/EpiData/Series/dSeriesBase.cpp
 
+    Sources/EpiData/Series/dSeriesf.epi
+    Sources/EpiData/Series/dSeriesf.h
+    Sources/EpiData/Series/dSeriesf.cpp
     Sources/EpiData/Series/dSeries1Df.epi
     Sources/EpiData/Series/dSeries1Df.h
     Sources/EpiData/Series/dSeries1Df.cpp
@@ -12,6 +15,9 @@ add_library(EpiData
     Sources/EpiData/Series/dSeries2Df.h
     Sources/EpiData/Series/dSeries2Df.cpp
 
+    Sources/EpiData/Series/dSeriesc.epi
+    Sources/EpiData/Series/dSeriesc.h
+    Sources/EpiData/Series/dSeriesc.cpp
     Sources/EpiData/Series/dSeries1Dc.epi
     Sources/EpiData/Series/dSeries1Dc.h
     Sources/EpiData/Series/dSeries1Dc.cpp

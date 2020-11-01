@@ -1,0 +1,10 @@
+class dSeriesc : dSeriesBase
+{
+    epiArray<epiComplexf> Data;
+
+    [Virtual, ReadOnly]
+    {
+        epiBool IsEmpty;
+        epiSize_t Size;
+    }
+};

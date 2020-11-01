@@ -160,23 +160,24 @@ mmImage mmImage::Duplicate() const
     return image;
 }
 
-void mmImage::Histogram(dSeries1Df& histogram, epiU8(Color::*get)() const) const
+dSeries1Df mmImage::Histogram(epiU8(Color::*get)() const) const
 {
+    dSeries1Df histogram;
     histogram.Resize(256);
 
+    // TODO: optimize
     for (epiU32 i = 0; i < 256; ++i)
     {
         histogram[i] = 0.0f;
     }
 
-    for (epiS32 r = 0; r < GetHeight(); ++r)
+    for (epiS32 i = 0; i < GetWidth() * GetHeight(); ++i)
     {
-        for (epiS32 c = 0; c < GetWidth(); ++c)
-        {
-            const Color color = At(r, c, mmImageEdgeHandling::Error);
-            histogram[(color.*get)()] += 1.0f;
-        }
+        const Color color = At(i, mmImageEdgeHandling::Error);
+        histogram[(color.*get)()] += 1.0f;
     }
+
+    return histogram;
 }
 
 void mmImage::HistogramEqualize()
@@ -185,8 +186,7 @@ void mmImage::HistogramEqualize()
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        dSeries1Df histogram;
-        Histogram(histogram, &Color::GetLumau);
+        const dSeries1Df histogram = Histogram(&Color::GetLumau);
 
         const epiFloat hSum = std::accumulate(histogram.begin(), histogram.end(), 0.0f);
 
@@ -209,13 +209,9 @@ void mmImage::HistogramEqualize()
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        dSeries1Df histogramR;
-        dSeries1Df histogramG;
-        dSeries1Df histogramB;
-
-        Histogram(histogramR, &Color::GetRu);
-        Histogram(histogramG, &Color::GetGu);
-        Histogram(histogramB, &Color::GetBu);
+        const dSeries1Df histogramR = Histogram(&Color::GetRu);
+        const dSeries1Df histogramG = Histogram(&Color::GetGu);
+        const dSeries1Df histogramB = Histogram(&Color::GetBu);
 
         const epiFloat hSumR = std::accumulate(histogramR.begin(), histogramR.end(), 0.0f);
         const epiFloat hSumG = std::accumulate(histogramG.begin(), histogramG.end(), 0.0f);
@@ -921,6 +917,15 @@ void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& 
     }
 }
 
+epiU8& mmImage::At(epiS32 index, epiU32 channel)
+{
+    const epiSize_t w = GetWidth();
+
+    epiAssert(w != 0);
+
+    return At(index / w, index % w, channel);
+}
+
 epiU8& mmImage::At(epiS32 r, epiS32 c, epiU32 channel)
 {
     const epiS32 w = static_cast<epiS32>(GetWidth());
@@ -930,14 +935,23 @@ epiU8& mmImage::At(epiS32 r, epiS32 c, epiU32 channel)
     const epiS32 x = channels * c + channel;
     const epiS32 y = r;
 
-#ifdef EPI_DEBUG
+#ifdef EPI_BUILD_DEBUG
     if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
     {
         epiLogFatal("`r={}` should be in range [{}..{}], `c={}` should be in range [{}..{}]", r, 0, h - 1, c, 0, w - 1);
     }
-#endif // EPI_DEBUG
+#endif // EPI_BUILD_DEBUG
 
     return GetData()[x + y * GetPitch()];
+}
+
+epiU8 mmImage::At(epiS32 index, epiU32 channel, mmImageEdgeHandling edge) const
+{
+    const epiSize_t w = GetWidth();
+
+    epiAssert(w != 0);
+
+    return At(index / w, index % w, channel, edge);
 }
 
 epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) const
@@ -1021,6 +1035,15 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) 
     }
 
     return GetData()[channels * x + channel + y * GetPitch()];
+}
+
+Color mmImage::At(epiS32 index, mmImageEdgeHandling edge) const
+{
+    const epiSize_t w = GetWidth();
+
+    epiAssert(w != 0);
+
+    return At(static_cast<epiS32>(index / w), static_cast<epiS32>(index % w), edge);
 }
 
 Color mmImage::At(epiS32 r, epiS32 c, mmImageEdgeHandling edge) const

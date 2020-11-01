@@ -1,10 +1,9 @@
-class dSeries1Df : dSeriesBase
+class dSeries1Df : dSeriesf
 {
-    epiArray<epiFloat> Data;
+    epiFloat BoundLeft = 0.0f;
 
     [Virtual, ReadOnly]
     {
-        epiBool IsEmpty;
-        epiSize_t Size;
+        epiFloat BoundRight;
     }
 };

@@ -10,45 +10,15 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 dSeries1Df::dSeries1Df(std::initializer_list<epiFloat> list)
-    : m_Data{list}
+    : super{list}
 {
 }
-
-epiBool dSeries1Df::GetIsEmpty_Callback() const
-{
-    return GetData().IsEmpty();
-}
-
-epiSize_t dSeries1Df::GetSize_Callback() const
-{
-    return GetData().GetSize();
-}
-
-void dSeries1Df::Reserve(epiSize_t capacity)
-{
-    GetData().Reserve(capacity);
-}
-
-void dSeries1Df::Resize(epiSize_t size)
-{
-    GetData().Resize(size);
-}
-
-void dSeries1Df::Clear()
-{
-    GetData().Clear();
-}
-
-epiFloat& dSeries1Df::PushBack(epiFloat&& value)
-{
-    return GetData().PushBack(std::move(value));
-}
-
-using namespace std::complex_literals;
 
 dSeries1Dc dSeries1Df::DFT_R2C() const
 {
 #if 0
+    using namespace std::complex_literals;
+
     dSeries1Dc X;
 
     const epiSize_t N = GetSize();
@@ -109,36 +79,9 @@ dSeries1Dc dSeries1Df::DFT_R2C() const
 #endif
 }
 
-epiFloat dSeries1Df::At(epiS32 index) const
+epiFloat dSeries1Df::GetBoundRight_Callback() const
 {
-    epiAssert(index >= 0 && index < GetSize());
-    return GetData()[index];
-}
-
-epiFloat& dSeries1Df::At(epiS32 index)
-{
-    epiAssert(index >= 0 && index < GetSize());
-    return GetData()[index];
-}
-
-epiFloat dSeries1Df::operator[](epiS32 index) const
-{
-    return At(index);
-}
-
-epiFloat& dSeries1Df::operator[](epiS32 index)
-{
-    return At(index);
-}
-
-epiBool operator==(const dSeries1Df& lhs, const dSeries1Df& rhs)
-{
-    return lhs.GetData() == rhs.GetData();
-}
-
-epiBool operator!=(const dSeries1Df& lhs, const dSeries1Df& rhs)
-{
-    return !(operator==(lhs, rhs));
+    return GetBoundLeft() + GetSize();
 }
 
 EPI_NAMESPACE_END()

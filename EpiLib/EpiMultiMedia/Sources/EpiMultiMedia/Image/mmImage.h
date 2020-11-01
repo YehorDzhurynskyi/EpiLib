@@ -80,7 +80,7 @@ public:
 
     mmImage Duplicate() const; // TODO: replace with auto-generated method
 
-    void Histogram(dSeries1Df& histogram, epiU8 (Color::*get)() const) const;
+    dSeries1Df Histogram(epiU8 (Color::*get)() const) const;
     void HistogramEqualize();
 
     void Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA = 0);
@@ -106,8 +106,11 @@ public:
 
     void Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint = Color(1.0f, 1.0f, 1.0f, 1.0f));
 
+    epiU8& At(epiS32 index, epiU32 channel);
     epiU8& At(epiS32 r, epiS32 c, epiU32 channel);
+    epiU8 At(epiS32 index, epiU32 channel, mmImageEdgeHandling edge) const;
     epiU8 At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) const;
+    Color At(epiS32 index, mmImageEdgeHandling edge) const;
     Color At(epiS32 r, epiS32 c, mmImageEdgeHandling edge) const;
 
     operator dSeries2Df() const;

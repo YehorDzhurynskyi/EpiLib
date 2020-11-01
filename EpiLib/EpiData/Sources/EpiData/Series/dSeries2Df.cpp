@@ -10,7 +10,7 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 dSeries2Df::dSeries2Df(std::initializer_list<epiFloat> list, epiSize_t width)
-    : m_Data{list}
+    : super{list}
     , m_Width{width}
 {
     if (GetWidth() == 0)
@@ -18,16 +18,6 @@ dSeries2Df::dSeries2Df(std::initializer_list<epiFloat> list, epiSize_t width)
         GetData().Clear();
         epiLogWarn("A zero `width` was passed to `dSeries2Df` constructor: clearing data!");
     }
-}
-
-epiBool dSeries2Df::GetIsEmpty_Callback() const
-{
-    return GetData().IsEmpty();
-}
-
-epiSize_t dSeries2Df::GetSize_Callback() const
-{
-    return GetData().GetSize();
 }
 
 epiSize_t dSeries2Df::GetHeight_Callback() const
@@ -41,37 +31,10 @@ epiSize_t dSeries2Df::GetHeight_Callback() const
     return GetSize() / GetWidth();
 }
 
-void dSeries2Df::Reserve(epiSize_t capacity)
-{
-    GetData().Reserve(capacity);
-}
-
-void dSeries2Df::Resize(epiSize_t size)
-{
-    GetData().Resize(size);
-}
-
-void dSeries2Df::Clear()
-{
-    GetData().Clear();
-}
-
-epiFloat& dSeries2Df::PushBack(epiFloat&& value)
-{
-    return GetData().PushBack(std::move(value));
-}
-
-void dSeries2Df::push_back(epiFloat value)
-{
-    return GetData().push_back(value);
-}
-
 dSeries2Dc dSeries2Df::DFT_R2C() const
 {
 #if 0
     using namespace std::complex_literals;
-
-    epiAssert(GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
 
     dSeries2Dc X;
 
@@ -152,42 +115,22 @@ dSeries2Dc dSeries2Df::DFT_R2C() const
 
 epiFloat dSeries2Df::At(epiS32 index) const
 {
-    epiAssert(index >= 0 && index < GetSize());
-
-    return GetData()[index];
+    return dSeriesf::At(index);
 }
 
 epiFloat& dSeries2Df::At(epiS32 index)
 {
-    epiAssert(index >= 0 && index < GetSize());
-
-    return GetData()[index];
+    return dSeriesf::At(index);
 }
 
 epiFloat dSeries2Df::At(epiS32 r, epiS32 c) const
 {
-    epiAssert(r >= 0 && r < GetHeight());
-    epiAssert(c >= 0 && c < GetWidth());
-
-    return GetData()[c + r * GetWidth()];
+    return At(c + r * GetWidth());
 }
 
 epiFloat& dSeries2Df::At(epiS32 r, epiS32 c)
 {
-    epiAssert(r >= 0 && r < GetHeight());
-    epiAssert(c >= 0 && c < GetWidth());
-
-    return GetData()[c + r * GetWidth()];
-}
-
-epiFloat dSeries2Df::operator[](epiS32 index) const
-{
-    return At(index);
-}
-
-epiFloat& dSeries2Df::operator[](epiS32 index)
-{
-    return At(index);
+    return At(c + r * GetWidth());
 }
 
 epiBool operator==(const dSeries2Df& lhs, const dSeries2Df& rhs)
