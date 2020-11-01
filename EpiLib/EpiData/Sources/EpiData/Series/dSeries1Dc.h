@@ -31,6 +31,9 @@ public:
 
     dSeries1Df DFT_C2R() const;
     dSeries1Df DFT_C2R(epiSize_t N) const;
+
+    dSeries1Df ToSeries1Df_Magnitude() const;
+    dSeries1Df ToSeries1Df_Phase() const;
 };
 
 EPI_NAMESPACE_END()

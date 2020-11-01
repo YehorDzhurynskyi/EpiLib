@@ -89,6 +89,34 @@ dSeries2Df dSeries2Dc::DFT_C2R(epiSize_t N, epiSize_t M) const
     return y;
 }
 
+dSeries2Df dSeries2Dc::ToSeries2Df_Magnitude() const
+{
+    dSeries2Df series;
+    series.GetData().Resize(GetSize());
+
+    epiU32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        v = AtAbs(i++);
+    }
+
+    return series;
+}
+
+dSeries2Df dSeries2Dc::ToSeries2Df_Phase() const
+{
+    dSeries2Df series;
+    series.GetData().Resize(GetSize());
+
+    epiU32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        v = AtTheta(i++);
+    }
+
+    return series;
+}
+
 epiFloat dSeries2Dc::AtAbs(epiS32 index) const
 {
     return dSeriesc::AtAbs(index);

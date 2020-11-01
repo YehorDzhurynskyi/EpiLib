@@ -38,7 +38,10 @@ public:
     dSeries2Dc(std::initializer_list<epiComplexf> list, epiSize_t width);
 
     dSeries2Df DFT_C2R() const;
-    dSeries2Df DFT_C2R(epiSize_t N, epiSize_t M) const;
+    dSeries2Df DFT_C2R(epiSize_t N /* width */, epiSize_t M /* height */) const;
+
+    dSeries2Df ToSeries2Df_Magnitude() const;
+    dSeries2Df ToSeries2Df_Phase() const;
 
     epiFloat AtAbs(epiS32 index) const;
     epiFloat AtTheta(epiS32 index) const;

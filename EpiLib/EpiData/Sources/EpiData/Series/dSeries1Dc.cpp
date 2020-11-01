@@ -103,4 +103,32 @@ dSeries1Df dSeries1Dc::DFT_C2R(epiSize_t N) const
 #endif
 }
 
+dSeries1Df dSeries1Dc::ToSeries1Df_Magnitude() const
+{
+    dSeries1Df series;
+    series.GetData().Resize(GetSize());
+
+    epiU32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        v = AtAbs(i++);
+    }
+
+    return series;
+}
+
+dSeries1Df dSeries1Dc::ToSeries1Df_Phase() const
+{
+    dSeries1Df series;
+    series.GetData().Resize(GetSize());
+
+    epiU32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        v = AtTheta(i++);
+    }
+
+    return series;
+}
+
 EPI_NAMESPACE_END()
