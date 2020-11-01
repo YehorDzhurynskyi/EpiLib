@@ -1,18 +1,18 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiCore/Platform/CPUDeviceX86.hxx"
+#include "EpiCore/Platform/epiDeviceCPUX86.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiCore/Platform/CPUDeviceBase.h"
+#include "EpiCore/Platform/epiDeviceCPUBase.h"
 
 #include <cpuinfo_x86.h>
 
 EPI_NAMESPACE_BEGIN()
 
-enum class CPUDeviceX86Microarchitecture : epiS32
+enum class epiDeviceCPUX86Microarchitecture : epiS32
 {
-EPI_GENREGION_BEGIN(CPUDeviceX86Microarchitecture)
+EPI_GENREGION_BEGIN(epiDeviceCPUX86Microarchitecture)
     Unknown = 0,
     IntelCore = 1,
     IntelPenryn = 2,
@@ -39,12 +39,12 @@ EPI_GENREGION_BEGIN(CPUDeviceX86Microarchitecture)
     AMDBulldozer = 23,
     AMDJaguar = 24,
     AMDZen = 25
-EPI_GENREGION_END(CPUDeviceX86Microarchitecture)
+EPI_GENREGION_END(epiDeviceCPUX86Microarchitecture)
 };
 
-enum class CPUDeviceX86CacheType : epiS32
+enum class epiDeviceCPUX86CacheType : epiS32
 {
-EPI_GENREGION_BEGIN(CPUDeviceX86CacheType)
+EPI_GENREGION_BEGIN(epiDeviceCPUX86CacheType)
     Null = 0,
     Data = 1,
     Instruction = 2,
@@ -53,19 +53,19 @@ EPI_GENREGION_BEGIN(CPUDeviceX86CacheType)
     DTLB = 5,
     STLB = 6,
     Prefetch = 7
-EPI_GENREGION_END(CPUDeviceX86CacheType)
+EPI_GENREGION_END(epiDeviceCPUX86CacheType)
 };
 
-class CPUDeviceX86CacheLevelInfo : public Object
+class epiDeviceCPUX86CacheLevelInfo : public Object
 {
-EPI_GENREGION_BEGIN(CPUDeviceX86CacheLevelInfo)
+EPI_GENREGION_BEGIN(epiDeviceCPUX86CacheLevelInfo)
 
-EPI_GENHIDDEN_CPUDeviceX86CacheLevelInfo()
+EPI_GENHIDDEN_epiDeviceCPUX86CacheLevelInfo()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xc84aeaf4};
+    constexpr static epiMetaTypeID TypeID{0xb1f18322};
 
-    enum CPUDeviceX86CacheLevelInfo_PIDs
+    enum epiDeviceCPUX86CacheLevelInfo_PIDs
     {
         PID_Level = 0x5b2be317,
         PID_CacheType = 0x1fd48f30,
@@ -79,55 +79,55 @@ public:
 
 protected:
     epiS32 m_Level{0};
-    CPUDeviceX86CacheType m_CacheType{CPUDeviceX86CacheType::Null};
+    epiDeviceCPUX86CacheType m_CacheType{epiDeviceCPUX86CacheType::Null};
     epiSize_t m_CacheSize{0};
     epiS32 m_Ways{0};
     epiSize_t m_LineSize{0};
     epiS32 m_TLBEntries{0};
     epiS32 m_Partitioning{0};
 
-EPI_GENREGION_END(CPUDeviceX86CacheLevelInfo)
+EPI_GENREGION_END(epiDeviceCPUX86CacheLevelInfo)
 
 public:
     epiString ToString() const override;
 };
 
-class CPUDeviceX86CacheInfo : public Object
+class epiDeviceCPUX86CacheInfo : public Object
 {
-EPI_GENREGION_BEGIN(CPUDeviceX86CacheInfo)
+EPI_GENREGION_BEGIN(epiDeviceCPUX86CacheInfo)
 
-EPI_GENHIDDEN_CPUDeviceX86CacheInfo()
+EPI_GENHIDDEN_epiDeviceCPUX86CacheInfo()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x6509852c};
+    constexpr static epiMetaTypeID TypeID{0x99b5cdb3};
 
-    enum CPUDeviceX86CacheInfo_PIDs
+    enum epiDeviceCPUX86CacheInfo_PIDs
     {
         PID_Levels = 0x9886612f,
         PID_COUNT = 1
     };
 
 protected:
-    epiArray<CPUDeviceX86CacheLevelInfo> m_Levels{};
+    epiArray<epiDeviceCPUX86CacheLevelInfo> m_Levels{};
 
-EPI_GENREGION_END(CPUDeviceX86CacheInfo)
+EPI_GENREGION_END(epiDeviceCPUX86CacheInfo)
 
 public:
-    CPUDeviceX86CacheInfo();
+    epiDeviceCPUX86CacheInfo();
 
     epiString ToString() const override;
 };
 
-class CPUDeviceX86 : public CPUDeviceBase
+class epiDeviceCPUX86 : public epiDeviceCPUBase
 {
-EPI_GENREGION_BEGIN(CPUDeviceX86)
+EPI_GENREGION_BEGIN(epiDeviceCPUX86)
 
-EPI_GENHIDDEN_CPUDeviceX86()
+EPI_GENHIDDEN_epiDeviceCPUX86()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xc87d28d6};
+    constexpr static epiMetaTypeID TypeID{0xac7e3540};
 
-    enum CPUDeviceX86_PIDs
+    enum epiDeviceCPUX86_PIDs
     {
         PID_CacheInfo = 0x5883e94e,
         PID_Family = 0xa24a246d,
@@ -203,7 +203,7 @@ protected:
     epiS32 GetModel_Callback() const;
     epiS32 GetStepping_Callback() const;
     epiString GetVendor_Callback() const;
-    CPUDeviceX86Microarchitecture GetMicroarchitecture_Callback() const;
+    epiDeviceCPUX86Microarchitecture GetMicroarchitecture_Callback() const;
     epiBool GetFPU_Callback() const;
     epiBool GetTSC_Callback() const;
     epiBool GetCX8_Callback() const;
@@ -266,12 +266,12 @@ protected:
     epiBool GetSS_Callback() const;
 
 protected:
-    CPUDeviceX86CacheInfo m_CacheInfo{};
+    epiDeviceCPUX86CacheInfo m_CacheInfo{};
 
-EPI_GENREGION_END(CPUDeviceX86)
+EPI_GENREGION_END(epiDeviceCPUX86)
 
 public:
-    CPUDeviceX86();
+    epiDeviceCPUX86();
 
     epiString ToString() const override;
 

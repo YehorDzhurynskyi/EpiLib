@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiCore/Platform/CPUDeviceBase.h"
-#include "EpiCore/Platform/CPUDeviceBase.cxx"
+#include "EpiCore/Platform/epiDeviceCPUBase.h"
+#include "EpiCore/Platform/epiDeviceCPUBase.cxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()

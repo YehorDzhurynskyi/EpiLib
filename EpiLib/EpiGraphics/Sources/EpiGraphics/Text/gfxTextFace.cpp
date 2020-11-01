@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/Text/gfxTextRenderedAtlas.h"
 #include "EpiGraphics/Text/gfxTextRenderedGlyph.h"
 
-#include "EpiCore/Platform/DisplayDevice.h"
+#include "EpiCore/Platform/epiPlatform.h"
 
 #include <glad/glad.h>
 
@@ -20,7 +20,7 @@ gfxTextFace::~gfxTextFace()
 
 void gfxTextFace::PrepareFontMetrics(epiU32 fontSize) const
 {
-    const epiVec2u dpi = DisplayDevice::DPI();
+    const epiVec2u dpi = epiPlatform::GetInstance().GetDeviceDisplay().GetDPI();
     if (FT_Set_Char_Size(m_Face, 0, fontSize * 64, dpi.x, dpi.y))
     {
         epiLogFatal("FreeType `FT_Set_Char_Size` has failed!");

@@ -18,15 +18,22 @@ add_library(EpiCore
     Sources/EpiCore/Hash.h
     Sources/EpiCore/Hash.cpp
 
-    Sources/EpiCore/Platform/DisplayDevice.epi
-    Sources/EpiCore/Platform/DisplayDevice.h
-    Sources/EpiCore/Platform/DisplayDevice.cpp
-    Sources/EpiCore/Platform/CPUDeviceBase.epi
-    Sources/EpiCore/Platform/CPUDeviceBase.h
-    Sources/EpiCore/Platform/CPUDeviceBase.cpp
-    Sources/EpiCore/Platform/CPUDeviceX86.epi
-    Sources/EpiCore/Platform/CPUDeviceX86.h
-    Sources/EpiCore/Platform/CPUDeviceX86.cpp
+    Sources/EpiCore/epiBuildInfo.epi
+    Sources/EpiCore/epiBuildInfo.h
+    Sources/EpiCore/epiBuildInfo.cpp
+
+    Sources/EpiCore/Platform/epiPlatform.epi
+    Sources/EpiCore/Platform/epiPlatform.h
+    Sources/EpiCore/Platform/epiPlatform.cpp
+    Sources/EpiCore/Platform/epiDeviceDisplay.epi
+    Sources/EpiCore/Platform/epiDeviceDisplay.h
+    Sources/EpiCore/Platform/epiDeviceDisplay.cpp
+    Sources/EpiCore/Platform/epiDeviceCPUBase.epi
+    Sources/EpiCore/Platform/epiDeviceCPUBase.h
+    Sources/EpiCore/Platform/epiDeviceCPUBase.cpp
+    Sources/EpiCore/Platform/epiDeviceCPUX86.epi
+    Sources/EpiCore/Platform/epiDeviceCPUX86.h
+    Sources/EpiCore/Platform/epiDeviceCPUX86.cpp
 
     Sources/EpiCore/Expression.h
     Sources/EpiCore/Expression.cpp

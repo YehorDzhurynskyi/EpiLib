@@ -1,0 +1,8 @@
+class epiPlatform
+{
+    [ReadOnly]
+    {
+        epiDeviceCPUBase* DeviceCPU;
+        epiDeviceDisplay DeviceDisplay;
+    }
+};

@@ -1,0 +1,15 @@
+enum DPIAwareness
+{
+    UnAware,
+    SystemAware,
+    PerMonitorAware
+};
+
+class epiDeviceDisplay
+{
+    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
+    epiVec2u DPI;
+
+    [WriteCallback]
+    DPIAwareness DPIAwareness;
+};

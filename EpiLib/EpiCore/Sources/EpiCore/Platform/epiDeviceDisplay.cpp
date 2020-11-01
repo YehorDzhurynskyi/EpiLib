@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiCore/Platform/DisplayDevice.h"
-#include "EpiCore/Platform/DisplayDevice.cxx"
+#include "EpiCore/Platform/epiDeviceDisplay.h"
+#include "EpiCore/Platform/epiDeviceDisplay.cxx"
 EPI_GENREGION_END(include)
 
 #include <Windows.h>
@@ -41,7 +41,7 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hDC, LPRECT rect, LPARAM pa
 
 EPI_NAMESPACE_BEGIN()
 
-epiVec2u DisplayDevice::DPI()
+epiVec2u epiDeviceDisplay::GetDPI_Callback() const
 {
     epiVec2u dpi;
 
@@ -49,7 +49,7 @@ epiVec2u DisplayDevice::DPI()
     return dpi;
 }
 
-void DisplayDevice::SetDPIAwareness(DPIAwareness awareness)
+void epiDeviceDisplay::SetDPIAwareness_Callback(DPIAwareness awareness)
 {
     switch (awareness)
     {
@@ -57,6 +57,8 @@ void DisplayDevice::SetDPIAwareness(DPIAwareness awareness)
     case DPIAwareness::SystemAware: SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE); break;
     case DPIAwareness::PerMonitorAware: SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE); break;
     }
+
+    m_DPIAwareness = awareness;
 }
 
 EPI_NAMESPACE_END()

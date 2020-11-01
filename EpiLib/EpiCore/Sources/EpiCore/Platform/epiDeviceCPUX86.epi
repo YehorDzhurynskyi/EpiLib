@@ -1,4 +1,4 @@
-enum CPUDeviceX86Microarchitecture
+enum epiDeviceCPUX86Microarchitecture
 {
     Unknown,
     IntelCore,
@@ -28,7 +28,7 @@ enum CPUDeviceX86Microarchitecture
     AMDZen
 };
 
-enum CPUDeviceX86CacheType
+enum epiDeviceCPUX86CacheType
 {
     Null,
     Data,
@@ -40,10 +40,10 @@ enum CPUDeviceX86CacheType
     Prefetch
 };
 
-class CPUDeviceX86CacheLevelInfo
+class epiDeviceCPUX86CacheLevelInfo
 {
     epiS32 Level;
-    CPUDeviceX86CacheType CacheType = CPUDeviceX86CacheType::Null;
+    epiDeviceCPUX86CacheType CacheType = epiDeviceCPUX86CacheType::Null;
     epiSize_t CacheSize;
     epiS32 Ways;
     epiSize_t LineSize;
@@ -51,14 +51,14 @@ class CPUDeviceX86CacheLevelInfo
     epiS32 Partitioning;
 };
 
-class CPUDeviceX86CacheInfo
+class epiDeviceCPUX86CacheInfo
 {
-    epiArray<CPUDeviceX86CacheLevelInfo> Levels;
+    epiArray<epiDeviceCPUX86CacheLevelInfo> Levels;
 };
 
-class CPUDeviceX86 : CPUDeviceBase
+class epiDeviceCPUX86 : epiDeviceCPUBase
 {
-    CPUDeviceX86CacheInfo CacheInfo;
+    epiDeviceCPUX86CacheInfo CacheInfo;
 
     [Virtual, ReadOnly]
     {
@@ -69,7 +69,7 @@ class CPUDeviceX86 : CPUDeviceBase
         [ReadCallback(SuppressRef=true)]
         epiString Vendor;
 
-        CPUDeviceX86Microarchitecture Microarchitecture;
+        epiDeviceCPUX86Microarchitecture Microarchitecture;
 
         epiBool FPU;
         epiBool TSC;
