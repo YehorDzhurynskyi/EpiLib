@@ -79,6 +79,43 @@ dSeries1Dc dSeries1Df::DFT_R2C() const
 #endif
 }
 
+dSeries1Df dSeries1Df::DFT_Shift() const
+{
+    dSeries1Df shift;
+
+    const epiSize_t s = GetSize();
+    shift.GetData().Resize(s);
+
+    for (epiU32 i = 0; i < s; ++i)
+    {
+        const epiU32 to = (i + s / 2) % s;
+        shift[to] = At(i);
+    }
+
+    return shift;
+}
+
+dSeries1Df dSeries1Df::DFT_IShift() const
+{
+    dSeries1Df shift;
+
+    const epiSize_t s = GetSize();
+    shift.GetData().Resize(s);
+
+    for (epiS32 i = 0; i < s; ++i)
+    {
+        epiS32 to = i - static_cast<epiS32>(s / 2);
+        if (to < 0)
+        {
+            to += s;
+        }
+
+        shift[to] = At(i);
+    }
+
+    return shift;
+}
+
 epiFloat dSeries1Df::GetBoundRight_Callback() const
 {
     return GetBoundLeft() + GetSize();

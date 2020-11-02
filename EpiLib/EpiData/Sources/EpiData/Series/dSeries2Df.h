@@ -38,6 +38,10 @@ public:
     dSeries2Df(std::initializer_list<epiFloat> list, epiSize_t width);
 
     dSeries2Dc DFT_R2C() const;
+    dSeries2Df DFT_Shift() const;
+    dSeries2Df DFT_IShift() const;
+    dSeries2Df DFT_RShift() const;
+    dSeries2Df DFT_IRShift() const;
 
     epiFloat At(epiS32 index) const;
     epiFloat& At(epiS32 index);

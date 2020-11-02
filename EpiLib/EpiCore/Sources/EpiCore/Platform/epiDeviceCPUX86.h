@@ -134,6 +134,7 @@ public:
         PID_Model = 0x16545ddd,
         PID_Stepping = 0x3d643b3,
         PID_Vendor = 0xf28e36c0,
+        PID_BrandName = 0x54c05f10,
         PID_Microarchitecture = 0x1ca07b8e,
         PID_FPU = 0x2aecd04f,
         PID_TSC = 0xeab741c3,
@@ -195,7 +196,7 @@ public:
         PID_RDRND = 0xe0f4b900,
         PID_DCA = 0x525d91ce,
         PID_SS = 0x222d1c26,
-        PID_COUNT = 66
+        PID_COUNT = 67
     };
 
 protected:
@@ -203,6 +204,7 @@ protected:
     epiS32 GetModel_Callback() const;
     epiS32 GetStepping_Callback() const;
     epiString GetVendor_Callback() const;
+    epiString GetBrandName_Callback() const;
     epiDeviceCPUX86Microarchitecture GetMicroarchitecture_Callback() const;
     epiBool GetFPU_Callback() const;
     epiBool GetTSC_Callback() const;

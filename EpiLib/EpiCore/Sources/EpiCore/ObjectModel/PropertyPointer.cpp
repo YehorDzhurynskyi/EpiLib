@@ -66,7 +66,7 @@ epiString PropertyPointer::GetValueString(epiS32 style) const
             epiSize_t value = Get<epiSize_t>();
             if (value == 0)
             {
-                return "0 Bytes";
+                return "0 B";
             }
 
             epiString str;
@@ -74,7 +74,7 @@ epiString PropertyPointer::GetValueString(epiS32 style) const
 
             const epiChar* kOrder[]
             {
-                "Bytes",
+                "B",
                 "KB",
                 "MB",
                 "GB",

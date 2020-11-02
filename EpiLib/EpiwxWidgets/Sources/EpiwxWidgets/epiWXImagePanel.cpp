@@ -417,32 +417,23 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     {
         const epi::dSeries2Dc series = m_ImageTgt.ToSeries2Df().DFT_R2C();
 
-        epi::mmImage dft;
-        dft.SetPixelFormat(epi::mmImagePixelFormat::GRAYSCALE);
-        dft.SetWidth(series.GetWidth());
-        dft.SetHeight(series.GetHeight());
-        dft.GetData().Resize(dft.GetPitch() * dft.GetHeight());
-
-        const auto itMax = std::max_element(series.begin(), series.end(), [](const epiComplexf& lhs, const epiComplexf& rhs)
-        {
-            return std::abs(lhs) < std::abs(rhs);
-        });
-        const epiFloat max = itMax != series.end() ? std::abs(*itMax) : 1.0f;
-
-        for (epiS32 r = 0; r < series.GetHeight(); ++r)
-        {
-            for (epiS32 c = 0; c < series.GetWidth(); ++c)
-            {
-                dft.GetData()[c + r * series.GetWidth()] = series.AtAbs(r, c) / max;
-            }
-        }
-
         // TODO: open another image view
-        m_ImageTgt = dft;
+        epi::dSeries2Df seriesMagnitude = series.ToSeries2Df_Magnitude().DFT_RShift();
+        seriesMagnitude.Transform([](epiFloat v)
+        {
+            return std::log10(v);
+        });
+
+        m_ImageTgt = epi::mmImage(seriesMagnitude);
         Refresh();
     } break;
     case ID_IMAGE_PANEL_DFT_PHASE:
     {
+        const epi::dSeries2Dc series = m_ImageTgt.ToSeries2Df().DFT_R2C();
+
+        // TODO: open another image view
+        m_ImageTgt = epi::mmImage(series.ToSeries2Df_Phase());
+        Refresh();
     } break;
     case ID_IMAGE_PANEL_PRESET_EFFECT0:
     {

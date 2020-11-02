@@ -63,6 +63,8 @@ public:
     dSeries1Df Histogram() const;
     dSeries1Df Histogram(epiU32 width) const;
 
+    dSeriesf& Transform(std::function<epiFloat(epiFloat)>&& callback);
+
     epiFloat At(epiS32 index) const;
     epiFloat& At(epiS32 index);
 

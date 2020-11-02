@@ -462,4 +462,417 @@ TEST(dSeries2Df_dSeries2Dc, DFT_R2C_to_DFT_C2R_NElements11x11)
     ASSERT_EQ(series, resultSeries);
 }
 
+TEST(dSeries2Df, DFT_Shift_NElements0x0)
+{
+    EXPECT_EQ(dSeries2Df().DFT_Shift().GetSize(), 0);
+}
+
+TEST(dSeries2Df, DFT_Shift_NElements1x1)
+{
+    const epiFloat expectedValue[]{1.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f}, 1).DFT_Shift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_Shift_NElements2x2)
+{
+    const epiFloat expectedValue[]{4.0f, 3.0f, 2.0f, 1.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f}, 2).DFT_Shift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_Shift_NElements2x3)
+{
+    const epiFloat expectedValue[]{6.0f, 5.0f, 2.0f, 1.0f, 4.0f, 3.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, 2).DFT_Shift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_Shift_NElements3x2)
+{
+    const epiFloat expectedValue[]{6.0f, 4.0f, 5.0f, 3.0f, 1.0f, 2.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, 3).DFT_Shift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_Shift_NElements4x4)
+{
+    const epiFloat expectedValue[]{11.0f, 12.0f, 9.0f, 10.0f,
+                                   15.0f, 16.0f, 13.0f, 14.0f,
+                                   3.0f, 4.0f, 1.0f, 2.0f,
+                                   7.0f, 8.0f, 5.0f, 6.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f,
+                                         5.0f, 6.0f, 7.0f, 8.0f,
+                                         9.0f, 10.0f, 11.0f, 12.0f,
+                                         13.0f, 14.0f, 15.0f, 16.0f}, 4).DFT_Shift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_Shift_NElements5x5)
+{
+    const epiFloat expectedValue[]{19.0f, 20.0f, 16.0f, 17.0f, 18.0f,
+                                   24.0f, 25.0f, 21.0f, 22.0f, 23.0f,
+                                   4.0f, 5.0f, 1.0f, 2.0f, 3.0f,
+                                   9.0f, 10.0f, 6.0f, 7.0f, 8.0f,
+                                   14.0f, 15.0f, 11.0f, 12.0f, 13.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+                                         6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
+                                         11.0f, 12.0f, 13.0f, 14.0f, 15.0f,
+                                         16.0f, 17.0f, 18.0f, 19.0f, 20.0f,
+                                         21.0f, 22.0f, 23.0f, 24.0f, 25.0f}, 5).DFT_Shift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IShift_NElements0x0)
+{
+    EXPECT_EQ(dSeries2Df().DFT_IShift().GetSize(), 0);
+}
+
+TEST(dSeries2Df, DFT_IShift_NElements1x1)
+{
+    const epiFloat expectedValue[]{1.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f}, 1).DFT_IShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IShift_NElements2x2)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f};
+
+    const dSeries2Df shift = dSeries2Df({4.0f, 3.0f, 2.0f, 1.0f}, 2).DFT_IShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IShift_NElements2x3)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+
+    const dSeries2Df shift = dSeries2Df({6.0f, 5.0f, 2.0f, 1.0f, 4.0f, 3.0f}, 2).DFT_IShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IShift_NElements3x2)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+
+    const dSeries2Df shift = dSeries2Df({6.0f, 4.0f, 5.0f, 3.0f, 1.0f, 2.0f}, 3).DFT_IShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IShift_NElements4x4)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f,
+                                   5.0f, 6.0f, 7.0f, 8.0f,
+                                   9.0f, 10.0f, 11.0f, 12.0f,
+                                   13.0f, 14.0f, 15.0f, 16.0f};
+
+    const dSeries2Df shift = dSeries2Df({11.0f, 12.0f, 9.0f, 10.0f,
+                                         15.0f, 16.0f, 13.0f, 14.0f,
+                                         3.0f, 4.0f, 1.0f, 2.0f,
+                                         7.0f, 8.0f, 5.0f, 6.0f}, 4).DFT_IShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IShift_NElements5x5)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+                                   6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
+                                   11.0f, 12.0f, 13.0f, 14.0f, 15.0f,
+                                   16.0f, 17.0f, 18.0f, 19.0f, 20.0f,
+                                   21.0f, 22.0f, 23.0f, 24.0f, 25.0f};
+
+    const dSeries2Df shift = dSeries2Df({19.0f, 20.0f, 16.0f, 17.0f, 18.0f,
+                                         24.0f, 25.0f, 21.0f, 22.0f, 23.0f,
+                                         4.0f, 5.0f, 1.0f, 2.0f, 3.0f,
+                                         9.0f, 10.0f, 6.0f, 7.0f, 8.0f,
+                                         14.0f, 15.0f, 11.0f, 12.0f, 13.0f}, 5).DFT_IShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_RShift_NElements0x0)
+{
+    EXPECT_EQ(dSeries2Df().DFT_RShift().GetSize(), 0);
+}
+
+TEST(dSeries2Df, DFT_RShift_NElements1x1)
+{
+    const epiFloat expectedValue[]{1.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f}, 1).DFT_RShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_RShift_NElements2x2)
+{
+    const epiFloat expectedValue[]{3.0f, 4.0f, 1.0f, 2.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f}, 2).DFT_RShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_RShift_NElements2x3)
+{
+    const epiFloat expectedValue[]{5.0f, 6.0f, 1.0f, 2.0f, 3.0f, 4.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, 2).DFT_RShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_RShift_NElements3x2)
+{
+    const epiFloat expectedValue[]{4.0f, 5.0f, 6.0f, 1.0f, 2.0f, 3.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, 3).DFT_RShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_RShift_NElements4x4)
+{
+    const epiFloat expectedValue[]{9.0f, 10.0f, 11.0f, 12.0f,
+                                   13.0f, 14.0f, 15.0f, 16.0f,
+                                   1.0f, 2.0f, 3.0f, 4.0f,
+                                   5.0f, 6.0f, 7.0f, 8.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f,
+                                         5.0f, 6.0f, 7.0f, 8.0f,
+                                         9.0f, 10.0f, 11.0f, 12.0f,
+                                         13.0f, 14.0f, 15.0f, 16.0f}, 4).DFT_RShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_RShift_NElements5x5)
+{
+    const epiFloat expectedValue[]{16.0f, 17.0f, 18.0f, 19.0f, 20.0f,
+                                   21.0f, 22.0f, 23.0f, 24.0f, 25.0f,
+                                   1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+                                   6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
+                                   11.0f, 12.0f, 13.0f, 14.0f, 15.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+                                         6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
+                                         11.0f, 12.0f, 13.0f, 14.0f, 15.0f,
+                                         16.0f, 17.0f, 18.0f, 19.0f, 20.0f,
+                                         21.0f, 22.0f, 23.0f, 24.0f, 25.0f}, 5).DFT_RShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IRShift_NElements0x0)
+{
+    EXPECT_EQ(dSeries2Df().DFT_IRShift().GetSize(), 0);
+}
+
+TEST(dSeries2Df, DFT_IRShift_NElements1x1)
+{
+    const epiFloat expectedValue[]{1.0f};
+
+    const dSeries2Df shift = dSeries2Df({1.0f}, 1).DFT_IRShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IRShift_NElements2x2)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f};
+
+    const dSeries2Df shift = dSeries2Df({3.0f, 4.0f, 1.0f, 2.0f}, 2).DFT_IRShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IRShift_NElements2x3)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+
+    const dSeries2Df shift = dSeries2Df({5.0f, 6.0f, 1.0f, 2.0f, 3.0f, 4.0f}, 2).DFT_IRShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IRShift_NElements3x2)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+
+    const dSeries2Df shift = dSeries2Df({4.0f, 5.0f, 6.0f, 1.0f, 2.0f, 3.0f}, 3).DFT_IRShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IRShift_NElements4x4)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f,
+                                   5.0f, 6.0f, 7.0f, 8.0f,
+                                   9.0f, 10.0f, 11.0f, 12.0f,
+                                   13.0f, 14.0f, 15.0f, 16.0f};
+
+    const dSeries2Df shift = dSeries2Df({16.0f, 17.0f, 18.0f, 19.0f, 20.0f,
+                                         21.0f, 22.0f, 23.0f, 24.0f, 25.0f,
+                                         1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+                                         6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
+                                         11.0f, 12.0f, 13.0f, 14.0f, 15.0f}, 4).DFT_IRShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
+TEST(dSeries2Df, DFT_IRShift_NElements5x5)
+{
+    const epiFloat expectedValue[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+                                   6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
+                                   11.0f, 12.0f, 13.0f, 14.0f, 15.0f,
+                                   16.0f, 17.0f, 18.0f, 19.0f, 20.0f,
+                                   21.0f, 22.0f, 23.0f, 24.0f, 25.0f};
+
+    const dSeries2Df shift = dSeries2Df({16.0f, 17.0f, 18.0f, 19.0f, 20.0f,
+                                         21.0f, 22.0f, 23.0f, 24.0f, 25.0f,
+                                         1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+                                         6.0f, 7.0f, 8.0f, 9.0f, 10.0f,
+                                         11.0f, 12.0f, 13.0f, 14.0f, 15.0f}, 5).DFT_IRShift();
+
+    ASSERT_EQ(shift.GetSize(), epiArrLen(expectedValue));
+
+    for (epiU32 i = 0; i < shift.GetSize(); ++i)
+    {
+        EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
+    }
+}
+
 EPI_NAMESPACE_END()

@@ -1059,13 +1059,14 @@ dSeries2Df mmImage::ToSeries2Df(mmImageGetColorValueCallback get) const
 {
     dSeries2Df y;
     y.SetWidth(GetWidth());
-    y.Reserve(GetWidth() * GetHeight());
 
-    for (epiU32 i = 0; i < GetData().GetSize(); ++i)
+    const epiSize_t size = GetWidth() * GetHeight();
+    y.Resize(size);
+
+    for (epiU32 i = 0; i < size; ++i)
     {
         const Color color = At(i);
         y[i] = static_cast<epiFloat>((color.*get)());
-
     }
 
     return y;

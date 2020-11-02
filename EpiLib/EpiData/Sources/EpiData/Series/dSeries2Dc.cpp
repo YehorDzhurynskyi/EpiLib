@@ -92,6 +92,7 @@ dSeries2Df dSeries2Dc::DFT_C2R(epiSize_t N, epiSize_t M) const
 dSeries2Df dSeries2Dc::ToSeries2Df_Magnitude() const
 {
     dSeries2Df series;
+    series.SetWidth(GetWidth());
     series.GetData().Resize(GetSize());
 
     epiU32 i = 0;
@@ -106,6 +107,7 @@ dSeries2Df dSeries2Dc::ToSeries2Df_Magnitude() const
 dSeries2Df dSeries2Dc::ToSeries2Df_Phase() const
 {
     dSeries2Df series;
+    series.SetWidth(GetWidth());
     series.GetData().Resize(GetSize());
 
     epiU32 i = 0;

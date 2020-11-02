@@ -56,7 +56,7 @@ dSeries1Df dSeriesf::Histogram() const
         return dSeries1Df{};
     }
 
-    return Histogram(*maxIt - *minIt);
+    return Histogram(*maxIt - *minIt + 1);
 }
 
 dSeries1Df dSeriesf::Histogram(epiU32 width) const
@@ -89,6 +89,16 @@ dSeries1Df dSeriesf::Histogram(epiU32 width) const
     }
 
     return histogram;
+}
+
+dSeriesf& dSeriesf::Transform(std::function<epiFloat(epiFloat)>&& callback)
+{
+    for (epiFloat& v : GetData())
+    {
+        v = callback(v);
+    }
+
+    return *this;
 }
 
 epiFloat dSeriesf::At(epiS32 index) const

@@ -38,6 +38,8 @@ public:
     dSeries1Df(std::initializer_list<epiFloat> list);
 
     dSeries1Dc DFT_R2C() const;
+    dSeries1Df DFT_Shift() const;
+    dSeries1Df DFT_IShift() const;
 };
 
 EPI_NAMESPACE_END()

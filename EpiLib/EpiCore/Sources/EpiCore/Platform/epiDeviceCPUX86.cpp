@@ -218,6 +218,14 @@ epiString epiDeviceCPUX86::GetVendor_Callback() const
     return m_X86Info.vendor;
 }
 
+epiString epiDeviceCPUX86::GetBrandName_Callback() const
+{
+    epiChar brand[49];
+    cpu_features::FillX86BrandString(brand);
+
+    return epiString(brand);
+}
+
 epiDeviceCPUX86Microarchitecture epiDeviceCPUX86::GetMicroarchitecture_Callback() const
 {
     auto microarchitectureOf = [](const cpu_features::X86Microarchitecture arch)

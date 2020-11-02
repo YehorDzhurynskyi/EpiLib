@@ -96,7 +96,8 @@ dSeries2Dc dSeries2Df::DFT_R2C() const
     fftwf_plan p = fftwf_plan_dft_r2c_2d(M, N, in, out, FFTW_EXHAUSTIVE | FFTW_WISDOM_ONLY);
     if (p == nullptr)
     {
-        p = fftwf_plan_dft_r2c_2d(M, N, in, out, FFTW_EXHAUSTIVE);
+        // TODO: submit background task to calculate `FFTW_EXHAUSTIVE` plan and return `FFTW_MEASURE` plan immediately
+        p = fftwf_plan_dft_r2c_2d(M, N, in, out, FFTW_MEASURE);
     }
 
     if (p != nullptr)
@@ -111,6 +112,118 @@ dSeries2Dc dSeries2Df::DFT_R2C() const
 
     return X;
 #endif
+}
+
+dSeries2Df dSeries2Df::DFT_Shift() const
+{
+    dSeries2Df shift;
+
+    const epiSize_t s = GetSize();
+    const epiSize_t w = GetWidth();
+    const epiSize_t h = GetHeight();
+
+    shift.SetWidth(w);
+    shift.GetData().Resize(s);
+
+    for (epiU32 r = 0; r < h; ++r)
+    {
+        const epiU32 toR = (r + h / 2) % h;
+
+        for (epiU32 c = 0; c < w; ++c)
+        {
+            const epiU32 toC = (c + w / 2) % w;
+
+            shift[toC + toR * w] = At(r, c);
+        }
+    }
+
+    return shift;
+}
+
+dSeries2Df dSeries2Df::DFT_IShift() const
+{
+    dSeries2Df shift;
+
+    const epiSize_t s = GetSize();
+    const epiSize_t w = GetWidth();
+    const epiSize_t h = GetHeight();
+
+    shift.SetWidth(w);
+    shift.GetData().Resize(s);
+
+    for (epiU32 r = 0; r < h; ++r)
+    {
+        epiS32 toR = r - static_cast<epiS32>(h / 2);
+        if (toR < 0)
+        {
+            toR += h;
+        }
+
+        for (epiU32 c = 0; c < w; ++c)
+        {
+            epiS32 toC = c - static_cast<epiS32>(w / 2);
+            if (toC < 0)
+            {
+                toC += w;
+            }
+
+            shift[toC + toR * w] = At(r, c);
+        }
+    }
+
+    return shift;
+}
+
+dSeries2Df dSeries2Df::DFT_RShift() const
+{
+    dSeries2Df shift;
+
+    const epiSize_t s = GetSize();
+    const epiSize_t w = GetWidth();
+    const epiSize_t h = GetHeight();
+
+    shift.SetWidth(w);
+    shift.GetData().Resize(s);
+
+    for (epiU32 r = 0; r < h; ++r)
+    {
+        const epiU32 toR = (r + h / 2) % h;
+
+        for (epiU32 c = 0; c < w; ++c)
+        {
+            shift[c + toR * w] = At(r, c);
+        }
+    }
+
+    return shift;
+}
+
+dSeries2Df dSeries2Df::DFT_IRShift() const
+{
+    dSeries2Df shift;
+
+    const epiSize_t s = GetSize();
+    const epiSize_t w = GetWidth();
+    const epiSize_t h = GetHeight();
+
+    shift.SetWidth(w);
+    shift.GetData().Resize(s);
+
+    for (epiU32 r = 0; r < h; ++r)
+    {
+        epiS32 toR = r - static_cast<epiS32>(h / 2);
+        if (toR < 0)
+        {
+            toR += h;
+        }
+
+        for (epiU32 c = 0; c < w; ++c)
+        {
+            shift[c + toR * w] = At(r, c);
+        }
+    }
+
+    return shift;
 }
 
 epiFloat dSeries2Df::At(epiS32 index) const
