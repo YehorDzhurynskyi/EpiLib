@@ -12,6 +12,7 @@
 #include "EpiData/Series/dSeries2Df.h"
 
 #include <wx/dcclient.h>
+#include <wx/dcbuffer.h>
 #include <wx/menu.h>
 #include <wx/numdlg.h>
 #include <wx/msgdlg.h>
@@ -105,26 +106,35 @@ void epiWXImageConfigurationDialog::OnImageUpdated(wxCommandEvent& event)
 wxBEGIN_EVENT_TABLE(epiWXImagePanel, wxPanel)
     EVT_PAINT(epiWXImagePanel::OnPaint)
     EVT_MOUSE_EVENTS(epiWXImagePanel::OnMouse)
+    EVT_ERASE_BACKGROUND(epiWXImagePanel::OnEraseBackground)
     EVT_MENU(wxID_ANY, epiWXImagePanel::OnMenu)
 wxEND_EVENT_TABLE()
 
 void epiWXImagePanel::OnPaint(wxPaintEvent& event)
 {
-    wxPaintDC dc(this);
+    wxAutoBufferedPaintDC dc(this);
+    dc.Clear();
 
     if (wxBitmap bitmapToDraw = ToWXImage(m_ImageTgt).Scale(m_ImageTgt.GetWidth() * m_ScaleFactor, m_ImageTgt.GetHeight() * m_ScaleFactor, wxIMAGE_QUALITY_NEAREST);
         bitmapToDraw.IsOk())
     {
         const wxSize& sizeHalfClient = GetClientSize() / 2;
         const wxSize& sizeHalfImage = bitmapToDraw.GetSize() / 2;
-        dc.DrawBitmap(bitmapToDraw, sizeHalfClient.x - sizeHalfImage.x, sizeHalfClient.y - sizeHalfImage.y, false);
+        dc.DrawBitmap(bitmapToDraw,
+                      sizeHalfClient.x - sizeHalfImage.x + m_ImagePosition.x,
+                      sizeHalfClient.y - sizeHalfImage.y + m_ImagePosition.y,
+                      false);
     }
 }
 
 void epiWXImagePanel::OnMouse(wxMouseEvent& event)
 {
-    // TODO: make scrolling FPS independent
+    if (!IsEnabled())
+    {
+        return;
+    }
 
+    // TODO: make scrolling FPS independent
     if (const epiFloat dZoom = event.GetWheelRotation() / 120.0f; dZoom != 0.0f)
     {
         ImageScale(m_ScaleFactor + dZoom * 0.05f);
@@ -137,10 +147,31 @@ void epiWXImagePanel::OnMouse(wxMouseEvent& event)
 
         PopupMenu(&contextMenu);
     }
+
+    if (event.LeftDown())
+    {
+        m_MouseCapturePosition = event.GetPosition();
+        m_ImageCapturePosition = m_ImagePosition;
+    }
+    else if (event.Dragging() && event.LeftIsDown())
+    {
+        m_ImagePosition = event.GetPosition() - m_MouseCapturePosition + m_ImageCapturePosition;
+        Refresh();
+    }
+}
+
+void epiWXImagePanel::OnEraseBackground(wxEraseEvent& event)
+{
+    // NOTE: should reduce flickering
 }
 
 void epiWXImagePanel::OnMenu(wxCommandEvent& event)
 {
+    if (!IsEnabled())
+    {
+        return;
+    }
+
     OnMenuEvent(event);
 }
 
@@ -548,6 +579,7 @@ void epiWXImagePanel::ImageReset()
 {
     m_ImageTgt = m_ImageSrc.Duplicate();
     ImageScale();
+    m_ImagePosition = {};
 }
 
 void epiWXImagePanel::ImageFitToScreen()
@@ -568,6 +600,7 @@ void epiWXImagePanel::ImageFitToScreen()
 
     const epiFloat scaleFactor = sizeScaled.x / static_cast<epiFloat>(m_ImageTgt.GetWidth());
     ImageScale(scaleFactor);
+    m_ImagePosition = {};
 }
 
 void epiWXImagePanel::ImageScale(epiFloat factor)

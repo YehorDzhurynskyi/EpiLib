@@ -96,10 +96,12 @@ public:
                     const wxString& name = wxASCII_STR(wxPanelNameStr))
         : wxPanel(parent, winid, pos, size, style, name)
     {
+        SetBackgroundStyle(wxBG_STYLE_PAINT);
     }
 
     void OnPaint(wxPaintEvent& event);
     void OnMouse(wxMouseEvent& event);
+    void OnEraseBackground(wxEraseEvent& event);
     virtual void OnMenuEvent(wxCommandEvent& event);
     virtual void BuildContextMenu(wxMenu& contextMenu);
 
@@ -119,4 +121,9 @@ protected:
     epi::mmImage m_ImageSrc;
     epi::mmImage m_ImageTgt;
     epiFloat m_ScaleFactor{1.0f};
+
+private:
+    wxPoint m_ImagePosition{};
+    wxPoint m_ImageCapturePosition{};
+    wxPoint m_MouseCapturePosition{};
 };
