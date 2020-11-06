@@ -96,6 +96,9 @@ template<typename T>
 class epiRect2
 {
 public:
+    using value_type = T;
+
+public:
     epiRect2() = default;
     epiRect2(const epiRect2& rhs) = default;
     epiRect2& operator=(const epiRect2& rhs) = default;

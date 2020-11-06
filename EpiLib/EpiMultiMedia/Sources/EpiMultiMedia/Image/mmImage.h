@@ -50,13 +50,14 @@ public:
 
     enum mmImage_PIDs
     {
-        PID_BitDepth = 0x7d479868,
+        PID_BPP = 0x5d8f8c1c,
+        PID_BPC = 0xd931cdc2,
         PID_Width = 0x4ddb6a2b,
         PID_Height = 0xf2e1e039,
         PID_Pitch = 0xe65e91dd,
         PID_Data = 0xdc15c5d,
         PID_PixelFormat = 0xc9797cbb,
-        PID_COUNT = 6
+        PID_COUNT = 7
     };
 
 protected:
@@ -64,7 +65,8 @@ protected:
     void SetPixelFormat_Callback(mmImagePixelFormat value);
 
 protected:
-    epiU32 m_BitDepth{0};
+    epiU32 m_BPP{0};
+    epiVec4u m_BPC{};
     epiSize_t m_Width{0};
     epiSize_t m_Height{0};
     epiArray<epiU8> m_Data{};
@@ -73,11 +75,12 @@ protected:
 EPI_GENREGION_END(mmImage)
 
 public:
-    static constexpr epiU32 BitDepthOf(mmImagePixelFormat fmt);
+    static /* TODO: add constexpr on c++20 */ epiU32 BPP(mmImagePixelFormat fmt);
+    static constexpr epiVec4u BPC(mmImagePixelFormat fmt);
     static constexpr epiU32 ChannelsOf(mmImagePixelFormat fmt);
 
 public:
-    mmImage() = default;
+    mmImage();
     mmImage(const dSeries2Df& series);
 
     mmImage Duplicate() const; // TODO: replace with auto-generated method

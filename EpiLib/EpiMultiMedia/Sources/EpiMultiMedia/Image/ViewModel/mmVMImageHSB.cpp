@@ -77,7 +77,8 @@ mmImage mmVMImageHSB::GetImageTgt_Internal() const
 
     epiAssert(h.GetWidth() == s.GetWidth() && s.GetWidth() == b.GetWidth());
     epiAssert(h.GetHeight() == s.GetHeight() && s.GetHeight() == b.GetHeight());
-    epiAssert(h.GetBitDepth() == s.GetBitDepth() && s.GetBitDepth() == b.GetBitDepth());
+    epiAssert(h.GetBPP() == s.GetBPP() && s.GetBPP() == b.GetBPP());
+    epiAssert(h.GetBPC() == s.GetBPC() && s.GetBPC() == b.GetBPC());
 
     to.SetWidth(h.GetWidth());
     to.SetHeight(h.GetHeight());

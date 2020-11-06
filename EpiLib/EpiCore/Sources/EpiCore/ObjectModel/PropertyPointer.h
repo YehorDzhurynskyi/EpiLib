@@ -29,6 +29,9 @@ public:
     static PropertyPointer CreateFromProperty(const Object& self, const MetaProperty* property);
     static PropertyPointer CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx);
 
+    template<typename T, typename Nested>
+    static PropertyPointer CreateFromArrayInplace(T& self, epiU32 idx);
+
     epiString GetValueString(epiS32 style = 0) const;
 
     template<typename T>
@@ -83,7 +86,8 @@ protected:
         None,
         Property,
         PropertyConst,
-        ArrayElem
+        ArrayElem,
+        InplaceElem
     };
 
     Form m_Form{Form::None};
@@ -148,7 +152,7 @@ void* PropertyPointer::Get_Static() const
 
     void* value = nullptr;
 
-    if (m_Form == Form::ArrayElem)
+    if (m_Form == Form::ArrayElem || m_Form == Form::InplaceElem)
     {
         if constexpr (MetaType::IsFundamental<T>() || MetaType::IsPointer<T>())
         {
@@ -212,6 +216,10 @@ void PropertyPointer::Set_Static(const void* value)
     {
         memcpy_s(m_ValueAddr, m_SizeOf, &reinterpret_cast<Object&>(value), m_SizeOf);
     }
+    else if (m_Form == Form::InplaceElem)
+    {
+        memcpy_s(m_ValueAddr, m_SizeOf, &value, m_SizeOf);
+    }
     else if (m_Form == Form::Property)
     {
         void* addr = (epiByte*)m_Self + (size_t)m_Meta->m_PtrWrite;
@@ -246,6 +254,22 @@ void PropertyPointer::Set_Static(const void* value)
             }
         }
     }
+}
+
+template<typename T, typename Nested>
+static PropertyPointer PropertyPointer::CreateFromArrayInplace(T& self, epiU32 idx)
+{
+    PropertyPointer ptr;
+    ptr.m_ValueAddr = reinterpret_cast<epiByte*>(&self) + sizeof(Nested) * idx;
+    ptr.m_SizeOf = sizeof(Nested);
+    ptr.m_Form = Form::InplaceElem;
+
+    constexpr epiMetaTypeID nestedTypeID = MetaType::TypeOf<Nested>();
+    epiAssertStatic(nestedTypeID != epiMetaTypeID_None);
+
+    ptr.m_TypeID = nestedTypeID;
+
+    return ptr;
 }
 
 EPI_NAMESPACE_END()

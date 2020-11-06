@@ -26,6 +26,11 @@ dvVMPlot::dvVMPlot()
     SetClipBox(clipbox);
 }
 
+void dvVMPlot::Clear()
+{
+    m_Series.Clear();
+}
+
 epiRect2f dvVMPlot::GetClipBox_Callback() const
 {
     epiRect2f box;

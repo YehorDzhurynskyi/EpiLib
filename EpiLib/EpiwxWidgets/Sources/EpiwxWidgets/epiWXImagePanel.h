@@ -7,6 +7,7 @@
 #include <wx/statbmp.h>
 
 #include "EpiwxWidgets/epiWXObjectConfigurationPanel.h"
+#include "EpiwxWidgets/epiWXPlot.h"
 
 #include "EpiMultimedia/Image/mmImage.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
@@ -25,6 +26,7 @@ public:
 public:
     epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
                                   wxWindow* parent,
+                                  const wxGLAttributes& glattrs,
                                   wxWindowID id,
                                   const wxString& title,
                                   const wxPoint& pos = wxDefaultPosition,
@@ -33,10 +35,13 @@ public:
                                   const wxString& name = wxASCII_STR(wxDialogNameStr));
 
     void OnImageUpdated(wxCommandEvent& event);
+    void OnImageUpdated();
 
 protected:
     epi::mmVMImageBase& m_ImageVM;
     wxStaticBitmap* m_StaticBitmap{nullptr};
+    epiWXPlot* m_PlotHistogramGrayscale{nullptr};
+    epiWXPlot* m_PlotHistogramRGB{nullptr};
 };
 
 class epiWXImagePanel : public wxPanel
@@ -89,15 +94,12 @@ public:
 
 public:
     epiWXImagePanel(wxWindow* parent,
+                    const wxGLAttributes& glattrs,
                     wxWindowID winid = wxID_ANY,
                     const wxPoint& pos = wxDefaultPosition,
                     const wxSize& size = wxDefaultSize,
                     long style = wxTAB_TRAVERSAL | wxNO_BORDER,
-                    const wxString& name = wxASCII_STR(wxPanelNameStr))
-        : wxPanel(parent, winid, pos, size, style, name)
-    {
-        SetBackgroundStyle(wxBG_STYLE_PAINT);
-    }
+                    const wxString& name = wxASCII_STR(wxPanelNameStr));
 
     void OnPaint(wxPaintEvent& event);
     void OnMouse(wxMouseEvent& event);
@@ -123,6 +125,8 @@ protected:
     epiFloat m_ScaleFactor{1.0f};
 
 private:
+    wxGLAttributes m_GLAttrs;
+
     wxPoint m_ImagePosition{};
     wxPoint m_ImageCapturePosition{};
     wxPoint m_MouseCapturePosition{};

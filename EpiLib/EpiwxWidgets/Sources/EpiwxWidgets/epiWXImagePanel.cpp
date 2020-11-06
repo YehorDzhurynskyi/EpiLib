@@ -11,6 +11,8 @@
 #include "EpiData/Series/dSeries2Dc.h"
 #include "EpiData/Series/dSeries2Df.h"
 
+#include "EpiDataVisualization/Plot/ViewModel/dvVMSeries1Df.h"
+
 #include <wx/dcclient.h>
 #include <wx/dcbuffer.h>
 #include <wx/menu.h>
@@ -52,6 +54,7 @@ wxEND_EVENT_TABLE()
 
 epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
                                                              wxWindow* parent,
+                                                             const wxGLAttributes& glattrs,
                                                              wxWindowID id,
                                                              const wxString& title,
                                                              const wxPoint& pos,
@@ -75,6 +78,17 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
 
     contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, this), wxSizerFlags().Expand());
 
+    wxBoxSizer* plotSizer = new wxBoxSizer(wxVERTICAL);
+    m_PlotHistogramGrayscale = new epiWXPlot(this, glattrs, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, wxGLCanvasName, wxNullPalette);
+    m_PlotHistogramGrayscale->SetMinClientSize({500, 50});
+    plotSizer->Add(m_PlotHistogramGrayscale, 1, wxALL | wxEXPAND, 10);
+
+    m_PlotHistogramRGB = new epiWXPlot(this, glattrs, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, wxGLCanvasName, wxNullPalette);
+    m_PlotHistogramRGB->SetMinClientSize({500, 50});
+    plotSizer->Add(m_PlotHistogramRGB, 1, wxALL | wxEXPAND, 10);
+
+    contentSizer->Add(plotSizer, wxSizerFlags().Expand());
+
     sizer->Add(contentSizer, wxSizerFlags().Expand());
 
     wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -85,10 +99,17 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
 
     SetSizerAndFit(sizer);
 
+    OnImageUpdated();
+
     CenterOnParent();
 }
 
 void epiWXImageConfigurationDialog::OnImageUpdated(wxCommandEvent& event)
+{
+    OnImageUpdated();
+}
+
+void epiWXImageConfigurationDialog::OnImageUpdated()
 {
     if (m_StaticBitmap != nullptr)
     {
@@ -101,6 +122,87 @@ void epiWXImageConfigurationDialog::OnImageUpdated(wxCommandEvent& event)
             }
         }
     }
+
+    if (m_PlotHistogramRGB != nullptr && m_PlotHistogramGrayscale != nullptr)
+    {
+        epi::mmImage image = m_ImageVM.GetImageTgt();
+        {
+            epi::dvVMPlot& plotVM = m_PlotHistogramGrayscale->GetViewModel();
+            plotVM.Clear();
+
+            epi::dSeries1Df* series = new epi::dSeries1Df(); // TODO: resolve leak
+            *series = image.ToGrayScaleLuma().Histogram(&epi::Color::GetLumau);
+
+            const auto itMaxElement = std::max_element(series->begin(), series->end());
+            epiRect2f rect;
+            rect.Left = 0.0f;
+            rect.Right = 256.0f;
+            rect.Top = itMaxElement != series->end() ? *itMaxElement : 1.0f;
+            rect.Bottom = 0.0f;
+            plotVM.SetBBox(rect);
+            plotVM.SetClipBox(rect);
+
+            epi::dvVMSeries1Df& seriesVM = plotVM.Add<epi::dvVMSeries1Df>();
+            seriesVM.SetSeries(series);
+            seriesVM.SetRepr(epi::dvSeries1DfRepr::Bar);
+            seriesVM.SetColor1(epi::Color::kDarkGray * epi::Color(1.0f, 1.0f, 1.0f, 0.333333f));
+            seriesVM.SetColor2(epi::Color::kLightGray * epi::Color(1.0f, 1.0f, 1.0f, 0.333333f));
+            seriesVM.SetZ(-0.99f);
+
+            m_PlotHistogramGrayscale->Refresh();
+        }
+        {
+            epi::dvVMPlot& plotVM = m_PlotHistogramRGB->GetViewModel();
+            plotVM.Clear();
+
+            epi::dSeries1Df* seriesR = new epi::dSeries1Df(); // TODO: resolve leak
+            epi::dSeries1Df* seriesG = new epi::dSeries1Df(); // TODO: resolve leak
+            epi::dSeries1Df* seriesB = new epi::dSeries1Df(); // TODO: resolve leak
+
+            *seriesR = image.Histogram(&epi::Color::GetRu);
+            *seriesG = image.Histogram(&epi::Color::GetGu);
+            *seriesB = image.Histogram(&epi::Color::GetBu);
+
+            const auto itMaxElementR = std::max_element(seriesR->begin(), seriesR->end());
+            const auto itMaxElementG = std::max_element(seriesG->begin(), seriesG->end());
+            const auto itMaxElementB = std::max_element(seriesB->begin(), seriesB->end());
+
+            epiFloat maxElement = itMaxElementR != seriesR->end() ? *itMaxElementR : 0.0f;
+            maxElement = std::max(maxElement, itMaxElementG != seriesG->end() ? *itMaxElementG : 0.0f);
+            maxElement = std::max(maxElement, itMaxElementB != seriesB->end() ? *itMaxElementB : 0.0f);
+
+            epiRect2f rect;
+            rect.Left = 0.0f;
+            rect.Right = 256.0f;
+            rect.Top = std::max(maxElement, 1.0f);
+            rect.Bottom = 0.0f;
+            plotVM.SetBBox(rect);
+            plotVM.SetClipBox(rect);
+
+            epi::dvVMSeries1Df& seriesVMR = plotVM.Add<epi::dvVMSeries1Df>();
+            seriesVMR.SetSeries(seriesR);
+            seriesVMR.SetRepr(epi::dvSeries1DfRepr::Bar);
+            seriesVMR.SetColor1(epi::Color::kDarkRed * epi::Color(1.0f, 1.0f, 1.0f, 0.333333f));
+            seriesVMR.SetColor2(epi::Color::kLightRed * epi::Color(1.0f, 1.0f, 1.0f, 0.333333f));
+            seriesVMR.SetZ(-99.0f);
+
+            epi::dvVMSeries1Df& seriesVMG = plotVM.Add<epi::dvVMSeries1Df>();
+            seriesVMG.SetSeries(seriesG);
+            seriesVMG.SetRepr(epi::dvSeries1DfRepr::Bar);
+            seriesVMG.SetColor1(epi::Color::kDarkGreen * epi::Color(1.0f, 1.0f, 1.0f, 0.333333f));
+            seriesVMG.SetColor2(epi::Color::kLightGreen * epi::Color(1.0f, 1.0f, 1.0f, 0.333333f));
+            seriesVMG.SetZ(-95.0f);
+
+            epi::dvVMSeries1Df& seriesVMB = plotVM.Add<epi::dvVMSeries1Df>();
+            seriesVMB.SetSeries(seriesB);
+            seriesVMB.SetRepr(epi::dvSeries1DfRepr::Bar);
+            seriesVMB.SetColor1(epi::Color::kDarkBlue * epi::Color(1.0f, 1.0f, 1.0f, 0.333333f));
+            seriesVMB.SetColor2(epi::Color::kLightBlue * epi::Color(1.0f, 1.0f, 1.0f, 0.333333f));
+            seriesVMB.SetZ(-90.0f);
+
+            m_PlotHistogramRGB->Refresh();
+        }
+    }
 }
 
 wxBEGIN_EVENT_TABLE(epiWXImagePanel, wxPanel)
@@ -109,6 +211,19 @@ wxBEGIN_EVENT_TABLE(epiWXImagePanel, wxPanel)
     EVT_ERASE_BACKGROUND(epiWXImagePanel::OnEraseBackground)
     EVT_MENU(wxID_ANY, epiWXImagePanel::OnMenu)
 wxEND_EVENT_TABLE()
+
+epiWXImagePanel::epiWXImagePanel(wxWindow* parent,
+                                 const wxGLAttributes& glattrs,
+                                 wxWindowID winid,
+                                 const wxPoint& pos,
+                                 const wxSize& size,
+                                 long style,
+                                 const wxString& name)
+    : wxPanel(parent, winid, pos, size, style, name)
+    , m_GLAttrs{glattrs}
+{
+    SetBackgroundStyle(wxBG_STYLE_PAINT);
+}
 
 void epiWXImagePanel::OnPaint(wxPaintEvent& event)
 {
@@ -292,7 +407,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         epi::mmVMImageThreshold vm;
         vm.SetImageSrc(&m_ImageTgt);
 
-        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Thresholding"); dialog.ShowModal() == wxID_OK)
+        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Thresholding"); dialog.ShowModal() == wxID_OK)
         {
             m_ImageTgt = vm.GetImageTgt();
             Refresh();
@@ -303,7 +418,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         epi::mmVMImageGamma vm;
         vm.SetImageSrc(&m_ImageTgt);
 
-        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Gamma Correction"); dialog.ShowModal() == wxID_OK)
+        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Gamma Correction"); dialog.ShowModal() == wxID_OK)
         {
             m_ImageTgt = vm.GetImageTgt();
             Refresh();
@@ -314,7 +429,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         epi::mmVMImageContrast vm;
         vm.SetImageSrc(&m_ImageTgt);
 
-        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "Contrast Adjustment"); dialog.ShowModal() == wxID_OK)
+        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Contrast Adjustment"); dialog.ShowModal() == wxID_OK)
         {
             m_ImageTgt = vm.GetImageTgt();
             Refresh();
@@ -325,7 +440,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         epi::mmVMImageHSB vm;
         vm.SetImageSrc(&m_ImageTgt);
 
-        if (epiWXImageConfigurationDialog dialog(vm, this, wxID_ANY, "HSB Adjustment"); dialog.ShowModal() == wxID_OK)
+        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "HSB Adjustment"); dialog.ShowModal() == wxID_OK)
         {
             m_ImageTgt = vm.GetImageTgt();
             Refresh();

@@ -261,7 +261,8 @@ mmImage mmVMImageContrast::GetImageTgt_Internal() const
 
     epiAssert(r.GetWidth() == g.GetWidth() && g.GetWidth() == b.GetWidth());
     epiAssert(r.GetHeight() == g.GetHeight() && g.GetHeight() == b.GetHeight());
-    epiAssert(r.GetBitDepth() == g.GetBitDepth() && g.GetBitDepth() == b.GetBitDepth());
+    epiAssert(r.GetBPP() == g.GetBPP() && g.GetBPP() == b.GetBPP());
+    epiAssert(r.GetBPC() == g.GetBPC() && g.GetBPC() == b.GetBPC());
 
     to.SetWidth(r.GetWidth());
     to.SetHeight(r.GetHeight());

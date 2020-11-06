@@ -106,6 +106,12 @@ mmImage ConvertTo(const mmImage& from,
 
 EPI_NAMESPACE_BEGIN()
 
+mmImage::mmImage()
+{
+    m_BPP = mmImage::BPP(GetPixelFormat());
+    m_BPC = mmImage::BPC(GetPixelFormat());
+}
+
 mmImage::mmImage(const dSeries2Df& series)
 {
     SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
@@ -131,9 +137,29 @@ mmImage::mmImage(const dSeries2Df& series)
     }
 }
 
-constexpr epiU32 mmImage::BitDepthOf(mmImagePixelFormat fmt)
+epiU32 mmImage::BPP(mmImagePixelFormat fmt)
 {
-    return ChannelsOf(fmt) * 8;
+    epiU32 bpp = 0;
+
+    const epiVec4u bpc = BPC(fmt);
+    for (epiU32 c = 0; c < ChannelsOf(fmt); ++c)
+    {
+        bpp += bpc[c];
+    }
+
+    return bpp;
+}
+
+constexpr epiVec4u mmImage::BPC(mmImagePixelFormat fmt)
+{
+    switch (fmt)
+    {
+    case mmImagePixelFormat::R8G8B8: return epiVec4u{8, 8, 8, 0};
+    case mmImagePixelFormat::R8G8B8A8: return epiVec4u{8, 8, 8, 8};
+    case mmImagePixelFormat::GRAYSCALE: return epiVec4u{8, 0, 0, 0};
+    }
+
+    epiAssert(false, "Unexpected `fmt`!");
 }
 
 constexpr epiU32 mmImage::ChannelsOf(mmImagePixelFormat fmt)
@@ -1282,7 +1308,8 @@ void mmImage::SetSize_Callback(const epiVec2u& value)
 void mmImage::SetPixelFormat_Callback(mmImagePixelFormat value)
 {
     m_PixelFormat = value;
-    m_BitDepth = mmImage::BitDepthOf(value);
+    m_BPP = mmImage::BPP(value);
+    m_BPC = mmImage::BPC(value);
 }
 
 epiSize_t mmImage::GetPitch_Callback() const

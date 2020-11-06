@@ -116,6 +116,7 @@ void epiWXPlot::OnResize(wxSizeEvent& event)
         m_UIContext->OnResize(rectVirtual);
     }
 
+    SetCurrent(*m_GLContext);
     glViewport(0, 0, size.x, size.y);
 }
 

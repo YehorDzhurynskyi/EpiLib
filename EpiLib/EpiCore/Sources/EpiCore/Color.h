@@ -192,6 +192,9 @@ protected:
 public:
     Color Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA = 0) const;
     Color Negative() const;
+    // TODO: introduce `dynamic range`, `intencity-level slicing`, `bit-plane slicing` expansion using piecewise function
+    Color Power(epiFloat powR, epiFloat powG, epiFloat powB, epiFloat powA = 1.0f) const;
+    Color Log(epiFloat logR, epiFloat logG, epiFloat logB, epiFloat logA = 1.0f) const;
     Color Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB, epiFloat gammaA = 1.0f) const;
     Color Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB, epiS8 contrastA = 0) const;
     Color ContrastStretch(epiU8 lowerR,

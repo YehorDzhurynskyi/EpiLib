@@ -200,6 +200,7 @@ public:
     template<typename T> static constexpr epiBool IsPointer();
     template<typename T> static constexpr epiBool IsNumeric();
     template<typename T> static constexpr epiBool IsFloating();
+    template<typename T> static constexpr epiMetaTypeID TypeOf();
 
 #if 0
     static epiByte* GetElementByIndex(const epiByte* container, const MetaProperty& meta, epiS32 index);
@@ -593,6 +594,80 @@ constexpr epiBool MetaType::IsFloating()
     else if constexpr (std::is_same_v<epiRect2f, T>) { static_assert(IsFloating(epiMetaTypeID_epiRect2f)) return true; }
     else if constexpr (std::is_same_v<epiRect2d, T>) { static_assert(IsFloating(epiMetaTypeID_epiRect2d)) return true; }
     else return false;
+}
+
+template<typename T>
+constexpr epiMetaTypeID MetaType::TypeOf()
+{
+    if constexpr (std::is_pointer_v<T>) return epiMetaTypeID_Ptr;
+    else if constexpr (std::is_same_v<epiChar, T>) return epiMetaTypeID_epiChar;
+    else if constexpr (std::is_same_v<epiWChar, T>) return epiMetaTypeID_epiWChar;
+    else if constexpr (std::is_same_v<epiBool, T>) return epiMetaTypeID_epiBool;
+    else if constexpr (std::is_same_v<epiByte, T>) return epiMetaTypeID_epiByte;
+    else if constexpr (std::is_same_v<epiFloat, T>) return epiMetaTypeID_epiFloat;
+    else if constexpr (std::is_same_v<epiDouble, T>) return epiMetaTypeID_epiDouble;
+    else if constexpr (std::is_same_v<epiSize_t, T>) return epiMetaTypeID_epiSize_t;
+    else if constexpr (std::is_same_v<epiString, T>) return epiMetaTypeID_epiString;
+    else if constexpr (std::is_same_v<epiWString, T>) return epiMetaTypeID_epiWString;
+    else if constexpr (std::is_same_v<epiU8, T>) return epiMetaTypeID_epiU8;
+    else if constexpr (std::is_same_v<epiU16, T>) return epiMetaTypeID_epiU16;
+    else if constexpr (std::is_same_v<epiU32, T>) return epiMetaTypeID_epiU32;
+    else if constexpr (std::is_same_v<epiU64, T>) return epiMetaTypeID_epiU64;
+    else if constexpr (std::is_same_v<epiS8, T>) return epiMetaTypeID_epiS8;
+    else if constexpr (std::is_same_v<epiS16, T>) return epiMetaTypeID_epiS16;
+    else if constexpr (std::is_same_v<epiS32, T>) return epiMetaTypeID_epiS32;
+    else if constexpr (std::is_same_v<epiS64, T>) return epiMetaTypeID_epiS64;
+    else if constexpr (std::is_same_v<epiSize2, T>) return epiMetaTypeID_epiSize2;
+    else if constexpr (std::is_same_v<epiSize2f, T>) return epiMetaTypeID_epiSize2f;
+    else if constexpr (std::is_same_v<epiSize2d, T>) return epiMetaTypeID_epiSize2d;
+    else if constexpr (std::is_same_v<epiSize2s, T>) return epiMetaTypeID_epiSize2s;
+    else if constexpr (std::is_same_v<epiSize2u, T>) return epiMetaTypeID_epiSize2u;
+    else if constexpr (std::is_same_v<epiVec2f, T>) return epiMetaTypeID_epiVec2f;
+    else if constexpr (std::is_same_v<epiVec2d, T>) return epiMetaTypeID_epiVec2d;
+    else if constexpr (std::is_same_v<epiVec2s, T>) return epiMetaTypeID_epiVec2s;
+    else if constexpr (std::is_same_v<epiVec2s8, T>) return epiMetaTypeID_epiVec2s8;
+    else if constexpr (std::is_same_v<epiVec2s16, T>) return epiMetaTypeID_epiVec2s16;
+    else if constexpr (std::is_same_v<epiVec2s32, T>) return epiMetaTypeID_epiVec2s32;
+    else if constexpr (std::is_same_v<epiVec2s64, T>) return epiMetaTypeID_epiVec2s64;
+    else if constexpr (std::is_same_v<epiVec2u, T>) return epiMetaTypeID_epiVec2u;
+    else if constexpr (std::is_same_v<epiVec2u8, T>) return epiMetaTypeID_epiVec2u8;
+    else if constexpr (std::is_same_v<epiVec2u16, T>) return epiMetaTypeID_epiVec2u16;
+    else if constexpr (std::is_same_v<epiVec2u32, T>) return epiMetaTypeID_epiVec2u32;
+    else if constexpr (std::is_same_v<epiVec2u64, T>) return epiMetaTypeID_epiVec2u64;
+    else if constexpr (std::is_same_v<epiVec3f, T>) return epiMetaTypeID_epiVec3f;
+    else if constexpr (std::is_same_v<epiVec3d, T>) return epiMetaTypeID_epiVec3d;
+    else if constexpr (std::is_same_v<epiVec3s, T>) return epiMetaTypeID_epiVec3s;
+    else if constexpr (std::is_same_v<epiVec3s8, T>) return epiMetaTypeID_epiVec3s8;
+    else if constexpr (std::is_same_v<epiVec3s16, T>) return epiMetaTypeID_epiVec3s16;
+    else if constexpr (std::is_same_v<epiVec3s32, T>) return epiMetaTypeID_epiVec3s32;
+    else if constexpr (std::is_same_v<epiVec3s64, T>) return epiMetaTypeID_epiVec3s64;
+    else if constexpr (std::is_same_v<epiVec3u, T>) return epiMetaTypeID_epiVec3u;
+    else if constexpr (std::is_same_v<epiVec3u8, T>) return epiMetaTypeID_epiVec3u8;
+    else if constexpr (std::is_same_v<epiVec3u16, T>) return epiMetaTypeID_epiVec3u16;
+    else if constexpr (std::is_same_v<epiVec3u32, T>) return epiMetaTypeID_epiVec3u32;
+    else if constexpr (std::is_same_v<epiVec3u64, T>) return epiMetaTypeID_epiVec3u64;
+    else if constexpr (std::is_same_v<epiVec4f, T>) return epiMetaTypeID_epiVec4f;
+    else if constexpr (std::is_same_v<epiVec4d, T>) return epiMetaTypeID_epiVec4d;
+    else if constexpr (std::is_same_v<epiVec4s, T>) return epiMetaTypeID_epiVec4s;
+    else if constexpr (std::is_same_v<epiVec4s8, T>) return epiMetaTypeID_epiVec4s8;
+    else if constexpr (std::is_same_v<epiVec4s16, T>) return epiMetaTypeID_epiVec4s16;
+    else if constexpr (std::is_same_v<epiVec4s32, T>) return epiMetaTypeID_epiVec4s32;
+    else if constexpr (std::is_same_v<epiVec4s64, T>) return epiMetaTypeID_epiVec4s64;
+    else if constexpr (std::is_same_v<epiVec4u, T>) return epiMetaTypeID_epiVec4u;
+    else if constexpr (std::is_same_v<epiVec4u8, T>) return epiMetaTypeID_epiVec4u8;
+    else if constexpr (std::is_same_v<epiVec4u16, T>) return epiMetaTypeID_epiVec4u16;
+    else if constexpr (std::is_same_v<epiVec4u32, T>) return epiMetaTypeID_epiVec4u32;
+    else if constexpr (std::is_same_v<epiVec4u64, T>) return epiMetaTypeID_epiVec4u64;
+    else if constexpr (std::is_same_v<epiMat2x2f, T>) return epiMetaTypeID_epiMat2x2f;
+    else if constexpr (std::is_same_v<epiMat3x3f, T>) return epiMetaTypeID_epiMat3x3f;
+    else if constexpr (std::is_same_v<epiMat4x4f, T>) return epiMetaTypeID_epiMat4x4f;
+    else if constexpr (std::is_same_v<epiComplexf, T>) return epiMetaTypeID_epiComplexf;
+    else if constexpr (std::is_same_v<epiComplexd, T>) return epiMetaTypeID_epiComplexd;
+    else if constexpr (std::is_same_v<epiRect2f, T>) return epiMetaTypeID_epiRect2f;
+    else if constexpr (std::is_same_v<epiRect2d, T>) return epiMetaTypeID_epiRect2d;
+    else if constexpr (std::is_same_v<epiRect2s, T>) return epiMetaTypeID_epiRect2s;
+    else if constexpr (std::is_same_v<epiRect2u, T>) return epiMetaTypeID_epiRect2u;
+    else return epiMetaTypeID_None;
 }
 
 }

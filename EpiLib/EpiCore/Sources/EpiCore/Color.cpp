@@ -116,10 +116,23 @@ Color Color::Negative() const
 
 Color Color::Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB, epiFloat gammaA) const
 {
-    return Color(std::pow(GetRf(), 1.0f / gammaR),
-                 std::pow(GetGf(), 1.0f / gammaG),
-                 std::pow(GetBf(), 1.0f / gammaB),
-                 std::pow(GetAf(), 1.0f / gammaA));
+    return Power(gammaR, gammaG, gammaB, gammaA);
+}
+
+Color Color::Power(epiFloat powR, epiFloat powG, epiFloat powB, epiFloat powA) const
+{
+    return Color(std::clamp(std::pow(GetRf(), powR), 0.0f, 1.0f),
+                 std::clamp(std::pow(GetGf(), powG), 0.0f, 1.0f),
+                 std::clamp(std::pow(GetBf(), powB), 0.0f, 1.0f),
+                 std::clamp(std::pow(GetAf(), powA), 0.0f, 1.0f));
+}
+
+Color Color::Log(epiFloat logR, epiFloat logG, epiFloat logB, epiFloat logA) const
+{
+    return Color(std::clamp(std::log(GetRf()) / std::log(logR), 0.0f, 1.0f),
+                 std::clamp(std::log(GetGf()) / std::log(logG), 0.0f, 1.0f),
+                 std::clamp(std::log(GetBf()) / std::log(logB), 0.0f, 1.0f),
+                 std::clamp(std::log(GetAf()) / std::log(logA), 0.0f, 1.0f));
 }
 
 Color Color::Contrast(epiS8 contrastR, epiS8 contrastG, epiS8 contrastB, epiS8 contrastA) const

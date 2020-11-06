@@ -53,6 +53,8 @@ public:
 public:
     template<typename T, typename ...Args>
     T& Add(Args&& ...args);
+
+    void Clear();
 };
 
 template<typename T, typename ...Args>

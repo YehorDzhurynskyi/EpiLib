@@ -20,7 +20,10 @@ class mmImage : mmMediaBase
     # TODO: add [Editor(ReadOnly=True)]
     {
         [ReadOnly]
-        epiU32 BitDepth;
+        {
+            epiU32 BPP;
+            epiVec4u BPC;
+        }
 
         epiSize_t Width;
         epiSize_t Height;
