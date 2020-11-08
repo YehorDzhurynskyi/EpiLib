@@ -117,7 +117,7 @@ mmImage::mmImage(const dSeries2Df& series)
     SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
     SetWidth(series.GetWidth());
     SetHeight(series.GetHeight());
-    GetData().Resize(series.GetWidth() * series.GetHeight());
+    GetData().Resize(series.GetSize());
 
     const auto& [minIt, maxIt] = std::minmax_element(series.begin(), series.end());
     if (minIt != series.end() && maxIt != series.end())
@@ -852,7 +852,7 @@ mmImage mmImage::Crop(const epiRect2u& crop, mmImageEdgeHandling edge) const
     image.SetHeight(cY1 - cY2);
 
     epiArray<epiU8>& data = image.GetData();
-    data.Resize(image.GetHeight() * image.GetPitch());
+    data.Resize(image.GetBytes());
     for (epiS32 r = 0, cR = cY2; cR < cY1; ++cR, ++r)
     {
         const epiS32 rr = image.GetHeight() - 1 - r;
@@ -1292,29 +1292,39 @@ mmImage mmImage::ToR8G8B8A8() const
     return mmImage{};
 }
 
-#if 0 // TODO: implement, property grid can't handle it properly
-epiVec2u mmImage::GetSize_Callback() const
+// TODO: fix property grid bug
+#if 0
+epiSize2 mmImage::GetSize_Callback() const
 {
-    return epiVec2u{GetWidth(), GetHeight()};
+    const epiSize_t w = GetWidth();
+    const epiSize_t h = GetHeight();
+
+    epiSize2 s{w, h};
+    return s;
 }
 
-void mmImage::SetSize_Callback(const epiVec2u& value)
+void mmImage::SetSize_Callback(const epiSize2& value)
 {
     SetWidth(value.x);
     SetHeight(value.y);
 }
 #endif
 
+epiSize_t mmImage::GetPitch_Callback() const
+{
+    return ChannelsOf(GetPixelFormat()) * GetWidth();
+}
+
+epiSize_t mmImage::GetBytes_Callback() const
+{
+    return GetPitch() * GetHeight();
+}
+
 void mmImage::SetPixelFormat_Callback(mmImagePixelFormat value)
 {
     m_PixelFormat = value;
     m_BPP = mmImage::BPP(value);
     m_BPC = mmImage::BPC(value);
-}
-
-epiSize_t mmImage::GetPitch_Callback() const
-{
-    return ChannelsOf(GetPixelFormat()) * GetWidth();
 }
 
 EPI_NAMESPACE_END()

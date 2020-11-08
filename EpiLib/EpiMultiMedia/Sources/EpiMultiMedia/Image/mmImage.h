@@ -55,13 +55,15 @@ public:
         PID_Width = 0x4ddb6a2b,
         PID_Height = 0xf2e1e039,
         PID_Pitch = 0xe65e91dd,
+        PID_Bytes = 0x70586cca,
         PID_Data = 0xdc15c5d,
         PID_PixelFormat = 0xc9797cbb,
-        PID_COUNT = 7
+        PID_COUNT = 8
     };
 
 protected:
     epiSize_t GetPitch_Callback() const;
+    epiSize_t GetBytes_Callback() const;
     void SetPixelFormat_Callback(mmImagePixelFormat value);
 
 protected:

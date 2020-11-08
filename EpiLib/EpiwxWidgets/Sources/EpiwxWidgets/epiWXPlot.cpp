@@ -118,6 +118,7 @@ void epiWXPlot::OnResize(wxSizeEvent& event)
 
     SetCurrent(*m_GLContext);
     glViewport(0, 0, size.x, size.y);
+    Refresh(false);
 }
 
 void epiWXPlot::OnEraseBackground(wxEraseEvent& event)
@@ -139,9 +140,6 @@ void epiWXPlot::OnPaint(wxPaintEvent& event)
 
 void epiWXPlot::OnIdle(wxIdleEvent& event)
 {
-    // TODO: refresh only on change
-    Refresh(false);
-
     m_UIContext->Update();
 }
 
@@ -163,6 +161,7 @@ void epiWXPlot::OnMouse(wxMouseEvent& event)
     if (const epiFloat dZoom = event.GetWheelRotation() / 120.0f; dZoom != 0.0f)
     {
         m_UIContext->OnMouseWheel(dZoom);
+        Refresh(false);
     }
 
     if (event.LeftUp() || event.LeftDown() || event.LeftDClick())
@@ -182,6 +181,7 @@ void epiWXPlot::OnMouse(wxMouseEvent& event)
         }
 
         m_UIContext->OnMousePrimary(action);
+        Refresh(false);
     }
 
     if (event.Entering() || event.Leaving())

@@ -28,12 +28,18 @@ class mmImage : mmMediaBase
         epiSize_t Width;
         epiSize_t Height;
 
-        [Virtual, ReadOnly, ReadCallback]
-        epiSize_t Pitch;
+        [Virtual]
+        {
+            # TODO: fix property grid bug
+            # [ReadCallback(SuppressRef=true)]
+            # epiSize2 Size;
 
-        # TODO: implement, property grid can't handle it properly
-        # [Virtual, ReadCallback(SuppressRef=true)]
-        # epiVec2u Size;
+            [ReadOnly]
+            {
+                epiSize_t Pitch;
+                epiSize_t Bytes;
+            }
+        }
     }
 
     epiArray<epiU8> Data;

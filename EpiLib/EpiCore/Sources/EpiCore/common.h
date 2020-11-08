@@ -11,6 +11,7 @@
 
 #define epiAssert(_x, _msg) assert(_x && "Function (" __FUNCTION__ "):" #_msg)
 #define epiAssertStatic(_x) static_assert(_x)
+#define epiAssertStaticEx(_x, _msg) static_assert(_x, _msg)
 #define epiExpect(_x, _msg) assert(_x && "Function (" __FUNCTION__ "):" #_msg)
 #define epiValidate(_x, _msg) isValid = isValid && (_x); epiExpect(_x, _msg)
 
