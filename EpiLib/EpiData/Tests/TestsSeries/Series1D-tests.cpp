@@ -312,13 +312,7 @@ TEST(dSeries1Df_dSeries1Dc, DFT_R2C_to_DFT_C2R_NElements100)
 {
     constexpr epiSize_t kN = 100;
 
-    dSeries1Df series;
-    for (epiU32 i = 0; i < kN; ++i)
-    {
-        epiFloat& x = series.PushBack();
-        x = epiRand01();
-    }
-
+    const dSeries1Df series = dSeries1Df::Rand(kN);
     const dSeries1Df resultSeries = dSeries1Df(series).DFT_R2C().DFT_C2R(kN);
 
     ASSERT_EQ(series, resultSeries);
@@ -328,13 +322,7 @@ TEST(dSeries1Df_dSeries1Dc, DFT_R2C_to_DFT_C2R_NElements101)
 {
     constexpr epiSize_t kN = 101;
 
-    dSeries1Df series;
-    for (epiU32 i = 0; i < kN; ++i)
-    {
-        epiFloat& x = series.PushBack();
-        x = epiRand01();
-    }
-
+    const dSeries1Df series = dSeries1Df::Rand(kN);
     const dSeries1Df resultSeries = dSeries1Df(series).DFT_R2C().DFT_C2R(kN);
 
     ASSERT_EQ(series, resultSeries);

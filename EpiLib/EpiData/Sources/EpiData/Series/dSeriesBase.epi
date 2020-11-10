@@ -1,3 +1,14 @@
+enum dSeriesEdgeHandling
+{
+    Error,
+    Zero,
+    FF,
+    Nearest,
+    Wrap,
+    Reflect,
+    Mirror
+};
+
 # TODO: Uncomment [Abstract]
 class dSeriesBase
 {

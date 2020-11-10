@@ -34,8 +34,19 @@ protected:
 EPI_GENREGION_END(dSeries2Df)
 
 public:
+    static dSeries2Df Arange(epiSize_t size, epiSize_t w, epiFloat start = 0.0f, epiFloat step = 1.0f);
+    static dSeries2Df Rand(epiSize_t size, epiSize_t w, epiFloat min = 0.0f, epiFloat max = 1.0f);
+    static dSeries2Df Full(epiSize_t size, epiSize_t w, epiFloat value);
+    static dSeries2Df Gaussian(epiSize_t size, epiSize_t w, epiFloat g);
+
+public:
     dSeries2Df() = default;
     dSeries2Df(std::initializer_list<epiFloat> list, epiSize_t width);
+
+    // TODO: implement with epigen
+    dSeries2Df Duplicate() const;
+
+    dSeries2Df Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
 
     dSeries2Dc DFT_R2C() const;
     dSeries2Df DFT_Shift() const;
@@ -43,9 +54,11 @@ public:
     dSeries2Df DFT_RShift() const;
     dSeries2Df DFT_IRShift() const;
 
-    epiFloat At(epiS32 index) const;
+    dSeries2Df Transform(std::function<epiFloat(epiFloat)>&& callback) const;
+
+    epiFloat At(epiS32 index, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
     epiFloat& At(epiS32 index);
-    epiFloat At(epiS32 r, epiS32 c) const;
+    epiFloat At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
     epiFloat& At(epiS32 r, epiS32 c);
 
     friend epiBool operator==(const dSeries2Df& lhs, const dSeries2Df& rhs);

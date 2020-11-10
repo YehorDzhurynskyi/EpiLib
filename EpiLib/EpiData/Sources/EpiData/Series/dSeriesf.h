@@ -63,6 +63,10 @@ public:
     dSeries1Df Histogram() const;
     dSeries1Df Histogram(epiU32 width) const;
 
+    epiFloat Min() const;
+    epiFloat Max() const;
+    epiVec2f MinMax() const;
+
     dSeriesf& Transform(std::function<epiFloat(epiFloat)>&& callback);
 
     epiFloat At(epiS32 index) const;
@@ -84,6 +88,11 @@ public:
     auto rend() -> typename reverse_iterator { return m_Data.rend(); }
     auto crbegin() -> typename const_reverse_iterator { return m_Data.crbegin(); }
     auto crend() -> typename const_reverse_iterator { return m_Data.crend(); }
+
+protected:
+    void Arange_Internal(epiSize_t size, epiFloat start, epiFloat step);
+    void Rand_Internal(epiSize_t size, epiFloat min, epiFloat max);
+    void Full_Internal(epiSize_t size, epiFloat value);
 };
 
 EPI_NAMESPACE_END()

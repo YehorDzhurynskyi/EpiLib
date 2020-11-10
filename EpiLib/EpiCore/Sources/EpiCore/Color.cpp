@@ -435,7 +435,7 @@ epiFloat Color::GetMinf_Callback() const
 
 epiU8 Color::GetMinu_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetMinf(), 0.0f, 1.0f) * 255.0f);
+    return std::min({GetRu(), GetGu(), GetBu()});
 }
 
 epiFloat Color::GetMaxf_Callback() const
@@ -445,7 +445,7 @@ epiFloat Color::GetMaxf_Callback() const
 
 epiU8 Color::GetMaxu_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetMaxf(), 0.0f, 1.0f) * 255.0f);
+    return std::max({GetRu(), GetGu(), GetBu()});
 }
 
 epiFloat Color::GetHuef_Callback() const
@@ -509,7 +509,7 @@ epiFloat Color::GetLuma601f_Callback() const
 
 epiU8 Color::GetLuma601u_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetLuma601f(), 0.0f, 1.0f) * 255.0f);
+    return static_cast<epiU8>(std::round(GetRu() * 0.299f + GetGu() * 0.587f + GetBu() * 0.114f));
 }
 
 epiFloat Color::GetLuma240f_Callback() const
@@ -519,7 +519,7 @@ epiFloat Color::GetLuma240f_Callback() const
 
 epiU8 Color::GetLuma240u_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetLuma240f(), 0.0f, 1.0f) * 255.0f);
+    return static_cast<epiU8>(std::round(GetRu() * 0.212f + GetGu() * 0.701f + GetBu() * 0.087f));
 }
 
 epiFloat Color::GetLuma709f_Callback() const
@@ -529,7 +529,7 @@ epiFloat Color::GetLuma709f_Callback() const
 
 epiU8 Color::GetLuma709u_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetLuma709f(), 0.0f, 1.0f) * 255.0f);
+    return static_cast<epiU8>(std::round(GetRu() * 0.2126f + GetGu() * 0.7152f + GetBu() * 0.0722f));
 }
 
 epiFloat Color::GetLuma2020f_Callback() const
@@ -539,7 +539,7 @@ epiFloat Color::GetLuma2020f_Callback() const
 
 epiU8 Color::GetLuma2020u_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetLuma2020f(), 0.0f, 1.0f) * 255.0f);
+    return static_cast<epiU8>(std::round(GetRu() * 0.2627f + GetGu() * 0.6780f + GetBu() * 0.0593f));
 }
 
 epiFloat Color::GetBrightnessf_Callback() const
@@ -549,7 +549,7 @@ epiFloat Color::GetBrightnessf_Callback() const
 
 epiU8 Color::GetBrightnessu_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetBrightnessf(), 0.0f, 1.0f) * 255.0f);
+    return GetMaxu();
 }
 
 epiFloat Color::GetLightnessf_Callback() const
@@ -559,7 +559,7 @@ epiFloat Color::GetLightnessf_Callback() const
 
 epiU8 Color::GetLightnessu_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetLightnessf(), 0.0f, 1.0f) * 255.0f);
+    return static_cast<epiU8>(0.5f * (GetMaxu() + GetMinu()));
 }
 
 epiFloat Color::GetIntensityf_Callback() const
@@ -569,7 +569,7 @@ epiFloat Color::GetIntensityf_Callback() const
 
 epiU8 Color::GetIntensityu_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetIntensityf(), 0.0f, 1.0f) * 255.0f);
+    return static_cast<epiU8>((GetRu() + GetGu() + GetBu()) / 3.0f);
 }
 
 epiFloat Color::GetChromaf_Callback() const
@@ -579,7 +579,7 @@ epiFloat Color::GetChromaf_Callback() const
 
 epiU8 Color::GetChromau_Callback() const
 {
-    return static_cast<epiU8>(std::clamp(GetChromaf(), 0.0f, 1.0f) * 255.0f);
+    return GetMaxu() - GetMinu();
 }
 
 epiFloat Color::GetSaturationBf_Callback() const

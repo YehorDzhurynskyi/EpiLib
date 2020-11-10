@@ -453,14 +453,8 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     } break;
     case ID_IMAGE_PANEL_MEAN_FILTER:
     {
-        cv::Mat kernel(11, 11, CV_32FC1);
-        for (epiS32 i = 0; i < kernel.rows * kernel.cols; ++i)
-        {
-            kernel.at<epiFloat>(i) = 1.0f;
-        }
-        kernel /= static_cast<epiFloat>(kernel.rows* kernel.cols);
-
-        m_ImageTgt.ConvolveWith(kernel);
+        const epi::dSeries2Df kernel = epi::dSeries2Df::Full(11 * 11, 11, 1.0f / (11 * 11));
+        m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
     case ID_IMAGE_PANEL_MEDIAN_FILTER:
@@ -469,83 +463,53 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     } break;
     case ID_IMAGE_PANEL_SHARPENING_FILTER:
     {
-        cv::Mat kernel(3, 3, CV_32FC1);
-        kernel.at<epiFloat>(0, 0) = +0.0f;
-        kernel.at<epiFloat>(0, 1) = +1.0f;
-        kernel.at<epiFloat>(0, 2) = +0.0f;
-        kernel.at<epiFloat>(1, 0) = +1.0f;
-        kernel.at<epiFloat>(1, 1) = -4.0f;
-        kernel.at<epiFloat>(1, 2) = +1.0f;
-        kernel.at<epiFloat>(2, 0) = +0.0f;
-        kernel.at<epiFloat>(2, 1) = +1.0f;
-        kernel.at<epiFloat>(2, 2) = +0.0f;
-
-        m_ImageTgt.ConvolveWith(kernel);
+        epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
+        kernel.At(0, 1) = 1.0f;
+        kernel.At(1, 0) = 1.0f;
+        kernel.At(1, 1) = -4.0f;
+        kernel.At(1, 2) = 1.0f;
+        kernel.At(2, 1) = 1.0f;
+        m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
     case ID_IMAGE_PANEL_GAUSSIAN_BLUR_FILTER:
     {
-        const epiS32 g = 4;
-        cv::Mat kernel(11, 11, CV_32FC1);
-        for (epiS32 r = 0; r < kernel.rows; ++r)
-        {
-            const epiS32 y = r - kernel.rows / 2;
-            for (epiS32 c = 0; c < kernel.cols; ++c)
-            {
-                const epiS32 x = c - kernel.cols / 2;
-                kernel.at<epiFloat>(c, r) = std::exp(-(x * x + y * y) / (2.0f * g * g)) / (2.0f * M_PI * g * g);
-            }
-        }
-
-        m_ImageTgt.ConvolveWith(kernel);
+        const epi::dSeries2Df kernel = epi::dSeries2Df::Gaussian(11 * 11, 11, 4.0f);
+        m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
     case ID_IMAGE_PANEL_EDGE_DETECTION_FILTER:
     {
-        cv::Mat kernel(3, 3, CV_32FC1);
-        kernel.at<epiFloat>(0, 0) = -1.0f;
-        kernel.at<epiFloat>(0, 1) = -1.0f;
-        kernel.at<epiFloat>(0, 2) = -1.0f;
-        kernel.at<epiFloat>(1, 0) = -1.0f;
-        kernel.at<epiFloat>(1, 1) = +8.0f;
-        kernel.at<epiFloat>(1, 2) = -1.0f;
-        kernel.at<epiFloat>(2, 0) = -1.0f;
-        kernel.at<epiFloat>(2, 1) = -1.0f;
-        kernel.at<epiFloat>(2, 2) = -1.0f;
+        epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, -1.0f);
+        kernel.At(1, 1) = 8.0f;
 
-        m_ImageTgt.ConvolveWith(kernel);
+        m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
     case ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_VERTICAL_FILTER:
     {
-        cv::Mat kernel(3, 3, CV_32FC1);
-        kernel.at<epiFloat>(0, 0) = -1.0f;
-        kernel.at<epiFloat>(0, 1) = +0.0f;
-        kernel.at<epiFloat>(0, 2) = +1.0f;
-        kernel.at<epiFloat>(1, 0) = -2.0f;
-        kernel.at<epiFloat>(1, 1) = +0.0f;
-        kernel.at<epiFloat>(1, 2) = +2.0f;
-        kernel.at<epiFloat>(2, 0) = -1.0f;
-        kernel.at<epiFloat>(2, 1) = +0.0f;
-        kernel.at<epiFloat>(2, 2) = +1.0f;
+        epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
+        kernel.At(0, 0) = -1.0f;
+        kernel.At(0, 2) = +1.0f;
+        kernel.At(1, 0) = -2.0f;
+        kernel.At(1, 2) = +2.0f;
+        kernel.At(2, 0) = -1.0f;
+        kernel.At(2, 2) = +1.0f;
 
-        m_ImageTgt.ConvolveWith(kernel);
+        m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
     case ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_HORIZONTAL_FILTER:
     {
-        cv::Mat kernel(3, 3, CV_32FC1);
-        kernel.at<epiFloat>(0, 0) = -1.0f;
-        kernel.at<epiFloat>(0, 1) = -2.0f;
-        kernel.at<epiFloat>(0, 2) = -1.0f;
-        kernel.at<epiFloat>(1, 0) = +0.0f;
-        kernel.at<epiFloat>(1, 1) = +0.0f;
-        kernel.at<epiFloat>(1, 2) = +0.0f;
-        kernel.at<epiFloat>(2, 0) = +1.0f;
-        kernel.at<epiFloat>(2, 1) = +2.0f;
-        kernel.at<epiFloat>(2, 2) = +1.0f;
+        epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
+        kernel.At(0, 0) = -1.0f;
+        kernel.At(0, 1) = -2.0f;
+        kernel.At(0, 2) = -1.0f;
+        kernel.At(2, 0) = +1.0f;
+        kernel.At(2, 1) = +2.0f;
+        kernel.At(2, 2) = +1.0f;
 
-        m_ImageTgt.ConvolveWith(kernel);
+        m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
     case ID_IMAGE_PANEL_CROP:
@@ -593,41 +557,24 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt.Contrast(87, -92, 0);
 
         {
-            cv::Mat kernelIdentity(3, 3, CV_32FC1);
-            kernelIdentity.at<epiFloat>(0, 0) = 0.0f;
-            kernelIdentity.at<epiFloat>(0, 1) = 0.0f;
-            kernelIdentity.at<epiFloat>(0, 2) = 0.0f;
-            kernelIdentity.at<epiFloat>(1, 0) = 0.0f;
-            kernelIdentity.at<epiFloat>(1, 1) = 1.0f;
-            kernelIdentity.at<epiFloat>(1, 2) = 0.0f;
-            kernelIdentity.at<epiFloat>(2, 0) = 0.0f;
-            kernelIdentity.at<epiFloat>(2, 1) = 0.0f;
-            kernelIdentity.at<epiFloat>(2, 2) = 0.0f;
+            epi::dSeries2Df kernelIdentity = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
+            kernelIdentity.At(1, 1) = 1.0f;
 
-            cv::Mat kernel(3, 3, CV_32FC1);
-            kernel.at<epiFloat>(0, 0) = -1.0f;
-            kernel.at<epiFloat>(0, 1) = +0.0f;
-            kernel.at<epiFloat>(0, 2) = +1.0f;
-            kernel.at<epiFloat>(1, 0) = -2.0f;
-            kernel.at<epiFloat>(1, 1) = +0.0f;
-            kernel.at<epiFloat>(1, 2) = +2.0f;
-            kernel.at<epiFloat>(2, 0) = -1.0f;
-            kernel.at<epiFloat>(2, 1) = +0.0f;
-            kernel.at<epiFloat>(2, 2) = +1.0f;
+            epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
+            kernel.At(0, 0) = -1.0f;
+            kernel.At(0, 2) = +1.0f;
+            kernel.At(1, 0) = -2.0f;
+            kernel.At(1, 2) = +2.0f;
+            kernel.At(2, 0) = -1.0f;
+            kernel.At(2, 2) = +1.0f;
 
-            m_ImageTgt.ConvolveWith(kernel, kernelIdentity, kernelIdentity);
+            m_ImageTgt = m_ImageTgt.Convolve(kernel, kernelIdentity, kernelIdentity);
         }
 
         {
-            cv::Mat kernel(5, 5, CV_32FC1);
-            for (epiS32 i = 0; i < kernel.rows * kernel.cols; ++i)
-            {
-                kernel.at<epiFloat>(i) = 1.0f;
-            }
-            kernel /= static_cast<epiFloat>(kernel.rows * kernel.cols);
-
-            m_ImageTgt.ConvolveWith(kernel);
-            r.ConvolveWith(kernel);
+            const epi::dSeries2Df kernel = epi::dSeries2Df::Full(5 * 5, 5, 1.0f / (5 * 5));
+            m_ImageTgt = m_ImageTgt.Convolve(kernel);
+            r.Convolve(kernel);
         }
 
         // TODO: consider intesity as an application mask

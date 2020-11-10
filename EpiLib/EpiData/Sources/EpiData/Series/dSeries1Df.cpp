@@ -9,6 +9,46 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+dSeries1Df dSeries1Df::Arange(epiSize_t size, epiFloat start, epiFloat step)
+{
+    dSeries1Df series;
+    series.Arange_Internal(size, start, step);
+
+    return series;
+}
+
+dSeries1Df dSeries1Df::Rand(epiSize_t size, epiFloat min, epiFloat max)
+{
+    dSeries1Df series;
+    series.Rand_Internal(size, min, max);
+
+    return series;
+}
+
+dSeries1Df dSeries1Df::Full(epiSize_t size, epiFloat value)
+{
+    dSeries1Df series;
+    series.Full_Internal(size, value);
+
+    return series;
+}
+
+dSeries1Df dSeries1Df::Gaussian(epiSize_t size, epiFloat g)
+{
+    dSeries1Df series;
+    series.GetData().Resize(size);
+
+    epiU32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        v = std::exp(-(i * i) / (2.0f * g * g)) / std::sqrt(2.0f * M_PI * g * g);
+
+        ++i;
+    }
+
+    return series;
+}
+
 dSeries1Df::dSeries1Df(std::initializer_list<epiFloat> list)
     : super{list}
 {

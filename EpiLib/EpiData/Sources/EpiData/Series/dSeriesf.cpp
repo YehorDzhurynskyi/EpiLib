@@ -91,6 +91,37 @@ dSeries1Df dSeriesf::Histogram(epiU32 width) const
     return histogram;
 }
 
+epiFloat dSeriesf::Min() const
+{
+    const auto it = std::min_element(begin(), end());
+    return it != end() ? *it : 0.0f;
+}
+
+epiFloat dSeriesf::Max() const
+{
+    const auto it = std::max_element(begin(), end());
+    return it != end() ? *it : 0.0f;
+}
+
+epiVec2f dSeriesf::MinMax() const
+{
+    epiVec2f minmax{0.0f, 0.0f};
+
+    const auto& [minIt, maxIt] = std::minmax_element(begin(), end());
+
+    if (minIt != end())
+    {
+        minmax.x = *minIt;
+    }
+
+    if (maxIt != end())
+    {
+        minmax.y = *maxIt;
+    }
+
+    return minmax;
+}
+
 dSeriesf& dSeriesf::Transform(std::function<epiFloat(epiFloat)>&& callback)
 {
     for (epiFloat& v : GetData())
@@ -131,6 +162,38 @@ epiBool operator==(const dSeriesf& lhs, const dSeriesf& rhs)
 epiBool operator!=(const dSeriesf& lhs, const dSeriesf& rhs)
 {
     return !(operator==(lhs, rhs));
+}
+
+void dSeriesf::Arange_Internal(epiSize_t size, epiFloat start, epiFloat step)
+{
+    GetData().Resize(size);
+
+    epiFloat value = start;
+    for (epiFloat& v : GetData())
+    {
+        v = value;
+        value += step;
+    }
+}
+
+void dSeriesf::Rand_Internal(epiSize_t size, epiFloat min, epiFloat max)
+{
+    GetData().Resize(size);
+
+    for (epiFloat& v : GetData())
+    {
+        v = (max - min) * epiRand01() + min;
+    }
+}
+
+void dSeriesf::Full_Internal(epiSize_t size, epiFloat value)
+{
+    GetData().Resize(size);
+
+    for (epiFloat& v : GetData())
+    {
+        v = value;
+    }
 }
 
 EPI_NAMESPACE_END()

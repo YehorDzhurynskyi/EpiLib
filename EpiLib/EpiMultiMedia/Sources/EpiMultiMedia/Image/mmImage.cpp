@@ -106,6 +106,158 @@ mmImage ConvertTo(const mmImage& from,
 
 EPI_NAMESPACE_BEGIN()
 
+mmImage mmImage::FromSeries2Df_ToGRAYSCALE(const dSeries2Df& series, epiBool clamp)
+{
+    if (clamp)
+    {
+        const dSeries2Df seriesClamped = series.Transform([](epiFloat v) { return std::clamp(v, 0.0f, 255.0f); });
+        return FromSeries2Df_ToGRAYSCALE(seriesClamped, epiVec2f{0.0f, 255.0f});
+    }
+    else
+    {
+        const auto& [minIt, maxIt] = std::minmax_element(series.begin(), series.end());
+        if (minIt != series.end() && maxIt != series.end())
+        {
+            const epiFloat min = *minIt;
+            const epiFloat max = *maxIt;
+
+            return FromSeries2Df_ToGRAYSCALE(series, epiVec2f{min, max});
+        }
+        else
+        {
+            epiLogWarn("Invalid `Series2Df` while converting `Series2Df` to `mmImage`: Couldn't determine min, max elements!");
+            return mmImage{};
+        }
+    }
+}
+
+mmImage mmImage::FromSeries2Df_ToGRAYSCALE(const dSeries2Df& series, const epiVec2f& minmax)
+{
+    mmImage image;
+
+    image.SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
+    image.SetWidth(series.GetWidth());
+    image.SetHeight(series.GetHeight());
+    image.GetData().Resize(series.GetSize());
+
+    epiU32 i = 0;
+    for (epiU8& v : image.GetData())
+    {
+        v = static_cast<epiU8>(255.0f * ((series.At(i++) - minmax.x) / (minmax.y - minmax.x)));
+    }
+
+    return image;
+}
+
+mmImage mmImage::FromSeries2Df_ToR8G8B8(const dSeries2Df& seriesR,
+                                      const dSeries2Df& seriesG,
+                                      const dSeries2Df& seriesB,
+                                      epiBool clampR,
+                                      epiBool clampG,
+                                      epiBool clampB)
+{
+    dSeries2Df r;
+    dSeries2Df g;
+    dSeries2Df b;
+    epiVec2f minmaxR{0.0f, 255.0f};
+    epiVec2f minmaxG{0.0f, 255.0f};
+    epiVec2f minmaxB{0.0f, 255.0f};
+
+    if (clampR)
+    {
+        r = seriesR.Transform([](epiFloat v) { return std::clamp(v, 0.0f, 255.0f); });
+    }
+    else
+    {
+        const auto& [minIt, maxIt] = std::minmax_element(seriesR.begin(), seriesR.end());
+        if (minIt != seriesR.end() && maxIt != seriesR.end())
+        {
+            minmaxR.x = *minIt;
+            minmaxR.y = *maxIt;
+            r = seriesR;
+        }
+        else
+        {
+            epiLogWarn("Invalid `Series2Df` while converting `Series2Df` to `mmImage`: Couldn't determine min, max elements!");
+            return mmImage{};
+        }
+    }
+
+    if (clampG)
+    {
+        g = seriesG.Transform([](epiFloat v) { return std::clamp(v, 0.0f, 255.0f); });
+    }
+    else
+    {
+        const auto& [minIt, maxIt] = std::minmax_element(seriesG.begin(), seriesG.end());
+        if (minIt != seriesG.end() && maxIt != seriesG.end())
+        {
+            minmaxG.x = *minIt;
+            minmaxG.y = *maxIt;
+            g = seriesG;
+        }
+        else
+        {
+            epiLogWarn("Invalid `Series2Df` while converting `Series2Df` to `mmImage`: Couldn't determine min, max elements!");
+            return mmImage{};
+        }
+    }
+
+    if (clampB)
+    {
+        b = seriesB.Transform([](epiFloat v) { return std::clamp(v, 0.0f, 255.0f); });
+    }
+    else
+    {
+        const auto& [minIt, maxIt] = std::minmax_element(seriesB.begin(), seriesB.end());
+        if (minIt != seriesB.end() && maxIt != seriesB.end())
+        {
+            minmaxB.x = *minIt;
+            minmaxB.y = *maxIt;
+            b = seriesB;
+        }
+        else
+        {
+            epiLogWarn("Invalid `Series2Df` while converting `Series2Df` to `mmImage`: Couldn't determine min, max elements!");
+            return mmImage{};
+        }
+    }
+
+    return FromSeries2Df_ToR8G8B8(r, g, b, minmaxR, minmaxG, minmaxB);
+}
+
+mmImage mmImage::FromSeries2Df_ToR8G8B8(const dSeries2Df& seriesR,
+                                      const dSeries2Df& seriesG,
+                                      const dSeries2Df& seriesB,
+                                      const epiVec2f& minmaxR,
+                                      const epiVec2f& minmaxG,
+                                      const epiVec2f& minmaxB)
+{
+    if (seriesR.GetSize() != seriesG.GetSize() || seriesG.GetSize() != seriesB.GetSize() ||
+        seriesR.GetWidth() != seriesG.GetWidth() || seriesG.GetWidth() != seriesB.GetWidth())
+    {
+        epiLogWarn("Invalid `Series2Df` while converting `Series2Df` to `mmImage`: series have different dimensions!");
+        return mmImage{};
+    }
+
+    mmImage image;
+
+    image.SetPixelFormat(mmImagePixelFormat::R8G8B8);
+    image.SetWidth(seriesR.GetWidth());
+    image.SetHeight(seriesR.GetHeight());
+    image.GetData().Resize(seriesR.GetSize() * 3);
+
+    const epiSize_t size = image.GetWidth() * image.GetHeight();
+    for (epiU32 i = 0; i < size; ++i)
+    {
+        image.At(i, 0u) = static_cast<epiU8>(255.0f * ((seriesR.At(i) - minmaxR.x) / (minmaxR.y - minmaxR.x)));
+        image.At(i, 1u) = static_cast<epiU8>(255.0f * ((seriesG.At(i) - minmaxG.x) / (minmaxG.y - minmaxG.x)));
+        image.At(i, 2u) = static_cast<epiU8>(255.0f * ((seriesB.At(i) - minmaxB.x) / (minmaxB.y - minmaxB.x)));
+    }
+
+    return image;
+}
+
 mmImage::mmImage()
 {
     m_BPP = mmImage::BPP(GetPixelFormat());
@@ -114,27 +266,12 @@ mmImage::mmImage()
 
 mmImage::mmImage(const dSeries2Df& series)
 {
-    SetPixelFormat(mmImagePixelFormat::GRAYSCALE);
-    SetWidth(series.GetWidth());
-    SetHeight(series.GetHeight());
-    GetData().Resize(series.GetSize());
+    *this = FromSeries2Df_ToGRAYSCALE(series);
+}
 
-    const auto& [minIt, maxIt] = std::minmax_element(series.begin(), series.end());
-    if (minIt != series.end() && maxIt != series.end())
-    {
-        const epiFloat min = *minIt;
-        const epiFloat max = *maxIt;
-
-        epiU32 i = 0;
-        for (epiU8& v : GetData())
-        {
-            v = static_cast<epiU8>(255.0f * ((series.At(i++) - min) / (max - min)));
-        }
-    }
-    else
-    {
-        epiLogWarn("Invalid `Series2Df` while converting `Series2Df` to `mmImage`: Couldn't determine min, max elements!");
-    }
+mmImage::mmImage(const dSeries2Df& series, epiFloat min, epiFloat max)
+{
+    *this = FromSeries2Df_ToGRAYSCALE(series, epiVec2f{min, max});
 }
 
 epiU32 mmImage::BPP(mmImagePixelFormat fmt)
@@ -713,125 +850,73 @@ void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 sh
     }
 }
 
-void mmImage::ConvolveWith(const cv::Mat& kernel, mmImageEdgeHandling edge)
+mmImage mmImage::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge) const
 {
-    ConvolveWith(kernel, kernel, kernel, edge);
+    return Convolve(kernel, kernel, kernel, edge);
 }
 
-void mmImage::ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB, mmImageEdgeHandling edge)
+mmImage mmImage::Convolve(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge) const
 {
-    epiAssert(kernelR.channels() == 1);
-    epiAssert(kernelG.channels() == 1);
-    epiAssert(kernelB.channels() == 1);
-    epiAssert(kernelR.depth() == CV_32F);
-    epiAssert(kernelG.depth() == CV_32F);
-    epiAssert(kernelB.depth() == CV_32F);
+    mmImage image = Duplicate();
 
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        const epiBool areEqualKernelRG = kernelR.rows == kernelG.rows &&
-                                         kernelR.cols == kernelG.cols &&
-                                         std::equal(kernelR.begin<epiFloat>(),
-                                                    kernelR.end<epiFloat>(),
-                                                    kernelG.begin<epiFloat>(),
-                                                    kernelG.end<epiFloat>(),
-                                                    [](epiFloat lhs, epiFloat rhs)
+        if (kernelR == kernelG && kernelG == kernelB)
         {
-            return epiEqual(lhs, rhs);
-        });
-
-        const epiBool areEqualKernelGB = kernelG.rows == kernelB.rows &&
-                                         kernelG.cols == kernelB.cols &&
-                                         std::equal(kernelG.begin<epiFloat>(),
-                                                    kernelG.end<epiFloat>(),
-                                                    kernelB.begin<epiFloat>(),
-                                                    kernelB.end<epiFloat>(),
-                                                    [](epiFloat lhs, epiFloat rhs)
-        {
-            return epiEqual(lhs, rhs);
-        });
-
-        if (areEqualKernelRG && areEqualKernelGB)
-        {
-            for (epiS32 r = 0; r < GetHeight(); ++r)
-            {
-                for (epiS32 c = 0; c < GetWidth(); ++c)
-                {
-                    epiFloat sum = 0;
-                    for (epiS32 kR = 0; kR < kernelR.rows; ++kR)
-                    {
-                        for (epiS32 kC = 0; kC < kernelR.cols; ++kC)
-                        {
-                            const epiU8 pix = At(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0, edge);
-                            const epiFloat pixKernel = kernelR.at<epiFloat>(kR, kC);
-
-                            sum += pix * pixKernel;
-                        }
-                    }
-                    At(r, c, 0) = static_cast<epiU8>(std::clamp(sum, 0.0f, 255.0f));
-                }
-            }
             break;
         }
         else
         {
-            *this = ToR8G8B8();
+            image = ToR8G8B8();
         }
     }
     case mmImagePixelFormat::R8G8B8:
     case mmImagePixelFormat::R8G8B8A8:
     {
-        for (epiS32 r = 0; r < GetHeight(); ++r)
+    } break;
+    }
+
+    return image;
+}
+
+mmImage mmImage::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge) const
+{
+    return Correlate(kernel, kernel, kernel, edge);
+}
+
+mmImage mmImage::Correlate(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge) const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        if (kernelR == kernelG && kernelG == kernelB)
         {
-            for (epiS32 c = 0; c < GetWidth(); ++c)
-            {
-                epiFloat sumR = 0;
-                for (epiS32 kR = 0; kR < kernelR.rows; ++kR)
-                {
-                    for (epiS32 kC = 0; kC < kernelR.cols; ++kC)
-                    {
-                        const epiU8 pix = At(r + kR - kernelR.rows / 2, c + kC - kernelR.cols / 2, 0, edge);
-                        const epiFloat pixKernel = kernelR.at<epiFloat>(kR, kC);
-
-                        sumR += pix * pixKernel;
-                    }
-                }
-                At(r, c, 0) = static_cast<epiU8>(std::clamp(sumR, 0.0f, 255.0f));
-
-                epiFloat sumG = 0;
-                for (epiS32 kR = 0; kR < kernelG.rows; ++kR)
-                {
-                    for (epiS32 kC = 0; kC < kernelG.cols; ++kC)
-                    {
-                        const epiU8 pix = At(r + kR - kernelG.rows / 2, c + kC - kernelG.cols / 2, 1, edge);
-                        const epiFloat pixKernel = kernelG.at<epiFloat>(kR, kC);
-
-                        sumG += pix * pixKernel;
-                    }
-                }
-                At(r, c, 1) = static_cast<epiU8>(std::clamp(sumG, 0.0f, 255.0f));
-
-                epiFloat sumB = 0;
-                for (epiS32 kR = 0; kR < kernelB.rows; ++kR)
-                {
-                    for (epiS32 kC = 0; kC < kernelB.cols; ++kC)
-                    {
-                        const epiU8 pix = At(r + kR - kernelB.rows / 2, c + kC - kernelB.cols / 2, 2, edge);
-                        const epiFloat pixKernel = kernelB.at<epiFloat>(kR, kC);
-
-                        sumB += pix * pixKernel;
-                    }
-                }
-                At(r, c, 2) = static_cast<epiU8>(std::clamp(sumB, 0.0f, 255.0f));
-            }
+            return ToSeries2Df().Correlate(kernelR, edge);
         }
+
+        const mmImage image = ToR8G8B8();
+        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Correlate(kernelR, edge);
+        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Correlate(kernelG, edge);
+        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Correlate(kernelB, edge);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Correlate(kernelR, edge);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Correlate(kernelG, edge);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Correlate(kernelB, edge);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
     }
 }
 
-mmImage mmImage::Crop(const epiRect2u& crop, mmImageEdgeHandling edge) const
+mmImage mmImage::Crop(const epiRect2u& crop, dSeriesEdgeHandling edge) const
 {
     const epiS32 cX1 = crop.Left;
     const epiS32 cY1 = std::min(static_cast<epiS32>(crop.Bottom + crop.GetHeight()), static_cast<epiS32>(GetHeight()));
@@ -914,7 +999,7 @@ void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& 
                 }
 
                 const Color colorSrc = image.At(r, c) * colorTint;
-                const Color colorDst = At(rr, cc, mmImageEdgeHandling::Error);
+                const Color colorDst = At(rr, cc, dSeriesEdgeHandling::Error);
                 const Color color = colorDst.Blend(colorSrc);
 
                 At(rr, cc, 0) = color.GetRu();
@@ -954,7 +1039,7 @@ epiU8& mmImage::At(epiS32 r, epiS32 c, epiU32 channel)
     return GetData()[x + y * GetPitch()];
 }
 
-epiU8 mmImage::At(epiS32 index, epiU32 channel, mmImageEdgeHandling edge) const
+epiU8 mmImage::At(epiS32 index, epiU32 channel, dSeriesEdgeHandling edge) const
 {
     const epiSize_t w = GetWidth();
 
@@ -963,19 +1048,16 @@ epiU8 mmImage::At(epiS32 index, epiU32 channel, mmImageEdgeHandling edge) const
     return At(index / w, index % w, channel, edge);
 }
 
-epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) const
+epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) const
 {
-    // TODO: implement different out of bounds handling
     const epiS32 w = static_cast<epiS32>(GetWidth());
     const epiS32 h = static_cast<epiS32>(GetHeight());
-
-    const epiU32 channels = ChannelsOf(GetPixelFormat());
 
     epiU32 x = 0;
     epiU32 y = 0;
     switch (edge)
     {
-    case mmImageEdgeHandling::Error:
+    case dSeriesEdgeHandling::Error:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -986,7 +1068,7 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case mmImageEdgeHandling::Zero:
+    case dSeriesEdgeHandling::Zero:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -996,7 +1078,7 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case mmImageEdgeHandling::FF:
+    case dSeriesEdgeHandling::FF:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -1006,36 +1088,67 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case mmImageEdgeHandling::Extend:
+    case dSeriesEdgeHandling::Nearest:
     {
         x = std::clamp(c, 0, w - 1);
         y = std::clamp(r, 0, h - 1);
     } break;
-    case mmImageEdgeHandling::Wrap:
+    case dSeriesEdgeHandling::Wrap:
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {
-            c = c < 0 ? (w - 1) + c - 1 : c - (w - 1) - 1;
+            c = c < 0 ? w + c % w : c % w;
         }
 
         if (const epiS32 rr = std::clamp(r, 0, h - 1); rr != r)
         {
-            r = r < 0 ? (h - 1) + r - 1 : r - (h - 1) - 1;
+            r = r < 0 ? h + r % h : r % h;
         }
 
         x = c;
         y = r;
     } break;
-    case mmImageEdgeHandling::Mirror:
+    case dSeriesEdgeHandling::Reflect:
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {
-            c = c < 0 ? cc - c - 1 : (w - 1) - (cc - (w - 1)) + 1;
+            c = c < 0 ? (c + 1) % w : (w - 1) - c % w;
         }
 
         if (const epiS32 rr = std::clamp(r, 0, h - 1); rr != r)
         {
-            r = r < 0 ? rr - r - 1 : (h - 1) - (rr - (h - 1)) + 1;
+            r = r < 0 ? (r + 1) % h : (h - 1) - r % h;
+        }
+
+        x = c;
+        y = r;
+    } break;
+    case dSeriesEdgeHandling::Mirror:
+    {
+        if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
+        {
+            if (c > w - 1)
+            {
+                c = (w - 1) - (c % w + 1);
+            }
+
+            if (c < 0)
+            {
+                c = -c % w;
+            }
+        }
+
+        if (const epiS32 rr = std::clamp(r, 0, h - 1); rr != r)
+        {
+            if (r > h - 1)
+            {
+                r = (h - 1) - (r % h + 1);
+            }
+
+            if (r < 0)
+            {
+                r = -r % h;
+            }
         }
 
         x = c;
@@ -1043,10 +1156,10 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge) 
     } break;
     }
 
-    return GetData()[channels * x + channel + y * GetPitch()];
+    return GetData()[ChannelsOf(GetPixelFormat()) * x + channel + y * GetPitch()];
 }
 
-Color mmImage::At(epiS32 index, mmImageEdgeHandling edge) const
+Color mmImage::At(epiS32 index, dSeriesEdgeHandling edge) const
 {
     const epiSize_t w = GetWidth();
 
@@ -1055,7 +1168,7 @@ Color mmImage::At(epiS32 index, mmImageEdgeHandling edge) const
     return At(static_cast<epiS32>(index / w), static_cast<epiS32>(index % w), edge);
 }
 
-Color mmImage::At(epiS32 r, epiS32 c, mmImageEdgeHandling edge) const
+Color mmImage::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
 {
     switch (GetPixelFormat())
     {

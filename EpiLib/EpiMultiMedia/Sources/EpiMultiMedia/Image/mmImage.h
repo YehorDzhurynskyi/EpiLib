@@ -11,8 +11,6 @@ EPI_GENREGION_END(include)
 #include "EpiData/Series/dSeries1Df.h"
 #include "EpiData/Series/dSeries2Dc.h"
 
-#include <opencv2/core.hpp>
-
 EPI_NAMESPACE_BEGIN()
 
 enum class mmImagePixelFormat : epiS32
@@ -22,18 +20,6 @@ EPI_GENREGION_BEGIN(mmImagePixelFormat)
     R8G8B8A8 = 1,
     GRAYSCALE = 2
 EPI_GENREGION_END(mmImagePixelFormat)
-};
-
-enum class mmImageEdgeHandling : epiS32
-{
-EPI_GENREGION_BEGIN(mmImageEdgeHandling)
-    Error = 0,
-    Zero = 1,
-    FF = 2,
-    Extend = 3,
-    Wrap = 4,
-    Mirror = 5
-EPI_GENREGION_END(mmImageEdgeHandling)
 };
 
 using mmImageGetColorValueCallback = epiU8(Color::*)() const;
@@ -81,9 +67,26 @@ public:
     static constexpr epiVec4u BPC(mmImagePixelFormat fmt);
     static constexpr epiU32 ChannelsOf(mmImagePixelFormat fmt);
 
+    static mmImage FromSeries2Df_ToGRAYSCALE(const dSeries2Df& series, epiBool clamp = true);
+    static mmImage FromSeries2Df_ToGRAYSCALE(const dSeries2Df& series, const epiVec2f& minmax);
+
+    static mmImage FromSeries2Df_ToR8G8B8(const dSeries2Df& seriesR,
+                                          const dSeries2Df& seriesG,
+                                          const dSeries2Df& seriesB,
+                                          epiBool clampR = true,
+                                          epiBool clampG = true,
+                                          epiBool clampB = true);
+    static mmImage FromSeries2Df_ToR8G8B8(const dSeries2Df& seriesR,
+                                          const dSeries2Df& seriesG,
+                                          const dSeries2Df& seriesB,
+                                          const epiVec2f& minmaxR,
+                                          const epiVec2f& minmaxG,
+                                          const epiVec2f& minmaxB);
+
 public:
     mmImage();
     mmImage(const dSeries2Df& series);
+    mmImage(const dSeries2Df& series, epiFloat min, epiFloat max);
 
     mmImage Duplicate() const; // TODO: replace with auto-generated method
 
@@ -106,19 +109,22 @@ public:
     void Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
     void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
 
-    void ConvolveWith(const cv::Mat& kernel, mmImageEdgeHandling edge = mmImageEdgeHandling::Extend);
-    void ConvolveWith(const cv::Mat& kernelR, const cv::Mat& kernelG, const cv::Mat& kernelB, mmImageEdgeHandling edge = mmImageEdgeHandling::Extend);
+    [[nodiscard]] mmImage Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    [[nodiscard]] mmImage Convolve(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
 
-    mmImage Crop(const epiRect2u& crop, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
+    [[nodiscard]] mmImage Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    [[nodiscard]] mmImage Correlate(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+
+    [[nodiscard]] mmImage Crop(const epiRect2u& crop, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
 
     void Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint = Color(1.0f, 1.0f, 1.0f, 1.0f));
 
     epiU8& At(epiS32 index, epiU32 channel);
     epiU8& At(epiS32 r, epiS32 c, epiU32 channel);
-    epiU8 At(epiS32 index, epiU32 channel, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
-    epiU8 At(epiS32 r, epiS32 c, epiU32 channel, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
-    Color At(epiS32 index, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
-    Color At(epiS32 r, epiS32 c, mmImageEdgeHandling edge = mmImageEdgeHandling::Error) const;
+    epiU8 At(epiS32 index, epiU32 channel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
+    epiU8 At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
+    Color At(epiS32 index, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
+    Color At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
 
     operator dSeries2Df() const;
     dSeries2Df ToSeries2Df(mmImageGetColorValueCallback get = &Color::GetLumau) const;

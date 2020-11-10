@@ -395,14 +395,7 @@ TEST(dSeries2Df_dSeries2Dc, DFT_R2C_to_DFT_C2R_NElements10x10)
     constexpr epiSize_t kM = 10;
     constexpr epiSize_t kN = 10;
 
-    dSeries2Df series;
-    series.SetWidth(kN);
-    for (epiU32 i = 0; i < kN * kM; ++i)
-    {
-        epiFloat& x = series.PushBack();
-        x = epiRand01();
-    }
-
+    const dSeries2Df series = dSeries2Df::Rand(kM * kN, kN);
     const dSeries2Df resultSeries = dSeries2Df(series).DFT_R2C().DFT_C2R(kN, kM);
 
     ASSERT_EQ(series, resultSeries);
@@ -413,14 +406,7 @@ TEST(dSeries2Df_dSeries2Dc, DFT_R2C_to_DFT_C2R_NElements10x11)
     constexpr epiSize_t kM = 11;
     constexpr epiSize_t kN = 10;
 
-    dSeries2Df series;
-    series.SetWidth(kN);
-    for (epiU32 i = 0; i < kN * kM; ++i)
-    {
-        epiFloat& x = series.PushBack();
-        x = epiRand01();
-    }
-
+    const dSeries2Df series = dSeries2Df::Rand(kM * kN, kN);
     const dSeries2Df resultSeries = dSeries2Df(series).DFT_R2C().DFT_C2R(kN, kM);
 
     ASSERT_EQ(series, resultSeries);
@@ -431,14 +417,7 @@ TEST(dSeries2Df_dSeries2Dc, DFT_R2C_to_DFT_C2R_NElements11x10)
     constexpr epiSize_t kM = 10;
     constexpr epiSize_t kN = 11;
 
-    dSeries2Df series;
-    series.SetWidth(kN);
-    for (epiU32 i = 0; i < kN * kM; ++i)
-    {
-        epiFloat& x = series.PushBack();
-        x = epiRand01();
-    }
-
+    const dSeries2Df series = dSeries2Df::Rand(kM * kN, kN);
     const dSeries2Df resultSeries = dSeries2Df(series).DFT_R2C().DFT_C2R(kN, kM);
 
     ASSERT_EQ(series, resultSeries);
@@ -449,14 +428,7 @@ TEST(dSeries2Df_dSeries2Dc, DFT_R2C_to_DFT_C2R_NElements11x11)
     constexpr epiSize_t kM = 11;
     constexpr epiSize_t kN = 11;
 
-    dSeries2Df series;
-    series.SetWidth(kN);
-    for (epiU32 i = 0; i < kN * kM; ++i)
-    {
-        epiFloat& x = series.PushBack();
-        x = epiRand01();
-    }
-
+    const dSeries2Df series = dSeries2Df::Rand(kM * kN, kN);
     const dSeries2Df resultSeries = dSeries2Df(series).DFT_R2C().DFT_C2R(kN, kM);
 
     ASSERT_EQ(series, resultSeries);
@@ -872,6 +844,336 @@ TEST(dSeries2Df, DFT_IRShift_NElements5x5)
     {
         EXPECT_NEAR(shift.At(i), expectedValue[i], epiFloatingEqTolerance());
     }
+}
+
+TEST(dSeries2Df, 4x4CorrelateIdentityReflect)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(4 * 4, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Reflect), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateIdentityMirror)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(4 * 4, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Mirror), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateIdentityNearest)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(4 * 4, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Nearest), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateIdentityWrap)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(4 * 4, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Wrap), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateIdentityZero)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(4 * 4, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Zero), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateIdentityFF)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(4 * 4, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::FF), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateKernel3x3Reflect)
+{
+    const dSeries2Df expected({5.0f, 9.0f, 14.0f, 18.0f,
+                               21.0f, 25.0f, 30.0f, 34.0f,
+                               41.0f, 45.0f, 50.0f, 54.0f,
+                               57.0f, 61.0f, 66.0f, 70.0f}, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Reflect), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateKernel3x3Mirror)
+{
+    const dSeries2Df expected({10.0f, 13.0f, 18.0f, 21.0f,
+                               22.0f, 25.0f, 30.0f, 33.0f,
+                               42.0f, 45.0f, 50.0f, 53.0f,
+                               54.0f, 57.0f, 62.0f, 65.0f}, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Mirror), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateKernel3x3Nearest)
+{
+    const dSeries2Df expected({5.0f, 9.0f, 14.0f, 18.0f,
+                               21.0f, 25.0f, 30.0f, 34.0f,
+                               41.0f, 45.0f, 50.0f, 54.0f,
+                               57.0f, 61.0f, 66.0f, 70.0f}, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Nearest), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateKernel3x3Wrap)
+{
+    const dSeries2Df expected({20.0f, 21.0f, 26.0f, 27.0f,
+                               24.0f, 25.0f, 30.0f, 31.0f,
+                               44.0f, 45.0f, 50.0f, 51.0f,
+                               48.0f, 49.0f, 54.0f, 55.0f}, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Wrap), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateKernel3x3Zero)
+{
+    const dSeries2Df expected({5.0f, 8.0f, 12.0f, 12.0f,
+                               17.0f, 25.0f, 30.0f, 27.0f,
+                               33.0f, 45.0f, 50.0f, 43.0f,
+                               33.0f, 48.0f, 52.0f, 40.0f}, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::Zero), expected);
+}
+
+TEST(dSeries2Df, 4x4CorrelateKernel3x3FF)
+{
+    const dSeries2Df expected({515.0f, 263.0f, 267.0f, 522.0f,
+                               272.0f, 25.0f, 30.0f, 282.0f,
+                               288.0f, 45.0f, 50.0f, 298.0f,
+                               543.0f, 303.0f, 307.0f, 550.0f}, 4);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(4 * 4, 4).Correlate(kernel, dSeriesEdgeHandling::FF), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateIdentityReflect)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(5 * 5, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Reflect), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateIdentityMirror)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(5 * 5, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Mirror), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateIdentityNearest)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(5 * 5, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Nearest), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateIdentityWrap)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(5 * 5, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Wrap), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateIdentityZero)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(5 * 5, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Zero), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateIdentityFF)
+{
+    const dSeries2Df expected = dSeries2Df::Arange(5 * 5, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(1, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::FF), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateKernel3x3Reflect)
+{
+    const dSeries2Df expected({6.0f, 10.0f, 15.0f, 20.0f, 24.0f,
+                               26.0f, 30.0f, 35.0f, 40.0f, 44.0f,
+                               51.0f, 55.0f, 60.0f, 65.0f, 69.0f,
+                               76.0f, 80.0f, 85.0f, 90.0f, 94.0f,
+                               96.0f, 100.0f, 105.0f, 110.0f, 114.0f}, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Reflect), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateKernel3x3Mirror)
+{
+    const dSeries2Df expected({12.0f, 15.0f, 20.0f, 25.0f, 28.0f,
+                               27.0f, 30.0f, 35.0f, 40.0f, 43.0f,
+                               52.0f, 55.0f, 60.0f, 65.0f, 68.0f,
+                               77.0f, 80.0f, 85.0f, 90.0f, 93.0f,
+                               92.0f, 95.0f, 100.0f, 105.0f, 108.0f}, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Mirror), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateKernel3x3Nearest)
+{
+    const dSeries2Df expected({6.0f, 10.0f, 15.0f, 20.0f, 24.0f,
+                               26.0f, 30.0f, 35.0f, 40.0f, 44.0f,
+                               51.0f, 55.0f, 60.0f, 65.0f, 69.0f,
+                               76.0f, 80.0f, 85.0f, 90.0f, 94.0f,
+                               96.0f, 100.0f, 105.0f, 110.0f, 114.0f}, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Nearest), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateKernel3x3Wrap)
+{
+    const dSeries2Df expected({30.0f, 30.0f, 35.0f, 40.0f, 40.0f,
+                               30.0f, 30.0f, 35.0f, 40.0f, 40.0f,
+                               55.0f, 55.0f, 60.0f, 65.0f, 65.0f,
+                               80.0f, 80.0f, 85.0f, 90.0f, 90.0f,
+                               80.0f, 80.0f, 85.0f, 90.0f, 90.0f}, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Wrap), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateKernel3x3Zero)
+{
+    const dSeries2Df expected({6.0f, 9.0f, 13.0f, 17.0f, 16.0f,
+                               21.0f, 30.0f, 35.0f, 40.0f, 35.0f,
+                               41.0f, 55.0f, 60.0f, 65.0f, 55.0f,
+                               61.0f, 80.0f, 85.0f, 90.0f, 75.0f,
+                               56.0f, 79.0f, 83.0f, 87.0f, 66.0f}, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::Zero), expected);
+}
+
+TEST(dSeries2Df, 5x5CorrelateKernel3x3FF)
+{
+    const dSeries2Df expected({516.0f, 264.0f, 268.0f, 272.0f, 526.0f,
+                               276.0f, 30.0f, 35.0f, 40.0f, 290.0f,
+                               296.0f, 55.0f, 60.0f, 65.0f, 310.0f,
+                               316.0f, 80.0f, 85.0f, 90.0f, 330.0f,
+                               566.0f, 334.0f, 338.0f, 342.0f, 576.0f}, 5);
+
+    dSeries2Df kernel = dSeries2Df::Full(3 * 3, 3, 0.0f);
+    kernel.At(0, 1) = 1.0f;
+    kernel.At(1, 0) = 1.0f;
+    kernel.At(1, 1) = 1.0f;
+    kernel.At(1, 2) = 1.0f;
+    kernel.At(2, 1) = 1.0f;
+
+    EXPECT_EQ(dSeries2Df::Arange(5 * 5, 5).Correlate(kernel, dSeriesEdgeHandling::FF), expected);
 }
 
 EPI_NAMESPACE_END()

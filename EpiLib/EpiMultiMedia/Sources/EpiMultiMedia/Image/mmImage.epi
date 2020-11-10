@@ -5,16 +5,6 @@ enum mmImagePixelFormat
     GRAYSCALE
 };
 
-enum mmImageEdgeHandling
-{
-    Error,
-    Zero,
-    FF,
-    Extend,
-    Wrap,
-    Mirror
-};
-
 class mmImage : mmMediaBase
 {
     # TODO: add [Editor(ReadOnly=True)]
