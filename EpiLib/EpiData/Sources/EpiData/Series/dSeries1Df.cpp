@@ -41,7 +41,7 @@ dSeries1Df dSeries1Df::Gaussian(epiSize_t size, epiFloat g)
     epiU32 i = 0;
     for (epiFloat& v : series.GetData())
     {
-        v = std::exp(-(i * i) / (2.0f * g * g)) / std::sqrt(2.0f * M_PI * g * g);
+        v = std::exp(-((i * i) / (2.0f * g * g))) / std::sqrt(2.0f * M_PI * g * g);
 
         ++i;
     }

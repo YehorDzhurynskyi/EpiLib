@@ -47,6 +47,7 @@ public:
     dSeries2Df Duplicate() const;
 
     dSeries2Df Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    dSeries2Df Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
 
     dSeries2Dc DFT_R2C() const;
     dSeries2Df DFT_Shift() const;

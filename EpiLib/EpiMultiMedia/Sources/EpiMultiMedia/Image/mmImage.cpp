@@ -857,28 +857,32 @@ mmImage mmImage::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge) co
 
 mmImage mmImage::Convolve(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge) const
 {
-    mmImage image = Duplicate();
-
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
         if (kernelR == kernelG && kernelG == kernelB)
         {
-            break;
+            return ToSeries2Df().Convolve(kernelR, edge);
         }
-        else
-        {
-            image = ToR8G8B8();
-        }
-    }
+
+        const mmImage image = ToR8G8B8();
+        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Convolve(kernelR, edge);
+        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Convolve(kernelG, edge);
+        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Convolve(kernelB, edge);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
     case mmImagePixelFormat::R8G8B8:
     case mmImagePixelFormat::R8G8B8A8:
     {
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Convolve(kernelR, edge);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Convolve(kernelG, edge);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Convolve(kernelB, edge);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
     }
-
-    return image;
 }
 
 mmImage mmImage::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge) const
@@ -1053,8 +1057,8 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
     const epiS32 w = static_cast<epiS32>(GetWidth());
     const epiS32 h = static_cast<epiS32>(GetHeight());
 
-    epiU32 x = 0;
-    epiU32 y = 0;
+    epiS32 x = 0;
+    epiS32 y = 0;
     switch (edge)
     {
     case dSeriesEdgeHandling::Error:
@@ -1112,12 +1116,12 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {
-            c = c < 0 ? (c + 1) % w : (w - 1) - c % w;
+            c = c < 0 ? -(c + 1) % w : (w - 1) - c % w;
         }
 
         if (const epiS32 rr = std::clamp(r, 0, h - 1); rr != r)
         {
-            r = r < 0 ? (r + 1) % h : (h - 1) - r % h;
+            r = r < 0 ? -(r + 1) % h : (h - 1) - r % h;
         }
 
         x = c;
