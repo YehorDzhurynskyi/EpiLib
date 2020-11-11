@@ -9,6 +9,16 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+dSeries2Df dSeries2Df::Identity(epiSize_t w)
+{
+    epiAssert(w % 2 != 0);
+
+    dSeries2Df series = dSeries2Df::Full(w * w, w, 0.0f);
+    series.At(w / 2, w / 2) = 1.0f;
+
+    return series;
+}
+
 dSeries2Df dSeries2Df::Arange(epiSize_t size, epiSize_t w, epiFloat start, epiFloat step)
 {
     dSeries2Df series;
@@ -120,7 +130,6 @@ dSeries2Df dSeries2Df::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling e
 
 dSeries2Df dSeries2Df::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge) const
 {
-    // TODO: figure out why `Convolve` and `Correlate` are the same
     dSeries2Df series;
     series.Resize(GetSize());
     series.SetWidth(GetWidth());
@@ -134,7 +143,7 @@ dSeries2Df dSeries2Df::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling ed
             {
                 for (epiS32 kC = 0; kC < kernel.GetWidth(); ++kC)
                 {
-                    const epiFloat v = At(r + kR - kernel.GetHeight() / 2, c + kC - kernel.GetWidth() / 2, edge);
+                    const epiFloat v = At(r - (kR - kernel.GetHeight() / 2), c - (kC - kernel.GetWidth() / 2), edge);
                     const epiFloat vKernel = kernel.At(kR, kC);
 
                     sum += v * vKernel;

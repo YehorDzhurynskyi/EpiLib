@@ -9,6 +9,16 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+dSeries1Df dSeries1Df::Identity(epiSize_t w)
+{
+    epiAssert(w % 2 != 0);
+
+    dSeries1Df series = dSeries1Df::Full(w, 0.0f);
+    series.At(w / 2) = 1.0f;
+
+    return series;
+}
+
 dSeries1Df dSeries1Df::Arange(epiSize_t size, epiFloat start, epiFloat step)
 {
     dSeries1Df series;

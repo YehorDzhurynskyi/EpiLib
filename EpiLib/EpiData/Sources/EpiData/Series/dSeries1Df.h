@@ -34,6 +34,7 @@ protected:
 EPI_GENREGION_END(dSeries1Df)
 
 public:
+    static dSeries1Df Identity(epiSize_t w);
     static dSeries1Df Arange(epiSize_t size, epiFloat start = 0.0f, epiFloat step = 1.0f);
     static dSeries1Df Rand(epiSize_t size, epiFloat min = 0.0f, epiFloat max = 1.0f);
     static dSeries1Df Full(epiSize_t size, epiFloat value);

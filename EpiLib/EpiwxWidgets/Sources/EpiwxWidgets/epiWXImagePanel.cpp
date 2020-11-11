@@ -534,7 +534,8 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
             return std::log10(v);
         });
 
-        m_ImageTgt = epi::mmImage(seriesMagnitude);
+        constexpr epiBool kClamp = false;
+        m_ImageTgt = epi::mmImage::FromSeries2Df_ToGRAYSCALE(seriesMagnitude, kClamp);
         Refresh();
     } break;
     case ID_IMAGE_PANEL_DFT_PHASE:
