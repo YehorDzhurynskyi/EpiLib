@@ -61,8 +61,9 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
 
                 control = spin;
             }
-            else if (typeID == epi::epiMetaTypeID_epiByte || typeID == epi::epiMetaTypeID_epiS8 || typeID == epi::epiMetaTypeID_epiU8)
+            else if (epi::MetaType::IsNumeric(typeID))
             {
+                // TODO: add hint to the user for a most popular values (for example, a median filter is good in range 3..7)
                 epiS32 minValue = 0;
                 epiS32 maxValue = 0;
                 switch (typeID)
@@ -70,6 +71,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                 case epi::epiMetaTypeID_epiByte: minValue = std::numeric_limits<epiByte>::min(); maxValue = std::numeric_limits<epiByte>::max(); break;
                 case epi::epiMetaTypeID_epiU8: minValue = std::numeric_limits<epiU8>::min(); maxValue = std::numeric_limits<epiU8>::max(); break;
                 case epi::epiMetaTypeID_epiS8: minValue = std::numeric_limits<epiS8>::min(); maxValue = std::numeric_limits<epiS8>::max(); break;
+                case epi::epiMetaTypeID_epiSize_t: minValue = std::numeric_limits<epiU8>::min(); maxValue = std::numeric_limits<epiU8>::max(); break;
                 default: epiLogError("Unexpected typeID=`{}`", typeID); break;
                 }
 
@@ -84,6 +86,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                         case epi::epiMetaTypeID_epiByte: slider->SetValue(ptr->Get<epiByte>()); break;
                         case epi::epiMetaTypeID_epiU8: slider->SetValue(ptr->Get<epiU8>()); break;
                         case epi::epiMetaTypeID_epiS8: slider->SetValue(ptr->Get<epiS8>()); break;
+                        case epi::epiMetaTypeID_epiSize_t: slider->SetValue(ptr->Get<epiSize_t>()); break;
                         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
                         }
 
@@ -224,6 +227,7 @@ void epiWXObjectConfigurationPanel::OnSliderValueChanged(wxCommandEvent& event)
         case epiMetaTypeID_epiByte: ptr->Set<epiByte>(slider->GetValue()); break;
         case epiMetaTypeID_epiU8: ptr->Set<epiU8>(slider->GetValue()); break;
         case epiMetaTypeID_epiS8: ptr->Set<epiS8>(slider->GetValue()); break;
+        case epiMetaTypeID_epiSize_t: ptr->Set<epiSize_t>(slider->GetValue()); break;
         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
         }
     }

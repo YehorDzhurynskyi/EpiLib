@@ -13,11 +13,12 @@ enum class dSeriesEdgeHandling : epiS32
 EPI_GENREGION_BEGIN(dSeriesEdgeHandling)
     Error = 0,
     Zero = 1,
-    FF = 2,
-    Nearest = 3,
-    Wrap = 4,
-    Reflect = 5,
-    Mirror = 6
+    One = 2,
+    FF = 3,
+    Nearest = 4,
+    Wrap = 5,
+    Reflect = 6,
+    Mirror = 7
 EPI_GENREGION_END(dSeriesEdgeHandling)
 };
 

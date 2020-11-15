@@ -89,6 +89,71 @@ dSeries2Df dSeries2Df::Duplicate() const
     return series;
 }
 
+epiBool dSeries2Df::GetIsEmpty_Internal() const
+{
+    return super::GetIsEmpty_Internal() || GetWidth() == 0;
+}
+
+dSeries2Df dSeries2Df::Add(epiFloat scalar) const
+{
+    dSeries2Df result = Duplicate();
+    result.dSeriesf::Add(scalar);
+
+    return result;
+}
+
+dSeries2Df dSeries2Df::Add(const dSeries2Df& series, dSeriesEdgeHandling edge) const
+{
+    dSeries2Df result;
+    result.Resize(GetSize());
+    result.SetWidth(GetWidth());
+
+    if (GetIsEmpty() || series.GetIsEmpty())
+    {
+        return result;
+    }
+
+    for (epiS32 r = 0; r < GetHeight(); ++r)
+    {
+        for (epiS32 c = 0; c < GetWidth(); ++c)
+        {
+            result.At(r, c) = At(r, c) + series.At(r, c, edge);
+        }
+    }
+
+    return result;
+}
+
+dSeries2Df dSeries2Df::Mult(epiFloat scalar) const
+{
+    dSeries2Df result = Duplicate();
+    result.dSeriesf::Mult(scalar);
+
+    return result;
+}
+
+dSeries2Df dSeries2Df::Mult(const dSeries2Df& series, dSeriesEdgeHandling edge) const
+{
+    dSeries2Df result;
+    result.Resize(GetSize());
+    result.SetWidth(GetWidth());
+
+    if (GetIsEmpty() || series.GetIsEmpty())
+    {
+        return result;
+    }
+
+    for (epiS32 r = 0; r < GetHeight(); ++r)
+    {
+        for (epiS32 c = 0; c < GetWidth(); ++c)
+        {
+            result.At(r, c) = At(r, c) * series.At(r, c, edge);
+        }
+    }
+
+    return result;
+}
+
 epiSize_t dSeries2Df::GetHeight_Callback() const
 {
     if (GetIsEmpty())
@@ -100,57 +165,365 @@ epiSize_t dSeries2Df::GetHeight_Callback() const
     return GetSize() / GetWidth();
 }
 
-dSeries2Df dSeries2Df::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge, KernelPPCallback callback) const
 {
     dSeries2Df series;
     series.Resize(GetSize());
     series.SetWidth(GetWidth());
 
-    for (epiS32 r = 0; r < GetHeight(); ++r)
-    {
-        for (epiS32 c = 0; c < GetWidth(); ++c)
-        {
-            epiFloat sum = 0.0f;
-            for (epiS32 kR = 0; kR < kernel.GetHeight(); ++kR)
-            {
-                for (epiS32 kC = 0; kC < kernel.GetWidth(); ++kC)
-                {
-                    const epiFloat v = At(r + kR - kernel.GetHeight() / 2, c + kC - kernel.GetWidth() / 2, edge);
-                    const epiFloat vKernel = kernel.At(kR, kC);
+    const epiSize_t w = series.GetWidth();
 
-                    sum += v * vKernel;
-                }
-            }
-            series.At(r, c) = sum;
-        }
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        series.At(r, c) = CorrelateElement(r, c, kernel, edge, callback);
+
+        ++i;
     }
 
     return series;
 }
 
-dSeries2Df dSeries2Df::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge) const
+epiFloat dSeries2Df::CorrelateElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge, KernelPPCallback callback) const
+{
+    epiFloat sum = 0.0f;
+    for (epiS32 kR = 0; kR < kernel.GetHeight(); ++kR)
+    {
+        for (epiS32 kC = 0; kC < kernel.GetWidth(); ++kC)
+        {
+            const epiFloat v = At(r + kR - kernel.GetHeight() / 2, c + kC - kernel.GetWidth() / 2, edge);
+            const epiFloat vKernel = kernel.At(kR, kC);
+
+            sum += v * vKernel;
+        }
+    }
+
+    return callback != nullptr ? callback(*this, sum, r, c) : sum;
+}
+
+dSeries2Df dSeries2Df::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge, KernelPPCallback callback) const
 {
     dSeries2Df series;
     series.Resize(GetSize());
     series.SetWidth(GetWidth());
 
-    for (epiS32 r = 0; r < GetHeight(); ++r)
-    {
-        for (epiS32 c = 0; c < GetWidth(); ++c)
-        {
-            epiFloat sum = 0.0f;
-            for (epiS32 kR = 0; kR < kernel.GetHeight(); ++kR)
-            {
-                for (epiS32 kC = 0; kC < kernel.GetWidth(); ++kC)
-                {
-                    const epiFloat v = At(r - (kR - kernel.GetHeight() / 2), c - (kC - kernel.GetWidth() / 2), edge);
-                    const epiFloat vKernel = kernel.At(kR, kC);
+    const epiSize_t w = series.GetWidth();
 
-                    sum += v * vKernel;
-                }
-            }
-            series.At(r, c) = sum;
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        series.At(r, c) = ConvolveElement(r, c, kernel, edge, callback);
+
+        ++i;
+    }
+
+    return series;
+}
+
+epiFloat dSeries2Df::ConvolveElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge, KernelPPCallback callback) const
+{
+    epiFloat sum = 0.0f;
+    for (epiS32 kR = 0; kR < kernel.GetHeight(); ++kR)
+    {
+        for (epiS32 kC = 0; kC < kernel.GetWidth(); ++kC)
+        {
+            const epiFloat v = At(r - (kR - kernel.GetHeight() / 2), c - (kC - kernel.GetWidth() / 2), edge);
+            const epiFloat vKernel = kernel.At(kR, kC);
+
+            sum += v * vKernel;
         }
+    }
+
+    return callback != nullptr ? callback(*this, sum, r, c) : sum;
+}
+
+dSeries2Df dSeries2Df::MeanArithmetic(epiSize_t windowSize, dSeriesEdgeHandling edge, epiFloat trim) const
+{
+    if (windowSize == 0)
+    {
+        return Duplicate();
+    }
+
+    const dSeries2Df kernel = dSeries2Df::Full(windowSize * windowSize, windowSize, 1.0f / (windowSize * windowSize - trim));
+    return Convolve(kernel, edge);
+}
+
+dSeries2Df dSeries2Df::MeanGeometric(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+{
+    if (windowSize == 0)
+    {
+        return Duplicate();
+    }
+
+    dSeries2Df series;
+    series.Resize(GetSize());
+    series.SetWidth(GetWidth());
+
+    const epiSize_t w = series.GetWidth();
+
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        epiFloat prod = 0.0f;
+        for (epiS32 kR = 0; kR < windowSize; ++kR)
+        {
+            for (epiS32 kC = 0; kC < windowSize; ++kC)
+            {
+                prod *= At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), edge);
+            }
+        }
+
+        series.At(r, c) = std::pow(prod, 1.0f / (windowSize * windowSize));
+
+        ++i;
+    }
+
+    return series;
+}
+
+dSeries2Df dSeries2Df::MeanHarmonic(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+{
+    if (windowSize == 0)
+    {
+        return Duplicate();
+    }
+
+    dSeries2Df series;
+    series.Resize(GetSize());
+    series.SetWidth(GetWidth());
+
+    const epiSize_t w = series.GetWidth();
+
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        epiFloat sum = 0.0f;
+        for (epiS32 kR = 0; kR < windowSize; ++kR)
+        {
+            for (epiS32 kC = 0; kC < windowSize; ++kC)
+            {
+                sum += 1.0f / At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), edge);
+            }
+        }
+
+        series.At(r, c) = (windowSize * windowSize) / sum;
+
+        ++i;
+    }
+
+    return series;
+}
+
+dSeries2Df dSeries2Df::MeanContraHarmonic(epiSize_t windowSize, dSeriesEdgeHandling edge, epiFloat order) const
+{
+    if (windowSize == 0)
+    {
+        return Duplicate();
+    }
+
+    dSeries2Df series;
+    series.Resize(GetSize());
+    series.SetWidth(GetWidth());
+
+    const epiSize_t w = series.GetWidth();
+
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        epiFloat sumNum = 0.0f;
+        epiFloat sumDen = 0.0f;
+        for (epiS32 kR = 0; kR < windowSize; ++kR)
+        {
+            for (epiS32 kC = 0; kC < windowSize; ++kC)
+            {
+                const epiFloat v = At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), edge);
+                const epiFloat y = std::pow(v, order);
+
+                sumNum += y * v;
+                sumDen += y;
+            }
+        }
+
+        series.At(r, c) = sumNum / sumDen;
+
+        ++i;
+    }
+
+    return series;
+}
+
+dSeries2Df dSeries2Df::Median(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+{
+    if (windowSize == 0)
+    {
+        return Duplicate();
+    }
+
+    // TODO: use inplace array
+    std::vector<epiFloat> localR;
+    std::vector<epiFloat> localC;
+    localR.resize(windowSize);
+    localC.resize(windowSize);
+
+    dSeries2Df series;
+    series.Resize(GetSize());
+    series.SetWidth(GetWidth());
+
+    const epiSize_t w = series.GetWidth();
+
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        for (epiS32 k = 0; k < windowSize; ++k)
+        {
+            localR[k] = At(r, c - (k - windowSize / 2), edge);
+            localC[k] = At(r - (k - windowSize / 2), c, edge);
+        }
+
+        std::sort(localR.begin(), localR.end());
+        std::sort(localC.begin(), localC.end());
+
+        if (windowSize % 2 == 0)
+        {
+            series.At(r, c) = 0.5f * (0.5f * (localR[windowSize / 2] + localR[windowSize / 2 - 1]) +
+                                      0.5f * (localC[windowSize / 2] + localC[windowSize / 2 - 1]));
+        }
+        else
+        {
+            series.At(r, c) = 0.5f * (localR[windowSize / 2] + localC[windowSize / 2]);
+        }
+
+        ++i;
+    }
+
+    return series;
+}
+
+dSeries2Df dSeries2Df::Min(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+{
+    if (windowSize == 0)
+    {
+        return Duplicate();
+    }
+
+    dSeries2Df series;
+    series.Resize(GetSize());
+    series.SetWidth(GetWidth());
+
+    const epiSize_t w = series.GetWidth();
+
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        epiFloat minR = std::numeric_limits<epiFloat>::max();
+        epiFloat minC = std::numeric_limits<epiFloat>::max();
+        for (epiS32 k = 0; k < windowSize; ++k)
+        {
+            minR = std::min(minR, At(r, c - (k - windowSize / 2), edge));
+            minC = std::min(minC, At(r - (k - windowSize / 2), c, edge));
+        }
+
+        series.At(r, c) = 0.5f * (minR + minC);
+
+        ++i;
+    }
+
+    return series;
+}
+
+dSeries2Df dSeries2Df::Max(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+{
+    if (windowSize == 0)
+    {
+        return Duplicate();
+    }
+
+    dSeries2Df series;
+    series.Resize(GetSize());
+    series.SetWidth(GetWidth());
+
+    const epiSize_t w = series.GetWidth();
+
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        epiFloat maxR = std::numeric_limits<epiFloat>::min();
+        epiFloat maxC = std::numeric_limits<epiFloat>::min();
+        for (epiS32 k = 0; k < windowSize; ++k)
+        {
+            maxR = std::max(maxR, At(r, c - (k - windowSize / 2), edge));
+            maxC = std::max(maxC, At(r - (k - windowSize / 2), c, edge));
+        }
+
+        series.At(r, c) = 0.5f * (maxR + maxC);
+
+        ++i;
+    }
+
+    return series;
+}
+
+dSeries2Df dSeries2Df::MidPoint(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+{
+    if (windowSize == 0)
+    {
+        return Duplicate();
+    }
+
+    dSeries2Df series;
+    series.Resize(GetSize());
+    series.SetWidth(GetWidth());
+
+    const epiSize_t w = series.GetWidth();
+
+    epiS32 i = 0;
+    for (epiFloat& v : series.GetData())
+    {
+        const epiS32 r = i / w;
+        const epiS32 c = i % w;
+
+        epiFloat minR = std::numeric_limits<epiFloat>::max();
+        epiFloat minC = std::numeric_limits<epiFloat>::max();
+        epiFloat maxR = std::numeric_limits<epiFloat>::min();
+        epiFloat maxC = std::numeric_limits<epiFloat>::min();
+        for (epiS32 k = 0; k < windowSize; ++k)
+        {
+            const epiFloat vR = At(r, c - (k - windowSize / 2), edge);
+            const epiFloat vC = At(r - (k - windowSize / 2), c, edge);
+
+            minR = std::min(minR, vR);
+            minC = std::min(minC, vC);
+            maxR = std::max(maxR, vR);
+            maxC = std::max(maxC, vC);
+        }
+
+        series.At(r, c) = 0.5f * (0.5f * (maxR + maxC) + 0.5f * (minR + minC));
+
+        ++i;
     }
 
     return series;
@@ -395,6 +768,16 @@ epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
             return 0;
+        }
+
+        x = c;
+        y = r;
+    } break;
+    case dSeriesEdgeHandling::One:
+    {
+        if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
+        {
+            return 1.0f;
         }
 
         x = c;

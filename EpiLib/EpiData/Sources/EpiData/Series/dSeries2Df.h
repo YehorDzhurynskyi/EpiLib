@@ -34,6 +34,9 @@ protected:
 EPI_GENREGION_END(dSeries2Df)
 
 public:
+    using KernelPPCallback = std::function<epiFloat(const dSeries2Df&, epiFloat, epiS32, epiS32)>;
+
+public:
     static dSeries2Df Identity(epiSize_t w);
     static dSeries2Df Arange(epiSize_t size, epiSize_t w, epiFloat start = 0.0f, epiFloat step = 1.0f);
     static dSeries2Df Rand(epiSize_t size, epiSize_t w, epiFloat min = 0.0f, epiFloat max = 1.0f);
@@ -47,8 +50,26 @@ public:
     // TODO: implement with epigen
     dSeries2Df Duplicate() const;
 
-    dSeries2Df Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
-    dSeries2Df Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    dSeries2Df Add(epiFloat scalar) const;
+    dSeries2Df Add(const dSeries2Df& series, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    dSeries2Df Mult(epiFloat scalar) const;
+    dSeries2Df Mult(const dSeries2Df& series, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+
+    dSeries2Df Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
+    epiFloat CorrelateElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
+    dSeries2Df Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
+    epiFloat ConvolveElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
+
+    dSeries2Df MeanArithmetic(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, epiFloat trim = 0.0f) const;
+    dSeries2Df MeanGeometric(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    dSeries2Df MeanHarmonic(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    dSeries2Df MeanContraHarmonic(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, epiFloat order = 0.0f) const;
+
+    dSeries2Df Median(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+
+    dSeries2Df Min(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    dSeries2Df Max(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    dSeries2Df MidPoint(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
 
     dSeries2Dc DFT_R2C() const;
     dSeries2Df DFT_Shift() const;
@@ -65,6 +86,9 @@ public:
 
     friend epiBool operator==(const dSeries2Df& lhs, const dSeries2Df& rhs);
     friend epiBool operator!=(const dSeries2Df& lhs, const dSeries2Df& rhs);
+
+protected:
+    epiBool GetIsEmpty_Internal() const override;
 };
 
 EPI_NAMESPACE_END()

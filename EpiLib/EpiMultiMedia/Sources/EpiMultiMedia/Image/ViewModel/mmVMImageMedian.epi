@@ -1,0 +1,10 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageMedian : mmVMImageBase
+{
+    mmImage Image;
+
+    [WriteCallback]
+    {
+        epiU8 WindowSize;
+    }
+};

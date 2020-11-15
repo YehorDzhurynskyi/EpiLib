@@ -2,6 +2,7 @@ enum dSeriesEdgeHandling
 {
     Error,
     Zero,
+    One,
     FF,
     Nearest,
     Wrap,

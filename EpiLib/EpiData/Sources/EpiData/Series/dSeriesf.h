@@ -67,6 +67,8 @@ public:
     epiFloat Max() const;
     epiVec2f MinMax() const;
 
+    dSeriesf& Add(epiFloat scalar);
+    dSeriesf& Mult(epiFloat scalar);
     dSeriesf& Transform(std::function<epiFloat(epiFloat)>&& callback);
 
     epiFloat At(epiS32 index) const;
@@ -93,6 +95,7 @@ protected:
     void Arange_Internal(epiSize_t size, epiFloat start, epiFloat step);
     void Rand_Internal(epiSize_t size, epiFloat min, epiFloat max);
     void Full_Internal(epiSize_t size, epiFloat value);
+    virtual epiBool GetIsEmpty_Internal() const;
 };
 
 EPI_NAMESPACE_END()

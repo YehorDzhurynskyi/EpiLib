@@ -14,6 +14,11 @@ dSeriesf::dSeriesf(std::initializer_list<epiFloat> list)
 
 epiBool dSeriesf::GetIsEmpty_Callback() const
 {
+    return GetIsEmpty_Internal();
+}
+
+epiBool dSeriesf::GetIsEmpty_Internal() const
+{
     return GetData().IsEmpty();
 }
 
@@ -120,6 +125,26 @@ epiVec2f dSeriesf::MinMax() const
     }
 
     return minmax;
+}
+
+dSeriesf& dSeriesf::Add(epiFloat scalar)
+{
+    for (epiFloat& v : GetData())
+    {
+        v += scalar;
+    }
+
+    return *this;
+}
+
+dSeriesf& dSeriesf::Mult(epiFloat scalar)
+{
+    for (epiFloat& v : GetData())
+    {
+        v *= scalar;
+    }
+
+    return *this;
 }
 
 dSeriesf& dSeriesf::Transform(std::function<epiFloat(epiFloat)>&& callback)

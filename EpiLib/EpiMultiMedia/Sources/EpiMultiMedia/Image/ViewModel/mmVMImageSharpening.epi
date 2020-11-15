@@ -1,0 +1,10 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageSharpening : mmVMImageBase
+{
+    mmImage Image;
+
+    [WriteCallback]
+    {
+        epiFloat ScaleFactor;
+    }
+};

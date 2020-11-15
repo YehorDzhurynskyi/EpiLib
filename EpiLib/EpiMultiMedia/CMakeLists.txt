@@ -32,6 +32,16 @@ add_library(EpiMultimedia
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageThreshold.epi
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageThreshold.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageThreshold.cpp
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageSpatialDenoising.epi
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageSpatialDenoising.h
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageSpatialDenoising.cpp
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageMedian.epi
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageMedian.h
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageMedian.cpp
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageSharpening.epi
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageSharpening.h
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageSharpening.cpp
+
     Sources/EpiMultimedia/Image/Provider/mmImageProviderBase.epi
     Sources/EpiMultimedia/Image/Provider/mmImageProviderBase.h
     Sources/EpiMultimedia/Image/Provider/mmImageProviderBase.cpp

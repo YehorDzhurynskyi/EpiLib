@@ -1,0 +1,11 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageSpatialDenoising : mmVMImageBase
+{
+    mmImage Image;
+
+    [WriteCallback]
+    {
+        epiU8 MeanKernelSize;
+        epiU8 NoiseVariance;
+    }
+};

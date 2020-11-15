@@ -7,6 +7,9 @@
 #include "EpiMultimedia/Image/ViewModel/mmVMImageHSB.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageThreshold.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageGamma.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageSpatialDenoising.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageMedian.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageSharpening.h"
 
 #include "EpiData/Series/dSeries2Dc.h"
 #include "EpiData/Series/dSeries2Df.h"
@@ -78,6 +81,7 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
 
     contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, this), wxSizerFlags().Expand());
 
+#if 0 // TODO: uncomment (performance is not good enough to proceed histograms as well)
     wxBoxSizer* plotSizer = new wxBoxSizer(wxVERTICAL);
     m_PlotHistogramGrayscale = new epiWXPlot(this, glattrs, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, wxGLCanvasName, wxNullPalette);
     m_PlotHistogramGrayscale->SetMinClientSize({500, 50});
@@ -88,6 +92,7 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
     plotSizer->Add(m_PlotHistogramRGB, 1, wxALL | wxEXPAND, 10);
 
     contentSizer->Add(plotSizer, wxSizerFlags().Expand());
+#endif
 
     sizer->Add(contentSizer, wxSizerFlags().Expand());
 
@@ -459,18 +464,25 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     } break;
     case ID_IMAGE_PANEL_MEDIAN_FILTER:
     {
-        // TODO: implement
+        epi::mmVMImageMedian vm;
+        vm.SetImageSrc(&m_ImageTgt);
+
+        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Median Filter"); dialog.ShowModal() == wxID_OK)
+        {
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
+        }
     } break;
-    case ID_IMAGE_PANEL_SHARPENING_FILTER:
+    case ID_IMAGE_PANEL_SHARPENING:
     {
-        epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
-        kernel.At(0, 1) = 1.0f;
-        kernel.At(1, 0) = 1.0f;
-        kernel.At(1, 1) = -4.0f;
-        kernel.At(1, 2) = 1.0f;
-        kernel.At(2, 1) = 1.0f;
-        m_ImageTgt = m_ImageTgt.Convolve(kernel);
-        Refresh();
+        epi::mmVMImageSharpening vm;
+        vm.SetImageSrc(&m_ImageTgt);
+
+        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Sharpening"); dialog.ShowModal() == wxID_OK)
+        {
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
+        }
     } break;
     case ID_IMAGE_PANEL_GAUSSIAN_BLUR_FILTER:
     {
@@ -478,15 +490,19 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
-    case ID_IMAGE_PANEL_EDGE_DETECTION_FILTER:
+    case ID_IMAGE_PANEL_EDGE_DETECTION_SOBEL_FILTER:
     {
-        epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, -1.0f);
-        kernel.At(1, 1) = 8.0f;
+        epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
+        kernel.At(0, 1) = 1.0f;
+        kernel.At(1, 0) = 1.0f;
+        kernel.At(1, 1) = -4.0f;
+        kernel.At(1, 2) = 1.0f;
+        kernel.At(2, 1) = 1.0f;
 
         m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
-    case ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_VERTICAL_FILTER:
+    case ID_IMAGE_PANEL_EDGE_DETECTION_SOBEL_VERTICAL_FILTER:
     {
         epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
         kernel.At(0, 0) = -1.0f;
@@ -499,7 +515,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
     } break;
-    case ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_HORIZONTAL_FILTER:
+    case ID_IMAGE_PANEL_EDGE_DETECTION_SOBEL_HORIZONTAL_FILTER:
     {
         epi::dSeries2Df kernel = epi::dSeries2Df::Full(3 * 3, 3, 0.0f);
         kernel.At(0, 0) = -1.0f;
@@ -511,6 +527,17 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
 
         m_ImageTgt = m_ImageTgt.Convolve(kernel);
         Refresh();
+    } break;
+    case ID_IMAGE_PANEL_SPATIALLY_ADAPTIVE_NOISE_FILTER:
+    {
+        epi::mmVMImageSpatialDenoising vm;
+        vm.SetImageSrc(&m_ImageTgt);
+
+        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Spatially Adaptive Noise Filter"); dialog.ShowModal() == wxID_OK)
+        {
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
+        }
     } break;
     case ID_IMAGE_PANEL_CROP:
     {
@@ -531,7 +558,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         epi::dSeries2Df seriesMagnitude = series.ToSeries2Df_Magnitude().DFT_RShift();
         seriesMagnitude.Transform([](epiFloat v)
         {
-            return std::log10(v);
+            return 10.0f * std::log10(v);
         });
 
         constexpr epiBool kClamp = false;
@@ -622,11 +649,12 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_HISTOGRAM_EQUALIZE, wxT("&Histogram equalize"));
     contextMenu.Append(ID_IMAGE_PANEL_MEAN_FILTER, wxT("&Mean Filter"));
     contextMenu.Append(ID_IMAGE_PANEL_MEDIAN_FILTER, wxT("&Median Filter"));
-    contextMenu.Append(ID_IMAGE_PANEL_SHARPENING_FILTER, wxT("&Sharpening Filter"));
+    contextMenu.Append(ID_IMAGE_PANEL_SHARPENING, wxT("&Sharpening"));
     contextMenu.Append(ID_IMAGE_PANEL_GAUSSIAN_BLUR_FILTER, wxT("&Gaussian Blur Filter"));
-    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_FILTER, wxT("&Edge Detection Filter"));
-    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_VERTICAL_FILTER, wxT("&Edge Detection Filter (Sober Vertically)"));
-    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBER_HORIZONTAL_FILTER, wxT("&Edge Detection Filter (Sober Horizontally)"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBEL_FILTER, wxT("&Edge Detection Filter (Sobel)"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBEL_VERTICAL_FILTER, wxT("&Edge Detection Filter (Sobel Vertically)"));
+    contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBEL_HORIZONTAL_FILTER, wxT("&Edge Detection Filter (Sobel Horizontally)"));
+    contextMenu.Append(ID_IMAGE_PANEL_SPATIALLY_ADAPTIVE_NOISE_FILTER, wxT("&Spatially Adaptive Noise Filter"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_CROP, wxT("&Crop"));
     contextMenu.AppendSeparator();

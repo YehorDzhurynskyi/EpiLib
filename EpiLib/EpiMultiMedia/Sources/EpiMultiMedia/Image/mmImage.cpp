@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/mmImage.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiData/Series/dSeries2Df.h"
-
 namespace
 {
 
@@ -392,6 +390,180 @@ void mmImage::HistogramEqualize()
             data[i * 3 + 0] = static_cast<epiU8>(hCompR[data[i * 3 + 0]]);
             data[i * 3 + 1] = static_cast<epiU8>(hCompG[data[i * 3 + 1]]);
             data[i * 3 + 2] = static_cast<epiU8>(hCompB[data[i * 3 + 2]]);
+        }
+    } break;
+    }
+}
+
+mmImage mmImage::Add(epiFloat scalar) const
+{
+    return Add(scalar, scalar, scalar);
+}
+
+mmImage mmImage::Add(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        if (epiEqual(scalarR, scalarG) && epiEqual(scalarG, scalarB))
+        {
+            return FromSeries2Df_ToGRAYSCALE(ToSeries2Df().Add(scalarR));
+        }
+
+        const mmImage image = ToR8G8B8();
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Add(scalarR);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Add(scalarG);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Add(scalarB);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Add(scalarR);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Add(scalarG);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Add(scalarB);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    }
+}
+
+mmImage mmImage::Add(const mmImage& image, dSeriesEdgeHandling edge) const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        switch (image.GetPixelFormat())
+        {
+        case mmImagePixelFormat::GRAYSCALE:
+        {
+            return ToSeries2Df().Add(image.ToSeries2Df(), edge);
+        } break;
+        case mmImagePixelFormat::R8G8B8:
+        case mmImagePixelFormat::R8G8B8A8:
+        {
+            const mmImage rgb = ToR8G8B8();
+
+            const dSeries2Df r = rgb.ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(&Color::GetRu), edge);
+            const dSeries2Df g = rgb.ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(&Color::GetGu), edge);
+            const dSeries2Df b = rgb.ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(&Color::GetBu), edge);
+
+            return FromSeries2Df_ToR8G8B8(r, g, b);
+        } break;
+        }
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        switch (image.GetPixelFormat())
+        {
+        case mmImagePixelFormat::GRAYSCALE:
+        {
+            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(), edge);
+            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(), edge);
+            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(), edge);
+
+            return FromSeries2Df_ToR8G8B8(r, g, b);
+        } break;
+        case mmImagePixelFormat::R8G8B8:
+        case mmImagePixelFormat::R8G8B8A8:
+        {
+            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(&Color::GetRu), edge);
+            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(&Color::GetGu), edge);
+            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(&Color::GetBu), edge);
+
+            return FromSeries2Df_ToR8G8B8(r, g, b);
+        } break;
+        }
+    } break;
+    }
+}
+
+mmImage mmImage::Mult(epiFloat scalar) const
+{
+    return Mult(scalar, scalar, scalar);
+}
+
+mmImage mmImage::Mult(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        if (epiEqual(scalarR, scalarG) && epiEqual(scalarG, scalarB))
+        {
+            return FromSeries2Df_ToGRAYSCALE(ToSeries2Df().Mult(scalarR));
+        }
+
+        const mmImage image = ToR8G8B8();
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Mult(scalarR);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Mult(scalarG);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Mult(scalarB);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Mult(scalarR);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Mult(scalarG);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Mult(scalarB);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    }
+}
+
+mmImage mmImage::Mult(const mmImage& image, dSeriesEdgeHandling edge) const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        switch (image.GetPixelFormat())
+        {
+        case mmImagePixelFormat::GRAYSCALE:
+        {
+            return ToSeries2Df().Mult(image.ToSeries2Df(), edge);
+        } break;
+        case mmImagePixelFormat::R8G8B8:
+        case mmImagePixelFormat::R8G8B8A8:
+        {
+            const mmImage rgb = ToR8G8B8();
+
+            const dSeries2Df r = rgb.ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(&Color::GetRu), edge);
+            const dSeries2Df g = rgb.ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(&Color::GetGu), edge);
+            const dSeries2Df b = rgb.ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(&Color::GetBu), edge);
+
+            return FromSeries2Df_ToR8G8B8(r, g, b);
+        } break;
+        }
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        switch (image.GetPixelFormat())
+        {
+        case mmImagePixelFormat::GRAYSCALE:
+        {
+            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(), edge);
+            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(), edge);
+            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(), edge);
+
+            return FromSeries2Df_ToR8G8B8(r, g, b);
+        } break;
+        case mmImagePixelFormat::R8G8B8:
+        case mmImagePixelFormat::R8G8B8A8:
+        {
+            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(&Color::GetRu), edge);
+            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(&Color::GetGu), edge);
+            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(&Color::GetBu), edge);
+
+            return FromSeries2Df_ToR8G8B8(r, g, b);
+        } break;
         }
     } break;
     }
@@ -850,12 +1022,18 @@ void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 sh
     }
 }
 
-mmImage mmImage::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge) const
+mmImage mmImage::Convolve(const dSeries2Df& kernel,
+                          dSeriesEdgeHandling edge,
+                          dSeries2Df::KernelPPCallback callback) const
 {
-    return Convolve(kernel, kernel, kernel, edge);
+    return Convolve(kernel, kernel, kernel, edge, callback);
 }
 
-mmImage mmImage::Convolve(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge) const
+mmImage mmImage::Convolve(const dSeries2Df& kernelR,
+                          const dSeries2Df& kernelG,
+                          const dSeries2Df& kernelB,
+                          dSeriesEdgeHandling edge,
+                          dSeries2Df::KernelPPCallback callback) const
 {
     switch (GetPixelFormat())
     {
@@ -863,34 +1041,40 @@ mmImage mmImage::Convolve(const dSeries2Df& kernelR, const dSeries2Df& kernelG, 
     {
         if (kernelR == kernelG && kernelG == kernelB)
         {
-            return ToSeries2Df().Convolve(kernelR, edge);
+            return ToSeries2Df().Convolve(kernelR, edge, callback);
         }
 
         const mmImage image = ToR8G8B8();
-        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Convolve(kernelR, edge);
-        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Convolve(kernelG, edge);
-        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Convolve(kernelB, edge);
+        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Convolve(kernelR, edge, callback);
+        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Convolve(kernelG, edge, callback);
+        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Convolve(kernelB, edge, callback);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
     case mmImagePixelFormat::R8G8B8:
     case mmImagePixelFormat::R8G8B8A8:
     {
-        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Convolve(kernelR, edge);
-        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Convolve(kernelG, edge);
-        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Convolve(kernelB, edge);
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Convolve(kernelR, edge, callback);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Convolve(kernelG, edge, callback);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Convolve(kernelB, edge, callback);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
     }
 }
 
-mmImage mmImage::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge) const
+mmImage mmImage::Correlate(const dSeries2Df& kernel,
+                           dSeriesEdgeHandling edge,
+                           dSeries2Df::KernelPPCallback callback) const
 {
-    return Correlate(kernel, kernel, kernel, edge);
+    return Correlate(kernel, kernel, kernel, edge, callback);
 }
 
-mmImage mmImage::Correlate(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge) const
+mmImage mmImage::Correlate(const dSeries2Df& kernelR,
+                           const dSeries2Df& kernelG,
+                           const dSeries2Df& kernelB,
+                           dSeriesEdgeHandling edge,
+                           dSeries2Df::KernelPPCallback callback) const
 {
     switch (GetPixelFormat())
     {
@@ -898,22 +1082,22 @@ mmImage mmImage::Correlate(const dSeries2Df& kernelR, const dSeries2Df& kernelG,
     {
         if (kernelR == kernelG && kernelG == kernelB)
         {
-            return ToSeries2Df().Correlate(kernelR, edge);
+            return ToSeries2Df().Correlate(kernelR, edge, callback);
         }
 
         const mmImage image = ToR8G8B8();
-        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Correlate(kernelR, edge);
-        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Correlate(kernelG, edge);
-        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Correlate(kernelB, edge);
+        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Correlate(kernelR, edge, callback);
+        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Correlate(kernelG, edge, callback);
+        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Correlate(kernelB, edge, callback);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
     case mmImagePixelFormat::R8G8B8:
     case mmImagePixelFormat::R8G8B8A8:
     {
-        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Correlate(kernelR, edge);
-        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Correlate(kernelG, edge);
-        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Correlate(kernelB, edge);
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Correlate(kernelR, edge, callback);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Correlate(kernelG, edge, callback);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Correlate(kernelB, edge, callback);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
@@ -957,6 +1141,26 @@ mmImage mmImage::Crop(const epiRect2u& crop, dSeriesEdgeHandling edge) const
     }
 
     return image;
+}
+
+mmImage mmImage::Median(epiSize_t windowSize, dSeriesEdgeHandling edge)
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        return FromSeries2Df_ToGRAYSCALE(ToSeries2Df().Median(windowSize, edge));
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Median(windowSize, edge);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Median(windowSize, edge);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Median(windowSize, edge);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    }
 }
 
 void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint)
@@ -1077,6 +1281,16 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
             return 0;
+        }
+
+        x = c;
+        y = r;
+    } break;
+    case dSeriesEdgeHandling::One:
+    {
+        if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
+        {
+            return 1;
         }
 
         x = c;

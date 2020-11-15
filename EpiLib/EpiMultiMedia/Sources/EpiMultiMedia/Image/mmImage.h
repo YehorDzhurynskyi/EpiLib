@@ -9,6 +9,7 @@ EPI_GENREGION_END(include)
 #include "EpiCore/Color.h"
 
 #include "EpiData/Series/dSeries1Df.h"
+#include "EpiData/Series/dSeries2Df.h"
 #include "EpiData/Series/dSeries2Dc.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -24,7 +25,6 @@ EPI_GENREGION_END(mmImagePixelFormat)
 
 using mmImageGetColorValueCallback = epiU8(Color::*)() const;
 
-class dSeries2Df;
 class mmImage : public mmMediaBase
 {
 EPI_GENREGION_BEGIN(mmImage)
@@ -93,6 +93,13 @@ public:
     dSeries1Df Histogram(mmImageGetColorValueCallback get = &Color::GetLumau) const;
     void HistogramEqualize();
 
+    mmImage Add(epiFloat scalar) const;
+    mmImage Add(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const;
+    mmImage Add(const mmImage& image, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    mmImage Mult(epiFloat scalar) const;
+    mmImage Mult(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const;
+    mmImage Mult(const mmImage& image, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+
     void Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA = 0);
     void Negative();
     void Gamma(epiFloat gammaR, epiFloat gammaG, epiFloat gammaB, epiFloat gammaA = 1.0f);
@@ -109,13 +116,27 @@ public:
     void Shift(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
     void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
 
-    [[nodiscard]] mmImage Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
-    [[nodiscard]] mmImage Convolve(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    [[nodiscard]] mmImage Convolve(const dSeries2Df& kernel,
+                                   dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect,
+                                   dSeries2Df::KernelPPCallback callback = nullptr) const;
+    [[nodiscard]] mmImage Convolve(const dSeries2Df& kernelR,
+                                   const dSeries2Df& kernelG,
+                                   const dSeries2Df& kernelB,
+                                   dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect,
+                                   dSeries2Df::KernelPPCallback callback = nullptr) const;
 
-    [[nodiscard]] mmImage Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
-    [[nodiscard]] mmImage Correlate(const dSeries2Df& kernelR, const dSeries2Df& kernelG, const dSeries2Df& kernelB, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    [[nodiscard]] mmImage Correlate(const dSeries2Df& kernel,
+                                    dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect,
+                                    dSeries2Df::KernelPPCallback callback = nullptr) const;
+    [[nodiscard]] mmImage Correlate(const dSeries2Df& kernelR,
+                                    const dSeries2Df& kernelG,
+                                    const dSeries2Df& kernelB,
+                                    dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect,
+                                    dSeries2Df::KernelPPCallback callback = nullptr) const;
 
     [[nodiscard]] mmImage Crop(const epiRect2u& crop, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
+
+    [[nodiscard]] mmImage Median(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect);
 
     void Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint = Color(1.0f, 1.0f, 1.0f, 1.0f));
 
