@@ -5,6 +5,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiData/Series/dSeries1Df.h"
 
+#include <random>
+
 EPI_NAMESPACE_BEGIN()
 
 dSeriesf::dSeriesf(std::initializer_list<epiFloat> list)
@@ -147,6 +149,36 @@ dSeriesf& dSeriesf::Mult(epiFloat scalar)
     return *this;
 }
 
+dSeriesf& dSeriesf::Log(epiFloat base)
+{
+    for (epiFloat& v : GetData())
+    {
+        v = std::log(v) / std::log(base);
+    }
+
+    return *this;
+}
+
+dSeriesf& dSeriesf::Exp(epiFloat base)
+{
+    for (epiFloat& v : GetData())
+    {
+        v = std::pow(base, v);
+    }
+
+    return *this;
+}
+
+dSeriesf& dSeriesf::Threshold(epiFloat low, epiFloat high)
+{
+    for (epiFloat& v : GetData())
+    {
+        v = v >= low && v <= high ? v : 0.0f;
+    }
+
+    return *this;
+}
+
 dSeriesf& dSeriesf::Transform(std::function<epiFloat(epiFloat)>&& callback)
 {
     for (epiFloat& v : GetData())
@@ -191,7 +223,7 @@ epiBool operator!=(const dSeriesf& lhs, const dSeriesf& rhs)
 
 void dSeriesf::Arange_Internal(epiSize_t size, epiFloat start, epiFloat step)
 {
-    GetData().Resize(size);
+    Resize(size);
 
     epiFloat value = start;
     for (epiFloat& v : GetData())
@@ -203,7 +235,7 @@ void dSeriesf::Arange_Internal(epiSize_t size, epiFloat start, epiFloat step)
 
 void dSeriesf::Rand_Internal(epiSize_t size, epiFloat min, epiFloat max)
 {
-    GetData().Resize(size);
+    Resize(size);
 
     for (epiFloat& v : GetData())
     {
@@ -213,11 +245,47 @@ void dSeriesf::Rand_Internal(epiSize_t size, epiFloat min, epiFloat max)
 
 void dSeriesf::Full_Internal(epiSize_t size, epiFloat value)
 {
-    GetData().Resize(size);
+    Resize(size);
 
     for (epiFloat& v : GetData())
     {
         v = value;
+    }
+}
+
+void dSeriesf::RandomNormal_Internal(epiSize_t size, epiFloat mean, epiFloat stddev, epiFloat scale)
+{
+    Resize(size);
+
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::normal_distribution<epiFloat> distribution(mean, stddev);
+
+    for (epiFloat& v : GetData())
+    {
+        v = std::round(distribution(gen)) * scale;
+    }
+}
+
+void dSeriesf::RandomSaltAndPepper_Internal(epiSize_t size, epiFloat amount, epiFloat s_vs_p, epiFloat saltValue, epiFloat pepperValue)
+{
+    epiAssert(s_vs_p >= 0.0f && s_vs_p <= 1.0f);
+
+    Resize(size);
+
+    const epiU32 numSalt = std::ceil(amount * size * s_vs_p);
+    const epiU32 numPepper = std::ceil(amount * size * (1.0f - s_vs_p));
+
+    for (epiU32 i = 0; i < numSalt; ++i)
+    {
+        const epiU32 coord = static_cast<epiU32>(epiRand01() * (size - 1));
+        At(coord) = saltValue;
+    }
+
+    for (epiU32 i = 0; i < numPepper; ++i)
+    {
+        const epiU32 coord = static_cast<epiU32>(epiRand01() * (size - 1));
+        At(coord) = pepperValue;
     }
 }
 

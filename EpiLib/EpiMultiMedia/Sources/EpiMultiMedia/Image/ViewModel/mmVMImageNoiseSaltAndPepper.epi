@@ -1,0 +1,20 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageNoiseSaltAndPepper : mmVMImageBase
+{
+    mmImage Image;
+
+    [WriteCallback]
+    {
+        epiFloat AmountR;
+        epiFloat AmountG;
+        epiFloat AmountB;
+
+        epiBool IsAmountSynchronized;
+
+        epiFloat SaltVsPepperR;
+        epiFloat SaltVsPepperG;
+        epiFloat SaltVsPepperB;
+
+        epiBool IsSaltVsPepperSynchronized;
+    }
+};

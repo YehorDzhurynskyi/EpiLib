@@ -1,0 +1,20 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageNoiseNormal : mmVMImageBase
+{
+    mmImage Image;
+
+    [WriteCallback]
+    {
+        epiFloat MeanR;
+        epiFloat MeanG;
+        epiFloat MeanB;
+
+        epiBool IsMeanSynchronized;
+
+        epiFloat StdDevR;
+        epiFloat StdDevG;
+        epiFloat StdDevB;
+
+        epiBool IsStdDevSynchronized;
+    }
+};

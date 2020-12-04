@@ -46,7 +46,7 @@ dSeries1Df dSeries1Df::Full(epiSize_t size, epiFloat value)
 dSeries1Df dSeries1Df::Gaussian(epiSize_t size, epiFloat g)
 {
     dSeries1Df series;
-    series.GetData().Resize(size);
+    series.Resize(size);
 
     epiU32 i = 0;
     for (epiFloat& v : series.GetData())
@@ -55,6 +55,22 @@ dSeries1Df dSeries1Df::Gaussian(epiSize_t size, epiFloat g)
 
         ++i;
     }
+
+    return series;
+}
+
+dSeries1Df dSeries1Df::RandomNormal(epiSize_t size, epiFloat mean, epiFloat stddev, epiFloat scale)
+{
+    dSeries1Df series;
+    series.RandomNormal_Internal(size, mean, stddev, scale);
+
+    return series;
+}
+
+dSeries1Df dSeries1Df::RandomSaltAndPepper(epiSize_t size, epiFloat amount, epiFloat s_vs_p, epiFloat saltValue, epiFloat pepperValue)
+{
+    dSeries1Df series = dSeries1Df::Full(size, 0.0f);
+    series.RandomSaltAndPepper_Internal(size, amount, s_vs_p, saltValue, pepperValue);
 
     return series;
 }

@@ -10,6 +10,7 @@
 #include "EpiMultimedia/Image/ViewModel/mmVMImageSpatialDenoising.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageMedian.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageSharpening.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageHomomorphic.h"
 
 #include "EpiData/Series/dSeries2Dc.h"
 #include "EpiData/Series/dSeries2Df.h"
@@ -539,6 +540,19 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
             Refresh();
         }
     } break;
+    case ID_IMAGE_PANEL_HOMOMORPHIC_FILTER:
+    {
+        epi::mmVMImageHomomorphic vm;
+        vm.SetImageSrc(&m_ImageTgt);
+        vm.SetHighPassScaleFactor(2.0f);
+        vm.SetLowPassScaleFactor(1.0f);
+
+        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Homomorphic Filter"); dialog.ShowModal() == wxID_OK)
+        {
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
+        }
+    } break;
     case ID_IMAGE_PANEL_CROP:
     {
         epiRect2u crop;
@@ -572,6 +586,14 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         // TODO: open another image view
         m_ImageTgt = epi::mmImage(series.ToSeries2Df_Phase());
         Refresh();
+    } break;
+    case ID_IMAGE_PANEL_NOISE_NORMAL:
+    {
+
+    } break;
+    case ID_IMAGE_PANEL_NOISE_SALT_AND_PEPPER:
+    {
+
     } break;
     case ID_IMAGE_PANEL_PRESET_EFFECT0:
     {
@@ -655,11 +677,15 @@ void epiWXImagePanel::BuildContextMenu(wxMenu& contextMenu)
     contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBEL_VERTICAL_FILTER, wxT("&Edge Detection Filter (Sobel Vertically)"));
     contextMenu.Append(ID_IMAGE_PANEL_EDGE_DETECTION_SOBEL_HORIZONTAL_FILTER, wxT("&Edge Detection Filter (Sobel Horizontally)"));
     contextMenu.Append(ID_IMAGE_PANEL_SPATIALLY_ADAPTIVE_NOISE_FILTER, wxT("&Spatially Adaptive Noise Filter"));
+    contextMenu.Append(ID_IMAGE_PANEL_HOMOMORPHIC_FILTER, wxT("&Homomorphic Filter"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_CROP, wxT("&Crop"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_DFT_MAGNITUDE, wxT("&DFT (Magnitude)"));
     contextMenu.Append(ID_IMAGE_PANEL_DFT_PHASE, wxT("&DFT (Phase)"));
+    contextMenu.AppendSeparator();
+    contextMenu.Append(ID_IMAGE_PANEL_NOISE_NORMAL, wxT("&Noise (Normal)"));
+    contextMenu.Append(ID_IMAGE_PANEL_NOISE_SALT_AND_PEPPER, wxT("&Noise (Salt&Pepper)"));
     contextMenu.AppendSeparator();
     contextMenu.Append(ID_IMAGE_PANEL_PRESET_EFFECT0, wxT("&Effect Preset #0"));
     contextMenu.AppendSeparator();

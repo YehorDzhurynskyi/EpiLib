@@ -41,6 +41,15 @@ add_library(EpiMultimedia
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageSharpening.epi
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageSharpening.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageSharpening.cpp
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageHomomorphic.epi
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageHomomorphic.h
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageHomomorphic.cpp
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageNoiseNormal.epi
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageNoiseNormal.h
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageNoiseNormal.cpp
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageNoiseSaltAndPepper.epi
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageNoiseSaltAndPepper.h
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageNoiseSaltAndPepper.cpp
 
     Sources/EpiMultimedia/Image/Provider/mmImageProviderBase.epi
     Sources/EpiMultimedia/Image/Provider/mmImageProviderBase.h

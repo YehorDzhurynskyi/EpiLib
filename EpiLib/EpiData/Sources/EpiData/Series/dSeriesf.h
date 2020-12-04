@@ -69,6 +69,11 @@ public:
 
     dSeriesf& Add(epiFloat scalar);
     dSeriesf& Mult(epiFloat scalar);
+    dSeriesf& Log(epiFloat base);
+    dSeriesf& Exp(epiFloat base);
+
+    dSeriesf& Threshold(epiFloat low, epiFloat high);
+
     dSeriesf& Transform(std::function<epiFloat(epiFloat)>&& callback);
 
     epiFloat At(epiS32 index) const;
@@ -95,6 +100,9 @@ protected:
     void Arange_Internal(epiSize_t size, epiFloat start, epiFloat step);
     void Rand_Internal(epiSize_t size, epiFloat min, epiFloat max);
     void Full_Internal(epiSize_t size, epiFloat value);
+    void RandomNormal_Internal(epiSize_t size, epiFloat mean, epiFloat stddev, epiFloat scale = 1.0f);
+    void RandomSaltAndPepper_Internal(epiSize_t size, epiFloat amount, epiFloat s_vs_p = 0.5f, epiFloat saltValue = 1.0f, epiFloat pepperValue = 0.0f);
+
     virtual epiBool GetIsEmpty_Internal() const;
 };
 

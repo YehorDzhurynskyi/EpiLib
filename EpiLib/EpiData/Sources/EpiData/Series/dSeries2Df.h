@@ -43,6 +43,9 @@ public:
     static dSeries2Df Full(epiSize_t size, epiSize_t w, epiFloat value);
     static dSeries2Df Gaussian(epiSize_t size, epiSize_t w, epiFloat g);
 
+    static dSeries2Df RandomNormal(epiSize_t size, epiSize_t w, epiFloat mean, epiFloat stddev, epiFloat scale = 1.0f);
+    static dSeries2Df RandomSaltAndPepper(epiSize_t size, epiSize_t w, epiFloat amount, epiFloat s_vs_p = 0.5f, epiFloat saltValue = 1.0f, epiFloat pepperValue = 0.0f);
+
 public:
     dSeries2Df() = default;
     dSeries2Df(std::initializer_list<epiFloat> list, epiSize_t width);
@@ -54,6 +57,10 @@ public:
     dSeries2Df Add(const dSeries2Df& series, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
     dSeries2Df Mult(epiFloat scalar) const;
     dSeries2Df Mult(const dSeries2Df& series, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    dSeries2Df Log(epiFloat base) const;
+    dSeries2Df Exp(epiFloat base) const;
+
+    dSeries2Df Threshold(epiFloat low, epiFloat high) const;
 
     dSeries2Df Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
     epiFloat CorrelateElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;

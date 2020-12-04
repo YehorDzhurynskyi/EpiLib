@@ -40,6 +40,9 @@ public:
     static dSeries1Df Full(epiSize_t size, epiFloat value);
     static dSeries1Df Gaussian(epiSize_t size, epiFloat g);
 
+    static dSeries1Df RandomNormal(epiSize_t size, epiFloat mean, epiFloat stddev, epiFloat scale = 1.0f);
+    static dSeries1Df RandomSaltAndPepper(epiSize_t size, epiFloat amount, epiFloat s_vs_p = 0.5f, epiFloat saltValue = 1.0f, epiFloat pepperValue = 0.0f);
+
 public:
     dSeries1Df() = default;
     dSeries1Df(std::initializer_list<epiFloat> list);

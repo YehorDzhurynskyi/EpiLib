@@ -62,6 +62,13 @@ add_library(EpiCore
 
     Sources/EpiCore/Event/EventBus.h
     Sources/EpiCore/Event/EventBus.cpp
+
+    Sources/EpiCore/MT/JobSystem/epiJobScheduler.h
+    Sources/EpiCore/MT/JobSystem/epiJobScheduler.cpp
+    Sources/EpiCore/MT/JobSystem/epiJob.h
+    Sources/EpiCore/MT/JobSystem/epiJob.cpp
+    Sources/EpiCore/MT/JobSystem/epiJobHandle.h
+    Sources/EpiCore/MT/JobSystem/epiJobHandle.cpp
 )
 
 get_target_property(EpiCore_SOURCES EpiCore SOURCES)

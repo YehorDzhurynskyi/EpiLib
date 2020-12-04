@@ -569,6 +569,76 @@ mmImage mmImage::Mult(const mmImage& image, dSeriesEdgeHandling edge) const
     }
 }
 
+mmImage mmImage::Log(epiFloat base) const
+{
+    return Log(base, base, base);
+}
+
+mmImage mmImage::Log(epiFloat baseR, epiFloat baseG, epiFloat baseB) const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        if (epiEqual(baseR, baseG) && epiEqual(baseG, baseB))
+        {
+            return FromSeries2Df_ToGRAYSCALE(ToSeries2Df().Log(baseR));
+        }
+
+        const mmImage image = ToR8G8B8();
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Log(baseR);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Log(baseG);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Log(baseB);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Log(baseR);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Log(baseG);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Log(baseB);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    }
+}
+
+mmImage mmImage::Exp(epiFloat base) const
+{
+    return Exp(base, base, base);
+}
+
+mmImage mmImage::Exp(epiFloat baseR, epiFloat baseG, epiFloat baseB) const
+{
+    switch (GetPixelFormat())
+    {
+    case mmImagePixelFormat::GRAYSCALE:
+    {
+        if (epiEqual(baseR, baseG) && epiEqual(baseG, baseB))
+        {
+            return FromSeries2Df_ToGRAYSCALE(ToSeries2Df().Exp(baseR));
+        }
+
+        const mmImage image = ToR8G8B8();
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Exp(baseR);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Exp(baseG);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Exp(baseB);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    case mmImagePixelFormat::R8G8B8:
+    case mmImagePixelFormat::R8G8B8A8:
+    {
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Exp(baseR);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Exp(baseG);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Exp(baseB);
+
+        return FromSeries2Df_ToR8G8B8(r, g, b);
+    } break;
+    }
+}
+
 void mmImage::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA)
 {
     switch (GetPixelFormat())

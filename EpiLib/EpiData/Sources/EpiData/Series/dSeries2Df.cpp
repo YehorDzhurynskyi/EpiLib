@@ -22,8 +22,8 @@ dSeries2Df dSeries2Df::Identity(epiSize_t w)
 dSeries2Df dSeries2Df::Arange(epiSize_t size, epiSize_t w, epiFloat start, epiFloat step)
 {
     dSeries2Df series;
-    series.Arange_Internal(size, start, step);
     series.SetWidth(w);
+    series.Arange_Internal(size, start, step);
 
     return series;
 
@@ -32,8 +32,8 @@ dSeries2Df dSeries2Df::Arange(epiSize_t size, epiSize_t w, epiFloat start, epiFl
 dSeries2Df dSeries2Df::Rand(epiSize_t size, epiSize_t w, epiFloat min, epiFloat max)
 {
     dSeries2Df series;
-    series.Rand_Internal(size, min, max);
     series.SetWidth(w);
+    series.Rand_Internal(size, min, max);
 
     return series;
 }
@@ -41,8 +41,8 @@ dSeries2Df dSeries2Df::Rand(epiSize_t size, epiSize_t w, epiFloat min, epiFloat 
 dSeries2Df dSeries2Df::Full(epiSize_t size, epiSize_t w, epiFloat value)
 {
     dSeries2Df series;
-    series.Full_Internal(size, value);
     series.SetWidth(w);
+    series.Full_Internal(size, value);
 
     return series;
 }
@@ -50,8 +50,8 @@ dSeries2Df dSeries2Df::Full(epiSize_t size, epiSize_t w, epiFloat value)
 dSeries2Df dSeries2Df::Gaussian(epiSize_t size, epiSize_t w, epiFloat g)
 {
     dSeries2Df series;
-    series.GetData().Resize(size);
     series.SetWidth(w);
+    series.Resize(size);
 
     epiU32 i = 0;
     for (epiFloat& v : series.GetData())
@@ -63,6 +63,24 @@ dSeries2Df dSeries2Df::Gaussian(epiSize_t size, epiSize_t w, epiFloat g)
 
         ++i;
     }
+
+    return series;
+}
+
+dSeries2Df dSeries2Df::RandomNormal(epiSize_t size, epiSize_t w, epiFloat mean, epiFloat stddev, epiFloat scale)
+{
+    dSeries2Df series;
+    series.SetWidth(w);
+    series.RandomNormal_Internal(size, mean, stddev, scale);
+
+    return series;
+}
+
+dSeries2Df dSeries2Df::RandomSaltAndPepper(epiSize_t size, epiSize_t w, epiFloat amount, epiFloat s_vs_p, epiFloat saltValue, epiFloat pepperValue)
+{
+    dSeries2Df series = dSeries2Df::Full(size, w, 0.0f);
+    series.SetWidth(w);
+    series.RandomSaltAndPepper_Internal(size, amount, s_vs_p, saltValue, pepperValue);
 
     return series;
 }
@@ -150,6 +168,30 @@ dSeries2Df dSeries2Df::Mult(const dSeries2Df& series, dSeriesEdgeHandling edge) 
             result.At(r, c) = At(r, c) * series.At(r, c, edge);
         }
     }
+
+    return result;
+}
+
+dSeries2Df dSeries2Df::Log(epiFloat base) const
+{
+    dSeries2Df result = Duplicate();
+    result.dSeriesf::Log(base);
+
+    return result;
+}
+
+dSeries2Df dSeries2Df::Exp(epiFloat base) const
+{
+    dSeries2Df result = Duplicate();
+    result.dSeriesf::Exp(base);
+
+    return result;
+}
+
+dSeries2Df dSeries2Df::Threshold(epiFloat low, epiFloat high) const
+{
+    dSeries2Df result = Duplicate();
+    result.dSeriesf::Threshold(low, high);
 
     return result;
 }

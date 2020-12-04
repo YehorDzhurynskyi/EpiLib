@@ -93,12 +93,18 @@ public:
     dSeries1Df Histogram(mmImageGetColorValueCallback get = &Color::GetLumau) const;
     void HistogramEqualize();
 
-    mmImage Add(epiFloat scalar) const;
-    mmImage Add(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const;
-    mmImage Add(const mmImage& image, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
-    mmImage Mult(epiFloat scalar) const;
-    mmImage Mult(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const;
-    mmImage Mult(const mmImage& image, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    // TODO: implement BSNR, ISNR
+
+    [[nodiscard]] mmImage Add(epiFloat scalar) const;
+    [[nodiscard]] mmImage Add(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const;
+    [[nodiscard]] mmImage Add(const mmImage& image, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    [[nodiscard]] mmImage Mult(epiFloat scalar) const;
+    [[nodiscard]] mmImage Mult(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const;
+    [[nodiscard]] mmImage Mult(const mmImage& image, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    [[nodiscard]] mmImage Log(epiFloat base) const;
+    [[nodiscard]] mmImage Log(epiFloat baseR, epiFloat baseG, epiFloat baseB) const;
+    [[nodiscard]] mmImage Exp(epiFloat base) const;
+    [[nodiscard]] mmImage Exp(epiFloat baseR, epiFloat baseG, epiFloat baseB) const;
 
     void Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA = 0);
     void Negative();

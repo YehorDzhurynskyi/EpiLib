@@ -1,0 +1,11 @@
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageHomomorphic : mmVMImageBase
+{
+    mmImage Image;
+
+    [WriteCallback]
+    {
+        epiFloat HighPassScaleFactor;
+        epiFloat LowPassScaleFactor;
+    }
+};

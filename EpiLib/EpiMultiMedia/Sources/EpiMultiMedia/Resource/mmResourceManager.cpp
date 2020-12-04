@@ -127,8 +127,8 @@ epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const
         }
         else if (mmVideo* video = epiAs<mmVideo>(media))
         {
-            epiAssert(parsingContext.CodecContext->framerate.den == 1);
-            video->SetFrameRate(parsingContext.CodecContext->framerate.num);
+            const epiFloat frameRate = parsingContext.CodecContext->framerate.num / static_cast<epiFloat>(parsingContext.CodecContext->framerate.den);
+            video->SetFrameRate(static_cast<epiU32>(std::ceil(frameRate)));
             video->SetBitRate(parsingContext.CodecContext->bit_rate);
 
             // TODO: set CodecName: parsingContext.CodecContext->codec->long_name
