@@ -2,6 +2,8 @@ enum mmResourceStatus
 {
     Empty,
     Broken,
+    LoadingShallow,
+    LoadingDeep,
     LoadedShallow,
     LoadedDeep
 };
@@ -9,6 +11,8 @@ enum mmResourceStatus
 class mmResource
 {
     epiString URL;
-    mmResourceStatus Status = mmResourceStatus::Empty;
     epiPtrArray<mmMediaBase> Media;
+
+    [Virtual]
+    mmResourceStatus Status;
 };

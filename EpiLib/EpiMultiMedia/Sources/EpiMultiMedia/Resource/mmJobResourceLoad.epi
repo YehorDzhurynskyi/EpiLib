@@ -1,0 +1,9 @@
+class mmJobResourceLoad : epiIJob
+{
+    # Input
+    epiString URL;
+    epiBool DeepLoad;
+
+    # Output
+    mmResource* Resource;
+};

@@ -1,0 +1,5 @@
+class epiIJob
+{
+    [Virtual, ReadOnly]
+    epiBool IsCompleted;
+};

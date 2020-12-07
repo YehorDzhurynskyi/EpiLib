@@ -318,7 +318,7 @@ epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const
 
 EPI_NAMESPACE_BEGIN()
 
-mmResource* mmResourceManager::LoadResource(const epiChar* url, bool deepLoad)
+mmResource* mmResourceManager::LoadResource(const epiChar* url, epiBool deepLoad)
 {
     std::unique_ptr<mmResource>& resource = m_Resources[url];
     resource = std::make_unique<mmResource>();
@@ -348,52 +348,60 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
         return;
     }
 
-    // TODO: investigate `options` parameter
-    AVFormatContext* avFormatContext = nullptr;
-    if (const int ret = avformat_open_input(&avFormatContext, resource.GetURL().c_str(), nullptr, nullptr); ret == 0)
+    resource.SetStatus(mmResourceStatus::LoadingShallow);
+
+    while (1)
     {
-        // TODO: investigate
-        // avFormatContext->metadata;
-
         // TODO: investigate `options` parameter
-        if (const int ret = avformat_find_stream_info(avFormatContext, nullptr); ret >= 0)
+        AVFormatContext* avFormatContext = nullptr;
+        if (const int ret = avformat_open_input(&avFormatContext, resource.GetURL().c_str(), nullptr, nullptr); ret == 0)
         {
-            auto& media = resource.GetMedia();
+            // TODO: investigate
+            // avFormatContext->metadata;
 
-            for (epiU32 i = 0; i < avFormatContext->nb_streams; ++i)
+            // TODO: investigate `options` parameter
+            if (const int ret = avformat_find_stream_info(avFormatContext, nullptr); ret >= 0)
             {
-                switch (avFormatContext->streams[i]->codec->codec_type)
+                auto& media = resource.GetMedia();
+
+                for (epiU32 i = 0; i < avFormatContext->nb_streams; ++i)
                 {
-                case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("Unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
-                case AVMEDIA_TYPE_AUDIO:
-                {
-                    media.push_back(new mmAudio());
-                } break;
-                case AVMEDIA_TYPE_VIDEO:
-                {
-                    media.push_back(new mmVideo());
-                } break;
+                    switch (avFormatContext->streams[i]->codec->codec_type)
+                    {
+                    case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("Unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
+                    case AVMEDIA_TYPE_AUDIO:
+                    {
+                        media.push_back(new mmAudio());
+                    } break;
+                    case AVMEDIA_TYPE_VIDEO:
+                    {
+                        media.push_back(new mmVideo());
+                    } break;
+                    }
                 }
+
+                // TODO: set samplerate
+
+                // TODO: figure out whether `avformat_close_input` should be called on `avformat_...` failure
+                avformat_close_input(&avFormatContext);
             }
-
-            // TODO: set samplerate
-
-            // TODO: figure out whether `avformat_close_input` should be called on `avformat_...` failure
-            avformat_close_input(&avFormatContext);
-
-            resource.SetStatus(mmResourceStatus::LoadedShallow);
+            else
+            {
+                epiLogWarn("Failed to retrieve stream info with `avformat_find_stream_info`! The resource is broken: url=`{}`!", resource.GetURL());
+                break;
+            }
         }
         else
         {
-            epiLogWarn("Failed to retrieve stream info with `avformat_find_stream_info`! The resource is broken: url=`{}`!", resource.GetURL());
-            resource.SetStatus(mmResourceStatus::Broken);
+            epiLogWarn("Failed to open with `avformat_open_input`! The resource is broken: url=`{}`!", resource.GetURL());
+            break;
         }
+
+        resource.SetStatus(mmResourceStatus::LoadedShallow);
+        return;
     }
-    else
-    {
-        epiLogWarn("Failed to open with `avformat_open_input`! The resource is broken: url=`{}`!", resource.GetURL());
-        resource.SetStatus(mmResourceStatus::Broken);
-    }
+
+    resource.SetStatus(mmResourceStatus::Broken);
 }
 
 void mmResourceManager::LoadResourceDeep(mmResource& resource)
@@ -408,90 +416,97 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
         return;
     }
 
-    // TODO: investigate `options` parameter
-    AVFormatContext* avFormatContext = nullptr;
-    if (const int ret = avformat_open_input(&avFormatContext, resource.GetURL().c_str(), nullptr, nullptr); ret == 0)
+    const mmResourceStatus previuosStatus = resource.GetStatus();
+    resource.SetStatus(mmResourceStatus::LoadingDeep);
+
+    while (1)
     {
-        // TODO: investigate
-        // avFormatContext->metadata;
-
         // TODO: investigate `options` parameter
-        if (const int ret = avformat_find_stream_info(avFormatContext, nullptr); ret >= 0)
+        AVFormatContext* avFormatContext = nullptr;
+        if (const int ret = avformat_open_input(&avFormatContext, resource.GetURL().c_str(), nullptr, nullptr); ret == 0)
         {
-            std::map<epiS32, mmMediaBase*> streams;
+            // TODO: investigate
+            // avFormatContext->metadata;
 
-            auto& media = resource.GetMedia();
-            for (epiU32 streamIdx = 0; streamIdx < avFormatContext->nb_streams; ++streamIdx)
+            // TODO: investigate `options` parameter
+            if (const int ret = avformat_find_stream_info(avFormatContext, nullptr); ret >= 0)
             {
-                switch (avFormatContext->streams[streamIdx]->codec->codec_type)
-                {
-                case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("Unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
-                case AVMEDIA_TYPE_AUDIO:
-                {
-                    mmAudio* audio = nullptr;
-                    if (resource.GetStatus() == mmResourceStatus::LoadedShallow)
-                    {
-                        mmMediaBase* mediaBase = media[streamIdx];
-                        if (audio = epiAs<mmAudio>(mediaBase); audio == nullptr)
-                        {
-                            epiLogError("Media stream matching has failed (`mmAudio` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
-                        }
-                    }
-                    else if (resource.GetStatus() == mmResourceStatus::Empty)
-                    {
-                        audio = new mmAudio();
-                        media.push_back(audio);
-                    }
+                std::map<epiS32, mmMediaBase*> streams;
 
-                    epiAssert(audio != nullptr);
-                    streams[streamIdx] = audio;
-                } break;
-                case AVMEDIA_TYPE_VIDEO:
+                auto& media = resource.GetMedia();
+                for (epiU32 streamIdx = 0; streamIdx < avFormatContext->nb_streams; ++streamIdx)
                 {
-                    mmVideo* video = nullptr;
-                    if (resource.GetStatus() == mmResourceStatus::LoadedShallow)
+                    switch (avFormatContext->streams[streamIdx]->codec->codec_type)
                     {
-                        mmMediaBase* mediaBase = media[streamIdx];
-                        if (video = epiAs<mmVideo>(mediaBase); video == nullptr)
+                    case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("Unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
+                    case AVMEDIA_TYPE_AUDIO:
+                    {
+                        mmAudio* audio = nullptr;
+                        if (previuosStatus == mmResourceStatus::LoadedShallow)
                         {
-                            epiLogError("Media stream matching has failed (`mmVideo` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
+                            mmMediaBase* mediaBase = media[streamIdx];
+                            if (audio = epiAs<mmAudio>(mediaBase); audio == nullptr)
+                            {
+                                epiLogError("Media stream matching has failed (`mmAudio` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
+                            }
                         }
-                    }
-                    else if (resource.GetStatus() == mmResourceStatus::Empty)
-                    {
-                        video = new mmVideo();
-                        media.push_back(video);
-                    }
+                        else if (previuosStatus == mmResourceStatus::Empty)
+                        {
+                            audio = new mmAudio();
+                            media.push_back(audio);
+                        }
 
-                    epiAssert(video != nullptr);
-                    streams[streamIdx] = video;
-                } break;
+                        epiAssert(audio != nullptr);
+                        streams[streamIdx] = audio;
+                    } break;
+                    case AVMEDIA_TYPE_VIDEO:
+                    {
+                        mmVideo* video = nullptr;
+                        if (previuosStatus == mmResourceStatus::LoadedShallow)
+                        {
+                            mmMediaBase* mediaBase = media[streamIdx];
+                            if (video = epiAs<mmVideo>(mediaBase); video == nullptr)
+                            {
+                                epiLogError("Media stream matching has failed (`mmVideo` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
+                            }
+                        }
+                        else if (previuosStatus == mmResourceStatus::Empty)
+                        {
+                            video = new mmVideo();
+                            media.push_back(video);
+                        }
+
+                        epiAssert(video != nullptr);
+                        streams[streamIdx] = video;
+                    } break;
+                    }
                 }
-            }
 
-            if (ParseMedia(resource, *avFormatContext, streams))
-            {
-                resource.SetStatus(mmResourceStatus::LoadedDeep);
+                if (!ParseMedia(resource, *avFormatContext, streams))
+                {
+                    break;
+                }
+
+                // TODO: figure out whether `avformat_close_input` should be called on `avformat_...` failure
+                avformat_close_input(&avFormatContext);
             }
             else
             {
-                resource.SetStatus(mmResourceStatus::Broken);
+                epiLogWarn("Failed to retrieve stream info with `avformat_find_stream_info`! The resource is broken: url=`{}`!", resource.GetURL());
+                break;
             }
-
-            // TODO: figure out whether `avformat_close_input` should be called on `avformat_...` failure
-            avformat_close_input(&avFormatContext);
         }
         else
         {
-            epiLogWarn("Failed to retrieve stream info with `avformat_find_stream_info`! The resource is broken: url=`{}`!", resource.GetURL());
-            resource.SetStatus(mmResourceStatus::Broken);
+            epiLogWarn("Failed to open with `avformat_open_input`! The resource is broken: url=`{}`!", resource.GetURL());
+            break;
         }
+
+        resource.SetStatus(mmResourceStatus::LoadedDeep);
+        return;
     }
-    else
-    {
-        epiLogWarn("Failed to open with `avformat_open_input`! The resource is broken: url=`{}`!", resource.GetURL());
-        resource.SetStatus(mmResourceStatus::Broken);
-    }
+
+    resource.SetStatus(mmResourceStatus::Broken);
 }
 
 EPI_NAMESPACE_END()

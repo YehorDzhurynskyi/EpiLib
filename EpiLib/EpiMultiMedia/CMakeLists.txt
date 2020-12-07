@@ -17,6 +17,7 @@ add_library(EpiMultimedia
     Sources/EpiMultimedia/Image/mmImage.epi
     Sources/EpiMultimedia/Image/mmImage.h
     Sources/EpiMultimedia/Image/mmImage.cpp
+    Sources/EpiMultimedia/Image/mmJobImage.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.epi
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.cpp
@@ -60,6 +61,12 @@ add_library(EpiMultimedia
 
     Sources/EpiMultimedia/Resource/mmResourceManager.h
     Sources/EpiMultimedia/Resource/mmResourceManager.cpp
+    Sources/EpiMultimedia/Resource/mmJobResourceLoad.epi
+    Sources/EpiMultimedia/Resource/mmJobResourceLoad.h
+    Sources/EpiMultimedia/Resource/mmJobResourceLoad.cpp
+    Sources/EpiMultimedia/Resource/mmJobResourceLoadDeep.epi
+    Sources/EpiMultimedia/Resource/mmJobResourceLoadDeep.h
+    Sources/EpiMultimedia/Resource/mmJobResourceLoadDeep.cpp
     Sources/EpiMultimedia/Resource/mmResource.epi
     Sources/EpiMultimedia/Resource/mmResource.h
     Sources/EpiMultimedia/Resource/mmResource.cpp

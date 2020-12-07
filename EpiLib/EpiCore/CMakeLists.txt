@@ -65,10 +65,18 @@ add_library(EpiCore
 
     Sources/EpiCore/MT/JobSystem/epiJobScheduler.h
     Sources/EpiCore/MT/JobSystem/epiJobScheduler.cpp
-    Sources/EpiCore/MT/JobSystem/epiJob.h
-    Sources/EpiCore/MT/JobSystem/epiJob.cpp
+    Sources/EpiCore/MT/JobSystem/epiIJob.epi
+    Sources/EpiCore/MT/JobSystem/epiIJob.h
+    Sources/EpiCore/MT/JobSystem/epiIJob.cpp
     Sources/EpiCore/MT/JobSystem/epiJobHandle.h
     Sources/EpiCore/MT/JobSystem/epiJobHandle.cpp
+    Sources/EpiCore/MT/JobSystem/epiJobWorker.h
+    Sources/EpiCore/MT/JobSystem/epiJobWorker.cpp
+
+    Sources/EpiCore/MT/EventLoop/epiEventLoop.h
+    Sources/EpiCore/MT/EventLoop/epiEventLoop.cpp
+    Sources/EpiCore/MT/EventLoop/epiEventLoopPeriodicalTask.h
+    Sources/EpiCore/MT/EventLoop/epiEventLoopPeriodicalTask.cpp
 )
 
 get_target_property(EpiCore_SOURCES EpiCore SOURCES)

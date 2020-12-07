@@ -131,10 +131,10 @@ epiDeviceCPUX86::epiDeviceCPUX86()
 
 epiString epiDeviceCPUX86::ToString() const
 {
-    epiString str;
+    epiString str = super::ToString();
     str.reserve(8192);
 
-    const MetaClass& meta = GetMetaClass();
+    const MetaClass& meta = epiDeviceCPUX86::GetMetaClass();
     const MetaClassData& metaData = meta.GetClassData();
     for (const auto& prty : metaData)
     {

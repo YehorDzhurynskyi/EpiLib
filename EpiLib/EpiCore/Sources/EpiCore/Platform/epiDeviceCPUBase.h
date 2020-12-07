@@ -19,10 +19,17 @@ public:
 
     enum epiDeviceCPUBase_PIDs
     {
-        PID_COUNT = 0
+        PID_NumberOfLogicalThreads = 0x7f08e3a,
+        PID_COUNT = 1
     };
 
+protected:
+    epiSize_t GetNumberOfLogicalThreads_Callback() const;
+
 EPI_GENREGION_END(epiDeviceCPUBase)
+
+public:
+    epiString ToString() const override;
 };
 
 EPI_NAMESPACE_END()

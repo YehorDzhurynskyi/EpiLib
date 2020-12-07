@@ -1,3 +1,5 @@
 class epiDeviceCPUBase
 {
+    [Virtual, ReadOnly]
+    epiSize_t NumberOfLogicalThreads;
 };

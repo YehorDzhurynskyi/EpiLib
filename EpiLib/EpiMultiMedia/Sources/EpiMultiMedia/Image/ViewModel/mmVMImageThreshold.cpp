@@ -3,6 +3,10 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/ViewModel/mmVMImageThreshold.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiMultimedia/Image/mmJobImage.h"
+
+#include "EpiCore/MT/JobSystem/epiJobScheduler.h"
+
 EPI_NAMESPACE_BEGIN()
 
 mmVMImageThreshold::mmVMImageThreshold()
@@ -17,9 +21,12 @@ void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
         if (mmImage* image = GetImageSrc())
         {
             mmImage imageR = image->ToGrayScaleR();
-            imageR.Threshold(value, value, value);
+            auto job = std::make_unique<mmJobImage<epiU8, epiU8, epiU8, epiU8>>(imageR, &mmImage::Threshold, value, value, value, 0);
+            job->Complete();
 
-            SetImageR(imageR);
+            //imageR.Threshold(value, value, value);
+
+            SetImageR(job->GetImage());
 
             if (GetIsThresholdSynchronized())
             {

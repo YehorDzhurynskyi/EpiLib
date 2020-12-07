@@ -15,8 +15,10 @@ enum class mmResourceStatus : epiS32
 EPI_GENREGION_BEGIN(mmResourceStatus)
     Empty = 0,
     Broken = 1,
-    LoadedShallow = 2,
-    LoadedDeep = 3
+    LoadingShallow = 2,
+    LoadingDeep = 3,
+    LoadedShallow = 4,
+    LoadedDeep = 5
 EPI_GENREGION_END(mmResourceStatus)
 };
 
@@ -32,17 +34,23 @@ public:
     enum mmResource_PIDs
     {
         PID_URL = 0x62d10724,
-        PID_Status = 0x7cac602a,
         PID_Media = 0xabed8e08,
+        PID_Status = 0x7cac602a,
         PID_COUNT = 3
     };
 
 protected:
+    mmResourceStatus GetStatus_Callback() const;
+    void SetStatus_Callback(mmResourceStatus value);
+
+protected:
     epiString m_URL{EPI_BUILD_DEBUG_ONLY("Empty")};
-    mmResourceStatus m_Status{mmResourceStatus::Empty};
     epiPtrArray<mmMediaBase> m_Media{};
 
 EPI_GENREGION_END(mmResource)
+
+protected:
+    std::atomic<mmResourceStatus> m_Status{mmResourceStatus::Empty};
 };
 
 EPI_NAMESPACE_END()
