@@ -1,6 +1,9 @@
 #pragma once
 
 #include <algorithm>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 #define EPI_GENREGION_BEGIN(x)
 #define EPI_GENREGION_END(x)

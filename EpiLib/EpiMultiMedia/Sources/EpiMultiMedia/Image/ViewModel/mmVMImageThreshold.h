@@ -7,6 +7,7 @@ EPI_GENREGION_END(include)
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 
 #include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
+#include "EpiCore/MT/EventLoop/epiEventLoopPeriodicalTask.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -54,6 +55,9 @@ public:
 protected:
     void SetImageSrc_Internal(mmImage* imageSrc) override;
     mmImage GetImageTgt_Internal() const override;
+
+protected:
+    epiEventLoopPeriodicalTask* m_PeriodicalTaskR{nullptr};
 };
 
 EPI_NAMESPACE_END()

@@ -6,8 +6,11 @@ EPI_GENREGION_END(include)
 #include "EpiMultimedia/Image/mmJobImage.h"
 
 #include "EpiCore/MT/JobSystem/epiJobScheduler.h"
+#include "EpiCore/MT/EventLoop/epiEventLoop.h"
 
 EPI_NAMESPACE_BEGIN()
+
+using JobThreshold = mmJobImage<epiU8, epiU8, epiU8, epiU8>;
 
 mmVMImageThreshold::mmVMImageThreshold()
 {
@@ -20,13 +23,33 @@ void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
     {
         if (mmImage* image = GetImageSrc())
         {
-            mmImage imageR = image->ToGrayScaleR();
-            auto job = std::make_unique<mmJobImage<epiU8, epiU8, epiU8, epiU8>>(imageR, &mmImage::Threshold, value, value, value, 0);
-            job->Complete();
+            std::unique_ptr<JobThreshold> job = std::make_unique<JobThreshold>(image->ToGrayScaleR(), &mmImage::Threshold, value, value, value, 0);
+            std::shared_ptr<epiJobHandle> jobHandle = epiJobScheduler::GetInstance().Schedule(std::move(job));
+            if (epiEventLoop* eventLoop = epiEventLoop::GetMainEventLoop())
+            {
+                if (m_PeriodicalTaskR != nullptr)
+                {
+                    m_PeriodicalTaskR->Cancel();
+                }
 
-            //imageR.Threshold(value, value, value);
+                m_PeriodicalTaskR = &eventLoop->AddPeriodicalTask([this, jobHandle, value]()
+                {
+                    epiBool keepAlive = true;
 
-            SetImageR(job->GetImage());
+                    if (jobHandle->IsCompleted())
+                    {
+                        if (JobThreshold* job = jobHandle->GetJob<JobThreshold>())
+                        {
+                            SetImageR(job->GetImage());
+
+                            epiPropertyChangedCheckAndTrigger(ThresholdR, value);
+                        }
+                        keepAlive = false;
+                    }
+
+                    return keepAlive;
+                }, 60ms);
+            }
 
             if (GetIsThresholdSynchronized())
             {
@@ -46,8 +69,6 @@ void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
             }
         }
     }
-
-    epiPropertyChangedCheckAndTrigger(ThresholdR, value);
 }
 
 void mmVMImageThreshold::SetThresholdG_Callback(epiU8 value)

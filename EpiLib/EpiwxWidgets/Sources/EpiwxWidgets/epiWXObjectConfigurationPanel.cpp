@@ -44,7 +44,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                 spin->SetRange(std::numeric_limits<epiDouble>::min(), std::numeric_limits<epiDouble>::max());
                 spin->SetIncrement(0.1);
                 spin->Bind(wxEVT_SPINCTRLDOUBLE, &epiWXObjectConfigurationPanel::OnSpinDoubleValueChanged, this); // TODO: figure out whether it should be unbonded
-                propertyChangedHandler.PropertyChangedRegister(prtyID, [spin]()
+                propertyChangedHandler.PropertyChangedRegister(prtyID, [this, spin]()
                 {
                     if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(spin->GetClientData()))
                     {
@@ -56,6 +56,8 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                         }
 
                         spin->Refresh();
+
+                        QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
                     }
                 });
 
@@ -77,7 +79,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
 
                 wxSlider* slider = new wxSlider(this, wxID_ANY, 0, minValue, maxValue, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
                 slider->Bind(wxEVT_SLIDER, &epiWXObjectConfigurationPanel::OnSliderValueChanged, this); // TODO: figure out whether it should be unbonded
-                propertyChangedHandler.PropertyChangedRegister(prtyID, [slider]()
+                propertyChangedHandler.PropertyChangedRegister(prtyID, [this, slider]()
                 {
                     if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
                     {
@@ -91,6 +93,8 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                         }
 
                         slider->Refresh();
+
+                        QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
                     }
                 });
 
@@ -121,7 +125,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
 
             epiWXSliderRange* slider = new epiWXSliderRange(this, wxID_ANY, 0, 0, minValue, maxValue);
             slider->Bind(wxEVT_SLIDER, &epiWXObjectConfigurationPanel::OnSliderRangeValueChanged, this); // TODO: figure out whether it should be unbonded
-            propertyChangedHandler.PropertyChangedRegister(prtyID, [slider]()
+            propertyChangedHandler.PropertyChangedRegister(prtyID, [this, slider]()
             {
                 if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
                 {
@@ -143,6 +147,8 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                     }
 
                     slider->Refresh();
+
+                    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
                 }
             });
 
@@ -154,13 +160,15 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
 
             // TODO: adjust for a specific type
             checkbox->Bind(wxEVT_CHECKBOX, &epiWXObjectConfigurationPanel::OnCheckboxValueChanged, this); // TODO: figure out whether it should be unbonded
-            propertyChangedHandler.PropertyChangedRegister(prtyID, [checkbox]()
+            propertyChangedHandler.PropertyChangedRegister(prtyID, [this, checkbox]()
             {
                 if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(checkbox->GetClientData()))
                 {
                     checkbox->SetValue(ptr->Get<epiBool>());
 
                     checkbox->Refresh();
+
+                    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
                 }
             });
 
@@ -211,8 +219,6 @@ void epiWXObjectConfigurationPanel::OnSpinDoubleValueChanged(wxSpinDoubleEvent& 
         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
         }
     }
-
-    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
 }
 
 void epiWXObjectConfigurationPanel::OnSliderValueChanged(wxCommandEvent& event)
@@ -231,8 +237,6 @@ void epiWXObjectConfigurationPanel::OnSliderValueChanged(wxCommandEvent& event)
         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
         }
     }
-
-    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
 }
 
 void epiWXObjectConfigurationPanel::OnSliderRangeValueChanged(wxCommandEvent& event)
@@ -249,8 +253,6 @@ void epiWXObjectConfigurationPanel::OnSliderRangeValueChanged(wxCommandEvent& ev
         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
         }
     }
-
-    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
 }
 
 void epiWXObjectConfigurationPanel::OnCheckboxValueChanged(wxCommandEvent& event)
@@ -260,8 +262,6 @@ void epiWXObjectConfigurationPanel::OnCheckboxValueChanged(wxCommandEvent& event
     {
         ptr->Set<epiBool>(checkbox->GetValue());
     }
-
-    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
 }
 
 void epiWXObjectConfigurationPanel::OnSpinValueChanged_Internal(const wxSpinCtrl& spin)
@@ -285,6 +285,4 @@ void epiWXObjectConfigurationPanel::OnSpinValueChanged_Internal(const wxSpinCtrl
         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
         }
     }
-
-    QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
 }

@@ -11,6 +11,8 @@ add_library(EpiwxWidgets
     Sources/EpiwxWidgets/epiWXObjectConfigurationPanel.cpp
     Sources/EpiwxWidgets/epiWXSliderRange.h
     Sources/EpiwxWidgets/epiWXSliderRange.cpp
+    Sources/EpiwxWidgets/epiWXEventLoop.h
+    Sources/EpiwxWidgets/epiWXEventLoop.cpp
 )
 get_target_property(EpiwxWidgets_SOURCES EpiwxWidgets SOURCES)
 epi_pack_sources(${EpiwxWidgets_SOURCES})
