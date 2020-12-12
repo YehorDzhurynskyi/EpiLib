@@ -5,7 +5,18 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-using JobThreshold = mmJobImage<epiU8, epiU8, epiU8, epiU8>;
+#define UpdateThreshold(Channel) \
+    UpdateImage<decltype(m_Threshold##Channel), epiU8, epiU8, epiU8, epiU8>(m_PeriodicalTask##Channel, \
+                                                                            static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
+                                                                            &mmImage::ToGrayScale##Channel, \
+                                                                            &mmImage::Threshold, \
+                                                                            PID_Threshold##Channel, \
+                                                                            m_Threshold##Channel, \
+                                                                            value, \
+                                                                            value, \
+                                                                            value, \
+                                                                            value, \
+                                                                            0);
 
 mmVMImageThreshold::mmVMImageThreshold()
 {
@@ -18,33 +29,12 @@ void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
     {
         if (mmImage* image = GetImageSrc())
         {
-            UpdateImage<decltype(m_ThresholdR), epiU8, epiU8, epiU8, epiU8>(m_PeriodicalTaskR,
-                                                                            static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImageR),
-                                                                            &mmImage::ToGrayScaleR,
-                                                                            &mmImage::Threshold,
-                                                                            PID_ThresholdR,
-                                                                            m_ThresholdR,
-                                                                            value,
-                                                                            value,
-                                                                            value,
-                                                                            value,
-                                                                            0);
+            UpdateThreshold(R);
 
             if (GetIsThresholdSynchronized())
             {
-                mmImage imageG = image->ToGrayScaleG();
-                imageG.Threshold(value, value, value);
-
-                SetImageG(imageG);
-
-                epiPropertyChangedCheckAndTrigger(ThresholdG, value);
-
-                mmImage imageB = image->ToGrayScaleB();
-                imageB.Threshold(value, value, value);
-
-                SetImageB(imageB);
-
-                epiPropertyChangedCheckAndTrigger(ThresholdB, value);
+                UpdateThreshold(G);
+                UpdateThreshold(B);
             }
         }
     }
@@ -56,31 +46,15 @@ void mmVMImageThreshold::SetThresholdG_Callback(epiU8 value)
     {
         if (mmImage* image = GetImageSrc())
         {
-            mmImage imageG = image->ToGrayScaleG();
-            imageG.Threshold(value, value, value);
-
-            SetImageG(imageG);
+            UpdateThreshold(G);
 
             if (GetIsThresholdSynchronized())
             {
-                mmImage imageR = image->ToGrayScaleR();
-                imageR.Threshold(value, value, value);
-
-                SetImageR(imageR);
-
-                epiPropertyChangedCheckAndTrigger(ThresholdR, value);
-
-                mmImage imageB = image->ToGrayScaleB();
-                imageB.Threshold(value, value, value);
-
-                SetImageB(imageB);
-
-                epiPropertyChangedCheckAndTrigger(ThresholdB, value);
+                UpdateThreshold(R);
+                UpdateThreshold(B);
             }
         }
     }
-
-    epiPropertyChangedCheckAndTrigger(ThresholdG, value);
 }
 
 void mmVMImageThreshold::SetThresholdB_Callback(epiU8 value)
@@ -89,31 +63,15 @@ void mmVMImageThreshold::SetThresholdB_Callback(epiU8 value)
     {
         if (mmImage* image = GetImageSrc())
         {
-            mmImage imageB = image->ToGrayScaleB();
-            imageB.Threshold(value, value, value);
-
-            SetImageB(imageB);
+            UpdateThreshold(B);
 
             if (GetIsThresholdSynchronized())
             {
-                mmImage imageR = image->ToGrayScaleR();
-                imageR.Threshold(value, value, value);
-
-                SetImageR(imageR);
-
-                epiPropertyChangedCheckAndTrigger(ThresholdR, value);
-
-                mmImage imageG = image->ToGrayScaleG();
-                imageG.Threshold(value, value, value);
-
-                SetImageG(imageG);
-
-                epiPropertyChangedCheckAndTrigger(ThresholdG, value);
+                UpdateThreshold(R);
+                UpdateThreshold(G);
             }
         }
     }
-
-    epiPropertyChangedCheckAndTrigger(ThresholdB, value);
 }
 
 void mmVMImageThreshold::SetIsThresholdSynchronized_Callback(epiBool value)
@@ -163,5 +121,7 @@ mmImage mmVMImageThreshold::GetImageTgt_Internal() const
 
     return to;
 }
+
+#undef UpdateThreshold
 
 EPI_NAMESPACE_END()
