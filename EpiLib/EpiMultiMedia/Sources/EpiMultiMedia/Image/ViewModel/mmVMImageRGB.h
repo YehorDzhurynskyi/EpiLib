@@ -33,6 +33,10 @@ protected:
 EPI_GENREGION_END(mmVMImageRGB)
 
 protected:
+    void SetImageSrc_Internal(mmImage* imageSrc) override;
+    mmImage GetImageTgt_Internal() const override;
+
+protected:
     epiEventLoopPeriodicalTask* m_PeriodicalTaskR{nullptr};
     epiEventLoopPeriodicalTask* m_PeriodicalTaskG{nullptr};
     epiEventLoopPeriodicalTask* m_PeriodicalTaskB{nullptr};

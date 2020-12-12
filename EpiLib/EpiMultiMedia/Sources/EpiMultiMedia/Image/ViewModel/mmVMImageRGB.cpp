@@ -4,4 +4,48 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
+
+void mmVMImageRGB::SetImageSrc_Internal(mmImage* imageSrc)
+{
+    if (mmImage* image = GetImageSrc())
+    {
+        SetImageR(image->ToGrayScaleR());
+        SetImageG(image->ToGrayScaleG());
+        SetImageB(image->ToGrayScaleB());
+    }
+}
+
+mmImage mmVMImageRGB::GetImageTgt_Internal() const
+{
+    mmImage to;
+
+    const mmImage& r = GetImageR();
+    const mmImage& g = GetImageG();
+    const mmImage& b = GetImageB();
+
+    epiAssert(r.GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
+    epiAssert(g.GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
+    epiAssert(b.GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
+
+    epiAssert(r.GetWidth() == g.GetWidth() && g.GetWidth() == b.GetWidth());
+    epiAssert(r.GetHeight() == g.GetHeight() && g.GetHeight() == b.GetHeight());
+    epiAssert(r.GetBPP() == g.GetBPP() && g.GetBPP() == b.GetBPP());
+    epiAssert(r.GetBPC() == g.GetBPC() && g.GetBPC() == b.GetBPC());
+
+    to.SetWidth(r.GetWidth());
+    to.SetHeight(r.GetHeight());
+    to.SetPixelFormat(mmImagePixelFormat::R8G8B8);
+    epiArray<epiU8>& toData = to.GetData();
+    toData.Resize(r.GetData().Size() * 3);
+
+    for (epiU32 i = 0; i < toData.Size() / 3; ++i)
+    {
+        toData[i * 3 + 0] = r.GetData()[i];
+        toData[i * 3 + 1] = g.GetData()[i];
+        toData[i * 3 + 2] = b.GetData()[i];
+    }
+
+    return to;
+}
+
 EPI_NAMESPACE_END()

@@ -42,10 +42,6 @@ EPI_GENREGION_END(mmVMImageThreshold)
 
 public:
     mmVMImageThreshold();
-
-protected:
-    void SetImageSrc_Internal(mmImage* imageSrc) override;
-    mmImage GetImageTgt_Internal() const override;
 };
 
 EPI_NAMESPACE_END()
