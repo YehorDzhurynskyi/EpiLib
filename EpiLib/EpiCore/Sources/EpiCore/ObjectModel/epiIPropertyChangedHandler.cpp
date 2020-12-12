@@ -26,7 +26,7 @@ void epiIPropertyChangedHandler::PropertyChangedUnregister(epiMetaPropertyID pro
     PropertyChangedUnregister(propertyID, *this);
 }
 
-void epiIPropertyChangedHandler::PropertyChangedTrigger(epiMetaPropertyID propertyID)
+void epiIPropertyChangedHandler::PropertyChangedTriggerCallbacks(epiMetaPropertyID propertyID)
 {
     for (auto& [listener, callbacks] : m_PropertyChangedListeners)
     {

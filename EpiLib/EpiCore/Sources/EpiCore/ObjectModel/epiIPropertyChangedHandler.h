@@ -5,15 +5,8 @@
 EPI_NAMESPACE_BEGIN()
 
 #define epiPropertyChangedCheckAndTrigger(Property, Value) \
-    do \
-    { \
-        static_assert(std::is_same_v<std::decay_t<decltype(m_##Property)>, std::decay_t<decltype(Value)>>); \
-        if (!epiEqual(m_##Property, Value)) \
-        { \
-            m_##Property = Value; \
-            PropertyChangedTrigger(PID_##Property); \
-        } \
-    } while (0); \
+    static_assert(std::is_same_v<std::decay_t<decltype(m_##Property)>, std::decay_t<decltype(Value)>>); \
+    PropertyChangedTrigger<decltype(m_##Property)>(PID_##Property, m_##Property, Value);
 
 class epiIPropertyChangedHandler
 {
@@ -26,10 +19,23 @@ public:
     void PropertyChangedRegister(epiMetaPropertyID propertyID, PropertyChangedCallback callback);
     void PropertyChangedUnregister(epiMetaPropertyID propertyID);
 
-    void PropertyChangedTrigger(epiMetaPropertyID propertyID);
+    template<typename PropertyType>
+    void PropertyChangedTrigger(epiMetaPropertyID propertyID, PropertyType& property, const PropertyType& value);
+
+    void PropertyChangedTriggerCallbacks(epiMetaPropertyID propertyID);
 
 private:
     std::map<epiIPropertyChangedHandler*, std::map<epiMetaPropertyID, PropertyChangedCallback>> m_PropertyChangedListeners;
 };
+
+template<typename PropertyType>
+void epiIPropertyChangedHandler::PropertyChangedTrigger(epiMetaPropertyID propertyID, PropertyType& property, const PropertyType& value)
+{
+    if (!epiEqual(property, value))
+    {
+        property = value;
+        PropertyChangedTriggerCallbacks(propertyID);
+    }
+}
 
 EPI_NAMESPACE_END()

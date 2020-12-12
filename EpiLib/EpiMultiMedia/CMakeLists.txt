@@ -21,6 +21,9 @@ add_library(EpiMultimedia
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.epi
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.cpp
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageRGB.epi
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageRGB.h
+    Sources/EpiMultimedia/Image/ViewModel/mmVMImageRGB.cpp
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageContrast.epi
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageContrast.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageContrast.cpp

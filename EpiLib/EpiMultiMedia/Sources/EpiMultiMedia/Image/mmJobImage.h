@@ -45,9 +45,9 @@ public:
     using Callback = void(mmImage::*)(Args ...args);
 
 public:
-    mmJobImage(const mmImage& image, Callback&& callback, Args ...args)
+    mmJobImage(const mmImage& image, Callback callback, Args ...args)
         : m_Image{image.Duplicate()}
-        , m_Callback{std::move(callback)}
+        , m_Callback{callback}
         , m_Args{std::forward<Args>(args)...}
     {
     }

@@ -1,0 +1,8 @@
+# TODO: add [Abstract]
+# TODO: add [Interface(epiIPropertyChangedHandler)]
+class mmVMImageRGB : mmVMImageBase
+{
+    mmImage ImageR;
+    mmImage ImageG;
+    mmImage ImageB;
+};

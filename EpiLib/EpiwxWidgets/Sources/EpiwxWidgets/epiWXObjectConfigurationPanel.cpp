@@ -180,7 +180,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
             epi::PropertyPointer* ptr = m_PrtyPointers.emplace_back(new epi::PropertyPointer());
             *ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
             control->SetClientData(ptr);
-            propertyChangedHandler.PropertyChangedTrigger(prtyID);
+            propertyChangedHandler.PropertyChangedTriggerCallbacks(prtyID);
 
             sizer->Add(new wxStaticText(this, wxID_ANY, prty.GetName()), wxSizerFlags().Right().Expand().CentreVertical().Proportion(1));
             sizer->Add(control, wxSizerFlags().Expand().CenterVertical().Proportion(2));

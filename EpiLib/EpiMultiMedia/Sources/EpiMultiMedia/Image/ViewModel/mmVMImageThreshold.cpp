@@ -3,11 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/ViewModel/mmVMImageThreshold.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiMultimedia/Image/mmJobImage.h"
-
-#include "EpiCore/MT/JobSystem/epiJobScheduler.h"
-#include "EpiCore/MT/EventLoop/epiEventLoop.h"
-
 EPI_NAMESPACE_BEGIN()
 
 using JobThreshold = mmJobImage<epiU8, epiU8, epiU8, epiU8>;
@@ -23,33 +18,17 @@ void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
     {
         if (mmImage* image = GetImageSrc())
         {
-            std::unique_ptr<JobThreshold> job = std::make_unique<JobThreshold>(image->ToGrayScaleR(), &mmImage::Threshold, value, value, value, 0);
-            std::shared_ptr<epiJobHandle> jobHandle = epiJobScheduler::GetInstance().Schedule(std::move(job));
-            if (epiEventLoop* eventLoop = epiEventLoop::GetMainEventLoop())
-            {
-                if (m_PeriodicalTaskR != nullptr)
-                {
-                    m_PeriodicalTaskR->Cancel();
-                }
-
-                m_PeriodicalTaskR = &eventLoop->AddPeriodicalTask([this, jobHandle, value]()
-                {
-                    epiBool keepAlive = true;
-
-                    if (jobHandle->IsCompleted())
-                    {
-                        if (JobThreshold* job = jobHandle->GetJob<JobThreshold>())
-                        {
-                            SetImageR(job->GetImage());
-
-                            epiPropertyChangedCheckAndTrigger(ThresholdR, value);
-                        }
-                        keepAlive = false;
-                    }
-
-                    return keepAlive;
-                }, 60ms);
-            }
+            UpdateImage<decltype(m_ThresholdR), epiU8, epiU8, epiU8, epiU8>(m_PeriodicalTaskR,
+                                                                            static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImageR),
+                                                                            &mmImage::ToGrayScaleR,
+                                                                            &mmImage::Threshold,
+                                                                            PID_ThresholdR,
+                                                                            m_ThresholdR,
+                                                                            value,
+                                                                            value,
+                                                                            value,
+                                                                            value,
+                                                                            0);
 
             if (GetIsThresholdSynchronized())
             {
