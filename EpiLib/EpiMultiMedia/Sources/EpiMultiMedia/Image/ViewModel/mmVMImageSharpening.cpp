@@ -25,14 +25,6 @@ void mmVMImageSharpening::SetScaleFactor_Callback(epiFloat value)
     }
 }
 
-void mmVMImageSharpening::SetImageSrc_Internal(mmImage* imageSrc)
-{
-    if (mmImage* image = GetImageSrc())
-    {
-        SetImage(image->Duplicate());
-    }
-}
-
 mmImage mmVMImageSharpening::GetImageTgt_Internal() const
 {
     return GetImage();

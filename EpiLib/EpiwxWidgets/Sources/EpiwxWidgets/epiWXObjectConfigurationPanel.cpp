@@ -1,5 +1,6 @@
 #include "EpiwxWidgets/epiWXObjectConfigurationPanel.h"
 
+#include "EpiwxWidgets/epiWXSlider.h"
 #include "EpiwxWidgets/epiWXSliderRange.h"
 
 #include "EpiCore/ObjectModel/PropertyPointer.h"
@@ -77,7 +78,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                 default: epiLogError("Unexpected typeID=`{}`", typeID); break;
                 }
 
-                wxSlider* slider = new wxSlider(this, wxID_ANY, 0, minValue, maxValue, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+                epiWXSlider<epiS32>* slider = new epiWXSlider<epiS32>(this, wxID_ANY, 0, minValue, maxValue);
                 slider->Bind(wxEVT_SLIDER, &epiWXObjectConfigurationPanel::OnSliderValueChanged, this); // TODO: figure out whether it should be unbonded
                 propertyChangedHandler.PropertyChangedRegister(prtyID, [this, slider]()
                 {
@@ -85,10 +86,10 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                     {
                         switch (ptr->GetTypeID())
                         {
-                        case epi::epiMetaTypeID_epiByte: slider->SetValue(ptr->Get<epiByte>()); break;
-                        case epi::epiMetaTypeID_epiU8: slider->SetValue(ptr->Get<epiU8>()); break;
-                        case epi::epiMetaTypeID_epiS8: slider->SetValue(ptr->Get<epiS8>()); break;
-                        case epi::epiMetaTypeID_epiSize_t: slider->SetValue(ptr->Get<epiSize_t>()); break;
+                        case epi::epiMetaTypeID_epiByte: slider->SetValuePrimary(ptr->Get<epiByte>()); break;
+                        case epi::epiMetaTypeID_epiU8: slider->SetValuePrimary(ptr->Get<epiU8>()); break;
+                        case epi::epiMetaTypeID_epiS8: slider->SetValuePrimary(ptr->Get<epiS8>()); break;
+                        case epi::epiMetaTypeID_epiSize_t: slider->SetValuePrimary(ptr->Get<epiSize_t>()); break;
                         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
                         }
 
@@ -123,7 +124,7 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
             default: epiLogError("Unexpected typeID=`{}`", typeID); break;
             }
 
-            epiWXSliderRange* slider = new epiWXSliderRange(this, wxID_ANY, 0, 0, minValue, maxValue);
+            epiWXSliderRange<epiU8>* slider = new epiWXSliderRange<epiU8>(this, wxID_ANY, 0, 0, minValue, maxValue);
             slider->Bind(wxEVT_SLIDER, &epiWXObjectConfigurationPanel::OnSliderRangeValueChanged, this); // TODO: figure out whether it should be unbonded
             propertyChangedHandler.PropertyChangedRegister(prtyID, [this, slider]()
             {
@@ -225,15 +226,15 @@ void epiWXObjectConfigurationPanel::OnSliderValueChanged(wxCommandEvent& event)
 {
     EPI_NAMESPACE_USING()
 
-    const wxSlider* slider = static_cast<const wxSlider*>(event.GetEventObject());
+    const epiWXSlider<epiS32>* slider = static_cast<const epiWXSlider<epiS32>*>(event.GetEventObject());
     if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
     {
         switch (ptr->GetTypeID())
         {
-        case epiMetaTypeID_epiByte: ptr->Set<epiByte>(slider->GetValue()); break;
-        case epiMetaTypeID_epiU8: ptr->Set<epiU8>(slider->GetValue()); break;
-        case epiMetaTypeID_epiS8: ptr->Set<epiS8>(slider->GetValue()); break;
-        case epiMetaTypeID_epiSize_t: ptr->Set<epiSize_t>(slider->GetValue()); break;
+        case epiMetaTypeID_epiByte: ptr->Set<epiByte>(slider->GetValuePrimary()); break;
+        case epiMetaTypeID_epiU8: ptr->Set<epiU8>(slider->GetValuePrimary()); break;
+        case epiMetaTypeID_epiS8: ptr->Set<epiS8>(slider->GetValuePrimary()); break;
+        case epiMetaTypeID_epiSize_t: ptr->Set<epiSize_t>(slider->GetValuePrimary()); break;
         default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
         }
     }
@@ -243,7 +244,7 @@ void epiWXObjectConfigurationPanel::OnSliderRangeValueChanged(wxCommandEvent& ev
 {
     EPI_NAMESPACE_USING()
 
-    const epiWXSliderRange* slider = static_cast<const epiWXSliderRange*>(event.GetEventObject());
+    const epiWXSliderRange<epiU8>* slider = static_cast<const epiWXSliderRange<epiU8>*>(event.GetEventObject());
     if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
     {
         switch (ptr->GetTypeID())

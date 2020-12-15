@@ -6,11 +6,9 @@ EPI_GENREGION_END(include)
 
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 
-#include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
-
 EPI_NAMESPACE_BEGIN()
 
-class mmVMImageHSB : public mmVMImageBase, public epiIPropertyChangedHandler
+class mmVMImageHSB : public mmVMImageBase
 {
 EPI_GENREGION_BEGIN(mmVMImageHSB)
 

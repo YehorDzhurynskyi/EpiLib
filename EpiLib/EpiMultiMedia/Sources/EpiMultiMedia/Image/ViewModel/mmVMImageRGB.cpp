@@ -7,11 +7,11 @@ EPI_NAMESPACE_BEGIN()
 
 void mmVMImageRGB::SetImageSrc_Internal(mmImage* imageSrc)
 {
-    if (mmImage* image = GetImageSrc())
+    if (imageSrc != nullptr)
     {
-        SetImageR(image->ToGrayScaleR());
-        SetImageG(image->ToGrayScaleG());
-        SetImageB(image->ToGrayScaleB());
+        SetImageR(imageSrc->ToGrayScaleR());
+        SetImageG(imageSrc->ToGrayScaleG());
+        SetImageB(imageSrc->ToGrayScaleB());
     }
 }
 

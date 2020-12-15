@@ -81,14 +81,6 @@ void mmVMImageSpatialDenoising::SetNoiseVariance_Callback(epiU8 value)
     }
 }
 
-void mmVMImageSpatialDenoising::SetImageSrc_Internal(mmImage* imageSrc)
-{
-    if (mmImage* image = GetImageSrc())
-    {
-        SetImage(image->Duplicate());
-    }
-}
-
 mmImage mmVMImageSpatialDenoising::GetImageTgt_Internal() const
 {
     return GetImage();

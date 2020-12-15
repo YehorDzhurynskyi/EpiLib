@@ -9,8 +9,11 @@ add_library(EpiwxWidgets
     Sources/EpiwxWidgets/epiWXPlot.cpp
     Sources/EpiwxWidgets/epiWXObjectConfigurationPanel.h
     Sources/EpiwxWidgets/epiWXObjectConfigurationPanel.cpp
+    Sources/EpiwxWidgets/epiWXSliderBase.h
+    Sources/EpiwxWidgets/epiWXSliderBase.cpp
+    Sources/EpiwxWidgets/epiWXSlider.h
+    Sources/EpiwxWidgets/epiWXSliderThumb.h
     Sources/EpiwxWidgets/epiWXSliderRange.h
-    Sources/EpiwxWidgets/epiWXSliderRange.cpp
     Sources/EpiwxWidgets/epiWXEventLoop.h
     Sources/EpiwxWidgets/epiWXEventLoop.cpp
 )

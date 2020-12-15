@@ -5,6 +5,19 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+#define UpdateGamma(Channel) \
+    UpdateImage<decltype(m_Gamma##Channel), epiFloat, epiFloat, epiFloat, epiFloat>(PID_Gamma##Channel, \
+                                                                                    m_Gamma##Channel, \
+                                                                                    value, \
+                                                                                    m_PeriodicalTask##Channel, \
+                                                                                    static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
+                                                                                    &mmImage::ToGrayScale##Channel, \
+                                                                                    &mmImage::Gamma, \
+                                                                                    value, \
+                                                                                    value, \
+                                                                                    value, \
+                                                                                    1.0f);
+
 mmVMImageGamma::mmVMImageGamma()
 {
     SetIsGammaSynchronized(true);
@@ -19,31 +32,15 @@ void mmVMImageGamma::SetGammaR_Callback(epiFloat value)
     {
         if (mmImage* image = GetImageSrc())
         {
-            mmImage imageR = image->ToGrayScaleR();
-            imageR.Gamma(value, value, value);
-
-            SetImageR(imageR);
+            UpdateGamma(R);
 
             if (GetIsGammaSynchronized())
             {
-                mmImage imageG = image->ToGrayScaleG();
-                imageG.Gamma(value, value, value);
-
-                SetImageG(imageG);
-
-                epiPropertyChangedCheckAndTrigger(GammaG, value);
-
-                mmImage imageB = image->ToGrayScaleB();
-                imageB.Gamma(value, value, value);
-
-                SetImageB(imageB);
-
-                epiPropertyChangedCheckAndTrigger(GammaB, value);
+                UpdateGamma(G);
+                UpdateGamma(B);
             }
         }
     }
-
-    epiPropertyChangedCheckAndTrigger(GammaR, value);
 }
 
 void mmVMImageGamma::SetGammaG_Callback(epiFloat value)
@@ -52,31 +49,15 @@ void mmVMImageGamma::SetGammaG_Callback(epiFloat value)
     {
         if (mmImage* image = GetImageSrc())
         {
-            mmImage imageG = image->ToGrayScaleG();
-            imageG.Gamma(value, value, value);
-
-            SetImageG(imageG);
+            UpdateGamma(G);
 
             if (GetIsGammaSynchronized())
             {
-                mmImage imageR = image->ToGrayScaleR();
-                imageR.Gamma(value, value, value);
-
-                SetImageR(imageR);
-
-                epiPropertyChangedCheckAndTrigger(GammaR, value);
-
-                mmImage imageB = image->ToGrayScaleB();
-                imageB.Gamma(value, value, value);
-
-                SetImageB(imageB);
-
-                epiPropertyChangedCheckAndTrigger(GammaB, value);
+                UpdateGamma(R);
+                UpdateGamma(B);
             }
         }
     }
-
-    epiPropertyChangedCheckAndTrigger(GammaG, value);
 }
 
 void mmVMImageGamma::SetGammaB_Callback(epiFloat value)
@@ -85,31 +66,15 @@ void mmVMImageGamma::SetGammaB_Callback(epiFloat value)
     {
         if (mmImage* image = GetImageSrc())
         {
-            mmImage imageB = image->ToGrayScaleB();
-            imageB.Gamma(value, value, value);
-
-            SetImageB(imageB);
+            UpdateGamma(B);
 
             if (GetIsGammaSynchronized())
             {
-                mmImage imageR = image->ToGrayScaleR();
-                imageR.Gamma(value, value, value);
-
-                SetImageR(imageR);
-
-                epiPropertyChangedCheckAndTrigger(GammaR, value);
-
-                mmImage imageG = image->ToGrayScaleG();
-                imageG.Gamma(value, value, value);
-
-                SetImageG(imageG);
-
-                epiPropertyChangedCheckAndTrigger(GammaG, value);
+                UpdateGamma(R);
+                UpdateGamma(G);
             }
         }
     }
-
-    epiPropertyChangedCheckAndTrigger(GammaB, value);
 }
 
 void mmVMImageGamma::SetIsGammaSynchronized_Callback(epiBool value)
@@ -117,47 +82,6 @@ void mmVMImageGamma::SetIsGammaSynchronized_Callback(epiBool value)
     epiPropertyChangedCheckAndTrigger(IsGammaSynchronized, value);
 }
 
-void mmVMImageGamma::SetImageSrc_Internal(mmImage* imageSrc)
-{
-    if (mmImage* image = GetImageSrc())
-    {
-        SetImageR(image->ToGrayScaleR());
-        SetImageG(image->ToGrayScaleG());
-        SetImageB(image->ToGrayScaleB());
-    }
-}
-
-mmImage mmVMImageGamma::GetImageTgt_Internal() const
-{
-    mmImage to;
-
-    const mmImage& r = GetImageR();
-    const mmImage& g = GetImageG();
-    const mmImage& b = GetImageB();
-
-    epiAssert(r.GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
-    epiAssert(g.GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
-    epiAssert(b.GetPixelFormat() == mmImagePixelFormat::GRAYSCALE);
-
-    epiAssert(r.GetWidth() == g.GetWidth() && g.GetWidth() == b.GetWidth());
-    epiAssert(r.GetHeight() == g.GetHeight() && g.GetHeight() == b.GetHeight());
-    epiAssert(r.GetBPP() == g.GetBPP() && g.GetBPP() == b.GetBPP());
-    epiAssert(r.GetBPC() == g.GetBPC() && g.GetBPC() == b.GetBPC());
-
-    to.SetWidth(r.GetWidth());
-    to.SetHeight(r.GetHeight());
-    to.SetPixelFormat(mmImagePixelFormat::R8G8B8);
-    epiArray<epiU8>& toData = to.GetData();
-    toData.Resize(r.GetData().Size() * 3);
-
-    for (epiU32 i = 0; i < toData.Size() / 3; ++i)
-    {
-        toData[i * 3 + 0] = r.GetData()[i];
-        toData[i * 3 + 1] = g.GetData()[i];
-        toData[i * 3 + 2] = b.GetData()[i];
-    }
-
-    return to;
-}
+#undef UpdateGamma
 
 EPI_NAMESPACE_END()

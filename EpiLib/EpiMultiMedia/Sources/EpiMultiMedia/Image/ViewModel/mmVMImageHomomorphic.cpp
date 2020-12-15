@@ -79,14 +79,6 @@ void mmVMImageHomomorphic::SetLowPassScaleFactor_Callback(epiFloat value)
     }
 }
 
-void mmVMImageHomomorphic::SetImageSrc_Internal(mmImage* imageSrc)
-{
-    if (mmImage* image = GetImageSrc())
-    {
-        SetImage(image->Duplicate());
-    }
-}
-
 mmImage mmVMImageHomomorphic::GetImageTgt_Internal() const
 {
     return GetImage();

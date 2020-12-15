@@ -55,11 +55,11 @@ void mmVMImageHSB::SetBrightness_Callback(epiS32 value)
 
 void mmVMImageHSB::SetImageSrc_Internal(mmImage* imageSrc)
 {
-    if (mmImage* image = GetImageSrc())
+    if (imageSrc != nullptr)
     {
-        SetImageHue(image->ToGrayScaleHue());
-        SetImageSaturation(image->ToGrayScaleSaturationB());
-        SetImageBrightness(image->ToGrayScaleBrightness());
+        SetImageHue(imageSrc->ToGrayScaleHue());
+        SetImageSaturation(imageSrc->ToGrayScaleSaturationB());
+        SetImageBrightness(imageSrc->ToGrayScaleBrightness());
     }
 }
 

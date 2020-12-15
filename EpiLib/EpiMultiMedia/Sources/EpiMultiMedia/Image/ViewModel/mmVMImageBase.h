@@ -42,27 +42,27 @@ EPI_GENREGION_END(mmVMImageBase)
 
 protected:
     template<typename PropertyType, typename ...Args>
-    void UpdateImage(epiEventLoopPeriodicalTask*& task,
+    void UpdateImage(epiMetaPropertyID propertyID,
+                     PropertyType& property,
+                     const PropertyType& value,
+                     epiEventLoopPeriodicalTask*& task,
                      void(mmVMImageBase::*SetImage)(const mmImage&),
                      mmImage(mmImage::*Convert)() const,
                      void(mmImage::*Callback)(Args...),
-                     epiMetaPropertyID propertyID,
-                     PropertyType& property,
-                     const PropertyType& value,
                      Args... args);
 
-    virtual void SetImageSrc_Internal(mmImage* imageSrc) = 0;
+    virtual void SetImageSrc_Internal(mmImage* imageSrc) {}
     virtual mmImage GetImageTgt_Internal() const = 0;
 };
 
 template<typename PropertyType, typename ...Args>
-void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
+void mmVMImageBase::UpdateImage(epiMetaPropertyID propertyID,
+                                PropertyType& property,
+                                const PropertyType& value,
+                                epiEventLoopPeriodicalTask*& task,
                                 void(mmVMImageBase::*SetImage)(const mmImage&),
                                 mmImage(mmImage::*Convert)() const,
                                 void(mmImage::*Callback)(Args...),
-                                epiMetaPropertyID propertyID,
-                                PropertyType& property,
-                                const PropertyType& value,
                                 Args... args)
 {
     if (mmImage* image = GetImageSrc())

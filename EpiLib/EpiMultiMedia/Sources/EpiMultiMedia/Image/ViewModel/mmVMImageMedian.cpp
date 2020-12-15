@@ -18,14 +18,6 @@ void mmVMImageMedian::SetWindowSize_Callback(epiU8 value)
     }
 }
 
-void mmVMImageMedian::SetImageSrc_Internal(mmImage* imageSrc)
-{
-    if (mmImage* image = GetImageSrc())
-    {
-        SetImage(image->Duplicate());
-    }
-}
-
 mmImage mmVMImageMedian::GetImageTgt_Internal() const
 {
     return GetImage();

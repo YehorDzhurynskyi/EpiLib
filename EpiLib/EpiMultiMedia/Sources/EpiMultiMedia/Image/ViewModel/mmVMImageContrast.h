@@ -4,13 +4,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/ViewModel/mmVMImageContrast.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
-
-#include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
+#include "EpiMultimedia/Image/ViewModel/mmVMImageRGB.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class mmVMImageContrast : public mmVMImageBase, public epiIPropertyChangedHandler
+class mmVMImageContrast : public mmVMImageRGB
 {
 EPI_GENREGION_BEGIN(mmVMImageContrast)
 
@@ -21,9 +19,6 @@ public:
 
     enum mmVMImageContrast_PIDs
     {
-        PID_ImageR = 0xabdaab02,
-        PID_ImageG = 0xc6074fe9,
-        PID_ImageB = 0xb66dbb66,
         PID_ContrastR = 0xdbee98fe,
         PID_ContrastG = 0xb6337c15,
         PID_ContrastB = 0xc659889a,
@@ -32,7 +27,7 @@ public:
         PID_ContrastStretchG = 0x164c9a8d,
         PID_ContrastStretchB = 0x66266e02,
         PID_IsContrastStretchSynchronized = 0xa1f9cc6c,
-        PID_COUNT = 11
+        PID_COUNT = 8
     };
 
 protected:
@@ -46,9 +41,6 @@ protected:
     void SetIsContrastStretchSynchronized_Callback(epiBool value);
 
 protected:
-    mmImage m_ImageR{};
-    mmImage m_ImageG{};
-    mmImage m_ImageB{};
     epiS8 m_ContrastR{0};
     epiS8 m_ContrastG{0};
     epiS8 m_ContrastB{0};
@@ -62,10 +54,6 @@ EPI_GENREGION_END(mmVMImageContrast)
 
 public:
     mmVMImageContrast();
-
-protected:
-    void SetImageSrc_Internal(mmImage* imageSrc) override;
-    mmImage GetImageTgt_Internal() const override;
 };
 
 EPI_NAMESPACE_END()

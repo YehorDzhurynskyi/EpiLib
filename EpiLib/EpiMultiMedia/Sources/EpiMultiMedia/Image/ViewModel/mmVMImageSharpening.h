@@ -6,11 +6,9 @@ EPI_GENREGION_END(include)
 
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 
-#include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
-
 EPI_NAMESPACE_BEGIN()
 
-class mmVMImageSharpening : public mmVMImageBase, public epiIPropertyChangedHandler
+class mmVMImageSharpening : public mmVMImageBase
 {
 EPI_GENREGION_BEGIN(mmVMImageSharpening)
 
@@ -36,7 +34,6 @@ protected:
 EPI_GENREGION_END(mmVMImageSharpening)
 
 protected:
-    void SetImageSrc_Internal(mmImage* imageSrc) override;
     mmImage GetImageTgt_Internal() const override;
 };
 
