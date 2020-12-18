@@ -29,8 +29,6 @@ public:
     virtual std::any GetMaxValueAny() const = 0;
 
 protected:
-    virtual void SetValueFromMousePosition(const wxPoint& mousePosition) = 0;
-
     void DoEnable(epiBool enable = true);
     void DoDisable();
 

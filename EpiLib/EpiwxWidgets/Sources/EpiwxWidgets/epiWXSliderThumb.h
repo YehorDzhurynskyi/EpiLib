@@ -27,14 +27,14 @@ public:
 
     void OnPaint(wxDC& dc);
 
+    wxSize GetSize() const;
+
 protected:
     T Fraction2Value(epiFloat fraction, T minValue, T maxValue) const;
     epiFloat Value2Fraction(T value, T minValue, T maxValue) const;
 
     epiS32 GetMinPosition() const;
     epiS32 GetMaxPosition() const;
-
-    wxSize GetSize() const;
 
 protected:
     epiWXSliderBase* m_Parent{nullptr};
@@ -68,16 +68,19 @@ epiWXSliderThumb<T>::epiWXSliderThumb(epiWXSliderBase* parent, T value)
 {
     epiAssert(m_Parent != nullptr);
 
-    m_ThumbPointList.Append(new wxPoint{0, 0});
-    m_ThumbPointList.Append(new wxPoint{0, 13});
-    m_ThumbPointList.Append(new wxPoint{5, 18});
-    m_ThumbPointList.Append(new wxPoint{10, 13});
-    m_ThumbPointList.Append(new wxPoint{10, 0});
+    // TODO: make it resolution independent
+    constexpr epiU32 kThumbScale = 3;
 
-    m_ThumbShadowPointList.Append(new wxPoint{0, 14});
-    m_ThumbShadowPointList.Append(new wxPoint{4, 18});
-    m_ThumbShadowPointList.Append(new wxPoint{6, 18});
-    m_ThumbShadowPointList.Append(new wxPoint{10, 14});
+    m_ThumbPointList.Append(new wxPoint{0 * kThumbScale, 0 * kThumbScale});
+    m_ThumbPointList.Append(new wxPoint{0 * kThumbScale, 13 * kThumbScale});
+    m_ThumbPointList.Append(new wxPoint{5 * kThumbScale, 18 * kThumbScale});
+    m_ThumbPointList.Append(new wxPoint{10 * kThumbScale, 13 * kThumbScale});
+    m_ThumbPointList.Append(new wxPoint{10 * kThumbScale, 0 * kThumbScale});
+
+    m_ThumbShadowPointList.Append(new wxPoint{0 * kThumbScale, 14 * kThumbScale});
+    m_ThumbShadowPointList.Append(new wxPoint{4 * kThumbScale, 18 * kThumbScale});
+    m_ThumbShadowPointList.Append(new wxPoint{6 * kThumbScale, 18 * kThumbScale});
+    m_ThumbShadowPointList.Append(new wxPoint{10 * kThumbScale, 14 * kThumbScale});
 
     epiS32 minX = std::numeric_limits<epiS32>::max();
     epiS32 maxX = std::numeric_limits<epiS32>::min();
@@ -105,7 +108,11 @@ wxPoint epiWXSliderThumb<T>::GetPosition() const
     const T maxValue = std::any_cast<T>(m_Parent->GetMaxValueAny());
 
     const epiFloat fraction = Value2Fraction(m_Value, minValue, maxValue);
-    return wxPoint{Fraction2Value(fraction, GetMinPosition(), GetMaxPosition()), parentSize.y / 2 + 1};
+
+    const epiS32 minPosition = GetMinPosition();
+    const epiS32 maxPosition = GetMaxPosition();
+
+    return wxPoint{static_cast<epiS32>((maxPosition - minPosition) * fraction + minPosition), parentSize.y / 2 + 1};
 }
 
 template<typename T>

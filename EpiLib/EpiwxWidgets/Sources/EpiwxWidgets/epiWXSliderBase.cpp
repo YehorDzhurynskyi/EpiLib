@@ -24,7 +24,6 @@ epiWXSliderBase::epiWXSliderBase(wxWindow* parent,
         return;
     }
 
-    SetMinSize(wxSize{std::max(500, size.x), std::max(26, size.y)});
     SetBorderWidth(8);
 
     Bind(wxEVT_LEFT_DOWN, &epiWXSliderBase::OnMouseDown, this);
