@@ -30,6 +30,10 @@ public:
     void SetValuePrimary(T value);
     T GetValuePrimary() const;
 
+    wxSize GetSizeSliderControl() const override;
+    void GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLabelSize) override;
+    wxSize GetSizeBBox() override;
+
 protected:
     void OnMouseDown_Internal(wxMouseEvent& event) override;
     void OnMouseUp_Internal(wxMouseEvent& event) override;
@@ -38,11 +42,6 @@ protected:
     void OnMouseEnter_Internal(wxMouseEvent& event) override;
     void OnMouseLeave_Internal(wxMouseEvent& event) override;
     void OnPaint_Internal(wxPaintEvent& event) override;
-
-    wxSize GetSizeSliderControl() const;
-    wxSize GetSizeSliderControlWithBorder() const;
-    void GetSizeLabelMinMaxValue(const wxDC& dc, wxSize& minLabelSize, wxSize& maxLabelSize) const;
-    wxSize GetSizeBBox(const wxDC& dc) const;
 
 protected:
     T m_MinValue{};
@@ -82,9 +81,8 @@ epiWXSlider<T>::epiWXSlider(wxWindow* parent,
         return;
     }
 
-    // TODO: make DPI-independent
-    const wxSize sliderControlSize = GetSizeSliderControlWithBorder();
-    SetMinSize(wxSize{std::max(500, sliderControlSize.x), std::max(30, sliderControlSize.y)});
+    const wxSize bboxSize = GetSizeBBox();
+    SetMinSize(wxSize{std::max(500, bboxSize.x), std::max(30, bboxSize.y)});
 }
 
 template<typename T>
@@ -246,23 +244,29 @@ void epiWXSlider<T>::OnPaint_Internal(wxPaintEvent& event)
     dc.SetPen(wxPen(kRangeOutlineColor, 1, wxPENSTYLE_SOLID));
     dc.SetBrush(wxBrush(kRangeBackgroundColor, wxBRUSHSTYLE_SOLID));
 
-    const wxSize bboxSize = GetSizeBBox(dc);
-    const wxSize sliderControlSize = GetSizeSliderControlWithBorder();
-
-    wxSize minLabelSize;
-    wxSize maxLabelSize;
-    GetSizeLabelMinMaxValue(dc, minLabelSize, maxLabelSize);
-
-    dc.DrawRectangle(minLabelSize.x + GetBorderWidth(),
-                     sliderControlSize.y / 2 - trackHeight / 2,
-                     GetSizeSliderControl().x,
-                     trackHeight);
+    const wxSize bboxSize = GetSizeBBox();
+    const wxSize sliderControlSize = GetSizeSliderControl();
 
     const std::string minText = std::to_string(m_MinValue);
     const std::string maxText = std::to_string(m_MaxValue);
 
-    dc.DrawText(minText, 0, 0);
-    dc.DrawText(maxText, bboxSize.x - maxLabelSize.x, 0);
+    wxCoord minTextX;
+    wxCoord minTextY;
+    wxCoord minTextDescent;
+    dc.GetTextExtent(minText, &minTextX, &minTextY, &minTextDescent);
+
+    wxCoord maxTextX;
+    wxCoord maxTextY;
+    wxCoord maxTextDescent;
+    dc.GetTextExtent(maxText, &maxTextX, &maxTextY, &maxTextDescent);
+
+    dc.DrawRectangle(minTextX + GetBorderWidth() + GetMinMaxLabelPadding(),
+                     bboxSize.y / 2 - trackHeight / 2,
+                     GetSizeSliderControl().x,
+                     trackHeight);
+
+    dc.DrawText(minText, GetBorderWidth(), minTextDescent);
+    dc.DrawText(maxText, bboxSize.x - maxTextX - GetBorderWidth(), maxTextDescent);
 
     if (IsEnabled())
     {
@@ -294,26 +298,23 @@ wxSize epiWXSlider<T>::GetSizeSliderControl() const
 }
 
 template<typename T>
-wxSize epiWXSlider<T>::GetSizeSliderControlWithBorder() const
+void epiWXSlider<T>::GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLabelSize)
 {
-    return GetSizeSliderControl() + wxSize{static_cast<epiS32>(GetBorderWidth()), static_cast<epiS32>(GetBorderWidth())};
-}
+    wxClientDC dc(this);
 
-template<typename T>
-void epiWXSlider<T>::GetSizeLabelMinMaxValue(const wxDC& dc, wxSize& minLabelSize, wxSize& maxLabelSize) const
-{
     minLabelSize = dc.GetTextExtent(std::to_string(m_MinValue));
     maxLabelSize = dc.GetTextExtent(std::to_string(m_MaxValue));
 }
 
 template<typename T>
-wxSize epiWXSlider<T>::GetSizeBBox(const wxDC& dc) const
+wxSize epiWXSlider<T>::GetSizeBBox()
 {
-    const wxSize sliderControlSize = GetSizeSliderControlWithBorder();
+    const wxSize sliderControlSize = GetSizeSliderControl();
+    const epiS32 border = GetBorderWidth();
 
     wxSize minLabelSize;
     wxSize maxLabelSize;
-    GetSizeLabelMinMaxValue(dc, minLabelSize, maxLabelSize);
+    GetSizeLabelMinMaxValue(minLabelSize, maxLabelSize);
 
-    return wxSize{sliderControlSize.x + minLabelSize.x + maxLabelSize.x, std::max({sliderControlSize.y, minLabelSize.y, maxLabelSize.y})};
+    return wxSize{2 * border + sliderControlSize.x + minLabelSize.x + maxLabelSize.x + 2 * static_cast<epiS32>(GetMinMaxLabelPadding()), 2 * border + std::max({sliderControlSize.y, minLabelSize.y, maxLabelSize.y})};
 }

@@ -106,7 +106,7 @@ Color Color::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA) const
     const epiU8 b = GetBu();
     const epiU8 a = GetAu();
 
-    return Color(r >= thrR ? r : 0, g >= thrG ? g : 0, b >= thrB ? b : 0, a >= thrA ? a : 0);
+    return Color(r > thrR ? r : 0, g > thrG ? g : 0, b > thrB ? b : 0, a > thrA ? a : 0);
 }
 
 Color Color::Negative() const

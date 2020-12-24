@@ -137,8 +137,15 @@ void epiWXSliderThumb<T>::SetPosition(const wxPoint& position)
     const T minValue = std::any_cast<T>(m_Parent->GetMinValueAny());
     const T maxValue = std::any_cast<T>(m_Parent->GetMaxValueAny());
 
-    positionX = std::clamp(positionX, GetMinPosition(), GetMaxPosition());
-    const epiFloat fraction = Value2Fraction(positionX, GetMinPosition(), GetMaxPosition());
+    const epiS32 minPosition = GetMinPosition();
+    const epiS32 maxPosition = GetMaxPosition();
+
+    positionX = std::clamp(positionX, minPosition, maxPosition);
+    const epiFloat fraction = epiFloat(positionX - minPosition) / (maxPosition - minPosition);
+    epiAssert(fraction >= 0.0f);
+
+    epiLogTrace("Fraction={}", fraction);
+
     SetValue(Fraction2Value(fraction, minValue, maxValue));
 }
 
@@ -251,7 +258,10 @@ T epiWXSliderThumb<T>::Fraction2Value(epiFloat fraction, T minValue, T maxValue)
 template<typename T>
 epiFloat epiWXSliderThumb<T>::Value2Fraction(T value, T minValue, T maxValue) const
 {
-    return epiFloat(value - minValue) / (maxValue - minValue);
+    const epiFloat fraction = epiFloat(value - minValue) / (maxValue - minValue);
+    epiAssert(fraction >= 0.0f);
+
+    return fraction;
 }
 
 template<typename T>
@@ -263,11 +273,25 @@ wxSize epiWXSliderThumb<T>::GetSize() const
 template<typename T>
 epiS32 epiWXSliderThumb<T>::GetMinPosition() const
 {
-    return m_Parent->GetBorderWidth() + GetSize().x / 2;
+    wxSize minLabelSize;
+    wxSize maxLabelSize;
+    m_Parent->GetSizeLabelMinMaxValue(minLabelSize, maxLabelSize);
+
+    const epiU32 padding = m_Parent->GetMinMaxLabelPadding();
+    const epiU32 border = m_Parent->GetBorderWidth();
+
+    return border + minLabelSize.x + padding + GetSize().x / 2;
 }
 
 template<typename T>
 epiS32 epiWXSliderThumb<T>::GetMaxPosition() const
 {
-    return m_Parent->GetSize().x - m_Parent->GetBorderWidth() - GetSize().x / 2;
+    wxSize minLabelSize;
+    wxSize maxLabelSize;
+    m_Parent->GetSizeLabelMinMaxValue(minLabelSize, maxLabelSize);
+
+    const epiU32 padding = m_Parent->GetMinMaxLabelPadding();
+    const epiU32 border = m_Parent->GetBorderWidth();
+
+    return (m_Parent->GetSize().x - (border + maxLabelSize.x + padding));
 }

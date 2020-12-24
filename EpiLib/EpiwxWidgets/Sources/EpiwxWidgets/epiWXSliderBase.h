@@ -24,9 +24,15 @@ public:
 public:
     epiU32 GetBorderWidth() const;
     void SetBorderWidth(epiU32 width);
+    epiU32 GetMinMaxLabelPadding() const;
+    void SetMinMaxLabelPadding(epiU32 padding);
 
     virtual std::any GetMinValueAny() const = 0;
     virtual std::any GetMaxValueAny() const = 0;
+
+    virtual wxSize GetSizeSliderControl() const = 0;
+    virtual void GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLabelSize) = 0;
+    virtual wxSize GetSizeBBox() = 0;
 
 protected:
     void DoEnable(epiBool enable = true);
@@ -52,4 +58,5 @@ protected:
 
 protected:
     epiU32 m_BorderWidth{};
+    epiU32 m_MinMaxLabelPadding{};
 };

@@ -25,6 +25,7 @@ epiWXSliderBase::epiWXSliderBase(wxWindow* parent,
     }
 
     SetBorderWidth(8);
+    SetMinMaxLabelPadding(20);
 
     Bind(wxEVT_LEFT_DOWN, &epiWXSliderBase::OnMouseDown, this);
     Bind(wxEVT_LEFT_UP, &epiWXSliderBase::OnMouseUp, this);
@@ -45,6 +46,16 @@ epiU32 epiWXSliderBase::GetBorderWidth() const
 void epiWXSliderBase::SetBorderWidth(epiU32 width)
 {
     m_BorderWidth = width;
+}
+
+epiU32 epiWXSliderBase::GetMinMaxLabelPadding() const
+{
+    return m_MinMaxLabelPadding;
+}
+
+void epiWXSliderBase::SetMinMaxLabelPadding(epiU32 padding)
+{
+    m_MinMaxLabelPadding = padding;
 }
 
 void epiWXSliderBase::DoEnable(epiBool enable)
