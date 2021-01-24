@@ -7,6 +7,7 @@ add_library(EpiCore
 
     Sources/EpiCore/types.h
     Sources/EpiCore/common.h
+    Sources/EpiCore/common.cpp
 
     Sources/EpiCore/Clock.h
     Sources/EpiCore/Clock.cpp
@@ -92,6 +93,7 @@ epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
 epi_extern_add(fmt)
 epi_extern_add(cpu_features)
+epi_extern_add(easy_profiler)
 
 configure_file(Sources/EpiCore/epi_config.h.in Sources/EpiCore/epi_config.h)
 
@@ -133,6 +135,7 @@ target_compile_definitions(EpiCore
     PUBLIC
         $<$<CONFIG:Debug>:EPI_BUILD_DEBUG>
         $<$<CONFIG:Release>:EPI_BUILD_RELEASE>
+        $<$<CONFIG:Profile>:EPI_BUILD_PROFILE>
 )
 
 target_include_directories(EpiCore
@@ -148,6 +151,7 @@ target_link_libraries(EpiCore
         glm
         fmt
         cpu_features
+        $<$<CONFIG:Profile>:easy_profiler>
         exprtk
 )
 

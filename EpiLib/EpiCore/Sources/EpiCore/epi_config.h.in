@@ -12,12 +12,26 @@
 #define EPI_BUILD_RELEASE_ONLY(x)
 #endif
 
+#ifdef EPI_BUILD_PROFILE
+#define EPI_BUILD_PROFILE_ONLY(x) x
+#else
+#define EPI_BUILD_PROFILE_ONLY(x)
+#endif
+
 #cmakedefine EPI_PLATFORM_WINDOWS
 
 #ifdef EPI_PLATFORM_WINDOWS
 #define EPI_PLATFORM_WINDOWS_ONLY(x) x
 #else
 #define EPI_PLATFORM_WINDOWS_ONLY(x)
+#endif
+
+#cmakedefine EPI_PLATFORM_LINUX
+
+#ifdef EPI_PLATFORM_LINUX
+#define EPI_PLATFORM_LINUX_ONLY(x) x
+#else
+#define EPI_PLATFORM_LINUX_ONLY(x)
 #endif
 
 #cmakedefine EPI_CPU_X86

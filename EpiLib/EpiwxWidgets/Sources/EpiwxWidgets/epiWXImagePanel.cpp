@@ -52,10 +52,6 @@ wxImage ToWXImage(epi::mmImage& image)
 
 }
 
-wxBEGIN_EVENT_TABLE(epiWXImageConfigurationDialog, wxDialog)
-    EVT_COMMAND(wxID_ANY, OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED, epiWXImageConfigurationDialog::OnImageUpdated)
-wxEND_EVENT_TABLE()
-
 epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
                                                              wxWindow* parent,
                                                              const wxGLAttributes& glattrs,
@@ -105,14 +101,14 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
 
     SetSizerAndFit(sizer);
 
+    vm.PropertyChangedRegister(epi::mmVMImageBase::PID_ImageTgt, [this]()
+    {
+        OnImageUpdated();
+    });
+
     OnImageUpdated();
 
     CenterOnParent();
-}
-
-void epiWXImageConfigurationDialog::OnImageUpdated(wxCommandEvent& event)
-{
-    OnImageUpdated();
 }
 
 void epiWXImageConfigurationDialog::OnImageUpdated()

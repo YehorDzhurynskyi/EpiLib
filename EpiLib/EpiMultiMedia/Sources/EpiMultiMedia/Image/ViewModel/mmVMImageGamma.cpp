@@ -6,17 +6,15 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 #define UpdateGamma(Channel) \
-    UpdateImage<decltype(m_Gamma##Channel), epiFloat, epiFloat, epiFloat, epiFloat>(PID_Gamma##Channel, \
-                                                                                    m_Gamma##Channel, \
-                                                                                    value, \
-                                                                                    m_PeriodicalTask##Channel, \
-                                                                                    static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
-                                                                                    &mmImage::ToGrayScale##Channel, \
-                                                                                    &mmImage::Gamma, \
-                                                                                    value, \
-                                                                                    value, \
-                                                                                    value, \
-                                                                                    1.0f);
+    UpdateImage<epiFloat, epiFloat, epiFloat, epiFloat>(m_PeriodicalTask##Channel, \
+                                                        static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
+                                                        &mmImage::ToGrayScale##Channel, \
+                                                        &mmImage::Gamma, \
+                                                        value, \
+                                                        value, \
+                                                        value, \
+                                                        1.0f); \
+    PropertyChangedTrigger(PID_Gamma##Channel, m_Gamma##Channel, value);
 
 mmVMImageGamma::mmVMImageGamma()
 {

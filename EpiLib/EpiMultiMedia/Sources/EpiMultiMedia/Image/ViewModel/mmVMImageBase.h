@@ -41,11 +41,8 @@ protected:
 EPI_GENREGION_END(mmVMImageBase)
 
 protected:
-    template<typename PropertyType, typename ...Args>
-    void UpdateImage(epiMetaPropertyID propertyID,
-                     PropertyType& property,
-                     const PropertyType& value,
-                     epiEventLoopPeriodicalTask*& task,
+    template<typename ...Args>
+    void UpdateImage(epiEventLoopPeriodicalTask*& task,
                      void(mmVMImageBase::*SetImage)(const mmImage&),
                      mmImage(mmImage::*Convert)() const,
                      void(mmImage::*Callback)(Args...),
@@ -55,11 +52,8 @@ protected:
     virtual mmImage GetImageTgt_Internal() const = 0;
 };
 
-template<typename PropertyType, typename ...Args>
-void mmVMImageBase::UpdateImage(epiMetaPropertyID propertyID,
-                                PropertyType& property,
-                                const PropertyType& value,
-                                epiEventLoopPeriodicalTask*& task,
+template<typename ...Args>
+void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
                                 void(mmVMImageBase::*SetImage)(const mmImage&),
                                 mmImage(mmImage::*Convert)() const,
                                 void(mmImage::*Callback)(Args...),
@@ -76,7 +70,7 @@ void mmVMImageBase::UpdateImage(epiMetaPropertyID propertyID,
                 task->Cancel();
             }
 
-            task = &eventLoop->AddPeriodicalTask([this, jobHandle, SetImage, propertyID, &property, value]()
+            task = &eventLoop->AddPeriodicalTask([this, jobHandle, SetImage]()
             {
                 epiBool keepAlive = true;
 
@@ -85,9 +79,8 @@ void mmVMImageBase::UpdateImage(epiMetaPropertyID propertyID,
                     if (mmJobImage<Args...>* job = jobHandle->GetJob<mmJobImage<Args...>>())
                     {
                         (this->*SetImage)(job->GetImage());
-
-                        PropertyChangedTrigger(propertyID, property, value);
                     }
+
                     keepAlive = false;
                 }
 

@@ -21,9 +21,6 @@ EPI_NAMESPACE_END()
 class epiWXImageConfigurationDialog : public wxDialog
 {
 public:
-    wxDECLARE_EVENT_TABLE();
-
-public:
     epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
                                   wxWindow* parent,
                                   const wxGLAttributes& glattrs,
@@ -34,7 +31,6 @@ public:
                                   long style = wxDEFAULT_DIALOG_STYLE /* TODO: make it resizable `| wxRESIZE_BORDER`*/,
                                   const wxString& name = wxASCII_STR(wxDialogNameStr));
 
-    void OnImageUpdated(wxCommandEvent& event);
     void OnImageUpdated();
 
 protected:

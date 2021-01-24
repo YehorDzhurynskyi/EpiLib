@@ -5,6 +5,24 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+void mmVMImageRGB::SetImageR_Callback(const mmImage& value)
+{
+    PropertyChangedTrigger(PID_ImageR, m_ImageR, value);
+    PropertyChangedTriggerCallbacks(PID_ImageTgt);
+}
+
+void mmVMImageRGB::SetImageG_Callback(const mmImage& value)
+{
+    PropertyChangedTrigger(PID_ImageG, m_ImageG, value);
+    PropertyChangedTriggerCallbacks(PID_ImageTgt);
+}
+
+void mmVMImageRGB::SetImageB_Callback(const mmImage& value)
+{
+    PropertyChangedTrigger(PID_ImageB, m_ImageB, value);
+    PropertyChangedTriggerCallbacks(PID_ImageTgt);
+}
+
 void mmVMImageRGB::SetImageSrc_Internal(mmImage* imageSrc)
 {
     if (imageSrc != nullptr)

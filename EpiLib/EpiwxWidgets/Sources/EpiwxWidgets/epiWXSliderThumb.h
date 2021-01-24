@@ -144,8 +144,6 @@ void epiWXSliderThumb<T>::SetPosition(const wxPoint& position)
     const epiFloat fraction = epiFloat(positionX - minPosition) / (maxPosition - minPosition);
     epiAssert(fraction >= 0.0f);
 
-    epiLogTrace("Fraction={}", fraction);
-
     SetValue(Fraction2Value(fraction, minValue, maxValue));
 }
 
@@ -154,10 +152,12 @@ void epiWXSliderThumb<T>::SetValue(T value)
 {
     m_Value = value;
 
+#if 0 // NOTE: uncomment on demand
     wxCommandEvent event(wxEVT_SLIDER, m_Parent->GetId());
     event.SetEventObject(m_Parent);
 
     wxPostEvent(m_Parent->GetEventHandler(), event);
+#endif
 }
 
 template<typename T>

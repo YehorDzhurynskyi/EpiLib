@@ -26,6 +26,11 @@ public:
     };
 
 protected:
+    void SetImageR_Callback(const mmImage& value);
+    void SetImageG_Callback(const mmImage& value);
+    void SetImageB_Callback(const mmImage& value);
+
+protected:
     mmImage m_ImageR{};
     mmImage m_ImageG{};
     mmImage m_ImageB{};

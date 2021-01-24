@@ -6,35 +6,31 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 #define UpdateContrast(Channel) \
-    UpdateImage<decltype(m_Contrast##Channel), epiS8, epiS8, epiS8, epiS8>(PID_Contrast##Channel, \
-                                                                           m_Contrast##Channel, \
-                                                                           value, \
-                                                                           m_PeriodicalTask##Channel, \
-                                                                           static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
-                                                                           &mmImage::ToGrayScale##Channel, \
-                                                                           &mmImage::Contrast, \
-                                                                           value, \
-                                                                           value, \
-                                                                           value, \
-                                                                           0); \
+    UpdateImage<epiS8, epiS8, epiS8, epiS8>(m_PeriodicalTask##Channel, \
+                                            static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
+                                            &mmImage::ToGrayScale##Channel, \
+                                            &mmImage::Contrast, \
+                                            value, \
+                                            value, \
+                                            value, \
+                                            0); \
+    PropertyChangedTrigger(PID_Contrast##Channel, m_Contrast##Channel, value); \
     epiPropertyChangedCheckAndTrigger(ContrastStretch##Channel, epiVec2u8{});
 
 #define UpdateContrastStretch(Channel) \
-    UpdateImage<decltype(m_ContrastStretch##Channel), epiU8, epiU8, epiU8, epiU8, epiU8, epiU8, epiU8, epiU8>(PID_ContrastStretch##Channel, \
-                                                                                                              m_ContrastStretch##Channel, \
-                                                                                                              value, \
-                                                                                                              m_PeriodicalTask##Channel, \
-                                                                                                              static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
-                                                                                                              &mmImage::ToGrayScale##Channel, \
-                                                                                                              &mmImage::ContrastStretch, \
-                                                                                                              value.x, \
-                                                                                                              value.y, \
-                                                                                                              value.x, \
-                                                                                                              value.y, \
-                                                                                                              value.x, \
-                                                                                                              value.y, \
-                                                                                                              0, \
-                                                                                                              0); \
+    UpdateImage<epiU8, epiU8, epiU8, epiU8, epiU8, epiU8, epiU8, epiU8>(m_PeriodicalTask##Channel, \
+                                                                        static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
+                                                                        &mmImage::ToGrayScale##Channel, \
+                                                                        &mmImage::ContrastStretch, \
+                                                                        value.x, \
+                                                                        value.y, \
+                                                                        value.x, \
+                                                                        value.y, \
+                                                                        value.x, \
+                                                                        value.y, \
+                                                                        0, \
+                                                                        0); \
+    PropertyChangedTrigger(PID_ContrastStretch##Channel, m_ContrastStretch##Channel, value); \
     epiPropertyChangedCheckAndTrigger(Contrast##Channel, epiS8{});
 
 mmVMImageContrast::mmVMImageContrast()

@@ -2,7 +2,10 @@
 # TODO: add [Interface(epiIPropertyChangedHandler)]
 class mmVMImageRGB : mmVMImageBase
 {
-    mmImage ImageR;
-    mmImage ImageG;
-    mmImage ImageB;
+    [WriteCallback]
+    {
+        mmImage ImageR;
+        mmImage ImageG;
+        mmImage ImageB;
+    }
 };

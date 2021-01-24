@@ -11,12 +11,19 @@ if (0)
         set(EPI_BUILD "Release" CACHE STRING "" FORCE)
     endif()
 
+    if (CMAKE_BUILD_TYPE_TOLOWER STREQUAL profile)
+        set(EPI_BUILD_PROFILE ON CACHE BOOL "" FORCE)
+        set(EPI_BUILD "Profile" CACHE STRING "" FORCE)
+    endif()
+
     if (EPI_BUILD STREQUAL Unknown)
         message(FATAL_ERROR "Couldn't determine a build configuration: ${EPI_BUILD}")
     else()
         message(STATUS "EPI_BUILD: ${EPI_BUILD}")
     endif()
 endif()
+
+set(CMAKE_CXX_FLAGS_PROFILE ${CMAKE_CXX_FLAGS_RELEASE})
 
 set(EPI_PLATFORM "Unknown" CACHE STRING "" FORCE)
 string(TOLOWER ${CMAKE_SYSTEM_NAME} CMAKE_SYSTEM_NAME_TOLOWER)

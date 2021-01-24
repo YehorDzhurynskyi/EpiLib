@@ -12,8 +12,8 @@ public:
 public:
     epiWXSlider(wxWindow* parent,
                 wxWindowID id,
-                T value,
-                T minValue,
+                epi::PropertyPointer&& pptr,
+                T minValue, // TODO: retrive these values from MetaProperty
                 T maxValue,
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize,
@@ -21,14 +21,15 @@ public:
                 const wxString& name = wxASCII_STR("epiWXSlider"));
 
 public:
+    void RefreshValue();
+
     std::any GetMinValueAny() const override;
     std::any GetMaxValueAny() const override;
 
     T GetMinValue() const;
     T GetMaxValue() const;
 
-    void SetValuePrimary(T value);
-    T GetValuePrimary() const;
+    T GetValue() const;
 
     wxSize GetSizeSliderControl() const override;
     void GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLabelSize) override;
@@ -47,23 +48,14 @@ protected:
     T m_MinValue{};
     T m_MaxValue{};
 
-    epiWXSliderThumb<T> m_ThumbPrimary;
+    epi::PropertyPointer m_PrtyPtr;
+    epiWXSliderThumb<T> m_Thumb;
 };
-
-namespace
-{
-
-const wxColour kRangeBackgroundColor = wxColour(231, 234, 234);
-const wxColour kRangeOutlineColor = wxColour(214, 214, 214);
-const wxColour kSelectedRangeColor = wxColour(0, 120, 215);
-const wxColour kSelectedRangeOutlineColor = wxColour(0, 120, 215);
-
-}
 
 template<typename T>
 epiWXSlider<T>::epiWXSlider(wxWindow* parent,
                             wxWindowID id,
-                            T value,
+                            epi::PropertyPointer&& pptr,
                             T minValue,
                             T maxValue,
                             const wxPoint& pos,
@@ -73,7 +65,8 @@ epiWXSlider<T>::epiWXSlider(wxWindow* parent,
     : super{parent, id, pos, size, style, name}
     , m_MinValue{minValue}
     , m_MaxValue{maxValue}
-    , m_ThumbPrimary{this, std::clamp(value, minValue, maxValue)}
+    , m_PrtyPtr{std::move(pptr)}
+    , m_Thumb{this, std::clamp(m_PrtyPtr.Get<T>(), minValue, maxValue)}
 {
     if (minValue > maxValue)
     {
@@ -83,6 +76,13 @@ epiWXSlider<T>::epiWXSlider(wxWindow* parent,
 
     const wxSize bboxSize = GetSizeBBox();
     SetMinSize(wxSize{std::max(500, bboxSize.x), std::max(30, bboxSize.y)});
+}
+
+template<typename T>
+void epiWXSlider<T>::RefreshValue()
+{
+    m_Thumb.SetValue(m_PrtyPtr.Get<T>());
+    Refresh();
 }
 
 template<typename T>
@@ -109,16 +109,16 @@ T epiWXSlider<T>::GetMaxValue() const
     return m_MaxValue;
 }
 
-template<typename T>
-void epiWXSlider<T>::SetValuePrimary(T value)
-{
-    m_ThumbPrimary.SetValue(value);
-}
+//template<typename T>
+//void epiWXSlider<T>::SetValue(T value)
+//{
+//    m_Thumb.SetValue(value);
+//}
 
 template<typename T>
-T epiWXSlider<T>::GetValuePrimary() const
+T epiWXSlider<T>::GetValue() const
 {
-    return m_ThumbPrimary.GetValue();
+    return m_Thumb.GetValue();
 }
 
 template<typename T>
@@ -130,13 +130,14 @@ void epiWXSlider<T>::OnMouseDown_Internal(wxMouseEvent& event)
     }
 
     const wxPoint mousePosition = event.GetPosition();
-    if (m_ThumbPrimary.IsMouseOver(mousePosition))
+    if (m_Thumb.IsMouseOver(mousePosition))
     {
-        m_ThumbPrimary.SetDragged(true);
-        m_ThumbPrimary.SetMouseOver(false);
+        m_Thumb.SetDragged(true);
+        m_Thumb.SetMouseOver(false);
     }
 
-    m_ThumbPrimary.SetPosition(mousePosition);
+    m_Thumb.SetPosition(mousePosition);
+    m_PrtyPtr.Set<T>(m_Thumb.GetValue());
 
     CaptureMouse();
 
@@ -151,8 +152,10 @@ void epiWXSlider<T>::OnMouseUp_Internal(wxMouseEvent& event)
         return;
     }
 
-    m_ThumbPrimary.SetPosition(event.GetPosition());
-    m_ThumbPrimary.SetDragged(false);
+    m_Thumb.SetPosition(event.GetPosition());
+    m_PrtyPtr.Set<T>(m_Thumb.GetValue());
+    epiLogDebug("SET: {}", m_Thumb.GetValue());
+    m_Thumb.SetDragged(false);
 
     if (HasCapture())
     {
@@ -175,14 +178,16 @@ void epiWXSlider<T>::OnMouseMotion_Internal(wxMouseEvent& event)
     const wxPoint mousePosition = event.GetPosition();
     if (event.Dragging() && event.LeftIsDown())
     {
-        m_ThumbPrimary.SetPosition(mousePosition);
+        m_Thumb.SetPosition(mousePosition);
+        m_PrtyPtr.Set<T>(m_Thumb.GetValue());
+        epiLogDebug("SET: {}", m_Thumb.GetValue());
         refreshNeeded = true;
     }
     else
     {
-        const epiBool prevMouseOver = m_ThumbPrimary.GetMouseOver();
-        m_ThumbPrimary.SetMouseOver(m_ThumbPrimary.IsMouseOver(mousePosition));
-        if (prevMouseOver != m_ThumbPrimary.GetMouseOver())
+        const epiBool prevMouseOver = m_Thumb.GetMouseOver();
+        m_Thumb.SetMouseOver(m_Thumb.IsMouseOver(mousePosition));
+        if (prevMouseOver != m_Thumb.GetMouseOver())
         {
             refreshNeeded = true;
         }
@@ -197,8 +202,8 @@ void epiWXSlider<T>::OnMouseMotion_Internal(wxMouseEvent& event)
 template<typename T>
 void epiWXSlider<T>::OnMouseLost_Internal(wxMouseCaptureLostEvent& event)
 {
-    m_ThumbPrimary.SetDragged(false);
-    m_ThumbPrimary.SetMouseOver(false);
+    m_Thumb.SetDragged(false);
+    m_Thumb.SetMouseOver(false);
 
     Refresh();
 }
@@ -212,9 +217,9 @@ void epiWXSlider<T>::OnMouseEnter_Internal(wxMouseEvent& event)
     }
 
     const wxPoint mousePosition = event.GetPosition();
-    if (m_ThumbPrimary.IsMouseOver(mousePosition))
+    if (m_Thumb.IsMouseOver(mousePosition))
     {
-        m_ThumbPrimary.SetMouseOver(true);
+        m_Thumb.SetMouseOver(true);
         Refresh();
     }
 }
@@ -227,7 +232,7 @@ void epiWXSlider<T>::OnMouseLeave_Internal(wxMouseEvent& event)
         return;
     }
 
-    m_ThumbPrimary.SetMouseOver(false);
+    m_Thumb.SetMouseOver(false);
 
     Refresh();
 }
@@ -286,7 +291,7 @@ void epiWXSlider<T>::OnPaint_Internal(wxPaintEvent& event)
     dc.DrawRectangle(positionLower, size.y / 2 - trackHeight / 4, positionUpper - positionLower, trackHeight / 2);
 #endif
 
-    m_ThumbPrimary.OnPaint(dc);
+    m_Thumb.OnPaint(dc);
 
     event.Skip();
 }
@@ -294,7 +299,7 @@ void epiWXSlider<T>::OnPaint_Internal(wxPaintEvent& event)
 template<typename T>
 wxSize epiWXSlider<T>::GetSizeSliderControl() const
 {
-    return wxSize{std::max(500, m_ThumbPrimary.GetSize().x), std::max(26, m_ThumbPrimary.GetSize().y)};
+    return wxSize{std::max(500, m_Thumb.GetSize().x), std::max(26, m_Thumb.GetSize().y)};
 }
 
 template<typename T>

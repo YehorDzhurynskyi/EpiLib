@@ -13,6 +13,12 @@ class epiWXSliderBase : public wxPanel
 public:
     using super = wxPanel;
 
+protected:
+    static const wxColour kRangeBackgroundColor;
+    static const wxColour kRangeOutlineColor;
+    static const wxColour kSelectedRangeColor;
+    static const wxColour kSelectedRangeOutlineColor;
+
 public:
     epiWXSliderBase(wxWindow* parent,
                     wxWindowID id,

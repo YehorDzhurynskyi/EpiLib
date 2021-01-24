@@ -1,14 +1,9 @@
 #include "EpiwxWidgets/epiWXSliderBase.h"
 
-namespace
-{
-
-const wxColour kRangeBackgroundColor = wxColour(231, 234, 234);
-const wxColour kRangeOutlineColor = wxColour(214, 214, 214);
-const wxColour kSelectedRangeColor = wxColour(0, 120, 215);
-const wxColour kSelectedRangeOutlineColor = wxColour(0, 120, 215);
-
-}
+const wxColour epiWXSliderBase::kRangeBackgroundColor = wxColour(231, 234, 234);
+const wxColour epiWXSliderBase::kRangeOutlineColor = wxColour(214, 214, 214);
+const wxColour epiWXSliderBase::kSelectedRangeColor = wxColour(0, 120, 215);
+const wxColour epiWXSliderBase::kSelectedRangeOutlineColor = wxColour(0, 120, 215);
 
 epiWXSliderBase::epiWXSliderBase(wxWindow* parent,
                                  wxWindowID id,

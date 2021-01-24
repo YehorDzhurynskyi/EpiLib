@@ -22,7 +22,9 @@
   set solution=%solution%
   set solution=!solution: =_!
 
-  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_DIR="%epidir%" -C "%initial_cache%"
+  set cmake_extra_params=%2
+
+  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_DIR="%epidir%" -C "%initial_cache%" %cmake_extra_params%
 
   goto :eof
 

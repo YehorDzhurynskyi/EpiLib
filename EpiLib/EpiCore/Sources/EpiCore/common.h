@@ -47,9 +47,29 @@ constexpr bool epiEqual(const T& lhs, const T& rhs)
 
 #include <spdlog/spdlog.h>
 
-#define epiLogTrace(MSG, ...) spdlog::trace(MSG, __VA_ARGS__)
-#define epiLogDebug(MSG, ...) spdlog::debug(MSG, __VA_ARGS__)
-#define epiLogInfo(MSG, ...) spdlog::info(MSG, __VA_ARGS__)
-#define epiLogWarn(MSG, ...) spdlog::warn(MSG, __VA_ARGS__)
-#define epiLogError(MSG, ...) spdlog::error(MSG, __VA_ARGS__)
-#define epiLogFatal(MSG, ...) spdlog::critical(MSG, __VA_ARGS__)
+#define epiLogTrace(MSG, ...)   spdlog::trace(MSG, __VA_ARGS__)
+#define epiLogDebug(MSG, ...)   spdlog::debug(MSG, __VA_ARGS__)
+#define epiLogInfo(MSG, ...)    spdlog::info(MSG, __VA_ARGS__)
+#define epiLogWarn(MSG, ...)    spdlog::warn(MSG, __VA_ARGS__)
+#define epiLogError(MSG, ...)   spdlog::error(MSG, __VA_ARGS__)
+#define epiLogFatal(MSG, ...)   spdlog::critical(MSG, __VA_ARGS__)
+
+#ifdef EPI_BUILD_PROFILE
+#include <easy/profiler.h>
+
+profiler::color_t epiProfileColorOf(std::string name);
+
+#define epiProfileFunction      EASY_FUNCTION(epiProfileColorOf(__FUNCTION__))
+#define epiProfileBlock(NAME)   EASY_BLOCK(NAME, epiProfileColorOf(NAME))
+#define epiProfileBlockEnd      EASY_END_BLOCK
+#define epiProfileThread(NAME)  EASY_THREAD(NAME)
+#define epiProfileCaptureStart  EASY_START_CAPTURE
+#define epiProfileCaptureStop   EASY_STOP_CAPTURE
+#else
+#define epiProfileFunction
+#define epiProfileBlock(NAME)
+#define epiProfileBlockEnd
+#define epiProfileThread(NAME)
+#define epiProfileCaptureStart
+#define epiProfileCaptureStop
+#endif

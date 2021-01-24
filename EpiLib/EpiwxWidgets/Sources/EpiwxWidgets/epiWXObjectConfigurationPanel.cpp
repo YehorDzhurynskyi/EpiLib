@@ -10,8 +10,6 @@
 #include <wx/button.h>
 #include <wx/checkbox.h>
 
-wxDEFINE_EVENT(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED, wxCommandEvent);
-
 epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object, // TODO: ensure lifetime
                                                              wxWindow* parent,
                                                              wxWindowID id,
@@ -31,13 +29,8 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
     const epi::MetaClassData& metaData = meta.GetClassData();
     for (const auto& prty : metaData)
     {
-        if (wxWindow* control = MakeControlFromProperty(prty, propertyChangedHandler); control != nullptr)
+        if (wxWindow* control = MakeControlFromProperty(prty); control != nullptr)
         {
-            m_PrtyPointers.push_back(std::move(std::make_unique<epi::PropertyPointer>()));
-            epi::PropertyPointer* ptr = m_PrtyPointers.back().get();
-            *ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
-
-            control->SetClientData(ptr);
             propertyChangedHandler.PropertyChangedTriggerCallbacks(prty.GetPID());
 
             sizer->Add(new wxStaticText(this, wxID_ANY, prty.GetName()), wxSizerFlags().Right().Expand().CentreVertical().Proportion(1));
@@ -51,9 +44,12 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
     SetSizerAndFit(vboxSizer);
 }
 
-wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::MetaProperty& prty, epi::epiIPropertyChangedHandler& propertyChangedHandler)
+wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::MetaProperty& prty)
 {
     wxWindow* control = nullptr;
+
+    // TODO: check whether interface is supported
+    epi::epiIPropertyChangedHandler& propertyChangedHandler = dynamic_cast<epi::epiIPropertyChangedHandler&>(m_Object);
 
     const epi::epiMetaPropertyID prtyID = prty.GetPID();
     const epi::epiMetaTypeID typeID = prty.GetTypeID();
@@ -68,10 +64,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
             if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(checkbox->GetClientData()))
             {
                 checkbox->SetValue(ptr->Get<epiBool>());
-
                 checkbox->Refresh();
-
-                QueueEvent(new wxCommandEvent(OBJECT_CONFIGURATION_DIALOG_OBJECT_UPDATED));
             }
         });
 
@@ -82,18 +75,18 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
         // TODO: add hint to the user for a most popular values (for example, a median filter is good in range 3..7)
         switch (typeID)
         {
-        case epi::epiMetaTypeID_epiByte: control = MakeControlSlider<epiByte>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiFloat: control = MakeControlSlider<epiFloat>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiDouble: control = MakeControlSlider<epiDouble>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiSize_t: control = MakeControlSlider<epiSize_t>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiU8: control = MakeControlSlider<epiU8>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiU16: control = MakeControlSlider<epiU16>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiU32: control = MakeControlSlider<epiU32>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiU64: control = MakeControlSlider<epiU64>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiS8: control = MakeControlSlider<epiS8>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiS16: control = MakeControlSlider<epiS16>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiS32: control = MakeControlSlider<epiS32>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiS64: control = MakeControlSlider<epiS64>(propertyChangedHandler, prtyID); break;
+        case epi::epiMetaTypeID_epiByte: control = MakeControlSlider<epiByte>(prty); break;
+        case epi::epiMetaTypeID_epiFloat: control = MakeControlSlider<epiFloat>(prty); break;
+        case epi::epiMetaTypeID_epiDouble: control = MakeControlSlider<epiDouble>(prty); break;
+        case epi::epiMetaTypeID_epiSize_t: control = MakeControlSlider<epiSize_t>(prty); break;
+        case epi::epiMetaTypeID_epiU8: control = MakeControlSlider<epiU8>(prty); break;
+        case epi::epiMetaTypeID_epiU16: control = MakeControlSlider<epiU16>(prty); break;
+        case epi::epiMetaTypeID_epiU32: control = MakeControlSlider<epiU32>(prty); break;
+        case epi::epiMetaTypeID_epiU64: control = MakeControlSlider<epiU64>(prty); break;
+        case epi::epiMetaTypeID_epiS8: control = MakeControlSlider<epiS8>(prty); break;
+        case epi::epiMetaTypeID_epiS16: control = MakeControlSlider<epiS16>(prty); break;
+        case epi::epiMetaTypeID_epiS32: control = MakeControlSlider<epiS32>(prty); break;
+        case epi::epiMetaTypeID_epiS64: control = MakeControlSlider<epiS64>(prty); break;
         default: epiLogError("Unrecognized typeID=`{}`", typeID); break;
         }
     }
@@ -101,44 +94,28 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
     {
         switch (typeID)
         {
-        case epi::epiMetaTypeID_epiSize2: control = MakeControlSliderRange<epiSize2, epiSize_t>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiSize2f: control = MakeControlSliderRange<epiSize2f, epiFloat>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiSize2d: control = MakeControlSliderRange<epiSize2d, epiDouble>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiSize2s: control = MakeControlSliderRange<epiSize2s, epiS32>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiSize2u: control = MakeControlSliderRange<epiSize2u, epiU32>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2f: control = MakeControlSliderRange<epiVec2f, epiFloat>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2d: control = MakeControlSliderRange<epiVec2d, epiDouble>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2s: control = MakeControlSliderRange<epiVec2s, epiS32>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2s8: control = MakeControlSliderRange<epiVec2s8, epiS8>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2s16: control = MakeControlSliderRange<epiVec2s16, epiS16>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2s32: control = MakeControlSliderRange<epiVec2s32, epiS32>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2s64: control = MakeControlSliderRange<epiVec2s64, epiS64>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2u: control = MakeControlSliderRange<epiVec2u, epiU32>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2u8: control = MakeControlSliderRange<epiVec2u8, epiU8>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2u16: control = MakeControlSliderRange<epiVec2u16, epiU16>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2u32: control = MakeControlSliderRange<epiVec2u32, epiU32>(propertyChangedHandler, prtyID); break;
-        case epi::epiMetaTypeID_epiVec2u64: control = MakeControlSliderRange<epiVec2u64, epiU64>(propertyChangedHandler, prtyID); break;
+        case epi::epiMetaTypeID_epiSize2: control = MakeControlSliderRange<epiSize2, epiSize_t>(prty); break;
+        case epi::epiMetaTypeID_epiSize2f: control = MakeControlSliderRange<epiSize2f, epiFloat>(prty); break;
+        case epi::epiMetaTypeID_epiSize2d: control = MakeControlSliderRange<epiSize2d, epiDouble>(prty); break;
+        case epi::epiMetaTypeID_epiSize2s: control = MakeControlSliderRange<epiSize2s, epiS32>(prty); break;
+        case epi::epiMetaTypeID_epiSize2u: control = MakeControlSliderRange<epiSize2u, epiU32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2f: control = MakeControlSliderRange<epiVec2f, epiFloat>(prty); break;
+        case epi::epiMetaTypeID_epiVec2d: control = MakeControlSliderRange<epiVec2d, epiDouble>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s: control = MakeControlSliderRange<epiVec2s, epiS32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s8: control = MakeControlSliderRange<epiVec2s8, epiS8>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s16: control = MakeControlSliderRange<epiVec2s16, epiS16>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s32: control = MakeControlSliderRange<epiVec2s32, epiS32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s64: control = MakeControlSliderRange<epiVec2s64, epiS64>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u: control = MakeControlSliderRange<epiVec2u, epiU32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u8: control = MakeControlSliderRange<epiVec2u8, epiU8>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u16: control = MakeControlSliderRange<epiVec2u16, epiU16>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u32: control = MakeControlSliderRange<epiVec2u32, epiU32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u64: control = MakeControlSliderRange<epiVec2u64, epiU64>(prty); break;
         default: epiLogError("Unrecognized typeID=`{}`", typeID); break;
         }
     }
 
     return control;
-}
-
-void epiWXObjectConfigurationPanel::OnSliderRangeValueChanged(wxCommandEvent& event)
-{
-    EPI_NAMESPACE_USING()
-
-    const epiWXSliderRange<epiU8>* slider = static_cast<const epiWXSliderRange<epiU8>*>(event.GetEventObject());
-    if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
-    {
-        switch (ptr->GetTypeID())
-        {
-        case epiMetaTypeID_epiVec2s8: ptr->Set<epiVec2s8>(epiVec2s8{slider->GetValueLower(), slider->GetValueUpper()}); break;
-        case epiMetaTypeID_epiVec2u8: ptr->Set<epiVec2u8>(epiVec2u8{slider->GetValueLower(), slider->GetValueUpper()}); break;
-        default: epiLogError("Unhandled case for typeid=`{}`", ptr->GetTypeID());
-        }
-    }
 }
 
 void epiWXObjectConfigurationPanel::OnCheckboxValueChanged(wxCommandEvent& event)

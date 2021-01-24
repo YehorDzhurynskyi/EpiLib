@@ -6,17 +6,15 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 #define UpdateThreshold(Channel) \
-    UpdateImage<decltype(m_Threshold##Channel), epiU8, epiU8, epiU8, epiU8>(PID_Threshold##Channel, \
-                                                                            m_Threshold##Channel, \
-                                                                            value, \
-                                                                            m_PeriodicalTask##Channel, \
-                                                                            static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
-                                                                            &mmImage::ToGrayScale##Channel, \
-                                                                            &mmImage::Threshold, \
-                                                                            value, \
-                                                                            value, \
-                                                                            value, \
-                                                                            0);
+    UpdateImage<epiU8, epiU8, epiU8, epiU8>(m_PeriodicalTask##Channel, \
+                                            static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
+                                            &mmImage::ToGrayScale##Channel, \
+                                            &mmImage::Threshold, \
+                                            value, \
+                                            value, \
+                                            value, \
+                                            0); \
+    PropertyChangedTrigger(PID_Threshold##Channel, m_Threshold##Channel, value);
 
 mmVMImageThreshold::mmVMImageThreshold()
 {
