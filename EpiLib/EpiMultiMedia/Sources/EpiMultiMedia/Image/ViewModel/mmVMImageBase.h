@@ -45,6 +45,7 @@ protected:
     void UpdateImage(epiEventLoopPeriodicalTask*& task,
                      void(mmVMImageBase::*SetImage)(const mmImage&),
                      mmImage(mmImage::*Convert)() const,
+                     const epiChar* jobName,
                      void(mmImage::*Callback)(Args...),
                      Args... args);
 
@@ -56,15 +57,33 @@ template<typename ...Args>
 void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
                                 void(mmVMImageBase::*SetImage)(const mmImage&),
                                 mmImage(mmImage::*Convert)() const,
+                                const epiChar* jobName,
                                 void(mmImage::*Callback)(Args...),
                                 Args... args)
 {
+    epiProfileFunction;
+
     if (mmImage* image = GetImageSrc())
     {
-        std::unique_ptr<mmJobImage<Args...>> job = std::make_unique<mmJobImage<Args...>>((image->*Convert)(), Callback, std::forward<Args>(args)...);
+        epiProfileBlock("UpdateImage::JobScheduling");
+
+        epiProfileBlock("UpdateImage::MakeJob");
+
+        epiProfileBlock("UpdateImage::MakeJob NEW");
+        auto jobPtr = new mmJobImage<Args...>((image->*Convert)(), jobName, Callback, std::forward<Args>(args)...);
+        epiProfileBlockEnd;
+
+        std::unique_ptr<mmJobImage<Args...>> job(jobPtr);
+        epiProfileBlockEnd;
+
         std::shared_ptr<epiJobHandle> jobHandle = epiJobScheduler::GetInstance().Schedule(std::move(job));
+
+        epiProfileBlockEnd;
+
         if (epiEventLoop* eventLoop = epiEventLoop::GetMainEventLoop())
         {
+            epiProfileBlock("UpdateImage::EventLoop");
+
             if (task != nullptr)
             {
                 task->Cancel();
@@ -72,6 +91,8 @@ void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
 
             task = &eventLoop->AddPeriodicalTask([this, jobHandle, SetImage]()
             {
+                epiProfileBlock("PeriodicalTask");
+
                 epiBool keepAlive = true;
 
                 if (jobHandle->IsCompleted())

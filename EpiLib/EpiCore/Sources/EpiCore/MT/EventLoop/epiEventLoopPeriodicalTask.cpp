@@ -25,6 +25,8 @@ void epiEventLoopPeriodicalTask::Cancel()
 
 void epiEventLoopPeriodicalTask::Execute()
 {
+    epiProfileBlock("Task::Execute");
+
     epiAssert(IsReady());
 
     m_LastProcessingTime = Clock::now();

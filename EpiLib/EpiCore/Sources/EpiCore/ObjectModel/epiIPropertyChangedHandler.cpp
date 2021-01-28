@@ -28,6 +28,8 @@ void epiIPropertyChangedHandler::PropertyChangedUnregister(epiMetaPropertyID pro
 
 void epiIPropertyChangedHandler::PropertyChangedTriggerCallbacks(epiMetaPropertyID propertyID)
 {
+    epiProfileFunction;
+
     for (auto& [listener, callbacks] : m_PropertyChangedListeners)
     {
         if (auto callbackIt = callbacks.find(propertyID); callbackIt != callbacks.end())

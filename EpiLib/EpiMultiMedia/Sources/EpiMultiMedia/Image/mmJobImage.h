@@ -45,16 +45,18 @@ public:
     using Callback = void(mmImage::*)(Args ...args);
 
 public:
-    mmJobImage(const mmImage& image, Callback callback, Args ...args)
+    mmJobImage(const mmImage& image, const epiChar* EPI_BUILD_PROFILE_ONLY(jobName), Callback callback, Args ...args)
         : m_Image{image.Duplicate()}
         , m_Callback{callback}
         , m_Args{std::forward<Args>(args)...}
+        EPI_BUILD_PROFILE_ONLY(, m_JobName(jobName))
     {
     }
 
 public:
     void Execute() override
     {
+        epiProfileBlock(epiString("mmJobImage::Execute(`" + m_JobName + "`)").c_str());
         ApplyMemberFunc<sizeof...(Args)>::ApplyTuple(&m_Image, m_Callback, m_Args);
     }
 
@@ -65,6 +67,8 @@ protected:
     mmImage m_Image;
     Callback m_Callback;
     std::tuple<Args...> m_Args;
+
+    EPI_BUILD_PROFILE_ONLY(epiString m_JobName);
 };
 
 }

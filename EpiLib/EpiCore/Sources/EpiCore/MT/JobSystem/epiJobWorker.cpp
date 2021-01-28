@@ -25,6 +25,19 @@ epiBool epiJobWorker::IsCancelled() const
 
 void epiJobWorker::Run()
 {
+#ifdef EPI_BUILD_PROFILE
+    std::string threadName;
+
+    {
+        std::stringstream ss;
+        ss << "Worker: " << m_Thread.get_id();
+
+        threadName = std::move(ss.str());
+    }
+
+    epiProfileThread(threadName.c_str());
+#endif
+
     while (!IsCancelled())
     {
         std::shared_ptr<epiJobHandle> handle;
@@ -58,9 +71,12 @@ void epiJobWorker::Run()
 
 std::shared_ptr<epiJobHandle> epiJobWorker::Push(std::unique_ptr<epiIJob>&& job)
 {
+    epiProfileFunction;
+
     std::shared_ptr<epiJobHandle> handle = std::make_shared<epiJobHandle>(std::move(job));
 
     {
+        epiProfileBlock("Mutex");
         std::lock_guard<std::mutex> lk(m_JobHandlesMutex);
         m_JobHandles.push_back(handle);
     }

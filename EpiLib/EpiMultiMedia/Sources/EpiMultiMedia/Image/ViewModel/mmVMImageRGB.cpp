@@ -7,19 +7,28 @@ EPI_NAMESPACE_BEGIN()
 
 void mmVMImageRGB::SetImageR_Callback(const mmImage& value)
 {
-    PropertyChangedTrigger(PID_ImageR, m_ImageR, value);
+    epiProfileFunction;
+
+    constexpr epiBool forceAssignment = true;
+    PropertyChangedTrigger(PID_ImageR, m_ImageR, value, forceAssignment);
     PropertyChangedTriggerCallbacks(PID_ImageTgt);
 }
 
 void mmVMImageRGB::SetImageG_Callback(const mmImage& value)
 {
-    PropertyChangedTrigger(PID_ImageG, m_ImageG, value);
+    epiProfileFunction;
+
+    constexpr epiBool forceAssignment = true;
+    PropertyChangedTrigger(PID_ImageG, m_ImageG, value, forceAssignment);
     PropertyChangedTriggerCallbacks(PID_ImageTgt);
 }
 
 void mmVMImageRGB::SetImageB_Callback(const mmImage& value)
 {
-    PropertyChangedTrigger(PID_ImageB, m_ImageB, value);
+    epiProfileFunction;
+
+    constexpr epiBool forceAssignment = true;
+    PropertyChangedTrigger(PID_ImageB, m_ImageB, value, forceAssignment);
     PropertyChangedTriggerCallbacks(PID_ImageTgt);
 }
 
@@ -35,6 +44,8 @@ void mmVMImageRGB::SetImageSrc_Internal(mmImage* imageSrc)
 
 mmImage mmVMImageRGB::GetImageTgt_Internal() const
 {
+    epiProfileFunction;
+
     mmImage to;
 
     const mmImage& r = GetImageR();

@@ -62,6 +62,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlSlider(const epi::MetaProper
 
     propertyChangedHandler.PropertyChangedRegister(prty.GetPID(), [slider]()
     {
+        epiProfileBlock("PropertyChangedRegister");
         slider->RefreshValue();
     });
 

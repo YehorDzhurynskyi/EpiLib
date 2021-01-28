@@ -97,6 +97,8 @@ protected:
 template<typename T>
 PropertyPointerGet_t<T> PropertyPointer::Get() const
 {
+    epiProfileBlock("PropertyPointer::Get()");
+
     static_assert(std::is_same_v<std::decay_t<T>, T>, "Please remove the reference, cv-qualifiers from provided template argument");
     epiAssert(IsReadable());
 
@@ -123,6 +125,8 @@ PropertyPointerGet_t<T> PropertyPointer::Get() const
 template<typename T>
 void PropertyPointer::Set(PropertyPointerSet_t<T> value)
 {
+    epiProfileBlock("PropertyPointer::Set()");
+
     static_assert(std::is_same_v<std::decay_t<T>, T>);
     epiAssert(IsWritable());
 
@@ -148,6 +152,8 @@ void PropertyPointer::Set(PropertyPointerSet_t<T> value)
 template<typename T>
 void* PropertyPointer::Get_Static() const
 {
+    epiProfileBlock("PropertyPointer::Get_Static()");
+
     epiAssert(IsReadable());
 
     void* value = nullptr;
@@ -210,6 +216,8 @@ void* PropertyPointer::Get_Static() const
 template<typename T>
 void PropertyPointer::Set_Static(const void* value)
 {
+    epiProfileBlock("PropertyPointer::Set_Static()");
+
     epiAssert(IsWritable());
 
     if (m_Form == Form::ArrayElem)

@@ -118,6 +118,8 @@ wxPoint epiWXSliderThumb<T>::GetPosition() const
 template<typename T>
 void epiWXSliderThumb<T>::SetPosition(const wxPoint& position)
 {
+    epiProfileFunction;
+
     epiS32 positionX = position.x;
 
 #if 0

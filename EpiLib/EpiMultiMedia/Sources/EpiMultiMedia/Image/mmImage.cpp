@@ -18,6 +18,8 @@ mmImage ConvertTo(const mmImage& from,
                   Transform&& transform = nullptr,
                   TransformArgs&& ...transformArgs)
 {
+    epiProfileFunction;
+
     mmImage to;
     to.SetPixelFormat(toFmt);
     to.SetWidth(from.GetWidth());

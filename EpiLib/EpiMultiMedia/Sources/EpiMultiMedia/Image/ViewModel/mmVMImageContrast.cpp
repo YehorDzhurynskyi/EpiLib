@@ -9,6 +9,7 @@ EPI_NAMESPACE_BEGIN()
     UpdateImage<epiS8, epiS8, epiS8, epiS8>(m_PeriodicalTask##Channel, \
                                             static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
                                             &mmImage::ToGrayScale##Channel, \
+                                            "Contrast" epiStringify(Channel), \
                                             &mmImage::Contrast, \
                                             value, \
                                             value, \
@@ -21,6 +22,7 @@ EPI_NAMESPACE_BEGIN()
     UpdateImage<epiU8, epiU8, epiU8, epiU8, epiU8, epiU8, epiU8, epiU8>(m_PeriodicalTask##Channel, \
                                                                         static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
                                                                         &mmImage::ToGrayScale##Channel, \
+                                                                        "ContrastStretch" epiStringify(Channel), \
                                                                         &mmImage::ContrastStretch, \
                                                                         value.x, \
                                                                         value.y, \

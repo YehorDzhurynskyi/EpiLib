@@ -9,6 +9,7 @@ EPI_NAMESPACE_BEGIN()
     UpdateImage<epiFloat, epiFloat, epiFloat, epiFloat>(m_PeriodicalTask##Channel, \
                                                         static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
                                                         &mmImage::ToGrayScale##Channel, \
+                                                        "Gamma" epiStringify(Channel), \
                                                         &mmImage::Gamma, \
                                                         value, \
                                                         value, \

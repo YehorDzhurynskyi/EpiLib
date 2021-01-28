@@ -20,7 +20,7 @@ public:
     void PropertyChangedUnregister(epiMetaPropertyID propertyID);
 
     template<typename PropertyType>
-    void PropertyChangedTrigger(epiMetaPropertyID propertyID, PropertyType& property, const PropertyType& value);
+    void PropertyChangedTrigger(epiMetaPropertyID propertyID, PropertyType& property, const PropertyType& value, epiBool forceAssignment = false);
 
     void PropertyChangedTriggerCallbacks(epiMetaPropertyID propertyID);
 
@@ -29,9 +29,11 @@ private:
 };
 
 template<typename PropertyType>
-void epiIPropertyChangedHandler::PropertyChangedTrigger(epiMetaPropertyID propertyID, PropertyType& property, const PropertyType& value)
+void epiIPropertyChangedHandler::PropertyChangedTrigger(epiMetaPropertyID propertyID, PropertyType& property, const PropertyType& value, epiBool forceAssignment)
 {
-    if (!epiEqual(property, value))
+    epiProfileFunction;
+
+    if (forceAssignment || !epiEqual(property, value))
     {
         property = value;
         PropertyChangedTriggerCallbacks(propertyID);

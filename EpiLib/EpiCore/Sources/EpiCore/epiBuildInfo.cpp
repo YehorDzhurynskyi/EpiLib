@@ -37,18 +37,24 @@ epiString epiBuildInfo::ToString() const
     str = "Build Info:\n";
 
     str += "\tPlatform: ";
-
 #if defined(EPI_PLATFORM_WINDOWS)
-    str += "Windows\n";
+    str += "Windows";
+#else
+#error "Add missing platform"
 #endif
+    str += "\n";
 
     str += "\tBuild Configuration: ";
-
 #if defined(EPI_BUILD_DEBUG)
-    str += "Debug\n";
+    str += "Debug";
 #elif defined(EPI_BUILD_RELEASE)
-    str += "Release\n";
+    str += "Release";
+#elif defined(EPI_BUILD_PROFILE)
+    str += "Profile";
+#else
+#error "Add missing build configuration"
 #endif
+    str += "\n";
 
     if (const epiDeviceCPUBase* cpu = epiPlatform::GetInstance().GetDeviceCPU())
     {

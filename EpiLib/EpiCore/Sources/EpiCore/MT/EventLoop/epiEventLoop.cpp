@@ -23,6 +23,8 @@ epiEventLoopPeriodicalTask& epiEventLoop::AddPeriodicalTask(epiEventLoopPeriodic
 
 void epiEventLoop::Update()
 {
+    epiProfileBlock("epiEventLoop::Update");
+
     for (auto& task : m_Tasks)
     {
         if (!task.IsCancelled() && task.IsReady())

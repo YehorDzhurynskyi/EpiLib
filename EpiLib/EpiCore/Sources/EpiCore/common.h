@@ -32,6 +32,9 @@ using namespace std::chrono_literals;
 #define epiToRadians(_degree) ((epiFloat)(_degree) * (M_PI / 180.0f))
 #define epiToDegree(_radians) ((epiFloat)(_radians) * (180.0f / M_PI))
 
+#define epiStringify(_X) #_X
+#define epiStringConcat(_X0, _X1) _X0 ## _X1
+
 template<typename T>
 constexpr bool epiEqual(const T& lhs, const T& rhs)
 {
@@ -59,12 +62,17 @@ constexpr bool epiEqual(const T& lhs, const T& rhs)
 
 profiler::color_t epiProfileColorOf(std::string name);
 
-#define epiProfileFunction      EASY_FUNCTION(epiProfileColorOf(__FUNCTION__))
-#define epiProfileBlock(NAME)   EASY_BLOCK(NAME, epiProfileColorOf(NAME))
-#define epiProfileBlockEnd      EASY_END_BLOCK
-#define epiProfileThread(NAME)  EASY_THREAD(NAME)
-#define epiProfileCaptureStart  EASY_START_CAPTURE
-#define epiProfileCaptureStop   EASY_STOP_CAPTURE
+#define epiProfileFunction              EASY_FUNCTION(epiProfileColorOf(__FUNCTION__))
+#define epiProfileBlock(NAME)           EASY_BLOCK(NAME, epiProfileColorOf(NAME))
+#define epiProfileBlockEnd              EASY_END_BLOCK
+#define epiProfileThread(NAME)          EASY_THREAD(NAME)
+#define epiProfileCaptureStart          EASY_START_CAPTURE
+#define epiProfileCaptureStop           EASY_STOP_CAPTURE
+#define epiProfileListenStart           profiler::startListen()
+#define epiProfileListenStop            profiler::stopListen()
+#define epiProfileListenStartEx(PORT)   profiler::startListen(PORT)
+#define epiProfileListenStopEx(PORT)    profiler::stopListen(PORT)
+#define epiProfileDump(FILENAME)        profiler::dumpBlocksToFile(FILENAME)
 #else
 #define epiProfileFunction
 #define epiProfileBlock(NAME)
@@ -72,4 +80,9 @@ profiler::color_t epiProfileColorOf(std::string name);
 #define epiProfileThread(NAME)
 #define epiProfileCaptureStart
 #define epiProfileCaptureStop
+#define epiProfileListenStart
+#define epiProfileListenStop
+#define epiProfileListenStartEx(PORT)
+#define epiProfileListenStopEx(PORT)
+#define epiProfileDump(FILENAME)
 #endif

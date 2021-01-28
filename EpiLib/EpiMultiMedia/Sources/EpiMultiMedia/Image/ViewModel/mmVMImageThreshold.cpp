@@ -9,6 +9,7 @@ EPI_NAMESPACE_BEGIN()
     UpdateImage<epiU8, epiU8, epiU8, epiU8>(m_PeriodicalTask##Channel, \
                                             static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
                                             &mmImage::ToGrayScale##Channel, \
+                                            "Threshold" epiStringify(Channel), \
                                             &mmImage::Threshold, \
                                             value, \
                                             value, \
@@ -23,6 +24,8 @@ mmVMImageThreshold::mmVMImageThreshold()
 
 void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
 {
+    epiProfileFunction;
+
     if (!epiEqual(GetThresholdR(), value))
     {
         if (mmImage* image = GetImageSrc())
@@ -40,6 +43,8 @@ void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
 
 void mmVMImageThreshold::SetThresholdG_Callback(epiU8 value)
 {
+    epiProfileFunction;
+
     if (!epiEqual(GetThresholdG(), value))
     {
         if (mmImage* image = GetImageSrc())
@@ -57,6 +62,8 @@ void mmVMImageThreshold::SetThresholdG_Callback(epiU8 value)
 
 void mmVMImageThreshold::SetThresholdB_Callback(epiU8 value)
 {
+    epiProfileFunction;
+
     if (!epiEqual(GetThresholdB(), value))
     {
         if (mmImage* image = GetImageSrc())
