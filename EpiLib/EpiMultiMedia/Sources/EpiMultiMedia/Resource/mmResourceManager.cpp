@@ -27,7 +27,7 @@ extern "C"
 namespace
 {
 
-EPI_NAMESPACE_USING();
+EPI_NAMESPACE_USING()
 
 epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const std::map<epiS32, mmMediaBase*>& streams)
 {

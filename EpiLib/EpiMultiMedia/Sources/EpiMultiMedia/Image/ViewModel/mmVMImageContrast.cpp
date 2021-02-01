@@ -5,7 +5,7 @@ EPI_GENREGION_END(include)
 namespace
 {
 
-EPI_NAMESPACE_USING();
+EPI_NAMESPACE_USING()
 
 mmImage UpdateImageCallbackContrast(const mmImage& image, mmImage(mmImage::* convert)() const, epiS8 contrast)
 {

@@ -6,7 +6,7 @@ EPI_GENREGION_END(include)
 namespace
 {
 
-EPI_NAMESPACE_USING();
+EPI_NAMESPACE_USING()
 
 mmImage UpdateImageCallbackThreshold(const mmImage& image, mmImage(mmImage::* convert)() const, epiU8 threshold)
 {

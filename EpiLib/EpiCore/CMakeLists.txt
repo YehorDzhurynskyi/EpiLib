@@ -79,6 +79,9 @@ add_library(EpiCore
     Sources/EpiCore/MT/EventLoop/epiEventLoop.cpp
     Sources/EpiCore/MT/EventLoop/epiEventLoopPeriodicalTask.h
     Sources/EpiCore/MT/EventLoop/epiEventLoopPeriodicalTask.cpp
+
+    Sources/EpiCore/CMD/epiCMDParser.h
+    Sources/EpiCore/CMD/epiCMDParser.cpp
 )
 
 get_target_property(EpiCore_SOURCES EpiCore SOURCES)

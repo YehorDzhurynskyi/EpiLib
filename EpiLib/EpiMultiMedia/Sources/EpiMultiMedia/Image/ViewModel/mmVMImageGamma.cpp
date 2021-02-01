@@ -6,7 +6,7 @@ EPI_GENREGION_END(include)
 namespace
 {
 
-EPI_NAMESPACE_USING();
+EPI_NAMESPACE_USING()
 
 mmImage UpdateImageCallbackGamma(const mmImage& image, mmImage(mmImage::*convert)() const, epiFloat gamma)
 {
