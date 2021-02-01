@@ -26,10 +26,10 @@ protected:
                                 T min = std::numeric_limits<T>::min(),
                                 T max = std::numeric_limits<T>::max());
 
-    template<typename T, typename Inner>
+    template<typename T>
     wxWindow* MakeControlSliderRange(const epi::MetaProperty& prty,
-                                     Inner min = std::numeric_limits<Inner>::min(),
-                                     Inner max = std::numeric_limits<Inner>::max());
+                                     T min = std::numeric_limits<T>::min(),
+                                     T max = std::numeric_limits<T>::max());
 
     void OnSliderRangeValueChanged(wxCommandEvent& event);
     void OnCheckboxValueChanged(wxCommandEvent& event);
@@ -58,13 +58,13 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlSlider(const epi::MetaProper
     return slider;
 }
 
-template<typename T, typename Inner>
+template<typename T>
 wxWindow* epiWXObjectConfigurationPanel::MakeControlSliderRange(const epi::MetaProperty& prty,
-                                                                Inner min,
-                                                                Inner max)
+                                                                T min,
+                                                                T max)
 {
     epi::PropertyPointer ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
-    epiWXSliderRange<T, Inner>* slider = new epiWXSliderRange<T, Inner>(this, wxID_ANY, std::move(ptr), min, max);
+    epiWXSliderRange<T>* slider = new epiWXSliderRange<T>(this, wxID_ANY, std::move(ptr), min, max);
 
     // TODO: check whether interface is supported
     epi::epiIPropertyChangedHandler& propertyChangedHandler = dynamic_cast<epi::epiIPropertyChangedHandler&>(m_Object);
@@ -73,7 +73,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlSliderRange(const epi::MetaP
     {
         if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
         {
-            const T value = ptr->Get<T>();
+            const epiVec2<T>& value = ptr->Get<epiVec2<T>>();
             slider->SetValueLower(value.x);
             slider->SetValueUpper(value.y);
             slider->Refresh();

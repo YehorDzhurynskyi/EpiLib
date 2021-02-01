@@ -98,23 +98,23 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
     {
         switch (typeID)
         {
-        case epi::epiMetaTypeID_epiSize2: control = MakeControlSliderRange<epiSize2, epiSize_t>(prty); break;
-        case epi::epiMetaTypeID_epiSize2f: control = MakeControlSliderRange<epiSize2f, epiFloat>(prty); break;
-        case epi::epiMetaTypeID_epiSize2d: control = MakeControlSliderRange<epiSize2d, epiDouble>(prty); break;
-        case epi::epiMetaTypeID_epiSize2s: control = MakeControlSliderRange<epiSize2s, epiS32>(prty); break;
-        case epi::epiMetaTypeID_epiSize2u: control = MakeControlSliderRange<epiSize2u, epiU32>(prty); break;
-        case epi::epiMetaTypeID_epiVec2f: control = MakeControlSliderRange<epiVec2f, epiFloat>(prty); break;
-        case epi::epiMetaTypeID_epiVec2d: control = MakeControlSliderRange<epiVec2d, epiDouble>(prty); break;
-        case epi::epiMetaTypeID_epiVec2s: control = MakeControlSliderRange<epiVec2s, epiS32>(prty); break;
-        case epi::epiMetaTypeID_epiVec2s8: control = MakeControlSliderRange<epiVec2s8, epiS8>(prty); break;
-        case epi::epiMetaTypeID_epiVec2s16: control = MakeControlSliderRange<epiVec2s16, epiS16>(prty); break;
-        case epi::epiMetaTypeID_epiVec2s32: control = MakeControlSliderRange<epiVec2s32, epiS32>(prty); break;
-        case epi::epiMetaTypeID_epiVec2s64: control = MakeControlSliderRange<epiVec2s64, epiS64>(prty); break;
-        case epi::epiMetaTypeID_epiVec2u: control = MakeControlSliderRange<epiVec2u, epiU32>(prty); break;
-        case epi::epiMetaTypeID_epiVec2u8: control = MakeControlSliderRange<epiVec2u8, epiU8>(prty); break;
-        case epi::epiMetaTypeID_epiVec2u16: control = MakeControlSliderRange<epiVec2u16, epiU16>(prty); break;
-        case epi::epiMetaTypeID_epiVec2u32: control = MakeControlSliderRange<epiVec2u32, epiU32>(prty); break;
-        case epi::epiMetaTypeID_epiVec2u64: control = MakeControlSliderRange<epiVec2u64, epiU64>(prty); break;
+        case epi::epiMetaTypeID_epiSize2: control = MakeControlSliderRange<epiSize_t>(prty); break;
+        case epi::epiMetaTypeID_epiSize2f: control = MakeControlSliderRange<epiFloat>(prty); break;
+        case epi::epiMetaTypeID_epiSize2d: control = MakeControlSliderRange<epiDouble>(prty); break;
+        case epi::epiMetaTypeID_epiSize2s: control = MakeControlSliderRange<epiS32>(prty); break;
+        case epi::epiMetaTypeID_epiSize2u: control = MakeControlSliderRange<epiU32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2f: control = MakeControlSliderRange<epiFloat>(prty); break;
+        case epi::epiMetaTypeID_epiVec2d: control = MakeControlSliderRange<epiDouble>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s: control = MakeControlSliderRange<epiS32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s8: control = MakeControlSliderRange<epiS8>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s16: control = MakeControlSliderRange<epiS16>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s32: control = MakeControlSliderRange<epiS32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2s64: control = MakeControlSliderRange<epiS64>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u: control = MakeControlSliderRange<epiU32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u8: control = MakeControlSliderRange<epiU8>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u16: control = MakeControlSliderRange<epiU16>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u32: control = MakeControlSliderRange<epiU32>(prty); break;
+        case epi::epiMetaTypeID_epiVec2u64: control = MakeControlSliderRange<epiU64>(prty); break;
         default: epiLogError("Unrecognized typeID=`{}`", typeID); break;
         }
     }

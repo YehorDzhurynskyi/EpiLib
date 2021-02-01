@@ -3,7 +3,7 @@
 #include "EpiwxWidgets/epiWXSliderThumb.h"
 #include "EpiwxWidgets/epiWXSliderBase.h"
 
-template<typename T, typename Inner>
+template<typename T>
 class epiWXSliderRange : public epiWXSliderBase
 {
 public:
@@ -13,8 +13,8 @@ public:
     epiWXSliderRange(wxWindow* parent,
                      wxWindowID id,
                      epi::PropertyPointer&& pptr,
-                     Inner minValue,
-                     Inner maxValue,
+                     T minValue,
+                     T maxValue,
                      const wxPoint& pos = wxDefaultPosition,
                      const wxSize& size = wxDefaultSize,
                      epiS32 style = wxSL_HORIZONTAL,
@@ -24,13 +24,13 @@ public:
     std::any GetMinValueAny() const override;
     std::any GetMaxValueAny() const override;
 
-    Inner GetMinValue() const;
-    Inner GetMaxValue() const;
+    T GetMinValue() const;
+    T GetMaxValue() const;
 
-    void SetValueLower(Inner value);
-    Inner GetValueLower() const;
-    void SetValueUpper(Inner value);
-    Inner GetValueUpper() const;
+    void SetValueLower(T value);
+    T GetValueLower() const;
+    void SetValueUpper(T value);
+    T GetValueUpper() const;
 
     wxSize GetSizeSliderControl() const override;
     void GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLabelSize) override;
@@ -46,12 +46,12 @@ protected:
     void OnPaint_Internal(wxPaintEvent& event) override;
 
 protected:
-    Inner m_MinValue{};
-    Inner m_MaxValue{};
+    T m_MinValue{};
+    T m_MaxValue{};
 
     epi::PropertyPointer m_PrtyPtr;
-    epiWXSliderThumb<Inner> m_ThumbLower;
-    epiWXSliderThumb<Inner> m_ThumbUpper;
+    epiWXSliderThumb<T> m_ThumbLower;
+    epiWXSliderThumb<T> m_ThumbUpper;
 };
 
 namespace
@@ -64,12 +64,12 @@ const wxColour kSelectedRangeOutlineColor = wxColour(0, 120, 215);
 
 }
 
-template<typename T, typename Inner>
-epiWXSliderRange<T, Inner>::epiWXSliderRange(wxWindow* parent,
+template<typename T>
+epiWXSliderRange<T>::epiWXSliderRange(wxWindow* parent,
                                              wxWindowID id,
                                              epi::PropertyPointer&& pptr,
-                                             Inner minValue,
-                                             Inner maxValue,
+                                             T minValue,
+                                             T maxValue,
                                              const wxPoint& pos,
                                              const wxSize& size,
                                              epiS32 style,
@@ -77,10 +77,10 @@ epiWXSliderRange<T, Inner>::epiWXSliderRange(wxWindow* parent,
     : super{parent, id, pos, size, style, name}
     , m_MinValue{minValue}
     , m_MaxValue{maxValue}
-    , m_ThumbLower{this, std::clamp(m_PrtyPtr.Get<T>().x, minValue, maxValue)}
-    , m_ThumbUpper{this, std::clamp(m_PrtyPtr.Get<T>().y, minValue, maxValue)}
+    , m_ThumbLower{this, std::clamp(m_PrtyPtr.Get<epiVec2<T>>().x, minValue, maxValue)}
+    , m_ThumbUpper{this, std::clamp(m_PrtyPtr.Get<epiVec2<T>>().y, minValue, maxValue)}
 {
-    const T& prty = m_PrtyPtr.Get<T>();
+    const epiVec2<T>& prty = m_PrtyPtr.Get<epiVec2<T>>();
     if (prty.x > prty.y)
     {
         epiLogError("lower value=`{}` should be less or equal to upper value=`{}`!", prty.x, prty.y);
@@ -88,65 +88,65 @@ epiWXSliderRange<T, Inner>::epiWXSliderRange(wxWindow* parent,
     }
 }
 
-template<typename T, typename Inner>
-std::any epiWXSliderRange<T, Inner>::GetMinValueAny() const
+template<typename T>
+std::any epiWXSliderRange<T>::GetMinValueAny() const
 {
     return std::make_any<T>(GetMinValue());
 }
 
-template<typename T, typename Inner>
-std::any epiWXSliderRange<T, Inner>::GetMaxValueAny() const
+template<typename T>
+std::any epiWXSliderRange<T>::GetMaxValueAny() const
 {
     return std::make_any<T>(GetMaxValue());
 }
 
-template<typename T, typename Inner>
-Inner epiWXSliderRange<T, Inner>::GetMinValue() const
+template<typename T>
+T epiWXSliderRange<T>::GetMinValue() const
 {
     return m_MinValue;
 }
 
-template<typename T, typename Inner>
-Inner epiWXSliderRange<T, Inner>::GetMaxValue() const
+template<typename T>
+T epiWXSliderRange<T>::GetMaxValue() const
 {
     return m_MaxValue;
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::SetValueLower(Inner value)
+template<typename T>
+void epiWXSliderRange<T>::SetValueLower(T value)
 {
     m_ThumbLower.SetValue(value);
-    m_PrtyPtr.Set<T>(T{value, GetValueUpper()});
+    m_PrtyPtr.Set<epiVec2<T>>(epiVec2<T>{value, GetValueUpper()});
 }
 
-template<typename T, typename Inner>
-Inner epiWXSliderRange<T, Inner>::GetValueLower() const
+template<typename T>
+T epiWXSliderRange<T>::GetValueLower() const
 {
     return m_ThumbLower.GetValue();
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::SetValueUpper(Inner value)
+template<typename T>
+void epiWXSliderRange<T>::SetValueUpper(T value)
 {
     m_ThumbUpper.SetValue(value);
-    m_PrtyPtr.Set<T>(T{GetValueLower(), value});
+    m_PrtyPtr.Set<epiVec2<T>>(epiVec2<T>{GetValueLower(), value});
 }
 
-template<typename T, typename Inner>
-Inner epiWXSliderRange<T, Inner>::GetValueUpper() const
+template<typename T>
+T epiWXSliderRange<T>::GetValueUpper() const
 {
     return m_ThumbUpper.GetValue();
 }
 
-template<typename T, typename Inner>
-wxSize epiWXSliderRange<T, Inner>::GetSizeSliderControl() const
+template<typename T>
+wxSize epiWXSliderRange<T>::GetSizeSliderControl() const
 {
     return wxSize{std::max({500, m_ThumbLower.GetSize().x, m_ThumbUpper.GetSize().x}),
                   std::max({26, m_ThumbLower.GetSize().y, m_ThumbUpper.GetSize().y})};
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLabelSize)
+template<typename T>
+void epiWXSliderRange<T>::GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLabelSize)
 {
     wxClientDC dc(this);
 
@@ -154,8 +154,8 @@ void epiWXSliderRange<T, Inner>::GetSizeLabelMinMaxValue(wxSize& minLabelSize, w
     maxLabelSize = dc.GetTextExtent(std::to_string(m_MaxValue));
 }
 
-template<typename T, typename Inner>
-wxSize epiWXSliderRange<T, Inner>::GetSizeBBox()
+template<typename T>
+wxSize epiWXSliderRange<T>::GetSizeBBox()
 {
     const wxSize sliderControlSize = GetSizeSliderControl();
     const epiS32 border = GetBorderWidth();
@@ -167,8 +167,8 @@ wxSize epiWXSliderRange<T, Inner>::GetSizeBBox()
     return wxSize{2 * border + sliderControlSize.x + minLabelSize.x + maxLabelSize.x + 2 * static_cast<epiS32>(GetMinMaxLabelPadding()), 2 * border + std::max({sliderControlSize.y, minLabelSize.y, maxLabelSize.y})};
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::OnMouseDown_Internal(wxMouseEvent& event)
+template<typename T>
+void epiWXSliderRange<T>::OnMouseDown_Internal(wxMouseEvent& event)
 {
 #if 0
     if (!IsEnabled())
@@ -191,8 +191,8 @@ void epiWXSliderRange<T, Inner>::OnMouseDown_Internal(wxMouseEvent& event)
 #endif
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::OnMouseUp_Internal(wxMouseEvent& event)
+template<typename T>
+void epiWXSliderRange<T>::OnMouseUp_Internal(wxMouseEvent& event)
 {
 #if 0
     if (!IsEnabled())
@@ -212,8 +212,8 @@ void epiWXSliderRange<T, Inner>::OnMouseUp_Internal(wxMouseEvent& event)
 #endif
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::OnMouseMotion_Internal(wxMouseEvent& event)
+template<typename T>
+void epiWXSliderRange<T>::OnMouseMotion_Internal(wxMouseEvent& event)
 {
 #if 0
     if (!IsEnabled())
@@ -246,8 +246,8 @@ void epiWXSliderRange<T, Inner>::OnMouseMotion_Internal(wxMouseEvent& event)
 #endif
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::OnMouseLost_Internal(wxMouseCaptureLostEvent& event)
+template<typename T>
+void epiWXSliderRange<T>::OnMouseLost_Internal(wxMouseCaptureLostEvent& event)
 {
 #if 0
     m_Thumb.SetDragged(false);
@@ -257,8 +257,8 @@ void epiWXSliderRange<T, Inner>::OnMouseLost_Internal(wxMouseCaptureLostEvent& e
 #endif
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::OnMouseEnter_Internal(wxMouseEvent& event)
+template<typename T>
+void epiWXSliderRange<T>::OnMouseEnter_Internal(wxMouseEvent& event)
 {
 #if 0
     if (!IsEnabled())
@@ -275,8 +275,8 @@ void epiWXSliderRange<T, Inner>::OnMouseEnter_Internal(wxMouseEvent& event)
 #endif
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::OnMouseLeave_Internal(wxMouseEvent& event)
+template<typename T>
+void epiWXSliderRange<T>::OnMouseLeave_Internal(wxMouseEvent& event)
 {
 #if 0
     if (!IsEnabled())
@@ -290,8 +290,8 @@ void epiWXSliderRange<T, Inner>::OnMouseLeave_Internal(wxMouseEvent& event)
 #endif
 }
 
-template<typename T, typename Inner>
-void epiWXSliderRange<T, Inner>::OnPaint_Internal(wxPaintEvent& event)
+template<typename T>
+void epiWXSliderRange<T>::OnPaint_Internal(wxPaintEvent& event)
 {
 #if 0
     wxBufferedPaintDC dc(this);
