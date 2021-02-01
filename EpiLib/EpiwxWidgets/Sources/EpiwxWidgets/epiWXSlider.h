@@ -154,7 +154,6 @@ void epiWXSlider<T>::OnMouseUp_Internal(wxMouseEvent& event)
 
     m_Thumb.SetPosition(event.GetPosition());
     m_PrtyPtr.Set<T>(m_Thumb.GetValue());
-    epiLogDebug("SET: {}", m_Thumb.GetValue());
     m_Thumb.SetDragged(false);
 
     if (HasCapture())
@@ -180,7 +179,6 @@ void epiWXSlider<T>::OnMouseMotion_Internal(wxMouseEvent& event)
     {
         m_Thumb.SetPosition(mousePosition);
         m_PrtyPtr.Set<T>(m_Thumb.GetValue());
-        epiLogDebug("SET: {}", m_Thumb.GetValue());
         refreshNeeded = true;
     }
     else

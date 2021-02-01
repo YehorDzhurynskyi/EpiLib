@@ -46,17 +46,6 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlSlider(const epi::MetaProper
     epi::PropertyPointer ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
     epiWXSlider<T>* slider = new epiWXSlider<T>(this, wxID_ANY, std::move(ptr), min, max);
 
-    // TODO: figure out whether it should be unbonded
-#if 0
-    slider->Bind(wxEVT_SLIDER, [slider](wxCommandEvent& event)
-    {
-        if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
-        {
-            ptr->Set<T>(slider->GetValuePrimary());
-        }
-    });
-#endif
-
     // TODO: check whether interface is supported
     epi::epiIPropertyChangedHandler& propertyChangedHandler = dynamic_cast<epi::epiIPropertyChangedHandler&>(m_Object);
 

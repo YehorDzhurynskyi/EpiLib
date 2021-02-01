@@ -17,7 +17,6 @@ add_library(EpiMultimedia
     Sources/EpiMultimedia/Image/mmImage.epi
     Sources/EpiMultimedia/Image/mmImage.h
     Sources/EpiMultimedia/Image/mmImage.cpp
-    Sources/EpiMultimedia/Image/mmJobImage.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.epi
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.h
     Sources/EpiMultimedia/Image/ViewModel/mmVMImageBase.cpp

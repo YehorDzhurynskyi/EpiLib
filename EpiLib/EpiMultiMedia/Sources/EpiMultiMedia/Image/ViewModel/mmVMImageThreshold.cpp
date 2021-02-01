@@ -3,18 +3,31 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/ViewModel/mmVMImageThreshold.cxx"
 EPI_GENREGION_END(include)
 
+namespace
+{
+
+EPI_NAMESPACE_USING();
+
+mmImage UpdateImageCallbackThreshold(const mmImage& image, mmImage(mmImage::* convert)() const, epiU8 threshold)
+{
+    mmImage result = (image.*convert)();
+    result.Threshold(threshold, threshold, threshold, 0);
+
+    return result;
+}
+
+}
+
 EPI_NAMESPACE_BEGIN()
 
 #define UpdateThreshold(Channel) \
-    UpdateImage<epiU8, epiU8, epiU8, epiU8>(m_PeriodicalTask##Channel, \
-                                            static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
-                                            &mmImage::ToGrayScale##Channel, \
-                                            "Threshold" epiStringify(Channel), \
-                                            &mmImage::Threshold, \
-                                            value, \
-                                            value, \
-                                            value, \
-                                            0); \
+    UpdateImage<decltype(UpdateImageCallbackThreshold), const mmImage&, mmImage(mmImage::*)() const, epiU8> \
+                                                        (m_PeriodicalTask##Channel, \
+                                                        static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
+                                                        &UpdateImageCallbackThreshold, \
+                                                        *GetImageSrc(), \
+                                                        &mmImage::ToGrayScale##Channel, \
+                                                        value); \
     PropertyChangedTrigger(PID_Threshold##Channel, m_Threshold##Channel, value);
 
 mmVMImageThreshold::mmVMImageThreshold()

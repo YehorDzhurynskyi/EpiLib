@@ -4,6 +4,11 @@ EPI_NAMESPACE_BEGIN()
 
 std::unique_ptr<epiEventLoop> epiEventLoop::ms_MainEventLoop;
 
+epiEventLoop::epiEventLoop(epiEventLoopPeriodicalTask::Duration updatePeriod)
+    : m_UpdatePeriod{updatePeriod}
+{
+}
+
 void epiEventLoop::SetMainEventLoop(std::unique_ptr<epiEventLoop>&& eventLoop)
 {
     ms_MainEventLoop = std::move(eventLoop);
@@ -17,6 +22,7 @@ epiEventLoop* epiEventLoop::GetMainEventLoop()
 epiEventLoopPeriodicalTask& epiEventLoop::AddPeriodicalTask(epiEventLoopPeriodicalTask::Task&& task, epiEventLoopPeriodicalTask::Duration period)
 {
     // TODO: should be a main thread, add `epiAssert`
+    epiAssert(m_UpdatePeriod <= period);
 
     return m_Tasks.emplace_back(std::move(task), period);
 }

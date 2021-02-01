@@ -59,6 +59,10 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
 
         // TODO: adjust for a specific type
         checkbox->Bind(wxEVT_CHECKBOX, &epiWXObjectConfigurationPanel::OnCheckboxValueChanged, this); // TODO: figure out whether it should be unbonded
+
+        // TODO: release memory
+        epi::PropertyPointer* ptr = new epi::PropertyPointer(epi::PropertyPointer::CreateFromProperty(m_Object, &prty));
+        checkbox->SetClientData(ptr);
         propertyChangedHandler.PropertyChangedRegister(prtyID, [this, checkbox]()
         {
             if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(checkbox->GetClientData()))

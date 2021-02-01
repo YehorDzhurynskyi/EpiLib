@@ -69,6 +69,7 @@ add_library(EpiCore
     Sources/EpiCore/MT/JobSystem/epiIJob.epi
     Sources/EpiCore/MT/JobSystem/epiIJob.h
     Sources/EpiCore/MT/JobSystem/epiIJob.cpp
+    Sources/EpiCore/MT/JobSystem/epiJobCallback.h
     Sources/EpiCore/MT/JobSystem/epiJobHandle.h
     Sources/EpiCore/MT/JobSystem/epiJobHandle.cpp
     Sources/EpiCore/MT/JobSystem/epiJobWorker.h

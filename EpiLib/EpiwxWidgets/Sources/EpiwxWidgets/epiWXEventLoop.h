@@ -10,6 +10,11 @@ EPI_NAMESPACE_BEGIN()
 class epiWXEventLoop : public epiEventLoop
 {
 public:
+    using super = epiEventLoop;
+
+public:
+    epiWXEventLoop(epiEventLoopPeriodicalTask::Duration updatePeriod);
+
     void Run() override;
 
 protected:

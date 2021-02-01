@@ -311,6 +311,8 @@ constexpr epiU32 mmImage::ChannelsOf(mmImagePixelFormat fmt)
 
 mmImage mmImage::Duplicate() const
 {
+    epiProfileFunction;
+
     mmImage image;
     image.SetWidth(GetWidth());
     image.SetHeight(GetHeight());
@@ -671,16 +673,16 @@ void mmImage::Threshold(epiU8 thrR, epiU8 thrG, epiU8 thrB, epiU8 thrA)
         if (thrA == 0)
         {
             mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
-        *this = ConvertTo(*this,
-                          mmImagePixelFormat::R8G8B8,
-                          get,
-                          epiVec4s{0, 1, 2, 3},
-                          epiVec4s{0, 1, 2, 3},
-                          &Color::Threshold,
-                          thrR,
-                          thrG,
-                          thrB,
-                          thrA);
+            *this = ConvertTo(*this,
+                              mmImagePixelFormat::R8G8B8,
+                              get,
+                              epiVec4s{0, 1, 2, 3},
+                              epiVec4s{0, 1, 2, 3},
+                              &Color::Threshold,
+                              thrR,
+                              thrG,
+                              thrB,
+                              thrA);
             break;
         }
         else

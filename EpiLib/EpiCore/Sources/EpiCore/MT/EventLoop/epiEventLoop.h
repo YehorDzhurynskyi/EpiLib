@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class epiEventLoop
 {
 public:
-    epiEventLoop() = default;
+    epiEventLoop(epiEventLoopPeriodicalTask::Duration updatePeriod);
     epiEventLoop(const epiEventLoop&) = delete;
     epiEventLoop(epiEventLoop&&) = default;
     epiEventLoop& operator=(const epiEventLoop&) = delete;
@@ -27,6 +27,8 @@ protected:
 
 protected:
     static std::unique_ptr<epiEventLoop> ms_MainEventLoop;
+
+    const epiEventLoopPeriodicalTask::Duration m_UpdatePeriod;
 
     // TODO: replace with a lock-free list
     std::list<epiEventLoopPeriodicalTask> m_Tasks;

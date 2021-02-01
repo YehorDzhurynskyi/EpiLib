@@ -3,18 +3,31 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/ViewModel/mmVMImageGamma.cxx"
 EPI_GENREGION_END(include)
 
+namespace
+{
+
+EPI_NAMESPACE_USING();
+
+mmImage UpdateImageCallbackGamma(const mmImage& image, mmImage(mmImage::*convert)() const, epiFloat gamma)
+{
+    mmImage result = (image.*convert)();
+    result.Gamma(gamma, gamma, gamma, 1.0f);
+
+    return result;
+}
+
+}
+
 EPI_NAMESPACE_BEGIN()
 
 #define UpdateGamma(Channel) \
-    UpdateImage<epiFloat, epiFloat, epiFloat, epiFloat>(m_PeriodicalTask##Channel, \
+    UpdateImage<decltype(UpdateImageCallbackGamma), const mmImage&, mmImage(mmImage::*)() const, epiFloat> \
+                                                        (m_PeriodicalTask##Channel, \
                                                         static_cast<void(mmVMImageBase::*)(const mmImage&)>(&mmVMImageRGB::SetImage##Channel), \
+                                                        &UpdateImageCallbackGamma, \
+                                                        *GetImageSrc(), \
                                                         &mmImage::ToGrayScale##Channel, \
-                                                        "Gamma" epiStringify(Channel), \
-                                                        &mmImage::Gamma, \
-                                                        value, \
-                                                        value, \
-                                                        value, \
-                                                        1.0f); \
+                                                        value); \
     PropertyChangedTrigger(PID_Gamma##Channel, m_Gamma##Channel, value);
 
 mmVMImageGamma::mmVMImageGamma()

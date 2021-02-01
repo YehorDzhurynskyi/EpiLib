@@ -9,8 +9,8 @@ EPI_GENREGION_END(include)
 #include "EpiCore/MT/EventLoop/epiEventLoopPeriodicalTask.h"
 #include "EpiCore/MT/EventLoop/epiEventLoop.h"
 #include "EpiCore/MT/JobSystem/epiJobScheduler.h"
+#include "EpiCore/MT/JobSystem/epiJobCallback.h"
 
-#include "EpiMultimedia/Image/mmJobImage.h"
 #include "EpiMultimedia/Image/mmImage.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -41,24 +41,20 @@ protected:
 EPI_GENREGION_END(mmVMImageBase)
 
 protected:
-    template<typename ...Args>
+    template<typename Callback, typename ...Args>
     void UpdateImage(epiEventLoopPeriodicalTask*& task,
                      void(mmVMImageBase::*SetImage)(const mmImage&),
-                     mmImage(mmImage::*Convert)() const,
-                     const epiChar* jobName,
-                     void(mmImage::*Callback)(Args...),
+                     Callback Callback,
                      Args... args);
 
     virtual void SetImageSrc_Internal(mmImage* imageSrc) {}
     virtual mmImage GetImageTgt_Internal() const = 0;
 };
 
-template<typename ...Args>
+template<typename Callback, typename ...Args>
 void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
                                 void(mmVMImageBase::*SetImage)(const mmImage&),
-                                mmImage(mmImage::*Convert)() const,
-                                const epiChar* jobName,
-                                void(mmImage::*Callback)(Args...),
+                                Callback callback,
                                 Args... args)
 {
     epiProfileFunction;
@@ -68,12 +64,7 @@ void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
         epiProfileBlock("UpdateImage::JobScheduling");
 
         epiProfileBlock("UpdateImage::MakeJob");
-
-        epiProfileBlock("UpdateImage::MakeJob NEW");
-        auto jobPtr = new mmJobImage<Args...>((image->*Convert)(), jobName, Callback, std::forward<Args>(args)...);
-        epiProfileBlockEnd;
-
-        std::unique_ptr<mmJobImage<Args...>> job(jobPtr);
+        auto job = std::make_unique<epiJobCallback<Callback, Args...>>(callback, std::forward<Args>(args)...);
         epiProfileBlockEnd;
 
         std::shared_ptr<epiJobHandle> jobHandle = epiJobScheduler::GetInstance().Schedule(std::move(job));
@@ -97,16 +88,16 @@ void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
 
                 if (jobHandle->IsCompleted())
                 {
-                    if (mmJobImage<Args...>* job = jobHandle->GetJob<mmJobImage<Args...>>())
+                    if (auto job = jobHandle->GetJob<epiJobCallback<Callback, Args...>>())
                     {
-                        (this->*SetImage)(job->GetImage());
+                        (this->*SetImage)(job->GetResult());
                     }
 
                     keepAlive = false;
                 }
 
                 return keepAlive;
-            }, 60ms);
+            }, 10ms);
         }
     }
 }
