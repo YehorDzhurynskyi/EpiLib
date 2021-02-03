@@ -74,7 +74,7 @@ protected:
 #endif // epiUSE_METAPROPERTY_NAME
 
 public:
-    friend class PropertyPointer;
+    friend class epiPropertyPointer;
     friend MetaProperty epiMetaProperty(const epiChar*, void*, void*, epiU64, epiMetaTypeID, epiMetaTypeID);
 };
 

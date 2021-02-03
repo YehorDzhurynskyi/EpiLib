@@ -3,7 +3,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiCore/Platform/epiDeviceCPUBase.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiCore/ObjectModel/PropertyPointer.h"
+#include "EpiCore/ObjectModel/Property/epiPropertyPointer.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -25,9 +25,9 @@ epiString epiDeviceCPUBase::ToString() const
         if (const MetaProperty* prty = metaData.GetPropertyBy(pid))
         {
             str += epiString(prty->GetName()) + ":";
-            PropertyPointer ptr = PropertyPointer::CreateFromProperty(*this, prty);
-            str += ' ' + ptr.GetValueString(PropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
-                                            PropertyPointerValueStringStyle_String_Quoted);
+            epiPropertyPointer ptr = epiPropertyPointer::CreateFromProperty(*this, prty);
+            str += ' ' + ptr.GetValueString(epiPropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
+                                            epiPropertyPointerValueStringStyle_String_Quoted);
             str += '\n';
         }
     }

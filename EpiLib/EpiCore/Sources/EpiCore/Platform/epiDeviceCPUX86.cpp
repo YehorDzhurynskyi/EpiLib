@@ -3,7 +3,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiCore/Platform/epiDeviceCPUX86.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiCore/ObjectModel/PropertyPointer.h"
+#include "EpiCore/ObjectModel/Property/epiPropertyPointer.h"
 
 namespace
 {
@@ -62,10 +62,10 @@ epiString epiDeviceCPUX86CacheLevelInfo::ToString() const
             }
             else
             {
-                PropertyPointer ptr = PropertyPointer::CreateFromProperty(*this, prty);
-                str += ptr.GetValueString(PropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
-                                          PropertyPointerValueStringStyle_String_Quoted |
-                                          PropertyPointerValueStringStyle_Size_Repr_Bytes);
+                epiPropertyPointer ptr = epiPropertyPointer::CreateFromProperty(*this, prty);
+                str += ptr.GetValueString(epiPropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
+                                          epiPropertyPointerValueStringStyle_String_Quoted |
+                                          epiPropertyPointerValueStringStyle_Size_Repr_Bytes);
             }
 
             str += '\n';
@@ -185,10 +185,10 @@ epiString epiDeviceCPUX86::ToString() const
             }
             else
             {
-                PropertyPointer ptr = PropertyPointer::CreateFromProperty(*this, prty);
-                str += ' ' + ptr.GetValueString(PropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
-                                                PropertyPointerValueStringStyle_String_Quoted | 
-                                                PropertyPointerValueStringStyle_Size_Repr_Bytes);
+                epiPropertyPointer ptr = epiPropertyPointer::CreateFromProperty(*this, prty);
+                str += ' ' + ptr.GetValueString(epiPropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
+                                                epiPropertyPointerValueStringStyle_String_Quoted | 
+                                                epiPropertyPointerValueStringStyle_Size_Repr_Bytes);
             }
 
             str += '\n';

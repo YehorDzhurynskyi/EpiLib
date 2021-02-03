@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "EpiCore/ObjectModel/PropertyPointer.h"
+#include "EpiCore/ObjectModel/Property/epiPropertyPointer.h"
 
 #include "TestClass.h"
 
@@ -76,7 +76,7 @@ void TraverseProperties(TestClassA& obj)
     {
         for (const auto& p : m->GetClassData())
         {
-            auto pp = PropertyPointer::CreateFromProperty(obj, &p);
+            auto pp = epiPropertyPointer::CreateFromProperty(obj, &p);
             ASSERT_EQ(pp.GetTypeID(), p.GetTypeID());
             ASSERT_EQ(pp.IsReadable(), p.GetFlags().ReadCallback || !p.GetFlags().WriteCallback || !p.GetFlags().WriteOnly);
             ASSERT_EQ(pp.IsWritable(), p.GetFlags().WriteCallback || !p.GetFlags().ReadCallback || !p.GetFlags().ReadOnly);

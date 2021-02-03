@@ -3,7 +3,7 @@
 #include "EpiwxWidgets/epiWXSlider.h"
 #include "EpiwxWidgets/epiWXSliderRange.h"
 
-#include "EpiCore/ObjectModel/PropertyPointer.h"
+#include "EpiCore/ObjectModel/Property/epiPropertyPointer.h"
 
 #include <wx/sizer.h>
 #include <wx/stattext.h>
@@ -61,11 +61,11 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
         checkbox->Bind(wxEVT_CHECKBOX, &epiWXObjectConfigurationPanel::OnCheckboxValueChanged, this); // TODO: figure out whether it should be unbonded
 
         // TODO: release memory
-        epi::PropertyPointer* ptr = new epi::PropertyPointer(epi::PropertyPointer::CreateFromProperty(m_Object, &prty));
+        epi::epiPropertyPointer* ptr = new epi::epiPropertyPointer(epi::epiPropertyPointer::CreateFromProperty(m_Object, &prty));
         checkbox->SetClientData(ptr);
         propertyChangedHandler.PropertyChangedRegister(prtyID, [this, checkbox]()
         {
-            if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(checkbox->GetClientData()))
+            if (epi::epiPropertyPointer* ptr = static_cast<epi::epiPropertyPointer*>(checkbox->GetClientData()))
             {
                 checkbox->SetValue(ptr->Get<epiBool>());
                 checkbox->Refresh();
@@ -125,7 +125,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
 void epiWXObjectConfigurationPanel::OnCheckboxValueChanged(wxCommandEvent& event)
 {
     const wxCheckBox* checkbox = static_cast<const wxCheckBox*>(event.GetEventObject());
-    if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(checkbox->GetClientData()))
+    if (epi::epiPropertyPointer* ptr = static_cast<epi::epiPropertyPointer*>(checkbox->GetClientData()))
     {
         ptr->Set<epiBool>(checkbox->GetValue());
     }

@@ -5,7 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
-#include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
+#include "EpiCore/ObjectModel/Property/epiIPropertyChangedHandler.h"
 #include "EpiCore/MT/EventLoop/epiEventLoopPeriodicalTask.h"
 #include "EpiCore/MT/EventLoop/epiEventLoop.h"
 #include "EpiCore/MT/JobSystem/epiJobScheduler.h"

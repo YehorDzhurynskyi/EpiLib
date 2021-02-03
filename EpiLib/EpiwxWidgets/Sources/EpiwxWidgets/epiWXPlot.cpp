@@ -10,7 +10,7 @@
 #include "EpiUI/Plot/uiPlotDrawArea.h"
 #include "EpiUI/Plot/uiPlotTimeline.h"
 
-#include "EpiCore/ObjectModel/PropertyPointer.h"
+#include "EpiCore/ObjectModel/Property/epiPropertyPointer.h"
 
 #include <glad/glad.h>
 #include <wx/wx.h>

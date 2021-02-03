@@ -74,8 +74,8 @@ void epiWXPropertyGrid::FillMultiDimensional(epiBaseArray& array, epiMetaTypeID 
     {
         const epiString label = fmt::format("[{:d}]", i);
 
-        PropertyPointer* ptr = new PropertyPointer();
-        *ptr = PropertyPointer::CreateFromArray(array, nestedTypeID, i);
+        epiPropertyPointer* ptr = new epiPropertyPointer();
+        *ptr = epiPropertyPointer::CreateFromArray(array, nestedTypeID, i);
 
         if (MetaType::IsFundamental(nestedTypeID))
         {
@@ -112,8 +112,8 @@ void epiWXPropertyGrid::FillMultiDimensionalPtr(epi::epiBaseArray& array, epi::e
     {
         const epiString label = fmt::format("[{:d}]", i);
 
-        PropertyPointer* ptr = new PropertyPointer();
-        *ptr = PropertyPointer::CreateFromArray(array, epiMetaTypeID_Ptr, i);
+        epiPropertyPointer* ptr = new epiPropertyPointer();
+        *ptr = epiPropertyPointer::CreateFromArray(array, epiMetaTypeID_Ptr, i);
 
         if (MetaType::IsCompound(nestedTypeID))
         {
@@ -145,8 +145,8 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
         const epiBool editable = !property->GetFlags().ReadOnly;
         const epiChar* label = property->GetName();
 
-        PropertyPointer* ptr = new PropertyPointer();
-        *ptr = PropertyPointer::CreateFromProperty(object, property);
+        epiPropertyPointer* ptr = new epiPropertyPointer();
+        *ptr = epiPropertyPointer::CreateFromProperty(object, property);
 
         if (MetaType::IsFundamental(property->GetTypeID()))
         {
@@ -271,7 +271,7 @@ void epiWXPropertyGrid::FillProperties(Object& object, const MetaClassData& meta
     }
 }
 
-void epiWXPropertyGrid::AddFundamental(PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable)
+void epiWXPropertyGrid::AddFundamental(epiPropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable)
 {
     epiAssert(MetaType::IsFundamental(ptr.GetTypeID()));
 
@@ -299,7 +299,7 @@ void epiWXPropertyGrid::AddFundamental(PropertyPointer& ptr, const epiChar* labe
     AddProperty(ptr, prty, parentPrty, editable);
 }
 
-void epiWXPropertyGrid::AddString(PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable)
+void epiWXPropertyGrid::AddString(epiPropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable)
 {
     epiAssert(MetaType::IsString(ptr.GetTypeID()));
 
@@ -314,7 +314,7 @@ void epiWXPropertyGrid::AddString(PropertyPointer& ptr, const epiChar* label, wx
     AddProperty(ptr, prty, parentPrty, editable);
 }
 
-void epiWXPropertyGrid::AddProperty(PropertyPointer& ptr, wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable)
+void epiWXPropertyGrid::AddProperty(epiPropertyPointer& ptr, wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable)
 {
     prty = parentPrty != nullptr ? parentPrty->AppendChild(prty) : Append(prty);
     prty->Enable(editable ? parentPrty->IsEnabled() : false);
@@ -330,7 +330,7 @@ void epiWXPropertyGrid::OnPropertyGridChanged(wxPropertyGridEvent& event)
     }
 
     void* clientData = property->GetClientData();
-    PropertyPointer* ptr = reinterpret_cast<PropertyPointer*>(clientData);
+    epiPropertyPointer* ptr = reinterpret_cast<epiPropertyPointer*>(clientData);
 
     if (MetaType::IsFundamental(ptr->GetTypeID()))
     {
@@ -369,7 +369,7 @@ void epiWXPropertyGrid::OnPropertyGridRightClick(wxPropertyGridEvent& event)
         return;
     }
 
-    if (PropertyPointer* ptr = reinterpret_cast<PropertyPointer*>(property->GetClientData()))
+    if (epiPropertyPointer* ptr = reinterpret_cast<epiPropertyPointer*>(property->GetClientData()))
     {
         OnPropertyRightClick(*ptr);
     }

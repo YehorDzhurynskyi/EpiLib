@@ -3,7 +3,7 @@
 #include <wx/propgrid/propgrid.h>
 
 #include "EpiCore/ObjectModel/Object.h"
-#include "EpiCore/ObjectModel/PropertyPointer.h"
+#include "EpiCore/ObjectModel/Property/epiPropertyPointer.h"
 
 class epiWXPlot;
 class epiWXPropertyGrid : public wxPropertyGrid
@@ -22,7 +22,7 @@ public:
     void SetObject(epi::Object& object);
     void Clear() override;
 
-    virtual void OnPropertyRightClick(epi::PropertyPointer& ptr) {}
+    virtual void OnPropertyRightClick(epi::epiPropertyPointer& ptr) {}
 
 protected:
     void FillCompound(epi::Object& object, wxPGProperty* parentPrty);
@@ -34,15 +34,15 @@ protected:
 
     void FillProperties(epi::Object& object, const epi::MetaClassData& meta, wxPGProperty* parentPrty);
 
-    void AddFundamental(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);
-    void AddString(epi::PropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);
-    void AddProperty(epi::PropertyPointer& ptr, wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable);
+    void AddFundamental(epi::epiPropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);
+    void AddString(epi::epiPropertyPointer& ptr, const epiChar* label, wxPGProperty* parentPrty, epiBool editable);
+    void AddProperty(epi::epiPropertyPointer& ptr, wxPGProperty* prty, wxPGProperty* parentPrty, epiBool editable);
 
     void OnPropertyGridChanged(wxPropertyGridEvent& event);
     void OnPropertyGridRightClick(wxPropertyGridEvent& event);
 
 protected:
-    std::vector<epi::PropertyPointer*> m_PropertyPointers;
+    std::vector<epi::epiPropertyPointer*> m_PropertyPointers;
 };
 
 template<typename T, typename Nested>
@@ -55,8 +55,8 @@ void epiWXPropertyGrid::FillMultiDimensionalInplace(T& inplace, wxPGProperty* pa
     {
         const epiString label = fmt::format("[{:d}]", i);
 
-        PropertyPointer* ptr = new PropertyPointer();
-        *ptr = PropertyPointer::CreateFromArrayInplace<T, Nested>(inplace, i);
+        epiPropertyPointer* ptr = new epiPropertyPointer();
+        *ptr = epiPropertyPointer::CreateFromArrayInplace<T, Nested>(inplace, i);
 
         if constexpr (MetaType::IsFundamental<Nested>())
         {

@@ -1,12 +1,12 @@
-#include "PropertyPointer.h"
+#include "epiPropertyPointer.h"
 
-#include "Object.h"
+#include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
 
-PropertyPointer PropertyPointer::CreateFromProperty(Object& self, const MetaProperty* property)
+epiPropertyPointer epiPropertyPointer::CreateFromProperty(Object& self, const MetaProperty* property)
 {
-    PropertyPointer ptr;
+    epiPropertyPointer ptr;
     ptr.m_Meta = property;
     ptr.m_Form = Form::Property;
     ptr.m_TypeID = ptr.m_Meta->GetTypeID();
@@ -15,9 +15,9 @@ PropertyPointer PropertyPointer::CreateFromProperty(Object& self, const MetaProp
     return ptr;
 }
 
-PropertyPointer PropertyPointer::CreateFromProperty(const Object& self, const MetaProperty* property)
+epiPropertyPointer epiPropertyPointer::CreateFromProperty(const Object& self, const MetaProperty* property)
 {
-    PropertyPointer ptr;
+    epiPropertyPointer ptr;
     ptr.m_Meta = property;
     ptr.m_Form = Form::PropertyConst;
     ptr.m_TypeID = ptr.m_Meta->GetTypeID();
@@ -26,9 +26,9 @@ PropertyPointer PropertyPointer::CreateFromProperty(const Object& self, const Me
     return ptr;
 }
 
-PropertyPointer PropertyPointer::CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx)
+epiPropertyPointer epiPropertyPointer::CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx)
 {
-    PropertyPointer ptr;
+    epiPropertyPointer ptr;
     ptr.m_ValueAddr = self.GetData() + self.GetSizeOfItem() * idx;
     ptr.m_SizeOf = self.GetSizeOfItem();
     ptr.m_Form = Form::ArrayElem;
@@ -37,21 +37,21 @@ PropertyPointer PropertyPointer::CreateFromArray(epiBaseArray& self, epiMetaType
     return ptr;
 }
 
-epiString PropertyPointer::GetValueString(epiS32 style) const
+epiString epiPropertyPointer::GetValueString(epiS32 style) const
 {
     switch (GetTypeID())
     {
     case epiMetaTypeID_epiBool:
     {
-        if (style & PropertyPointerValueStringStyle_Boolean_ON_OFF)
+        if (style & epiPropertyPointerValueStringStyle_Boolean_ON_OFF)
         {
             return Get<epiBool>() ? "ON" : "OFF";
         }
-        else if (style & PropertyPointerValueStringStyle_Boolean_True_False)
+        else if (style & epiPropertyPointerValueStringStyle_Boolean_True_False)
         {
             return Get<epiBool>() ? "True" : "False";
         }
-        else if (style & PropertyPointerValueStringStyle_Boolean_Enabled_Disabled)
+        else if (style & epiPropertyPointerValueStringStyle_Boolean_Enabled_Disabled)
         {
             return Get<epiBool>() ? "Enabled" : "Disabled";
         }
@@ -61,7 +61,7 @@ epiString PropertyPointer::GetValueString(epiS32 style) const
     case epiMetaTypeID_epiS32: return std::to_string(Get<epiS32>());
     case epiMetaTypeID_epiSize_t:
     {
-        if (style & PropertyPointerValueStringStyle_Size_Repr_Bytes)
+        if (style & epiPropertyPointerValueStringStyle_Size_Repr_Bytes)
         {
             epiSize_t value = Get<epiSize_t>();
             if (value == 0)
@@ -106,7 +106,7 @@ epiString PropertyPointer::GetValueString(epiS32 style) const
     }
     case epiMetaTypeID_epiString:
     {
-        if (style & PropertyPointerValueStringStyle_String_Quoted)
+        if (style & epiPropertyPointerValueStringStyle_String_Quoted)
         {
             return '`' + Get<epiString>() + '`';
         }
@@ -119,17 +119,17 @@ epiString PropertyPointer::GetValueString(epiS32 style) const
     return "";
 }
 
-epiBool PropertyPointer::IsReadable() const
+epiBool epiPropertyPointer::IsReadable() const
 {
     return m_Form == Form::ArrayElem || m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.WriteOnly;
 }
 
-epiBool PropertyPointer::IsWritable() const
+epiBool epiPropertyPointer::IsWritable() const
 {
     return m_Form != Form::PropertyConst && (m_Form == Form::ArrayElem || m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.ReadOnly);
 }
 
-epiMetaTypeID PropertyPointer::GetTypeID() const
+epiMetaTypeID epiPropertyPointer::GetTypeID() const
 {
     return m_TypeID;
 }
@@ -138,7 +138,7 @@ epiMetaTypeID PropertyPointer::GetTypeID() const
 // NOTE: runtime lookup
 // uncomment if compile-time type deduction isn't enough
 
-void* PropertyPointer::Get_Dynamic() const
+void* epiPropertyPointer::Get_Dynamic() const
 {
     epiAssert(IsReadable());
 
@@ -222,7 +222,7 @@ void* PropertyPointer::Get_Dynamic() const
     return value;
 }
 
-void PropertyPointer::Set_Dynamic(void* value)
+void epiPropertyPointer::Set_Dynamic(void* value)
 {
     epiAssert(IsWritable());
 

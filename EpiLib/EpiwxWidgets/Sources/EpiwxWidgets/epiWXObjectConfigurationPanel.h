@@ -5,7 +5,7 @@
 #include <wx/slider.h>
 
 #include "EpiCore/ObjectModel/Object.h"
-#include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
+#include "EpiCore/ObjectModel/Property/epiIPropertyChangedHandler.h"
 
 class epiWXObjectConfigurationPanel : public wxPanel
 {
@@ -43,7 +43,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlSlider(const epi::MetaProper
                                                            T min,
                                                            T max)
 {
-    epi::PropertyPointer ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
+    epi::epiPropertyPointer ptr = epi::epiPropertyPointer::CreateFromProperty(m_Object, &prty);
     epiWXSlider<T>* slider = new epiWXSlider<T>(this, wxID_ANY, std::move(ptr), min, max);
 
     // TODO: check whether interface is supported
@@ -62,7 +62,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlSliderRange(const epi::MetaP
                                                                 T min,
                                                                 T max)
 {
-    epi::PropertyPointer ptr = epi::PropertyPointer::CreateFromProperty(m_Object, &prty);
+    epi::epiPropertyPointer ptr = epi::epiPropertyPointer::CreateFromProperty(m_Object, &prty);
     epiWXSliderRange<T>* slider = new epiWXSliderRange<T>(this, wxID_ANY, std::move(ptr), min, max);
 
     // TODO: check whether interface is supported
@@ -70,7 +70,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlSliderRange(const epi::MetaP
 
     propertyChangedHandler.PropertyChangedRegister(prty.GetPID(), [this, slider]()
     {
-        if (epi::PropertyPointer* ptr = static_cast<epi::PropertyPointer*>(slider->GetClientData()))
+        if (epi::epiPropertyPointer* ptr = static_cast<epi::epiPropertyPointer*>(slider->GetClientData()))
         {
             const epiVec2<T>& value = ptr->Get<epiVec2<T>>();
             slider->SetValueLower(value.x);

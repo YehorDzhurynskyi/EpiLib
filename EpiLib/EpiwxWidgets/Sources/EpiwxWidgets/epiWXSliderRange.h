@@ -12,7 +12,7 @@ public:
 public:
     epiWXSliderRange(wxWindow* parent,
                      wxWindowID id,
-                     epi::PropertyPointer&& pptr,
+                     epi::epiPropertyPointer&& pptr,
                      T minValue,
                      T maxValue,
                      const wxPoint& pos = wxDefaultPosition,
@@ -49,7 +49,7 @@ protected:
     T m_MinValue{};
     T m_MaxValue{};
 
-    epi::PropertyPointer m_PrtyPtr;
+    epi::epiPropertyPointer m_PrtyPtr;
     epiWXSliderThumb<T> m_ThumbLower;
     epiWXSliderThumb<T> m_ThumbUpper;
 };
@@ -67,7 +67,7 @@ const wxColour kSelectedRangeOutlineColor = wxColour(0, 120, 215);
 template<typename T>
 epiWXSliderRange<T>::epiWXSliderRange(wxWindow* parent,
                                              wxWindowID id,
-                                             epi::PropertyPointer&& pptr,
+                                             epi::epiPropertyPointer&& pptr,
                                              T minValue,
                                              T maxValue,
                                              const wxPoint& pos,

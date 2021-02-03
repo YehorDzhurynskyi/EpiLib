@@ -1,11 +1,10 @@
 #pragma once
 
-#include "MetaObject.h"
+#include "EpiCore/ObjectModel/MetaObject.h"
 
-namespace epi
-{
+EPI_NAMESPACE_BEGIN()
 
-class PropertyPath final
+class epiPropertyPath final
 {
 protected:
     enum class PathNodeType
@@ -43,4 +42,4 @@ protected:
     std::vector<PathNode> m_Nodes;
 };
 
-}
+EPI_NAMESPACE_END()

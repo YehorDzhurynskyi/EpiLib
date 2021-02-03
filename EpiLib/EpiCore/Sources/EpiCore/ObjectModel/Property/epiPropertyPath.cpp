@@ -1,19 +1,18 @@
-#include "PropertyPath.h"
+#include "EpiCore/ObjectModel/Property/epiPropertyPath.h"
 
-#include "Object.h"
-#include "Handle.h"
+#include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/ObjectModel/Handle.h"
 
 #include <charconv>
 
-namespace epi
-{
+EPI_NAMESPACE_BEGIN()
 
-PropertyPath::PathNode::PathNode()
+epiPropertyPath::PathNode::PathNode()
     : PropertyID(-1)
     , Type(PathNodeType::Plain)
 {}
 
-epiBool PropertyPath::Parse(const std::string& path)
+epiBool epiPropertyPath::Parse(const std::string& path)
 {
     const epiSize_t classNamePos = path.find(':');
     if (classNamePos == std::string::npos) goto invalid_input;
@@ -104,12 +103,12 @@ invalid_input:
     return false;
 }
 
-void PropertyPath::Clear()
+void epiPropertyPath::Clear()
 {
     m_Nodes.clear();
 }
 
-epiByte* PropertyPath::GetValue(const Object& object) const
+epiByte* epiPropertyPath::GetValue(const Object& object) const
 {
     const Object* current = &object;
     epiByte* value = nullptr;
@@ -164,7 +163,7 @@ epiByte* PropertyPath::GetValue(const Object& object) const
     return value;
 }
 
-void PropertyPath::AddPathNode(epiMetaPropertyID pid)
+void epiPropertyPath::AddPathNode(epiMetaPropertyID pid)
 {
     PathNode node;
     node.PropertyID = pid;
@@ -173,7 +172,7 @@ void PropertyPath::AddPathNode(epiMetaPropertyID pid)
     m_Nodes.push_back(std::move(node));
 }
 
-void PropertyPath::AddPathNodeIndexed(epiMetaPropertyID pid, epiS32 index)
+void epiPropertyPath::AddPathNodeIndexed(epiMetaPropertyID pid, epiS32 index)
 {
     PathNode node;
     node.PropertyID = pid;
@@ -183,9 +182,9 @@ void PropertyPath::AddPathNodeIndexed(epiMetaPropertyID pid, epiS32 index)
     m_Nodes.push_back(std::move(node));
 }
 
-void PropertyPath::Reverse()
+void epiPropertyPath::Reverse()
 {
     std::reverse(m_Nodes.begin(), m_Nodes.end());
 }
 
-}
+EPI_NAMESPACE_END()

@@ -51,15 +51,14 @@ add_library(EpiCore
     Sources/EpiCore/ObjectModel/Object.cpp
     Sources/EpiCore/ObjectModel/MetaObject.h
     Sources/EpiCore/ObjectModel/MetaObject.cpp
-    Sources/EpiCore/ObjectModel/PropertyPath.h
-    Sources/EpiCore/ObjectModel/PropertyPath.cpp
-    Sources/EpiCore/ObjectModel/PropertyPointer.h
-    Sources/EpiCore/ObjectModel/PropertyPointer.cpp
-    Sources/EpiCore/ObjectModel/epiPropertyGrouping.h
-    Sources/EpiCore/ObjectModel/epiPropertyGrouping.cpp
-    Sources/EpiCore/ObjectModel/epiIPropertyChangedHandler.h
-    Sources/EpiCore/ObjectModel/epiIPropertyChangedHandler.cpp
     Sources/EpiCore/ObjectModel/Handle.h
+
+    Sources/EpiCore/ObjectModel/Property/epiPropertyPath.h
+    Sources/EpiCore/ObjectModel/Property/epiPropertyPath.cpp
+    Sources/EpiCore/ObjectModel/Property/epiPropertyPointer.h
+    Sources/EpiCore/ObjectModel/Property/epiPropertyPointer.cpp
+    Sources/EpiCore/ObjectModel/Property/epiIPropertyChangedHandler.h
+    Sources/EpiCore/ObjectModel/Property/epiIPropertyChangedHandler.cpp
 
     Sources/EpiCore/Event/EventBus.h
     Sources/EpiCore/Event/EventBus.cpp

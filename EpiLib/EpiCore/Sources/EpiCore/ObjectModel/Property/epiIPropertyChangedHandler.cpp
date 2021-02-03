@@ -1,4 +1,4 @@
-#include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
+#include "EpiCore/ObjectModel/Property/epiIPropertyChangedHandler.h"
 
 EPI_NAMESPACE_BEGIN()
 

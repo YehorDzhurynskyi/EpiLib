@@ -5,7 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
-#include "EpiCore/ObjectModel/epiIPropertyChangedHandler.h"
+#include "EpiCore/ObjectModel/Property/epiIPropertyChangedHandler.h"
 
 EPI_NAMESPACE_BEGIN()
 
