@@ -76,7 +76,6 @@ std::shared_ptr<epiJobHandle> epiJobWorker::Push(std::unique_ptr<epiIJob>&& job)
     std::shared_ptr<epiJobHandle> handle = std::make_shared<epiJobHandle>(std::move(job));
 
     {
-        epiProfileBlock("Mutex");
         std::lock_guard<std::mutex> lk(m_JobHandlesMutex);
         m_JobHandles.push_back(handle);
     }

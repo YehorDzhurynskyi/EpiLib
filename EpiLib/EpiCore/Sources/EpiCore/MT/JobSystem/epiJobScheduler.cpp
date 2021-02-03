@@ -32,11 +32,8 @@ std::shared_ptr<epiJobHandle> epiJobScheduler::Schedule(std::unique_ptr<epiIJob>
     std::shared_ptr<epiJobHandle> handle;
 
     epiJobWorker* bestMatchWorker = nullptr;
-    epiProfileBlock("Loop");
     for (auto& worker : m_Workers)
     {
-        epiProfileBlock("Iteration");
-
         epiAssert(!worker.IsCancelled());
 
         if (!worker.HasJob())
@@ -51,15 +48,10 @@ std::shared_ptr<epiJobHandle> epiJobScheduler::Schedule(std::unique_ptr<epiIJob>
 
         bestMatchWorker = worker.GetTotalJobsCount() < bestMatchWorker->GetTotalJobsCount() ? &worker : bestMatchWorker;
     }
-    epiProfileBlockEnd;
 
-    epiProfileBlock("Assignment");
     if (bestMatchWorker != nullptr)
     {
-        epiProfileBlock("Log");
         epiLogTrace(bestMatchWorker->ToString() + ": Scheduling job `" + job->ToString() + "`");
-        epiProfileBlockEnd;
-
         handle = bestMatchWorker->Push(std::move(job));
     }
     else

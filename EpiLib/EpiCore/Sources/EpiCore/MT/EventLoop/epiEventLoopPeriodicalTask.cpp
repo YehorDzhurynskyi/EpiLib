@@ -25,7 +25,7 @@ void epiEventLoopPeriodicalTask::Cancel()
 
 void epiEventLoopPeriodicalTask::Execute()
 {
-    epiProfileBlock("Task::Execute");
+    epiProfileFunction;
 
     epiAssert(IsReady());
 

@@ -113,6 +113,8 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
 
 void epiWXImageConfigurationDialog::OnImageUpdated()
 {
+    epiProfileFunction;
+
     if (m_StaticBitmap != nullptr)
     {
         if (epi::mmImage* image = m_ImageVM.GetImageSrc())
