@@ -1,0 +1,5 @@
+class uiVMSliderIntegralSigned : uiVMBase
+{
+    epiS64 MinValue;
+    epiS64 MaxValue;
+};

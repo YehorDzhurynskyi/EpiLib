@@ -1,0 +1,5 @@
+class uiVMSliderFloating : uiVMBase
+{
+    epiFloat MinValue;
+    epiFloat MaxValue;
+};

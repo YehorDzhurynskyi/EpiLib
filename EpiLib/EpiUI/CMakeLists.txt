@@ -27,6 +27,19 @@ add_library(EpiUI
     Sources/EpiUI/Plot/uiPlotDrawArea.epi
     Sources/EpiUI/Plot/uiPlotDrawArea.h
     Sources/EpiUI/Plot/uiPlotDrawArea.cpp
+
+    Sources/EpiUI/ViewModel/uiVMBase.epi
+    Sources/EpiUI/ViewModel/uiVMBase.h
+    Sources/EpiUI/ViewModel/uiVMBase.cpp
+    Sources/EpiUI/ViewModel/uiVMSliderIntegralSigned.epi
+    Sources/EpiUI/ViewModel/uiVMSliderIntegralSigned.h
+    Sources/EpiUI/ViewModel/uiVMSliderIntegralSigned.cpp
+    Sources/EpiUI/ViewModel/uiVMSliderIntegralUnsigned.epi
+    Sources/EpiUI/ViewModel/uiVMSliderIntegralUnsigned.h
+    Sources/EpiUI/ViewModel/uiVMSliderIntegralUnsigned.cpp
+    Sources/EpiUI/ViewModel/uiVMSliderFloating.epi
+    Sources/EpiUI/ViewModel/uiVMSliderFloating.h
+    Sources/EpiUI/ViewModel/uiVMSliderFloating.cpp
 )
 get_target_property(EpiUI_SOURCES EpiUI SOURCES)
 epi_pack_sources(${EpiUI_SOURCES})
