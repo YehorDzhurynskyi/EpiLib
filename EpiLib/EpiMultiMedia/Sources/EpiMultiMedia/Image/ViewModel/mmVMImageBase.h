@@ -40,6 +40,8 @@ protected:
 
 EPI_GENREGION_END(mmVMImageBase)
 
+// TODO: add const to `mmImage* m_ImageSrc{nullptr};`
+
 protected:
     template<typename Callback, typename ...Args>
     void UpdateImage(epiEventLoopPeriodicalTask*& task,
@@ -61,20 +63,11 @@ void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
 
     if (mmImage* image = GetImageSrc())
     {
-        epiProfileBlock("UpdateImage::JobScheduling");
-
-        epiProfileBlock("UpdateImage::MakeJob");
         auto job = std::make_unique<epiJobCallback<Callback, Args...>>(callback, std::forward<Args>(args)...);
-        epiProfileBlockEnd;
-
         std::shared_ptr<epiJobHandle> jobHandle = epiJobScheduler::GetInstance().Schedule(std::move(job));
-
-        epiProfileBlockEnd;
 
         if (epiEventLoop* eventLoop = epiEventLoop::GetMainEventLoop())
         {
-            epiProfileBlock("UpdateImage::EventLoop");
-
             if (task != nullptr)
             {
                 task->Cancel();
@@ -82,14 +75,13 @@ void mmVMImageBase::UpdateImage(epiEventLoopPeriodicalTask*& task,
 
             task = &eventLoop->AddPeriodicalTask([this, jobHandle, SetImage]()
             {
-                epiProfileBlock("PeriodicalTask");
-
                 epiBool keepAlive = true;
 
                 if (jobHandle->IsCompleted())
                 {
                     if (auto job = jobHandle->GetJob<epiJobCallback<Callback, Args...>>())
                     {
+                        // TODO: handle bug: `this` isn't guaranteed to exist
                         (this->*SetImage)(job->GetResult());
                     }
 

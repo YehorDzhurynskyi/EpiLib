@@ -9,8 +9,10 @@ void mmVMImageRGB::SetImageR_Callback(const mmImage& value)
 {
     epiProfileFunction;
 
-    constexpr epiBool forceAssignment = true;
-    PropertyChangedTrigger(PID_ImageR, m_ImageR, value, forceAssignment);
+    // TODO: `PropertyChangedTriggerCallbacks(PID_ImageTgt);` is being called on each SetImage<Channel> while it can be called only once
+
+    constexpr epiBool kForceAssignment = true;
+    PropertyChangedTrigger(PID_ImageR, m_ImageR, value, kForceAssignment);
     PropertyChangedTriggerCallbacks(PID_ImageTgt);
 }
 
@@ -18,8 +20,8 @@ void mmVMImageRGB::SetImageG_Callback(const mmImage& value)
 {
     epiProfileFunction;
 
-    constexpr epiBool forceAssignment = true;
-    PropertyChangedTrigger(PID_ImageG, m_ImageG, value, forceAssignment);
+    constexpr epiBool kForceAssignment = true;
+    PropertyChangedTrigger(PID_ImageG, m_ImageG, value, kForceAssignment);
     PropertyChangedTriggerCallbacks(PID_ImageTgt);
 }
 
@@ -27,8 +29,8 @@ void mmVMImageRGB::SetImageB_Callback(const mmImage& value)
 {
     epiProfileFunction;
 
-    constexpr epiBool forceAssignment = true;
-    PropertyChangedTrigger(PID_ImageB, m_ImageB, value, forceAssignment);
+    constexpr epiBool kForceAssignment = true;
+    PropertyChangedTrigger(PID_ImageB, m_ImageB, value, kForceAssignment);
     PropertyChangedTriggerCallbacks(PID_ImageTgt);
 }
 
