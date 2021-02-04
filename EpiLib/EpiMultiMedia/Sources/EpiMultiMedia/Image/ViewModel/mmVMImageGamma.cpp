@@ -32,6 +32,7 @@ EPI_NAMESPACE_BEGIN()
 
 mmVMImageGamma::mmVMImageGamma()
 {
+    // TODO: fix bug: slider has value 0 at start regardless what set here
     SetIsGammaSynchronized(true);
     SetGammaR(1.0f);
     SetGammaG(1.0f);

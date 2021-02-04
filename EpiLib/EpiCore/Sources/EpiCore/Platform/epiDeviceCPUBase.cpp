@@ -25,7 +25,7 @@ epiString epiDeviceCPUBase::ToString() const
         if (const MetaProperty* prty = metaData.GetPropertyBy(pid))
         {
             str += epiString(prty->GetName()) + ":";
-            epiPropertyPointer ptr = epiPropertyPointer::CreateFromProperty(*this, prty);
+            epiPropertyPointer ptr = epiPropertyPointer::CreateFromPropertyConst(*this, prty);
             str += ' ' + ptr.GetValueString(epiPropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
                                             epiPropertyPointerValueStringStyle_String_Quoted);
             str += '\n';

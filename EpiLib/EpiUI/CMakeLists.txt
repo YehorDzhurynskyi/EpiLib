@@ -17,6 +17,10 @@ add_library(EpiUI
     Sources/EpiUI/uiWidget.h
     Sources/EpiUI/uiWidget.cpp
 
+    Sources/EpiUI/uiDataContextView.epi
+    Sources/EpiUI/uiDataContextView.h
+    Sources/EpiUI/uiDataContextView.cpp
+
     Sources/EpiUI/uiPage.epi
     Sources/EpiUI/uiPage.h
     Sources/EpiUI/uiPage.cpp

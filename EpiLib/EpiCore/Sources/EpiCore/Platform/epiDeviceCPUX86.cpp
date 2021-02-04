@@ -62,7 +62,7 @@ epiString epiDeviceCPUX86CacheLevelInfo::ToString() const
             }
             else
             {
-                epiPropertyPointer ptr = epiPropertyPointer::CreateFromProperty(*this, prty);
+                epiPropertyPointer ptr = epiPropertyPointer::CreateFromPropertyConst(*this, prty);
                 str += ptr.GetValueString(epiPropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
                                           epiPropertyPointerValueStringStyle_String_Quoted |
                                           epiPropertyPointerValueStringStyle_Size_Repr_Bytes);
@@ -185,7 +185,7 @@ epiString epiDeviceCPUX86::ToString() const
             }
             else
             {
-                epiPropertyPointer ptr = epiPropertyPointer::CreateFromProperty(*this, prty);
+                epiPropertyPointer ptr = epiPropertyPointer::CreateFromPropertyConst(*this, prty);
                 str += ' ' + ptr.GetValueString(epiPropertyPointerValueStringStyle_Boolean_Enabled_Disabled |
                                                 epiPropertyPointerValueStringStyle_String_Quoted | 
                                                 epiPropertyPointerValueStringStyle_Size_Repr_Bytes);

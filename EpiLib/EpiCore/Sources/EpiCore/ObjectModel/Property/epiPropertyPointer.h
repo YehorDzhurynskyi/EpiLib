@@ -25,7 +25,7 @@ class epiPropertyPointer final
 {
 public:
     static epiPropertyPointer CreateFromProperty(Object& self, const MetaProperty* property);
-    static epiPropertyPointer CreateFromProperty(const Object& self, const MetaProperty* property);
+    static epiPropertyPointer CreateFromPropertyConst(const Object& self, const MetaProperty* property);
     static epiPropertyPointer CreateFromArray(epiBaseArray& self, epiMetaTypeID nestedTypeId, epiU32 idx);
 
     template<typename T, typename Nested>

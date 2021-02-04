@@ -13,12 +13,13 @@
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 
 #include "EpiUI/ViewModel/uiVMPropertyBase.h"
+#include "EpiUI/uiDataContextView.h"
 
 class epiWXImageConfigurationDialog : public wxDialog
 {
 public:
     epiWXImageConfigurationDialog(epi::mmVMImageBase& imageVM,
-                                  epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>>&& vmList,
+                                  const epi::uiDataContextView& dataContextView,
                                   wxWindow* parent,
                                   const wxGLAttributes& glattrs,
                                   wxWindowID id,

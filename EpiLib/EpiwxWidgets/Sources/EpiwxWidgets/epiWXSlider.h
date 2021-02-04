@@ -44,6 +44,9 @@ protected:
     void OnMouseLeave_Internal(wxMouseEvent& event) override;
     void OnPaint_Internal(wxPaintEvent& event) override;
 
+    epiString GetMinValueText() const;
+    epiString GetMaxValueText() const;
+
 protected:
     T m_MinValue{};
     T m_MaxValue{};
@@ -81,7 +84,7 @@ epiWXSlider<T>::epiWXSlider(wxWindow* parent,
 template<typename T>
 void epiWXSlider<T>::RefreshValue()
 {
-    m_Thumb.SetValue(m_PrtyPtr.Get<T>());
+    m_Thumb.SetValue(std::clamp(m_PrtyPtr.Get<T>(), GetMinValue(), GetMaxValue()));
     Refresh();
 }
 
@@ -108,12 +111,6 @@ T epiWXSlider<T>::GetMaxValue() const
 {
     return m_MaxValue;
 }
-
-//template<typename T>
-//void epiWXSlider<T>::SetValue(T value)
-//{
-//    m_Thumb.SetValue(value);
-//}
 
 template<typename T>
 T epiWXSlider<T>::GetValue() const
@@ -250,8 +247,8 @@ void epiWXSlider<T>::OnPaint_Internal(wxPaintEvent& event)
     const wxSize bboxSize = GetSizeBBox();
     const wxSize sliderControlSize = GetSizeSliderControl();
 
-    const std::string minText = std::to_string(m_MinValue);
-    const std::string maxText = std::to_string(m_MaxValue);
+    const std::string minText = GetMinValueText();
+    const std::string maxText = GetMaxValueText();
 
     wxCoord minTextX;
     wxCoord minTextY;
@@ -295,6 +292,18 @@ void epiWXSlider<T>::OnPaint_Internal(wxPaintEvent& event)
 }
 
 template<typename T>
+epiString epiWXSlider<T>::GetMinValueText() const
+{
+    return fmt::format("{}", m_MinValue);
+}
+
+template<typename T>
+epiString epiWXSlider<T>::GetMaxValueText() const
+{
+    return fmt::format("{}", m_MaxValue);
+}
+
+template<typename T>
 wxSize epiWXSlider<T>::GetSizeSliderControl() const
 {
     return wxSize{std::max(500, m_Thumb.GetSize().x), std::max(26, m_Thumb.GetSize().y)};
@@ -305,8 +314,8 @@ void epiWXSlider<T>::GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLa
 {
     wxClientDC dc(this);
 
-    minLabelSize = dc.GetTextExtent(std::to_string(m_MinValue));
-    maxLabelSize = dc.GetTextExtent(std::to_string(m_MaxValue));
+    minLabelSize = dc.GetTextExtent(GetMinValueText());
+    maxLabelSize = dc.GetTextExtent(GetMaxValueText());
 }
 
 template<typename T>

@@ -15,7 +15,7 @@ epiPropertyPointer epiPropertyPointer::CreateFromProperty(Object& self, const Me
     return ptr;
 }
 
-epiPropertyPointer epiPropertyPointer::CreateFromProperty(const Object& self, const MetaProperty* property)
+epiPropertyPointer epiPropertyPointer::CreateFromPropertyConst(const Object& self, const MetaProperty* property)
 {
     epiPropertyPointer ptr;
     ptr.m_Meta = property;

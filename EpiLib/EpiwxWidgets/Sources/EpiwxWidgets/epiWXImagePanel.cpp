@@ -58,7 +58,7 @@ wxImage ToWXImage(epi::mmImage& image)
 }
 
 epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase& imageVM,
-                                                             epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>>&& vmList,
+                                                             const epi::uiDataContextView& dataContextView,
                                                              wxWindow* parent,
                                                              const wxGLAttributes& glattrs,
                                                              wxWindowID id,
@@ -84,7 +84,7 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
 
     // TODO: check whether interface is supported
     epi::epiIPropertyChangedHandler& dataContext = dynamic_cast<epi::epiIPropertyChangedHandler&>(m_ImageVM);
-    contentSizer->Add(new epiWXObjectConfigurationPanel(dataContext, std::move(vmList), this), wxSizerFlags().Expand());
+    contentSizer->Add(new epiWXObjectConfigurationPanel(dataContext, dataContextView.BuildVMList(m_ImageVM), this), wxSizerFlags().Expand());
 
 #if 0 // TODO: uncomment (performance is not good enough to proceed histograms as well)
     wxBoxSizer* plotSizer = new wxBoxSizer(wxVERTICAL);
@@ -419,65 +419,42 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         epi::mmVMImageThreshold vm;
         vm.SetImageSrc(&m_ImageTgt);
 
-        epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>> vmList;
+        epi::uiDataContextView dataContextView;
 
+        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdR);
+        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdG);
+        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdB);
+        dataContextView.AddCheckboxBoolean(epi::mmVMImageThreshold::PID_IsThresholdSynchronized);
+
+        if (epiWXImageConfigurationDialog dialog(vm, dataContextView, this, m_GLAttrs, wxID_ANY, "Thresholding"); dialog.ShowModal() == wxID_OK)
         {
-            const epi::MetaClass& meta = vm.GetMetaClass();
-            const epi::MetaProperty* prty = meta.GetPropertyAt(epi::mmVMImageThreshold::PIDX_ThresholdR);
-            epiAssert(prty != nullptr);
-
-            auto ptr = std::make_unique<epi::uiVMPropertySliderIntegralUnsigned>(epi::epiPropertyPointer::CreateFromProperty(vm, prty),
-                                                                                 0u,
-                                                                                 255u);
-            vmList.push_back(std::move(ptr));
+            m_ImageTgt = vm.GetImageTgt();
+            Refresh();
         }
-        {
-            const epi::MetaClass& meta = vm.GetMetaClass();
-            const epi::MetaProperty* prty = meta.GetPropertyAt(epi::mmVMImageThreshold::PIDX_ThresholdG);
-            epiAssert(prty != nullptr);
+    } break;
+    case ID_IMAGE_PANEL_GAMMA_CORRECTION:
+    {
+        // TODO: add default points for slider (for example, the default point for gamma is 1.0f)
 
-            auto ptr = std::make_unique<epi::uiVMPropertySliderIntegralUnsigned>(epi::epiPropertyPointer::CreateFromProperty(vm, prty),
-                                                                                 0u,
-                                                                                 255u);
-            vmList.push_back(std::move(ptr));
-        }
-        {
-            const epi::MetaClass& meta = vm.GetMetaClass();
-            const epi::MetaProperty* prty = meta.GetPropertyAt(epi::mmVMImageThreshold::PIDX_ThresholdB);
-            epiAssert(prty != nullptr);
+        epi::mmVMImageGamma vm;
+        vm.SetImageSrc(&m_ImageTgt);
 
-            auto ptr = std::make_unique<epi::uiVMPropertySliderIntegralUnsigned>(epi::epiPropertyPointer::CreateFromProperty(vm, prty),
-                                                                                 0u,
-                                                                                 255u);
-            vmList.push_back(std::move(ptr));
-        }
-        {
-            const epi::MetaClass& meta = vm.GetMetaClass();
-            const epi::MetaProperty* prty = meta.GetPropertyAt(epi::mmVMImageThreshold::PIDX_IsThresholdSynchronized);
-            epiAssert(prty != nullptr);
+        epi::uiDataContextView dataContextView;
 
-            auto ptr = std::make_unique<epi::uiVMPropertyCheckboxBoolean>(epi::epiPropertyPointer::CreateFromProperty(vm, prty));
-            vmList.push_back(std::move(ptr));
-        }
+        constexpr epiFloat kGammaMin = 0.2f;
+        constexpr epiFloat kGammaMax = 1.0f / kGammaMin;
+        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaR, kGammaMin, kGammaMax);
+        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaG, kGammaMin, kGammaMax);
+        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaB, kGammaMin, kGammaMax);
+        dataContextView.AddCheckboxBoolean(epi::mmVMImageGamma::PID_IsGammaSynchronized);
 
-        if (epiWXImageConfigurationDialog dialog(vm, std::move(vmList), this, m_GLAttrs, wxID_ANY, "Thresholding"); dialog.ShowModal() == wxID_OK)
+        if (epiWXImageConfigurationDialog dialog(vm, dataContextView, this, m_GLAttrs, wxID_ANY, "Gamma Correction"); dialog.ShowModal() == wxID_OK)
         {
             m_ImageTgt = vm.GetImageTgt();
             Refresh();
         }
     } break;
 #if 0
-    case ID_IMAGE_PANEL_GAMMA_CORRECTION:
-    {
-        epi::mmVMImageGamma vm;
-        vm.SetImageSrc(&m_ImageTgt);
-
-        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Gamma Correction"); dialog.ShowModal() == wxID_OK)
-        {
-            m_ImageTgt = vm.GetImageTgt();
-            Refresh();
-        }
-    } break;
     case ID_IMAGE_PANEL_CONTRAST_ADJUSTMENT:
     {
         epi::mmVMImageContrast vm;

@@ -1,0 +1,19 @@
+enum uiDataContextViewEntryView
+{
+    None,
+    CheckboxBoolean,
+    SliderFloating,
+    SliderIntegralSigned,
+    SliderIntegralUnsigned
+};
+
+class uiDataContextViewEntry
+{
+    epiHash_t PID; # TODO: replace with `epiMetaPropertyID`
+    uiDataContextViewEntryView View = uiDataContextViewEntryView::None;
+};
+
+class uiDataContextView
+{
+    epiArray<uiDataContextViewEntry> Entries;
+};
