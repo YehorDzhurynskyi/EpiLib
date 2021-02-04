@@ -1,5 +1,10 @@
-class uiVMPropertySliderIntegralUnsigned : uiVMPropertyBase
+class uiVMPropertySliderIntegralUnsigned : uiVMPropertySlider
 {
+    [Virtual]
+    {
+        epiU64 Value;
+    }
+
     epiU64 MinValue;
     epiU64 MaxValue;
 };

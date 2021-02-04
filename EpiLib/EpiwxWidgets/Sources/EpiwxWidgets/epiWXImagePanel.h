@@ -12,16 +12,13 @@
 #include "EpiMultimedia/Image/mmImage.h"
 #include "EpiMultimedia/Image/ViewModel/mmVMImageBase.h"
 
-EPI_NAMESPACE_BEGIN()
-
-class mmVMImageBase;
-
-EPI_NAMESPACE_END()
+#include "EpiUI/ViewModel/uiVMPropertyBase.h"
 
 class epiWXImageConfigurationDialog : public wxDialog
 {
 public:
-    epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
+    epiWXImageConfigurationDialog(epi::mmVMImageBase& imageVM,
+                                  epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>>&& vmList,
                                   wxWindow* parent,
                                   const wxGLAttributes& glattrs,
                                   wxWindowID id,

@@ -1,5 +1,10 @@
-class uiVMPropertySliderFloating : uiVMPropertyBase
+class uiVMPropertySliderFloating : uiVMPropertySlider
 {
+    [Virtual]
+    {
+        epiFloat Value;
+    }
+
     epiFloat MinValue;
     epiFloat MaxValue;
 };

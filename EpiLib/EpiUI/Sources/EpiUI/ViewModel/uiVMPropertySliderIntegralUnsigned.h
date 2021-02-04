@@ -4,11 +4,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiUI/ViewModel/uiVMPropertySliderIntegralUnsigned.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiUI/ViewModel/uiVMPropertyBase.h"
+#include "EpiUI/ViewModel/uiVMPropertySlider.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class uiVMPropertySliderIntegralUnsigned : public uiVMPropertyBase
+class uiVMPropertySliderIntegralUnsigned : public uiVMPropertySlider
 {
 EPI_GENREGION_BEGIN(uiVMPropertySliderIntegralUnsigned)
 
@@ -19,10 +19,15 @@ public:
 
     enum uiVMPropertySliderIntegralUnsigned_PIDs
     {
+        PID_Value = 0xdcb67730,
         PID_MinValue = 0xe1feef64,
         PID_MaxValue = 0x79e4085,
-        PID_COUNT = 2
+        PID_COUNT = 3
     };
+
+protected:
+    epiU64 GetValue_Callback() const;
+    void SetValue_Callback(epiU64 value);
 
 protected:
     epiU64 m_MinValue{0};
@@ -39,9 +44,6 @@ public:
 
     template<typename T>
     T GetValue() const;
-
-    void SetValue(epiU64 value);
-    epiU64 GetValue() const;
 };
 
 template<typename T>
@@ -56,6 +58,8 @@ uiVMPropertySliderIntegralUnsigned::uiVMPropertySliderIntegralUnsigned(const epi
 template<typename T>
 void uiVMPropertySliderIntegralUnsigned::SetValue(T value)
 {
+    epiAssert(m_PrtyPtr.GetTypeID() == MetaType::TypeOf<T>());
+
     value = std::clamp<T>(value, static_cast<T>(m_MinValue), static_cast<T>(m_MaxValue));
 
     m_PrtyPtr.Set<T>(value);
@@ -64,6 +68,8 @@ void uiVMPropertySliderIntegralUnsigned::SetValue(T value)
 template<typename T>
 T uiVMPropertySliderIntegralUnsigned::GetValue() const
 {
+    epiAssert(m_PrtyPtr.GetTypeID() == MetaType::TypeOf<T>());
+
     T value = m_PrtyPtr.Get<T>();
 
     epiAssert(epiEqual(static_cast<epiU64>(value), std::clamp<epiU64>(static_cast<epiU64>(value), m_MinValue, m_MaxValue)));

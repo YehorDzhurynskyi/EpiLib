@@ -42,7 +42,10 @@ public:
     epiBool IsReadable() const;
     epiBool IsWritable() const;
 
+    const epiChar* GetPropertyName() const;
+
     epiMetaTypeID GetTypeID() const;
+    epiMetaPropertyID GetPID() const;
 
 protected:
     template<typename T>

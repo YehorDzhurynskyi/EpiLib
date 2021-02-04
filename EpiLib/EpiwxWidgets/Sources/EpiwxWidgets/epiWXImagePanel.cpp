@@ -17,6 +17,11 @@
 
 #include "EpiDataVisualization/Plot/ViewModel/dvVMSeries1Df.h"
 
+#include "EpiUI/ViewModel/uiVMPropertySliderFloating.h"
+#include "EpiUI/ViewModel/uiVMPropertySliderIntegralSigned.h"
+#include "EpiUI/ViewModel/uiVMPropertySliderIntegralUnsigned.h"
+#include "EpiUI/ViewModel/uiVMPropertyCheckboxBoolean.h"
+
 #include <wx/dcclient.h>
 #include <wx/dcbuffer.h>
 #include <wx/menu.h>
@@ -52,7 +57,8 @@ wxImage ToWXImage(epi::mmImage& image)
 
 }
 
-epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase& vm,
+epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase& imageVM,
+                                                             epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>>&& vmList,
                                                              wxWindow* parent,
                                                              const wxGLAttributes& glattrs,
                                                              wxWindowID id,
@@ -62,7 +68,7 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
                                                              long style,
                                                              const wxString& name)
     : wxDialog(parent, id, title, pos, size, style, name)
-    , m_ImageVM(vm)
+    , m_ImageVM(imageVM)
 {
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* contentSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -76,7 +82,9 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
         }
     }
 
-    contentSizer->Add(new epiWXObjectConfigurationPanel(m_ImageVM, this), wxSizerFlags().Expand());
+    // TODO: check whether interface is supported
+    epi::epiIPropertyChangedHandler& dataContext = dynamic_cast<epi::epiIPropertyChangedHandler&>(m_ImageVM);
+    contentSizer->Add(new epiWXObjectConfigurationPanel(dataContext, std::move(vmList), this), wxSizerFlags().Expand());
 
 #if 0 // TODO: uncomment (performance is not good enough to proceed histograms as well)
     wxBoxSizer* plotSizer = new wxBoxSizer(wxVERTICAL);
@@ -101,7 +109,7 @@ epiWXImageConfigurationDialog::epiWXImageConfigurationDialog(epi::mmVMImageBase&
 
     SetSizerAndFit(sizer);
 
-    vm.PropertyChangedRegister(epi::mmVMImageBase::PID_ImageTgt, [this]()
+    imageVM.PropertyChangedRegister(epi::mmVMImageBase::PID_ImageTgt, [this]()
     {
         OnImageUpdated();
     });
@@ -411,12 +419,54 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         epi::mmVMImageThreshold vm;
         vm.SetImageSrc(&m_ImageTgt);
 
-        if (epiWXImageConfigurationDialog dialog(vm, this, m_GLAttrs, wxID_ANY, "Thresholding"); dialog.ShowModal() == wxID_OK)
+        epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>> vmList;
+
+        {
+            const epi::MetaClass& meta = vm.GetMetaClass();
+            const epi::MetaProperty* prty = meta.GetPropertyAt(epi::mmVMImageThreshold::PIDX_ThresholdR);
+            epiAssert(prty != nullptr);
+
+            auto ptr = std::make_unique<epi::uiVMPropertySliderIntegralUnsigned>(epi::epiPropertyPointer::CreateFromProperty(vm, prty),
+                                                                                 0u,
+                                                                                 255u);
+            vmList.push_back(std::move(ptr));
+        }
+        {
+            const epi::MetaClass& meta = vm.GetMetaClass();
+            const epi::MetaProperty* prty = meta.GetPropertyAt(epi::mmVMImageThreshold::PIDX_ThresholdG);
+            epiAssert(prty != nullptr);
+
+            auto ptr = std::make_unique<epi::uiVMPropertySliderIntegralUnsigned>(epi::epiPropertyPointer::CreateFromProperty(vm, prty),
+                                                                                 0u,
+                                                                                 255u);
+            vmList.push_back(std::move(ptr));
+        }
+        {
+            const epi::MetaClass& meta = vm.GetMetaClass();
+            const epi::MetaProperty* prty = meta.GetPropertyAt(epi::mmVMImageThreshold::PIDX_ThresholdB);
+            epiAssert(prty != nullptr);
+
+            auto ptr = std::make_unique<epi::uiVMPropertySliderIntegralUnsigned>(epi::epiPropertyPointer::CreateFromProperty(vm, prty),
+                                                                                 0u,
+                                                                                 255u);
+            vmList.push_back(std::move(ptr));
+        }
+        {
+            const epi::MetaClass& meta = vm.GetMetaClass();
+            const epi::MetaProperty* prty = meta.GetPropertyAt(epi::mmVMImageThreshold::PIDX_IsThresholdSynchronized);
+            epiAssert(prty != nullptr);
+
+            auto ptr = std::make_unique<epi::uiVMPropertyCheckboxBoolean>(epi::epiPropertyPointer::CreateFromProperty(vm, prty));
+            vmList.push_back(std::move(ptr));
+        }
+
+        if (epiWXImageConfigurationDialog dialog(vm, std::move(vmList), this, m_GLAttrs, wxID_ANY, "Thresholding"); dialog.ShowModal() == wxID_OK)
         {
             m_ImageTgt = vm.GetImageTgt();
             Refresh();
         }
     } break;
+#if 0
     case ID_IMAGE_PANEL_GAMMA_CORRECTION:
     {
         epi::mmVMImageGamma vm;
@@ -585,6 +635,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
         m_ImageTgt = epi::mmImage(series.ToSeries2Df_Phase());
         Refresh();
     } break;
+#endif
     case ID_IMAGE_PANEL_NOISE_NORMAL:
     {
 

@@ -5,7 +5,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void uiVMPropertySliderFloating::SetValue(epiFloat value)
+void uiVMPropertySliderFloating::SetValue_Callback(epiFloat value)
 {
     epiAssert(MetaType::IsFloating(m_PrtyPtr.GetTypeID())); // TODO: IsFloatingFundamental
     switch (m_PrtyPtr.GetTypeID())
@@ -16,7 +16,7 @@ void uiVMPropertySliderFloating::SetValue(epiFloat value)
     }
 }
 
-epiFloat uiVMPropertySliderFloating::GetValue() const
+epiFloat uiVMPropertySliderFloating::GetValue_Callback() const
 {
     epiAssert(MetaType::IsFloating(m_PrtyPtr.GetTypeID())); // TODO: IsFloatingFundamental
     switch (m_PrtyPtr.GetTypeID())

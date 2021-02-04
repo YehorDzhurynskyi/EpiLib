@@ -5,12 +5,18 @@
 
 #include "EpiCore/ObjectModel/Property/epiPropertyPointer.h"
 
+#include "EpiUI/ViewModel/uiVMPropertyCheckboxBoolean.h"
+#include "EpiUI/ViewModel/uiVMPropertySliderFloating.h"
+#include "EpiUI/ViewModel/uiVMPropertySliderIntegralSigned.h"
+#include "EpiUI/ViewModel/uiVMPropertySliderIntegralUnsigned.h"
+
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/button.h>
 #include <wx/checkbox.h>
 
-epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object, // TODO: ensure lifetime
+epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::epiIPropertyChangedHandler& dataContext,
+                                                             epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>>&& vmList, // TODO: ensure lifetime // TODO: use epiPtrArray
                                                              wxWindow* parent,
                                                              wxWindowID id,
                                                              const wxPoint& pos,
@@ -18,22 +24,24 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
                                                              long style,
                                                              const wxString& name)
     : wxPanel(parent, id, pos, size, style, name)
-    , m_Object{object}
+    , m_DataContext{dataContext}
+    , m_VMList{std::move(vmList)}
 {
     wxFlexGridSizer* sizer = new wxFlexGridSizer(2, 30, 20);
 
-    // TODO: check whether interface is supported
-    epi::epiIPropertyChangedHandler& propertyChangedHandler = dynamic_cast<epi::epiIPropertyChangedHandler&>(m_Object);
-
-    const epi::MetaClass& meta = m_Object.GetMetaClass();
-    const epi::MetaClassData& metaData = meta.GetClassData();
-    for (const auto& prty : metaData)
+    for (const auto& vm : m_VMList)
     {
-        if (wxWindow* control = MakeControlFromProperty(prty); control != nullptr)
+        if (!vm)
         {
-            propertyChangedHandler.PropertyChangedTriggerCallbacks(prty.GetPID());
+            continue;
+        }
 
-            sizer->Add(new wxStaticText(this, wxID_ANY, prty.GetName()), wxSizerFlags().Right().Expand().CentreVertical().Proportion(1));
+        if (wxWindow* control = MakeControlFromPropertyVM(*vm); control != nullptr)
+        {
+            const epi::epiPropertyPointer& ptr = vm->GetPrtyPtr();
+            m_DataContext.PropertyChangedTriggerCallbacks(ptr.GetPID());
+
+            sizer->Add(new wxStaticText(this, wxID_ANY, ptr.GetPropertyName()), wxSizerFlags().Right().Expand().CentreVertical().Proportion(1));
             sizer->Add(control, wxSizerFlags().Expand().CenterVertical().Proportion(2));
         }
     }
@@ -44,56 +52,165 @@ epiWXObjectConfigurationPanel::epiWXObjectConfigurationPanel(epi::Object& object
     SetSizerAndFit(vboxSizer);
 }
 
-wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::MetaProperty& prty)
+wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMPropertyBase& vm)
 {
     wxWindow* control = nullptr;
 
-    // TODO: check whether interface is supported
-    epi::epiIPropertyChangedHandler& propertyChangedHandler = dynamic_cast<epi::epiIPropertyChangedHandler&>(m_Object);
-
-    const epi::epiMetaPropertyID prtyID = prty.GetPID();
-    const epi::epiMetaTypeID typeID = prty.GetTypeID();
-    if (typeID == epi::epiMetaTypeID_epiBool)
+    const epi::epiPropertyPointer& ptr = vm.GetPrtyPtr();
+    if (epi::uiVMPropertyCheckboxBoolean* checkboxVM = epi::epiAs<epi::uiVMPropertyCheckboxBoolean>(&vm))
     {
         wxCheckBox* checkbox = new wxCheckBox(this, wxID_ANY, wxEmptyString);
 
         // TODO: adjust for a specific type
         checkbox->Bind(wxEVT_CHECKBOX, &epiWXObjectConfigurationPanel::OnCheckboxValueChanged, this); // TODO: figure out whether it should be unbonded
+        checkbox->SetClientData(checkboxVM);
 
-        // TODO: release memory
-        epi::epiPropertyPointer* ptr = new epi::epiPropertyPointer(epi::epiPropertyPointer::CreateFromProperty(m_Object, &prty));
-        checkbox->SetClientData(ptr);
-        propertyChangedHandler.PropertyChangedRegister(prtyID, [this, checkbox]()
+        m_DataContext.PropertyChangedRegister(ptr.GetPID(), [checkbox]()
         {
-            if (epi::epiPropertyPointer* ptr = static_cast<epi::epiPropertyPointer*>(checkbox->GetClientData()))
+            if (epi::uiVMPropertyCheckboxBoolean* checkboxVM = static_cast<epi::uiVMPropertyCheckboxBoolean*>(checkbox->GetClientData()))
             {
-                checkbox->SetValue(ptr->Get<epiBool>());
+                checkbox->SetValue(checkboxVM->GetValue());
                 checkbox->Refresh();
             }
         });
 
         control = checkbox;
     }
-    else if (epi::MetaType::IsNumeric(typeID))
+    else if (epi::uiVMPropertySlider* sliderVM = epi::epiAs<epi::uiVMPropertySlider>(&vm))
     {
         // TODO: add hint to the user for a most popular values (for example, a median filter is good in range 3..7)
-        switch (typeID)
+
+        epiWXSliderBase* slider = nullptr;
+        if (epi::uiVMPropertySliderFloating* sliderFloatingVM = epi::epiAs<epi::uiVMPropertySliderFloating>(&vm))
         {
-        case epi::epiMetaTypeID_epiByte: control = MakeControlSlider<epiByte>(prty); break;
-        case epi::epiMetaTypeID_epiFloat: control = MakeControlSlider<epiFloat>(prty); break;
-        case epi::epiMetaTypeID_epiDouble: control = MakeControlSlider<epiDouble>(prty); break;
-        case epi::epiMetaTypeID_epiSize_t: control = MakeControlSlider<epiSize_t>(prty); break;
-        case epi::epiMetaTypeID_epiU8: control = MakeControlSlider<epiU8>(prty); break;
-        case epi::epiMetaTypeID_epiU16: control = MakeControlSlider<epiU16>(prty); break;
-        case epi::epiMetaTypeID_epiU32: control = MakeControlSlider<epiU32>(prty); break;
-        case epi::epiMetaTypeID_epiU64: control = MakeControlSlider<epiU64>(prty); break;
-        case epi::epiMetaTypeID_epiS8: control = MakeControlSlider<epiS8>(prty); break;
-        case epi::epiMetaTypeID_epiS16: control = MakeControlSlider<epiS16>(prty); break;
-        case epi::epiMetaTypeID_epiS32: control = MakeControlSlider<epiS32>(prty); break;
-        case epi::epiMetaTypeID_epiS64: control = MakeControlSlider<epiS64>(prty); break;
-        default: epiLogError("Unrecognized typeID=`{}`", typeID); break;
+            switch (ptr.GetTypeID())
+            {
+            case epi::epiMetaTypeID_epiFloat:
+            {
+                slider = new epiWXSlider<epiFloat>(this,
+                                                   wxID_ANY,
+                                                   ptr,
+                                                   static_cast<epiFloat>(sliderFloatingVM->GetMinValue()),
+                                                   static_cast<epiFloat>(sliderFloatingVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiDouble:
+            {
+                slider = new epiWXSlider<epiDouble>(this,
+                                                    wxID_ANY,
+                                                    ptr,
+                                                    static_cast<epiDouble>(sliderFloatingVM->GetMinValue()),
+                                                    static_cast<epiDouble>(sliderFloatingVM->GetMaxValue()));
+            } break;
+            default: epiAssert(!"Unexpected type id!");
+            }
         }
+        else if (epi::uiVMPropertySliderIntegralSigned* sliderIntegralSignedVM = epi::epiAs<epi::uiVMPropertySliderIntegralSigned>(&vm))
+        {
+            switch (ptr.GetTypeID())
+            {
+            case epi::epiMetaTypeID_epiS8:
+            {
+                slider = new epiWXSlider<epiS8>(this,
+                                                wxID_ANY,
+                                                ptr,
+                                                static_cast<epiS8>(sliderIntegralSignedVM->GetMinValue()),
+                                                static_cast<epiS8>(sliderIntegralSignedVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiS16:
+            {
+                slider = new epiWXSlider<epiS16>(this,
+                                                 wxID_ANY,
+                                                 ptr,
+                                                 static_cast<epiS16>(sliderIntegralSignedVM->GetMinValue()),
+                                                 static_cast<epiS16>(sliderIntegralSignedVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiS32:
+            {
+                slider = new epiWXSlider<epiS32>(this,
+                                                 wxID_ANY,
+                                                 ptr,
+                                                 static_cast<epiS32>(sliderIntegralSignedVM->GetMinValue()),
+                                                 static_cast<epiS32>(sliderIntegralSignedVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiS64:
+            {
+                slider = new epiWXSlider<epiS64>(this,
+                                                 wxID_ANY,
+                                                 ptr,
+                                                 static_cast<epiS64>(sliderIntegralSignedVM->GetMinValue()),
+                                                 static_cast<epiS64>(sliderIntegralSignedVM->GetMaxValue()));
+            } break;
+            default: epiAssert(!"Unexpected type id!");
+            }
+        }
+        else if (epi::uiVMPropertySliderIntegralUnsigned* sliderIntegralUnsignedVM = epi::epiAs<epi::uiVMPropertySliderIntegralUnsigned>(&vm))
+        {
+            switch (ptr.GetTypeID())
+            {
+            case epi::epiMetaTypeID_epiByte:
+            {
+                slider = new epiWXSlider<epiByte>(this,
+                                                  wxID_ANY,
+                                                  ptr,
+                                                  static_cast<epiByte>(sliderIntegralUnsignedVM->GetMinValue()),
+                                                  static_cast<epiByte>(sliderIntegralUnsignedVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiU8:
+            {
+                slider = new epiWXSlider<epiU8>(this,
+                                                wxID_ANY,
+                                                ptr,
+                                                static_cast<epiU8>(sliderIntegralUnsignedVM->GetMinValue()),
+                                                static_cast<epiU8>(sliderIntegralUnsignedVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiU16:
+            {
+                slider = new epiWXSlider<epiU16>(this,
+                                                 wxID_ANY,
+                                                 ptr,
+                                                 static_cast<epiU16>(sliderIntegralUnsignedVM->GetMinValue()),
+                                                 static_cast<epiU16>(sliderIntegralUnsignedVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiU32:
+            {
+                slider = new epiWXSlider<epiU32>(this,
+                                                 wxID_ANY,
+                                                 ptr,
+                                                 static_cast<epiU32>(sliderIntegralUnsignedVM->GetMinValue()),
+                                                 static_cast<epiU32>(sliderIntegralUnsignedVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiU64:
+            {
+                slider = new epiWXSlider<epiU64>(this,
+                                                 wxID_ANY,
+                                                 ptr,
+                                                 static_cast<epiU64>(sliderIntegralUnsignedVM->GetMinValue()),
+                                                 static_cast<epiU64>(sliderIntegralUnsignedVM->GetMaxValue()));
+            } break;
+            case epi::epiMetaTypeID_epiSize_t:
+            {
+                slider = new epiWXSlider<epiSize_t>(this,
+                                                    wxID_ANY,
+                                                    ptr,
+                                                    static_cast<epiSize_t>(sliderIntegralUnsignedVM->GetMinValue()),
+                                                    static_cast<epiSize_t>(sliderIntegralUnsignedVM->GetMaxValue()));
+            } break;
+            default: epiAssert(!"Unexpected type id!");
+            }
+        }
+
+        m_DataContext.PropertyChangedRegister(ptr.GetPID(), [slider]()
+        {
+            slider->RefreshValue();
+        });
+
+        control = slider;
     }
+    else
+    {
+        epiLogError("Unhandled VM type=`{}`", vm.GetMetaClass().GetName());
+    }
+#if 0
     else if (epi::MetaType::IsMultiDimensionalInplace(typeID))
     {
         switch (typeID)
@@ -118,6 +235,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
         default: epiLogError("Unrecognized typeID=`{}`", typeID); break;
         }
     }
+#endif
 
     return control;
 }
@@ -125,8 +243,8 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromProperty(const epi::Meta
 void epiWXObjectConfigurationPanel::OnCheckboxValueChanged(wxCommandEvent& event)
 {
     const wxCheckBox* checkbox = static_cast<const wxCheckBox*>(event.GetEventObject());
-    if (epi::epiPropertyPointer* ptr = static_cast<epi::epiPropertyPointer*>(checkbox->GetClientData()))
+    if (epi::uiVMPropertyCheckboxBoolean* checkboxVM = static_cast<epi::uiVMPropertyCheckboxBoolean*>(checkbox->GetClientData()))
     {
-        ptr->Set<epiBool>(checkbox->GetValue());
+        checkboxVM->SetValue(checkbox->GetValue());
     }
 }

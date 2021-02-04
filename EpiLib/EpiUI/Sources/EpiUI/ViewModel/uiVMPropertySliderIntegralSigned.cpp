@@ -5,7 +5,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void uiVMPropertySliderIntegralSigned::SetValue(epiS64 value)
+void uiVMPropertySliderIntegralSigned::SetValue_Callback(epiS64 value)
 {
     epiAssert(MetaType::IsNumeric(m_PrtyPtr.GetTypeID()));
     switch (m_PrtyPtr.GetTypeID())
@@ -18,7 +18,7 @@ void uiVMPropertySliderIntegralSigned::SetValue(epiS64 value)
     }
 }
 
-epiS64 uiVMPropertySliderIntegralSigned::GetValue() const
+epiS64 uiVMPropertySliderIntegralSigned::GetValue_Callback() const
 {
     epiAssert(MetaType::IsNumeric(m_PrtyPtr.GetTypeID()));
     switch (m_PrtyPtr.GetTypeID())

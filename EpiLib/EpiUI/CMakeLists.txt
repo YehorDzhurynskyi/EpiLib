@@ -31,6 +31,9 @@ add_library(EpiUI
     Sources/EpiUI/ViewModel/uiVMPropertyBase.epi
     Sources/EpiUI/ViewModel/uiVMPropertyBase.h
     Sources/EpiUI/ViewModel/uiVMPropertyBase.cpp
+    Sources/EpiUI/ViewModel/uiVMPropertySlider.epi
+    Sources/EpiUI/ViewModel/uiVMPropertySlider.h
+    Sources/EpiUI/ViewModel/uiVMPropertySlider.cpp
     Sources/EpiUI/ViewModel/uiVMPropertySliderIntegralSigned.epi
     Sources/EpiUI/ViewModel/uiVMPropertySliderIntegralSigned.h
     Sources/EpiUI/ViewModel/uiVMPropertySliderIntegralSigned.cpp
@@ -40,6 +43,9 @@ add_library(EpiUI
     Sources/EpiUI/ViewModel/uiVMPropertySliderFloating.epi
     Sources/EpiUI/ViewModel/uiVMPropertySliderFloating.h
     Sources/EpiUI/ViewModel/uiVMPropertySliderFloating.cpp
+    Sources/EpiUI/ViewModel/uiVMPropertyCheckboxBoolean.epi
+    Sources/EpiUI/ViewModel/uiVMPropertyCheckboxBoolean.h
+    Sources/EpiUI/ViewModel/uiVMPropertyCheckboxBoolean.cpp
 )
 get_target_property(EpiUI_SOURCES EpiUI SOURCES)
 epi_pack_sources(${EpiUI_SOURCES})

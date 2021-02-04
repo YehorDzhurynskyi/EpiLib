@@ -28,6 +28,8 @@ public:
                     const wxString& name = wxASCII_STR("epiWXSliderBase"));
 
 public:
+    virtual void RefreshValue() = 0;
+
     epiU32 GetBorderWidth() const;
     void SetBorderWidth(epiU32 width);
     epiU32 GetMinMaxLabelPadding() const;

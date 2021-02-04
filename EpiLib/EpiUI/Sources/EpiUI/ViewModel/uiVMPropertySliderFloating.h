@@ -4,11 +4,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiUI/ViewModel/uiVMPropertySliderFloating.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiUI/ViewModel/uiVMPropertyBase.h"
+#include "EpiUI/ViewModel/uiVMPropertySlider.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class uiVMPropertySliderFloating : public uiVMPropertyBase
+class uiVMPropertySliderFloating : public uiVMPropertySlider
 {
 EPI_GENREGION_BEGIN(uiVMPropertySliderFloating)
 
@@ -19,10 +19,15 @@ public:
 
     enum uiVMPropertySliderFloating_PIDs
     {
+        PID_Value = 0xdcb67730,
         PID_MinValue = 0xe1feef64,
         PID_MaxValue = 0x79e4085,
-        PID_COUNT = 2
+        PID_COUNT = 3
     };
+
+protected:
+    epiFloat GetValue_Callback() const;
+    void SetValue_Callback(epiFloat value);
 
 protected:
     epiFloat m_MinValue{0.0f};
@@ -39,9 +44,6 @@ public:
 
     template<typename T>
     T GetValue() const;
-
-    void SetValue(epiFloat value);
-    epiFloat GetValue() const;
 };
 
 template<typename T>
@@ -56,6 +58,8 @@ uiVMPropertySliderFloating::uiVMPropertySliderFloating(const epiPropertyPointer&
 template<typename T>
 void uiVMPropertySliderFloating::SetValue(T value)
 {
+    epiAssert(m_PrtyPtr.GetTypeID() == MetaType::TypeOf<T>());
+
     value = std::clamp<T>(value, static_cast<T>(m_MinValue), static_cast<T>(m_MaxValue));
 
     m_PrtyPtr.Set<T>(value);
@@ -64,6 +68,8 @@ void uiVMPropertySliderFloating::SetValue(T value)
 template<typename T>
 T uiVMPropertySliderFloating::GetValue() const
 {
+    epiAssert(m_PrtyPtr.GetTypeID() == MetaType::TypeOf<T>());
+
     T value = m_PrtyPtr.Get<T>();
 
     epiAssert(epiEqual(static_cast<epiFloat>(value), std::clamp<epiFloat>(static_cast<epiFloat>(value), m_MinValue, m_MaxValue)));

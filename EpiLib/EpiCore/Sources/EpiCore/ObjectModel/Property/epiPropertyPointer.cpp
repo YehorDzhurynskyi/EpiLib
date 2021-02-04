@@ -129,9 +129,19 @@ epiBool epiPropertyPointer::IsWritable() const
     return m_Form != Form::PropertyConst && (m_Form == Form::ArrayElem || m_Meta->m_Flags.WriteCallback || !m_Meta->m_Flags.ReadCallback || !m_Meta->m_Flags.ReadOnly);
 }
 
+const epiChar* epiPropertyPointer::GetPropertyName() const
+{
+    return m_Meta->GetName();
+}
+
 epiMetaTypeID epiPropertyPointer::GetTypeID() const
 {
     return m_TypeID;
+}
+
+epiMetaPropertyID epiPropertyPointer::GetPID() const
+{
+    return m_Meta->GetPID();
 }
 
 #if 0

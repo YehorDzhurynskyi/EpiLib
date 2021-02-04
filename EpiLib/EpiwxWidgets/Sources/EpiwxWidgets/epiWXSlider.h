@@ -12,7 +12,7 @@ public:
 public:
     epiWXSlider(wxWindow* parent,
                 wxWindowID id,
-                epi::epiPropertyPointer&& pptr,
+                const epi::epiPropertyPointer& pptr,
                 T minValue, // TODO: retrive these values from MetaProperty
                 T maxValue,
                 const wxPoint& pos = wxDefaultPosition,
@@ -21,7 +21,7 @@ public:
                 const wxString& name = wxASCII_STR("epiWXSlider"));
 
 public:
-    void RefreshValue();
+    void RefreshValue() override;
 
     std::any GetMinValueAny() const override;
     std::any GetMaxValueAny() const override;
@@ -55,7 +55,7 @@ protected:
 template<typename T>
 epiWXSlider<T>::epiWXSlider(wxWindow* parent,
                             wxWindowID id,
-                            epi::epiPropertyPointer&& pptr,
+                            const epi::epiPropertyPointer& pptr,
                             T minValue,
                             T maxValue,
                             const wxPoint& pos,
@@ -65,7 +65,7 @@ epiWXSlider<T>::epiWXSlider(wxWindow* parent,
     : super{parent, id, pos, size, style, name}
     , m_MinValue{minValue}
     , m_MaxValue{maxValue}
-    , m_PrtyPtr{std::move(pptr)}
+    , m_PrtyPtr{pptr}
     , m_Thumb{this, std::clamp(m_PrtyPtr.Get<T>(), minValue, maxValue)}
 {
     if (minValue > maxValue)

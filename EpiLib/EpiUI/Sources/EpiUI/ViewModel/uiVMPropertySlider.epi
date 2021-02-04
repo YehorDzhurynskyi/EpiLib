@@ -1,0 +1,4 @@
+# TODO: [Abstract]
+class uiVMPropertySlider : uiVMPropertyBase
+{
+};

@@ -1,16 +1,19 @@
 #pragma once
 
+#include "EpiCore/ObjectModel/Object.h"
+#include "EpiCore/ObjectModel/Property/epiIPropertyChangedHandler.h"
+
+#include "EpiUI/ViewModel/uiVMPropertyBase.h"
+
 #include <wx/panel.h>
 #include <wx/spinctrl.h>
 #include <wx/slider.h>
 
-#include "EpiCore/ObjectModel/Object.h"
-#include "EpiCore/ObjectModel/Property/epiIPropertyChangedHandler.h"
-
 class epiWXObjectConfigurationPanel : public wxPanel
 {
 public:
-    epiWXObjectConfigurationPanel(epi::Object& object, // TODO: ensure lifetime
+    epiWXObjectConfigurationPanel(epi::epiIPropertyChangedHandler& dataContext,
+                                  epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>>&& vmList,
                                   wxWindow* parent,
                                   wxWindowID id = wxID_ANY,
                                   const wxPoint& pos = wxDefaultPosition,
@@ -19,44 +22,16 @@ public:
                                   const wxString& name = wxASCII_STR(wxPanelNameStr));
 
 protected:
-    wxWindow* MakeControlFromProperty(const epi::MetaProperty& prty);
+    wxWindow* MakeControlFromPropertyVM(epi::uiVMPropertyBase& vm);
 
-    template<typename T>
-    wxWindow* MakeControlSlider(const epi::MetaProperty& prty,
-                                T min = std::numeric_limits<T>::min(),
-                                T max = std::numeric_limits<T>::max());
-
-    template<typename T>
-    wxWindow* MakeControlSliderRange(const epi::MetaProperty& prty,
-                                     T min = std::numeric_limits<T>::min(),
-                                     T max = std::numeric_limits<T>::max());
-
-    void OnSliderRangeValueChanged(wxCommandEvent& event);
     void OnCheckboxValueChanged(wxCommandEvent& event);
 
 protected:
-    epi::Object& m_Object;
+    epi::epiIPropertyChangedHandler& m_DataContext;
+    epi::epiArray<std::unique_ptr<epi::uiVMPropertyBase>> m_VMList;
 };
 
-template<typename T>
-wxWindow* epiWXObjectConfigurationPanel::MakeControlSlider(const epi::MetaProperty& prty,
-                                                           T min,
-                                                           T max)
-{
-    epi::epiPropertyPointer ptr = epi::epiPropertyPointer::CreateFromProperty(m_Object, &prty);
-    epiWXSlider<T>* slider = new epiWXSlider<T>(this, wxID_ANY, std::move(ptr), min, max);
-
-    // TODO: check whether interface is supported
-    epi::epiIPropertyChangedHandler& propertyChangedHandler = dynamic_cast<epi::epiIPropertyChangedHandler&>(m_Object);
-
-    propertyChangedHandler.PropertyChangedRegister(prty.GetPID(), [slider]()
-    {
-        slider->RefreshValue();
-    });
-
-    return slider;
-}
-
+#if 0
 template<typename T>
 wxWindow* epiWXObjectConfigurationPanel::MakeControlSliderRange(const epi::MetaProperty& prty,
                                                                 T min,
@@ -81,3 +56,4 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlSliderRange(const epi::MetaP
 
     return slider;
 }
+#endif
