@@ -1,0 +1,5 @@
+class uiVMPropertySliderIntegralSigned : uiVMPropertyBase
+{
+    epiS64 MinValue;
+    epiS64 MaxValue;
+};

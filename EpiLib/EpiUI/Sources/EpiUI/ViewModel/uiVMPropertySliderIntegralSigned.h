@@ -1,23 +1,23 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiUI/ViewModel/uiVMSliderIntegralSigned.hxx"
+#include "EpiUI/ViewModel/uiVMPropertySliderIntegralSigned.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiUI/ViewModel/uiVMBase.h"
+#include "EpiUI/ViewModel/uiVMPropertyBase.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class uiVMSliderIntegralSigned : public uiVMBase
+class uiVMPropertySliderIntegralSigned : public uiVMPropertyBase
 {
-EPI_GENREGION_BEGIN(uiVMSliderIntegralSigned)
+EPI_GENREGION_BEGIN(uiVMPropertySliderIntegralSigned)
 
-EPI_GENHIDDEN_uiVMSliderIntegralSigned()
+EPI_GENHIDDEN_uiVMPropertySliderIntegralSigned()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x36f20130};
+    constexpr static epiMetaTypeID TypeID{0x3c68adbe};
 
-    enum uiVMSliderIntegralSigned_PIDs
+    enum uiVMPropertySliderIntegralSigned_PIDs
     {
         PID_MinValue = 0xe1feef64,
         PID_MaxValue = 0x79e4085,
@@ -28,11 +28,11 @@ protected:
     epiS64 m_MinValue{0};
     epiS64 m_MaxValue{0};
 
-EPI_GENREGION_END(uiVMSliderIntegralSigned)
+EPI_GENREGION_END(uiVMPropertySliderIntegralSigned)
 
 public:
     template<typename T>
-    uiVMSliderIntegralSigned(const epiPropertyPointer& prtyPtr, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
+    uiVMPropertySliderIntegralSigned(const epiPropertyPointer& prtyPtr, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
 
     template<typename T>
     void SetValue(T value);
@@ -45,7 +45,7 @@ public:
 };
 
 template<typename T>
-uiVMSliderIntegralSigned::uiVMSliderIntegralSigned(const epiPropertyPointer& prtyPtr, T minValue, T maxValue)
+uiVMPropertySliderIntegralSigned::uiVMPropertySliderIntegralSigned(const epiPropertyPointer& prtyPtr, T minValue, T maxValue)
     : super(prtyPtr)
     , m_MinValue{static_cast<epiS64>(minValue)}
     , m_MaxValue{static_cast<epiS64>(maxValue)}
@@ -54,7 +54,7 @@ uiVMSliderIntegralSigned::uiVMSliderIntegralSigned(const epiPropertyPointer& prt
 }
 
 template<typename T>
-void uiVMSliderIntegralSigned::SetValue(T value)
+void uiVMPropertySliderIntegralSigned::SetValue(T value)
 {
     value = std::clamp<T>(value, static_cast<T>(m_MinValue), static_cast<T>(m_MaxValue));
 
@@ -62,7 +62,7 @@ void uiVMSliderIntegralSigned::SetValue(T value)
 }
 
 template<typename T>
-T uiVMSliderIntegralSigned::GetValue() const
+T uiVMPropertySliderIntegralSigned::GetValue() const
 {
     T value = m_PrtyPtr.Get<T>();
 

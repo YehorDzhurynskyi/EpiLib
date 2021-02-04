@@ -20,6 +20,7 @@ epiBool MetaProperty::HasNested() const
 
 epiMetaPropertyID MetaProperty::GetPID() const
 {
+    // TODO: add constant epiMetaPropertyID on epigen step
     return epiHash(GetName());
 }
 

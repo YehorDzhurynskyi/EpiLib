@@ -1,23 +1,23 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiUI/ViewModel/uiVMSliderFloating.hxx"
+#include "EpiUI/ViewModel/uiVMPropertySliderFloating.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiUI/ViewModel/uiVMBase.h"
+#include "EpiUI/ViewModel/uiVMPropertyBase.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class uiVMSliderFloating : public uiVMBase
+class uiVMPropertySliderFloating : public uiVMPropertyBase
 {
-EPI_GENREGION_BEGIN(uiVMSliderFloating)
+EPI_GENREGION_BEGIN(uiVMPropertySliderFloating)
 
-EPI_GENHIDDEN_uiVMSliderFloating()
+EPI_GENHIDDEN_uiVMPropertySliderFloating()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xf34e2058};
+    constexpr static epiMetaTypeID TypeID{0x3ce18576};
 
-    enum uiVMSliderFloating_PIDs
+    enum uiVMPropertySliderFloating_PIDs
     {
         PID_MinValue = 0xe1feef64,
         PID_MaxValue = 0x79e4085,
@@ -28,11 +28,11 @@ protected:
     epiFloat m_MinValue{0.0f};
     epiFloat m_MaxValue{0.0f};
 
-EPI_GENREGION_END(uiVMSliderFloating)
+EPI_GENREGION_END(uiVMPropertySliderFloating)
 
 public:
     template<typename T>
-    uiVMSliderFloating(const epiPropertyPointer& prtyPtr, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
+    uiVMPropertySliderFloating(const epiPropertyPointer& prtyPtr, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
 
     template<typename T>
     void SetValue(T value);
@@ -45,7 +45,7 @@ public:
 };
 
 template<typename T>
-uiVMSliderFloating::uiVMSliderFloating(const epiPropertyPointer& prtyPtr, T minValue, T maxValue)
+uiVMPropertySliderFloating::uiVMPropertySliderFloating(const epiPropertyPointer& prtyPtr, T minValue, T maxValue)
     : super(prtyPtr)
     , m_MinValue{static_cast<epiFloat>(minValue)}
     , m_MaxValue{static_cast<epiFloat>(maxValue)}
@@ -54,7 +54,7 @@ uiVMSliderFloating::uiVMSliderFloating(const epiPropertyPointer& prtyPtr, T minV
 }
 
 template<typename T>
-void uiVMSliderFloating::SetValue(T value)
+void uiVMPropertySliderFloating::SetValue(T value)
 {
     value = std::clamp<T>(value, static_cast<T>(m_MinValue), static_cast<T>(m_MaxValue));
 
@@ -62,7 +62,7 @@ void uiVMSliderFloating::SetValue(T value)
 }
 
 template<typename T>
-T uiVMSliderFloating::GetValue() const
+T uiVMPropertySliderFloating::GetValue() const
 {
     T value = m_PrtyPtr.Get<T>();
 

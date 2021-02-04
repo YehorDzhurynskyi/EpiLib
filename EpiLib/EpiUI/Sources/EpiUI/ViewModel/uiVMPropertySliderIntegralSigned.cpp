@@ -1,11 +1,11 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiUI/ViewModel/uiVMSliderIntegralSigned.h"
-#include "EpiUI/ViewModel/uiVMSliderIntegralSigned.cxx"
+#include "EpiUI/ViewModel/uiVMPropertySliderIntegralSigned.h"
+#include "EpiUI/ViewModel/uiVMPropertySliderIntegralSigned.cxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void uiVMSliderIntegralSigned::SetValue(epiS64 value)
+void uiVMPropertySliderIntegralSigned::SetValue(epiS64 value)
 {
     epiAssert(MetaType::IsNumeric(m_PrtyPtr.GetTypeID()));
     switch (m_PrtyPtr.GetTypeID())
@@ -18,7 +18,7 @@ void uiVMSliderIntegralSigned::SetValue(epiS64 value)
     }
 }
 
-epiS64 uiVMSliderIntegralSigned::GetValue() const
+epiS64 uiVMPropertySliderIntegralSigned::GetValue() const
 {
     epiAssert(MetaType::IsNumeric(m_PrtyPtr.GetTypeID()));
     switch (m_PrtyPtr.GetTypeID())

@@ -1,0 +1,5 @@
+class uiVMPropertySliderFloating : uiVMPropertyBase
+{
+    epiFloat MinValue;
+    epiFloat MaxValue;
+};

@@ -1,11 +1,11 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiUI/ViewModel/uiVMSliderFloating.h"
-#include "EpiUI/ViewModel/uiVMSliderFloating.cxx"
+#include "EpiUI/ViewModel/uiVMPropertySliderFloating.h"
+#include "EpiUI/ViewModel/uiVMPropertySliderFloating.cxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void uiVMSliderFloating::SetValue(epiFloat value)
+void uiVMPropertySliderFloating::SetValue(epiFloat value)
 {
     epiAssert(MetaType::IsFloating(m_PrtyPtr.GetTypeID())); // TODO: IsFloatingFundamental
     switch (m_PrtyPtr.GetTypeID())
@@ -16,7 +16,7 @@ void uiVMSliderFloating::SetValue(epiFloat value)
     }
 }
 
-epiFloat uiVMSliderFloating::GetValue() const
+epiFloat uiVMPropertySliderFloating::GetValue() const
 {
     epiAssert(MetaType::IsFloating(m_PrtyPtr.GetTypeID())); // TODO: IsFloatingFundamental
     switch (m_PrtyPtr.GetTypeID())
