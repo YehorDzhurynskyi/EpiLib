@@ -10,38 +10,31 @@ template<typename T>
 class epiWXSliderThumb
 {
 public:
-    epiWXSliderThumb(epiWXSliderBase* parent, T value);
+    epiWXSliderThumb(T value);
 
-    wxPoint GetPosition() const;
+    void SetValue(T value);
+    T GetValue() const;
+
+    wxSize GetSize() const;
+
     void SetPosition(const wxPoint& position);
-
-    epiBool IsMouseOver(const wxPoint& mousePosition) const;
+    wxPoint GetPosition() const;
 
     epiBool GetDragged() const;
     void SetDragged(epiBool value);
     epiBool GetMouseOver() const;
     void SetMouseOver(epiBool value);
 
-    void SetValue(T value);
-    T GetValue() const;
+    epiBool IsMouseOver(const wxPoint& mousePosition) const;
 
     void OnPaint(wxDC& dc);
 
-    wxSize GetSize() const;
-
 protected:
-    T Fraction2Value(epiFloat fraction, T minValue, T maxValue) const;
-    epiFloat Value2Fraction(T value, T minValue, T maxValue) const;
-
-    epiS32 GetMinPosition() const;
-    epiS32 GetMaxPosition() const;
-
-protected:
-    epiWXSliderBase* m_Parent{nullptr};
+    T m_Value{};
 
     wxSize m_Size{};
+    wxPoint m_Position{};
 
-    T m_Value{};
     epiBool m_Dragged{false};
     epiBool m_MouseOver{false};
 
@@ -52,22 +45,19 @@ protected:
 namespace
 {
 
-const wxColour kIdleColor = wxColour(0, 120, 215);
-const wxColour kIdleShadowColor = wxColour(120, 180, 228);
-const wxColour kDraggedColor = wxColour(204, 204, 204);
-const wxColour kDraggedShadowColor = wxColour(222, 222, 222);
+const wxColour kDraggedColor = wxColour(0, 120, 215);
+const wxColour kDraggedShadowColor = wxColour(120, 180, 228);
 const wxColour kMouseOverColor = wxColour(23, 23, 23);
 const wxColour kMouseOverShadowColor = wxColour(132, 132, 132);
+const wxColour kIdleColor = wxColour(154, 154, 154);
+const wxColour kIdleShadowColor = wxColour(222, 222, 222);
 
 }
 
 template<typename T>
-epiWXSliderThumb<T>::epiWXSliderThumb(epiWXSliderBase* parent, T value)
-    : m_Parent{parent}
-    , m_Value{value}
+epiWXSliderThumb<T>::epiWXSliderThumb(T value)
+    : m_Value{value}
 {
-    epiAssert(m_Parent != nullptr);
-
     // TODO: make it resolution independent
     constexpr epiU32 kThumbScale = 3;
 
@@ -99,6 +89,7 @@ epiWXSliderThumb<T>::epiWXSliderThumb(epiWXSliderBase* parent, T value)
     m_Size.y = maxY - minY;
 }
 
+#if 0
 template<typename T>
 wxPoint epiWXSliderThumb<T>::GetPosition() const
 {
@@ -148,18 +139,12 @@ void epiWXSliderThumb<T>::SetPosition(const wxPoint& position)
 
     SetValue(Fraction2Value(fraction, minValue, maxValue));
 }
+#endif
 
 template<typename T>
 void epiWXSliderThumb<T>::SetValue(T value)
 {
     m_Value = value;
-
-#if 0 // NOTE: uncomment on demand
-    wxCommandEvent event(wxEVT_SLIDER, m_Parent->GetId());
-    event.SetEventObject(m_Parent);
-
-    wxPostEvent(m_Parent->GetEventHandler(), event);
-#endif
 }
 
 template<typename T>
@@ -169,15 +154,21 @@ T epiWXSliderThumb<T>::GetValue() const
 }
 
 template<typename T>
-epiBool epiWXSliderThumb<T>::IsMouseOver(const wxPoint& mousePosition) const
+wxSize epiWXSliderThumb<T>::GetSize() const
 {
-    const wxPoint position = GetPosition();
+    return m_Size;
+}
 
-    return
-        mousePosition.x >= position.x - GetSize().x / 2 &&
-        mousePosition.x <= position.x + GetSize().x / 2 &&
-        mousePosition.y >= position.y - GetSize().y / 2 &&
-        mousePosition.y <= position.y + GetSize().y / 2;
+template<typename T>
+void epiWXSliderThumb<T>::SetPosition(const wxPoint& position)
+{
+    m_Position = position;
+}
+
+template<typename T>
+wxPoint epiWXSliderThumb<T>::GetPosition() const
+{
+    return m_Position;
 }
 
 template<typename T>
@@ -205,12 +196,24 @@ void epiWXSliderThumb<T>::SetMouseOver(epiBool value)
 }
 
 template<typename T>
+epiBool epiWXSliderThumb<T>::IsMouseOver(const wxPoint& mousePosition) const
+{
+    const wxPoint position = GetPosition();
+
+    return
+        mousePosition.x >= position.x - GetSize().x / 2 &&
+        mousePosition.x <= position.x + GetSize().x / 2 &&
+        mousePosition.y >= position.y - GetSize().y / 2 &&
+        mousePosition.y <= position.y + GetSize().y / 2;
+}
+
+template<typename T>
 void epiWXSliderThumb<T>::OnPaint(wxDC& dc)
 {
     wxColour colorThumb;
     wxColour colorThumbShadow;
 
-    if (m_Dragged || !m_Parent->IsEnabled())
+    if (m_Dragged)
     {
         colorThumb = kDraggedColor;
         colorThumbShadow = kDraggedShadowColor;
@@ -251,27 +254,7 @@ void epiWXSliderThumb<T>::OnPaint(wxDC& dc)
     dc.DrawPolygon(&kThumbPolyList, position.x - GetSize().x / 2, position.y - GetSize().y / 2);
 }
 
-template<typename T>
-T epiWXSliderThumb<T>::Fraction2Value(epiFloat fraction, T minValue, T maxValue) const
-{
-    return (maxValue - minValue) * fraction + minValue;
-}
-
-template<typename T>
-epiFloat epiWXSliderThumb<T>::Value2Fraction(T value, T minValue, T maxValue) const
-{
-    const epiFloat fraction = epiFloat(value - minValue) / (maxValue - minValue);
-    epiAssert(fraction >= 0.0f);
-
-    return fraction;
-}
-
-template<typename T>
-wxSize epiWXSliderThumb<T>::GetSize() const
-{
-    return m_Size;
-}
-
+#if 0
 template<typename T>
 epiS32 epiWXSliderThumb<T>::GetMinPosition() const
 {
@@ -297,3 +280,4 @@ epiS32 epiWXSliderThumb<T>::GetMaxPosition() const
 
     return (m_Parent->GetSize().x - (border + maxLabelSize.x + padding));
 }
+#endif

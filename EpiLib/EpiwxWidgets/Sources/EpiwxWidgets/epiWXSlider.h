@@ -23,9 +23,6 @@ public:
 public:
     void RefreshValue() override;
 
-    std::any GetMinValueAny() const override;
-    std::any GetMaxValueAny() const override;
-
     T GetMinValue() const;
     T GetMaxValue() const;
 
@@ -44,6 +41,8 @@ protected:
     void OnMouseLeave_Internal(wxMouseEvent& event) override;
     void OnPaint_Internal(wxPaintEvent& event) override;
 
+    void SetValueFromPosition(const wxPoint& position);
+
     epiString GetMinValueText() const;
     epiString GetMaxValueText() const;
 
@@ -54,6 +53,26 @@ protected:
     epi::epiPropertyPointer m_PrtyPtr;
     epiWXSliderThumb<T> m_Thumb;
 };
+
+namespace
+{
+
+template<typename T>
+T Fraction2Value(epiFloat fraction, T minValue, T maxValue)
+{
+    return (maxValue - minValue) * fraction + minValue;
+}
+
+template<typename T>
+epiFloat Value2Fraction(T value, T minValue, T maxValue)
+{
+    const epiFloat fraction = epiFloat(value - minValue) / (maxValue - minValue);
+    epiAssert(fraction >= 0.0f);
+
+    return fraction;
+}
+
+}
 
 template<typename T>
 epiWXSlider<T>::epiWXSlider(wxWindow* parent,
@@ -69,7 +88,7 @@ epiWXSlider<T>::epiWXSlider(wxWindow* parent,
     , m_MinValue{minValue}
     , m_MaxValue{maxValue}
     , m_PrtyPtr{pptr}
-    , m_Thumb{this, std::clamp(m_PrtyPtr.Get<T>(), minValue, maxValue)}
+    , m_Thumb{std::clamp(m_PrtyPtr.Get<T>(), minValue, maxValue)}
 {
     if (minValue > maxValue)
     {
@@ -78,26 +97,46 @@ epiWXSlider<T>::epiWXSlider(wxWindow* parent,
     }
 
     const wxSize bboxSize = GetSizeBBox();
-    SetMinSize(wxSize{std::max(500, bboxSize.x), std::max(30, bboxSize.y)});
+    const wxSize tgtSize = wxSize{std::max(500, bboxSize.x), std::max(30, bboxSize.y)};
+    SetSize(tgtSize);
+    SetMinSize(tgtSize);
 }
 
 template<typename T>
 void epiWXSlider<T>::RefreshValue()
 {
-    m_Thumb.SetValue(std::clamp(m_PrtyPtr.Get<T>(), GetMinValue(), GetMaxValue()));
+    auto getMinThumbPosition = [this]()
+    {
+        wxSize minLabelSize;
+        wxSize maxLabelSize;
+        GetSizeLabelMinMaxValue(minLabelSize, maxLabelSize);
+
+        const epiU32 padding = GetMinMaxLabelPadding();
+        const epiU32 border = GetBorderWidth();
+
+        return border + minLabelSize.x + padding + m_Thumb.GetSize().x / 2;
+    };
+
+    auto getMaxThumbPosition = [this]()
+    {
+        wxSize minLabelSize;
+        wxSize maxLabelSize;
+        GetSizeLabelMinMaxValue(minLabelSize, maxLabelSize);
+
+        const epiU32 padding = GetMinMaxLabelPadding();
+        const epiU32 border = GetBorderWidth();
+
+        return (GetSize().x - (border + maxLabelSize.x + padding));
+    };
+    const epiS32 minThumbPosition = getMinThumbPosition();
+    const epiS32 maxThumbPosition = getMaxThumbPosition();
+
+    T value = std::clamp(m_PrtyPtr.Get<T>(), GetMinValue(), GetMaxValue());
+    const epiFloat fraction = Value2Fraction(value, GetMinValue(), GetMaxValue());
+
+    m_Thumb.SetPosition(wxPoint{static_cast<epiS32>((maxThumbPosition - minThumbPosition) * fraction + minThumbPosition), GetSize().y / 2 + 1});
+    m_Thumb.SetValue(value);
     Refresh();
-}
-
-template<typename T>
-std::any epiWXSlider<T>::GetMinValueAny() const
-{
-    return std::make_any<T>(GetMinValue());
-}
-
-template<typename T>
-std::any epiWXSlider<T>::GetMaxValueAny() const
-{
-    return std::make_any<T>(GetMaxValue());
 }
 
 template<typename T>
@@ -119,6 +158,52 @@ T epiWXSlider<T>::GetValue() const
 }
 
 template<typename T>
+void epiWXSlider<T>::SetValueFromPosition(const wxPoint& position)
+{
+    wxPoint positionClamped;
+    positionClamped.x = position.x;
+    positionClamped.y = GetSize().y / 2 + 1;
+
+    auto getMinThumbPosition = [this]()
+    {
+        wxSize minLabelSize;
+        wxSize maxLabelSize;
+        GetSizeLabelMinMaxValue(minLabelSize, maxLabelSize);
+
+        const epiU32 padding = GetMinMaxLabelPadding();
+        const epiU32 border = GetBorderWidth();
+
+        return border + minLabelSize.x + padding + m_Thumb.GetSize().x / 2;
+    };
+
+    auto getMaxThumbPosition = [this]()
+    {
+        wxSize minLabelSize;
+        wxSize maxLabelSize;
+        GetSizeLabelMinMaxValue(minLabelSize, maxLabelSize);
+
+        const epiU32 padding = GetMinMaxLabelPadding();
+        const epiU32 border = GetBorderWidth();
+
+        return (GetSize().x - (border + maxLabelSize.x + padding));
+    };
+
+    const epiS32 minThumbPosition = getMinThumbPosition();
+    const epiS32 maxThumbPosition = getMaxThumbPosition();
+
+    positionClamped.x = std::clamp(positionClamped.x, minThumbPosition, maxThumbPosition);
+    const epiFloat fraction = epiFloat(positionClamped.x - minThumbPosition) / (maxThumbPosition - minThumbPosition);
+    epiAssert(fraction >= 0.0f);
+
+    T value = Fraction2Value(fraction, GetMinValue(), GetMaxValue());
+
+    m_Thumb.SetValue(value);
+    m_Thumb.SetPosition(positionClamped);
+
+    m_PrtyPtr.Set<T>(value);
+}
+
+template<typename T>
 void epiWXSlider<T>::OnMouseDown_Internal(wxMouseEvent& event)
 {
     if (!IsEnabled())
@@ -133,8 +218,7 @@ void epiWXSlider<T>::OnMouseDown_Internal(wxMouseEvent& event)
         m_Thumb.SetMouseOver(false);
     }
 
-    m_Thumb.SetPosition(mousePosition);
-    m_PrtyPtr.Set<T>(m_Thumb.GetValue());
+    SetValueFromPosition(mousePosition);
 
     CaptureMouse();
 
@@ -149,8 +233,7 @@ void epiWXSlider<T>::OnMouseUp_Internal(wxMouseEvent& event)
         return;
     }
 
-    m_Thumb.SetPosition(event.GetPosition());
-    m_PrtyPtr.Set<T>(m_Thumb.GetValue());
+    SetValueFromPosition(event.GetPosition());
     m_Thumb.SetDragged(false);
 
     if (HasCapture())
@@ -174,8 +257,7 @@ void epiWXSlider<T>::OnMouseMotion_Internal(wxMouseEvent& event)
     const wxPoint mousePosition = event.GetPosition();
     if (event.Dragging() && event.LeftIsDown())
     {
-        m_Thumb.SetPosition(mousePosition);
-        m_PrtyPtr.Set<T>(m_Thumb.GetValue());
+        SetValueFromPosition(mousePosition);
         refreshNeeded = true;
     }
     else

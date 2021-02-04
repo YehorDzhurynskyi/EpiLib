@@ -35,9 +35,6 @@ public:
     epiU32 GetMinMaxLabelPadding() const;
     void SetMinMaxLabelPadding(epiU32 padding);
 
-    virtual std::any GetMinValueAny() const = 0;
-    virtual std::any GetMaxValueAny() const = 0;
-
     virtual wxSize GetSizeSliderControl() const = 0;
     virtual void GetSizeLabelMinMaxValue(wxSize& minLabelSize, wxSize& maxLabelSize) = 0;
     virtual wxSize GetSizeBBox() = 0;
