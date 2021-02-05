@@ -39,9 +39,6 @@ protected:
     epiBool m_IsGammaSynchronized{false};
 
 EPI_GENREGION_END(mmVMImageGamma)
-
-public:
-    mmVMImageGamma();
 };
 
 EPI_NAMESPACE_END()

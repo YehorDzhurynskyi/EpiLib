@@ -30,11 +30,6 @@ EPI_NAMESPACE_BEGIN()
                                                         value); \
     PropertyChangedTrigger(PID_Threshold##Channel, m_Threshold##Channel, value);
 
-mmVMImageThreshold::mmVMImageThreshold()
-{
-    SetIsThresholdSynchronized(true);
-}
-
 void mmVMImageThreshold::SetThresholdR_Callback(epiU8 value)
 {
     epiProfileFunction;

@@ -418,6 +418,7 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
     {
         epi::mmVMImageThreshold vm;
         vm.SetImageSrc(&m_ImageTgt);
+        vm.SetIsThresholdSynchronized(true);
 
         epi::uiDataContextView dataContextView;
 
@@ -438,6 +439,10 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
 
         epi::mmVMImageGamma vm;
         vm.SetImageSrc(&m_ImageTgt);
+        vm.SetGammaR(1.0f);
+        vm.SetGammaG(1.0f);
+        vm.SetGammaB(1.0f);
+        vm.SetIsGammaSynchronized(true);
 
         epi::uiDataContextView dataContextView;
 

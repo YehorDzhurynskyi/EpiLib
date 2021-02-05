@@ -2,6 +2,7 @@ class mmVMImageGamma : mmVMImageRGB
 {
     [WriteCallback]
     {
+        # TODO: add an opportunity to assign value to WriteCallback non-Virtual property
         epiFloat GammaR;
         epiFloat GammaG;
         epiFloat GammaB;

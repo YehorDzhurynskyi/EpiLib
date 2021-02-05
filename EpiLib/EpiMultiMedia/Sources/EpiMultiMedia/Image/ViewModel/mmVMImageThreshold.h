@@ -39,9 +39,6 @@ protected:
     epiBool m_IsThresholdSynchronized{false};
 
 EPI_GENREGION_END(mmVMImageThreshold)
-
-public:
-    mmVMImageThreshold();
 };
 
 EPI_NAMESPACE_END()

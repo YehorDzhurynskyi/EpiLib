@@ -30,15 +30,6 @@ EPI_NAMESPACE_BEGIN()
                                                         value); \
     PropertyChangedTrigger(PID_Gamma##Channel, m_Gamma##Channel, value);
 
-mmVMImageGamma::mmVMImageGamma()
-{
-    // TODO: fix bug: slider has value 0 at start regardless what set here
-    SetIsGammaSynchronized(true);
-    SetGammaR(1.0f);
-    SetGammaG(1.0f);
-    SetGammaB(1.0f);
-}
-
 void mmVMImageGamma::SetGammaR_Callback(epiFloat value)
 {
     if (!epiEqual(GetGammaR(), value))
