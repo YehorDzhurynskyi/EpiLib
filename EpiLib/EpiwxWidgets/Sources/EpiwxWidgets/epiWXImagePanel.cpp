@@ -422,9 +422,10 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
 
         epi::uiDataContextView dataContextView;
 
-        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdR);
-        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdG);
-        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdB);
+        constexpr epiU8 kThresholdDefault = 0u;
+        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdR, kThresholdDefault);
+        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdG, kThresholdDefault);
+        dataContextView.AddSlider<epiU8>(epi::mmVMImageThreshold::PID_ThresholdB, kThresholdDefault);
         dataContextView.AddCheckboxBoolean(epi::mmVMImageThreshold::PID_IsThresholdSynchronized);
 
         if (epiWXImageConfigurationDialog dialog(vm, dataContextView, this, m_GLAttrs, wxID_ANY, "Thresholding"); dialog.ShowModal() == wxID_OK)
@@ -446,11 +447,12 @@ void epiWXImagePanel::OnMenuEvent(wxCommandEvent& event)
 
         epi::uiDataContextView dataContextView;
 
+        constexpr epiFloat kGammaDefault = 1.0f;
         constexpr epiFloat kGammaMin = 0.2f;
         constexpr epiFloat kGammaMax = 1.0f / kGammaMin;
-        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaR, kGammaMin, kGammaMax);
-        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaG, kGammaMin, kGammaMax);
-        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaB, kGammaMin, kGammaMax);
+        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaR, kGammaDefault, kGammaMin, kGammaMax);
+        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaG, kGammaDefault, kGammaMin, kGammaMax);
+        dataContextView.AddSlider<epiFloat>(epi::mmVMImageGamma::PID_GammaB, kGammaDefault, kGammaMin, kGammaMax);
         dataContextView.AddCheckboxBoolean(epi::mmVMImageGamma::PID_IsGammaSynchronized);
 
         if (epiWXImageConfigurationDialog dialog(vm, dataContextView, this, m_GLAttrs, wxID_ANY, "Gamma Correction"); dialog.ShowModal() == wxID_OK)

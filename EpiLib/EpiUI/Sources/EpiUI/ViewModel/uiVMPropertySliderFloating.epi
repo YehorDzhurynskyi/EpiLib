@@ -7,4 +7,5 @@ class uiVMPropertySliderFloating : uiVMPropertySlider
 
     epiFloat MinValue;
     epiFloat MaxValue;
+    epiFloat DefaultValue;
 };

@@ -44,6 +44,7 @@ protected:
     void DoDisable();
 
     void OnMouseDown(wxMouseEvent& event);
+    void OnMouseDClick(wxMouseEvent& event);
     void OnMouseUp(wxMouseEvent& event);
     void OnMouseMotion(wxMouseEvent& event);
     void OnMouseLost(wxMouseCaptureLostEvent& event);
@@ -54,6 +55,7 @@ protected:
     void OnResize(wxSizeEvent& event);
 
     virtual void OnMouseDown_Internal(wxMouseEvent& event) = 0;
+    virtual void OnMouseDClick_Internal(wxMouseEvent& event) = 0;
     virtual void OnMouseUp_Internal(wxMouseEvent& event) = 0;
     virtual void OnMouseMotion_Internal(wxMouseEvent& event) = 0;
     virtual void OnMouseLost_Internal(wxMouseCaptureLostEvent& event) = 0;

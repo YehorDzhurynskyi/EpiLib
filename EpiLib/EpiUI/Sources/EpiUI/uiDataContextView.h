@@ -50,16 +50,19 @@ public:
         {
             epiFloat MinValue;
             epiFloat MaxValue;
+            epiFloat DefaultValue;
         } SliderFloating;
         struct
         {
             epiS64 MinValue;
             epiS64 MaxValue;
+            epiS64 DefaultValue;
         } SliderIntegralSigned;
         struct
         {
             epiU64 MinValue;
             epiU64 MaxValue;
+            epiU64 DefaultValue;
         } SliderIntegralUnsigned;
     };
 
@@ -96,20 +99,21 @@ public:
     void AddCheckboxBoolean(epiMetaPropertyID pid);
 
     template<typename T>
-    void AddSlider(epiMetaPropertyID pid, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
+    void AddSlider(epiMetaPropertyID pid, T defaultValue, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
 
     // TODO: use epiPtrArray
     epiArray<std::unique_ptr<uiVMPropertyBase>> BuildVMList(Object& dataContext) const;
 };
 
 template<typename T>
-void uiDataContextView::AddSlider(epiMetaPropertyID pid, T minValue, T maxValue)
+void uiDataContextView::AddSlider(epiMetaPropertyID pid, T defaultValue, T minValue, T maxValue)
 {
     if constexpr (std::is_floating_point_v<T>)
     {
         uiDataContextViewEntry::ViewData data;
         data.SliderFloating.MinValue = static_cast<decltype(data.SliderFloating.MinValue)>(minValue);
         data.SliderFloating.MaxValue = static_cast<decltype(data.SliderFloating.MaxValue)>(maxValue);
+        data.SliderFloating.DefaultValue = static_cast<decltype(data.SliderFloating.DefaultValue)>(defaultValue);
 
         Add(pid, uiDataContextViewEntryView::SliderFloating, data);
     }
@@ -118,6 +122,7 @@ void uiDataContextView::AddSlider(epiMetaPropertyID pid, T minValue, T maxValue)
         uiDataContextViewEntry::ViewData data;
         data.SliderIntegralSigned.MinValue = static_cast<decltype(data.SliderIntegralSigned.MinValue)>(minValue);
         data.SliderIntegralSigned.MaxValue = static_cast<decltype(data.SliderIntegralSigned.MaxValue)>(maxValue);
+        data.SliderIntegralSigned.DefaultValue = static_cast<decltype(data.SliderIntegralSigned.DefaultValue)>(defaultValue);
 
         Add(pid, uiDataContextViewEntryView::SliderIntegralSigned, data);
     }
@@ -126,6 +131,7 @@ void uiDataContextView::AddSlider(epiMetaPropertyID pid, T minValue, T maxValue)
         uiDataContextViewEntry::ViewData data;
         data.SliderIntegralUnsigned.MinValue = static_cast<decltype(data.SliderIntegralUnsigned.MinValue)>(minValue);
         data.SliderIntegralUnsigned.MaxValue = static_cast<decltype(data.SliderIntegralUnsigned.MaxValue)>(maxValue);
+        data.SliderIntegralUnsigned.DefaultValue = static_cast<decltype(data.SliderIntegralUnsigned.DefaultValue)>(defaultValue);
 
         Add(pid, uiDataContextViewEntryView::SliderIntegralUnsigned, data);
     }

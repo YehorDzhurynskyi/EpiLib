@@ -24,6 +24,7 @@ epiWXSliderBase::epiWXSliderBase(wxWindow* parent,
 
     Bind(wxEVT_LEFT_DOWN, &epiWXSliderBase::OnMouseDown, this);
     Bind(wxEVT_LEFT_UP, &epiWXSliderBase::OnMouseUp, this);
+    Bind(wxEVT_LEFT_DCLICK, &epiWXSliderBase::OnMouseDClick, this);
     Bind(wxEVT_MOTION, &epiWXSliderBase::OnMouseMotion, this);
     Bind(wxEVT_MOUSE_CAPTURE_LOST, &epiWXSliderBase::OnMouseLost, this);
     Bind(wxEVT_ENTER_WINDOW, &epiWXSliderBase::OnMouseEnter, this);
@@ -68,6 +69,11 @@ void epiWXSliderBase::DoDisable()
 void epiWXSliderBase::OnMouseDown(wxMouseEvent& event)
 {
     OnMouseDown_Internal(event);
+}
+
+void epiWXSliderBase::OnMouseDClick(wxMouseEvent& event)
+{
+    OnMouseDClick_Internal(event);
 }
 
 void epiWXSliderBase::OnMouseUp(wxMouseEvent& event)

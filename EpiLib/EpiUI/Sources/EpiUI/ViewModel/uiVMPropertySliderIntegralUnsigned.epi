@@ -7,4 +7,5 @@ class uiVMPropertySliderIntegralUnsigned : uiVMPropertySlider
 
     epiU64 MinValue;
     epiU64 MaxValue;
+    epiU64 DefaultValue;
 };

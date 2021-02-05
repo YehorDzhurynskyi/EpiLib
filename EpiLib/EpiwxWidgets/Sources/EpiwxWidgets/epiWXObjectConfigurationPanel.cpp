@@ -90,6 +90,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiFloat>(this,
                                                    wxID_ANY,
                                                    ptr,
+                                                   static_cast<epiFloat>(sliderFloatingVM->GetDefaultValue()),
                                                    static_cast<epiFloat>(sliderFloatingVM->GetMinValue()),
                                                    static_cast<epiFloat>(sliderFloatingVM->GetMaxValue()));
             } break;
@@ -98,6 +99,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiDouble>(this,
                                                     wxID_ANY,
                                                     ptr,
+                                                    static_cast<epiDouble>(sliderFloatingVM->GetDefaultValue()),
                                                     static_cast<epiDouble>(sliderFloatingVM->GetMinValue()),
                                                     static_cast<epiDouble>(sliderFloatingVM->GetMaxValue()));
             } break;
@@ -113,6 +115,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiS8>(this,
                                                 wxID_ANY,
                                                 ptr,
+                                                static_cast<epiS8>(sliderIntegralSignedVM->GetDefaultValue()),
                                                 static_cast<epiS8>(sliderIntegralSignedVM->GetMinValue()),
                                                 static_cast<epiS8>(sliderIntegralSignedVM->GetMaxValue()));
             } break;
@@ -121,6 +124,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiS16>(this,
                                                  wxID_ANY,
                                                  ptr,
+                                                 static_cast<epiS16>(sliderIntegralSignedVM->GetDefaultValue()),
                                                  static_cast<epiS16>(sliderIntegralSignedVM->GetMinValue()),
                                                  static_cast<epiS16>(sliderIntegralSignedVM->GetMaxValue()));
             } break;
@@ -129,6 +133,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiS32>(this,
                                                  wxID_ANY,
                                                  ptr,
+                                                 static_cast<epiS32>(sliderIntegralSignedVM->GetDefaultValue()),
                                                  static_cast<epiS32>(sliderIntegralSignedVM->GetMinValue()),
                                                  static_cast<epiS32>(sliderIntegralSignedVM->GetMaxValue()));
             } break;
@@ -137,6 +142,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiS64>(this,
                                                  wxID_ANY,
                                                  ptr,
+                                                 static_cast<epiS64>(sliderIntegralSignedVM->GetDefaultValue()),
                                                  static_cast<epiS64>(sliderIntegralSignedVM->GetMinValue()),
                                                  static_cast<epiS64>(sliderIntegralSignedVM->GetMaxValue()));
             } break;
@@ -152,6 +158,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiByte>(this,
                                                   wxID_ANY,
                                                   ptr,
+                                                  static_cast<epiByte>(sliderIntegralUnsignedVM->GetDefaultValue()),
                                                   static_cast<epiByte>(sliderIntegralUnsignedVM->GetMinValue()),
                                                   static_cast<epiByte>(sliderIntegralUnsignedVM->GetMaxValue()));
             } break;
@@ -160,6 +167,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiU8>(this,
                                                 wxID_ANY,
                                                 ptr,
+                                                static_cast<epiU8>(sliderIntegralUnsignedVM->GetDefaultValue()),
                                                 static_cast<epiU8>(sliderIntegralUnsignedVM->GetMinValue()),
                                                 static_cast<epiU8>(sliderIntegralUnsignedVM->GetMaxValue()));
             } break;
@@ -168,6 +176,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiU16>(this,
                                                  wxID_ANY,
                                                  ptr,
+                                                 static_cast<epiU16>(sliderIntegralUnsignedVM->GetDefaultValue()),
                                                  static_cast<epiU16>(sliderIntegralUnsignedVM->GetMinValue()),
                                                  static_cast<epiU16>(sliderIntegralUnsignedVM->GetMaxValue()));
             } break;
@@ -176,6 +185,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiU32>(this,
                                                  wxID_ANY,
                                                  ptr,
+                                                 static_cast<epiU32>(sliderIntegralUnsignedVM->GetDefaultValue()),
                                                  static_cast<epiU32>(sliderIntegralUnsignedVM->GetMinValue()),
                                                  static_cast<epiU32>(sliderIntegralUnsignedVM->GetMaxValue()));
             } break;
@@ -184,6 +194,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiU64>(this,
                                                  wxID_ANY,
                                                  ptr,
+                                                 static_cast<epiU64>(sliderIntegralUnsignedVM->GetDefaultValue()),
                                                  static_cast<epiU64>(sliderIntegralUnsignedVM->GetMinValue()),
                                                  static_cast<epiU64>(sliderIntegralUnsignedVM->GetMaxValue()));
             } break;
@@ -192,6 +203,7 @@ wxWindow* epiWXObjectConfigurationPanel::MakeControlFromPropertyVM(epi::uiVMProp
                 slider = new epiWXSlider<epiSize_t>(this,
                                                     wxID_ANY,
                                                     ptr,
+                                                    static_cast<epiSize_t>(sliderIntegralUnsignedVM->GetDefaultValue()),
                                                     static_cast<epiSize_t>(sliderIntegralUnsignedVM->GetMinValue()),
                                                     static_cast<epiSize_t>(sliderIntegralUnsignedVM->GetMaxValue()));
             } break;

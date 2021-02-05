@@ -22,7 +22,8 @@ public:
         PID_Value = 0xdcb67730,
         PID_MinValue = 0xe1feef64,
         PID_MaxValue = 0x79e4085,
-        PID_COUNT = 3
+        PID_DefaultValue = 0xdc53e7d5,
+        PID_COUNT = 4
     };
 
 protected:
@@ -32,12 +33,13 @@ protected:
 protected:
     epiS64 m_MinValue{0};
     epiS64 m_MaxValue{0};
+    epiS64 m_DefaultValue{0};
 
 EPI_GENREGION_END(uiVMPropertySliderIntegralSigned)
 
 public:
     template<typename T>
-    uiVMPropertySliderIntegralSigned(const epiPropertyPointer& prtyPtr, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
+    uiVMPropertySliderIntegralSigned(const epiPropertyPointer& prtyPtr, T defaultValue, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
 
     template<typename T>
     void SetValue(T value);
@@ -47,10 +49,11 @@ public:
 };
 
 template<typename T>
-uiVMPropertySliderIntegralSigned::uiVMPropertySliderIntegralSigned(const epiPropertyPointer& prtyPtr, T minValue, T maxValue)
+uiVMPropertySliderIntegralSigned::uiVMPropertySliderIntegralSigned(const epiPropertyPointer& prtyPtr, T defaultValue, T minValue, T maxValue)
     : super(prtyPtr)
     , m_MinValue{static_cast<epiS64>(minValue)}
     , m_MaxValue{static_cast<epiS64>(maxValue)}
+    , m_DefaultValue{static_cast<epiS64>(defaultValue)}
 {
     static_assert(std::is_integral_v<T> && std::is_signed_v<T>);
 }

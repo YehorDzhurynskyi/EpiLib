@@ -57,18 +57,21 @@ epiArray<std::unique_ptr<uiVMPropertyBase>> uiDataContextView::BuildVMList(Objec
         case uiDataContextViewEntryView::SliderFloating:
         {
             vm = std::make_unique<uiVMPropertySliderFloating>(ptr,
+                                                              entry.GetViewData().SliderFloating.DefaultValue,
                                                               entry.GetViewData().SliderFloating.MinValue,
                                                               entry.GetViewData().SliderFloating.MaxValue);
         } break;
         case uiDataContextViewEntryView::SliderIntegralSigned:
         {
             vm = std::make_unique<uiVMPropertySliderIntegralSigned>(ptr,
+                                                                    entry.GetViewData().SliderIntegralSigned.DefaultValue,
                                                                     entry.GetViewData().SliderIntegralSigned.MinValue,
                                                                     entry.GetViewData().SliderIntegralSigned.MaxValue);
         } break;
         case uiDataContextViewEntryView::SliderIntegralUnsigned:
         {
             vm = std::make_unique<uiVMPropertySliderIntegralUnsigned>(ptr,
+                                                                      entry.GetViewData().SliderIntegralUnsigned.DefaultValue,
                                                                       entry.GetViewData().SliderIntegralUnsigned.MinValue,
                                                                       entry.GetViewData().SliderIntegralUnsigned.MaxValue);
         } break;

@@ -22,7 +22,8 @@ public:
         PID_Value = 0xdcb67730,
         PID_MinValue = 0xe1feef64,
         PID_MaxValue = 0x79e4085,
-        PID_COUNT = 3
+        PID_DefaultValue = 0xdc53e7d5,
+        PID_COUNT = 4
     };
 
 protected:
@@ -32,12 +33,16 @@ protected:
 protected:
     epiFloat m_MinValue{0.0f};
     epiFloat m_MaxValue{0.0f};
+    epiFloat m_DefaultValue{0.0f};
 
 EPI_GENREGION_END(uiVMPropertySliderFloating)
 
 public:
     template<typename T>
-    uiVMPropertySliderFloating(const epiPropertyPointer& prtyPtr, T minValue = std::numeric_limits<T>::min(), T maxValue = std::numeric_limits<T>::max());
+    uiVMPropertySliderFloating(const epiPropertyPointer& prtyPtr,
+                               T defaultValue,
+                               T minValue = std::numeric_limits<T>::min(),
+                               T maxValue = std::numeric_limits<T>::max());
 
     template<typename T>
     void SetValue(T value);
@@ -47,10 +52,11 @@ public:
 };
 
 template<typename T>
-uiVMPropertySliderFloating::uiVMPropertySliderFloating(const epiPropertyPointer& prtyPtr, T minValue, T maxValue)
+uiVMPropertySliderFloating::uiVMPropertySliderFloating(const epiPropertyPointer& prtyPtr, T defaultValue, T minValue, T maxValue)
     : super(prtyPtr)
     , m_MinValue{static_cast<epiFloat>(minValue)}
     , m_MaxValue{static_cast<epiFloat>(maxValue)}
+    , m_DefaultValue{static_cast<epiFloat>(defaultValue)}
 {
     static_assert(std::is_floating_point_v<T>);
 }
