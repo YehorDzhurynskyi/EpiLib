@@ -17,6 +17,26 @@ add_library(EpiwxWidgets
     Sources/EpiwxWidgets/epiWXEventLoop.h
     Sources/EpiwxWidgets/epiWXEventLoop.cpp
 )
+
+if (EPI_GRAPHICS_DRIVER_VK)
+    find_package(Vulkan REQUIRED FATAL_ERROR)
+    
+    target_link_libraries(EpiwxWidgets
+        PRIVATE
+            Vulkan::Vulkan
+    )
+
+    target_sources(EpiwxWidgets
+        PUBLIC
+            Sources/EpiwxWidgets/Vulkan/epiWXVulkanContext.h
+            Sources/EpiwxWidgets/Vulkan/epiWXVulkanContext.cpp
+            Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvasBase.h
+            Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvasBase.cpp
+            Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h
+            Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvas.cpp
+    )
+endif()
+
 get_target_property(EpiwxWidgets_SOURCES EpiwxWidgets SOURCES)
 epi_pack_sources(${EpiwxWidgets_SOURCES})
 
@@ -53,3 +73,5 @@ target_link_libraries(EpiwxWidgets
 epi_module_register(EpiwxWidgets
     FOLDER "EpiLib"
 )
+
+add_subdirectory(Examples)
