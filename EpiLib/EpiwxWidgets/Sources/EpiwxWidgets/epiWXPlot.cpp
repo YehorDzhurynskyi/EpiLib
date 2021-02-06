@@ -12,7 +12,6 @@
 
 #include "EpiCore/ObjectModel/Property/epiPropertyPointer.h"
 
-#include <glad/glad.h>
 #include <wx/wx.h>
 
 EPI_NAMESPACE_USING()

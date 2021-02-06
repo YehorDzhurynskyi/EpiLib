@@ -239,25 +239,19 @@ void gfxDrawerText::SceneEnd(const gfxCamera& camera)
     {
         gfxBindableScoped scope(m_ShaderProgramText, m_VertexArrayText, m_TextAtlas);
 
-        const epiS32 locationSampler = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_texture");
         glActiveTexture(GL_TEXTURE0);
-        glUniform1i(locationSampler, 0);
+        m_ShaderProgramText.Uniform("u_texture", 0);
 
-        const epiS32 locationShift = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_shift");
-        glUniform1f(locationShift, 0.0f);
+        m_ShaderProgramText.Uniform("u_shift", 0.0f);
+        m_ShaderProgramText.Uniform("u_gamma", 1.43f);
 
-        const epiS32 locationGamma = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_gamma");
-        glUniform1f(locationGamma, 1.43f);
-
-        const epiS32 locationPixelSize = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_pixel_size");
         const epiSize_t atlasW = m_TextAtlas.GetTexture().GetWidth();
         const epiSize_t atlasH = m_TextAtlas.GetTexture().GetHeight();
         const epiVec2f pixelSize(1.0f / atlasW, 1.0f / atlasH);
-        glUniform2fv(locationPixelSize, 1, &pixelSize[0]);
+        m_ShaderProgramText.Uniform("u_pixel_size", pixelSize);
 
-        const epiS32 locationVP = glGetUniformLocation(m_ShaderProgramText.GetProgramID(), "u_view_projection");
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
-        glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
+        m_ShaderProgramText.Uniform("u_view_projection", VP);
 
         glDrawArrays(GL_TRIANGLES, 0, textVerticesCount);
     }

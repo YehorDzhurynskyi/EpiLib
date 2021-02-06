@@ -119,4 +119,95 @@ void gfxShaderProgram::UnBind()
     m_Impl->UnBind();
 }
 
+void gfxShaderProgram::UniformFloat(const epiChar* name, epiFloat value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformFloat(name, value);
+}
+
+void gfxShaderProgram::UniformVec2f(const epiChar* name, const epiVec2f& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec2f(name, value);
+}
+
+void gfxShaderProgram::UniformVec3f(const epiChar* name, const epiVec3f& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec3f(name, value);
+}
+
+void gfxShaderProgram::UniformVec4f(const epiChar* name, const epiVec4f& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec4f(name, value);
+}
+
+void gfxShaderProgram::UniformMat4x4f(const epiChar* name, const epiMat4x4f& value, epiBool transpose)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformMat4x4f(name, value, transpose);
+}
+
+void gfxShaderProgram::UniformS32(const epiChar* name, epiS32 value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformS32(name, value);
+}
+
+void gfxShaderProgram::UniformVec2s(const epiChar* name, const epiVec2s& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec2s(name, value);
+}
+
+void gfxShaderProgram::UniformVec3s(const epiChar* name, const epiVec3s& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec3s(name, value);
+}
+
+void gfxShaderProgram::UniformVec4s(const epiChar* name, const epiVec4s& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec4s(name, value);
+}
+
+void gfxShaderProgram::UniformU32(const epiChar* name, epiU32 value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformU32(name, value);
+}
+
+void gfxShaderProgram::UniformVec2u(const epiChar* name, const epiVec2u& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec2u(name, value);
+}
+
+void gfxShaderProgram::UniformVec3u(const epiChar* name, const epiVec3u& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec3u(name, value);
+}
+
+void gfxShaderProgram::UniformVec4u(const epiChar* name, const epiVec4u& value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->UniformVec4u(name, value);
+}
+
 EPI_NAMESPACE_END()

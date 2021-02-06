@@ -9,8 +9,6 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/Platform/epiPlatform.h"
 
-#include <glad/glad.h>
-
 EPI_NAMESPACE_BEGIN()
 
 gfxTextFace::~gfxTextFace()

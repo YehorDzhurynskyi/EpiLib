@@ -48,9 +48,6 @@ public:
     gfxVertexBufferLayoutImplGL& operator=(gfxVertexBufferLayoutImplGL&& rhs) = default;
     ~gfxVertexBufferLayoutImplGL() override = default;
 
-    const epiArray<gfxVertexBufferLayoutAttributeImpl>& GetAttributes() const override;
-    void SetAttributes(const epiArray<gfxVertexBufferLayoutAttributeImpl>& value) override;
-
     void Apply() const override;
 
     void Add(gfxVertexBufferLayoutAttributeImpl&& attr) override;

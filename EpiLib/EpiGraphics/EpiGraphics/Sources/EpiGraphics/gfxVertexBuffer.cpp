@@ -68,12 +68,13 @@ void gfxVertexBufferLayoutAttribute::SetOffset_Callback(epiSize_t value)
 void gfxVertexBufferLayout::Add(gfxVertexBufferLayoutAttribute&& attr)
 {
     m_Impl->Add(std::move(*attr.m_Impl));
+    m_Size++;
 }
 
 void gfxVertexBufferLayout::Add(epiSize_t size, gfxVertexBufferLayoutAttributeType type, epiBool normalized, epiSize_t stride, epiSize_t offset)
 {
     gfxVertexBufferLayoutAttribute attr;
-    attr.SetIndex(m_Impl->GetAttributes().Size());
+    attr.SetIndex(m_Size);
     attr.SetSize(size);
     attr.SetType(type);
     attr.SetNormalized(normalized);

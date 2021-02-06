@@ -68,9 +68,6 @@ public:
     gfxVertexBufferLayoutImpl& operator=(gfxVertexBufferLayoutImpl&& rhs) = default;
     virtual ~gfxVertexBufferLayoutImpl() = default;
 
-    virtual const epiArray<gfxVertexBufferLayoutAttributeImpl>& GetAttributes() const = 0;
-    virtual void SetAttributes(const epiArray<gfxVertexBufferLayoutAttributeImpl>& value) = 0;
-
     virtual void Apply() const = 0;
 
     virtual void Add(gfxVertexBufferLayoutAttributeImpl&& attr) = 0;
@@ -168,6 +165,22 @@ public:
 
     virtual void Bind() = 0;
     virtual void UnBind() = 0;
+
+    virtual void UniformFloat(const epiChar* name, epiFloat value) = 0;
+    virtual void UniformVec2f(const epiChar* name, const epiVec2f& value) = 0;
+    virtual void UniformVec3f(const epiChar* name, const epiVec3f& value) = 0;
+    virtual void UniformVec4f(const epiChar* name, const epiVec4f& value) = 0;
+    virtual void UniformMat4x4f(const epiChar* name, const epiMat4x4f& value, epiBool transpose) = 0;
+
+    virtual void UniformS32(const epiChar* name, epiS32 value) = 0;
+    virtual void UniformVec2s(const epiChar* name, const epiVec2s& value) = 0;
+    virtual void UniformVec3s(const epiChar* name, const epiVec3s& value) = 0;
+    virtual void UniformVec4s(const epiChar* name, const epiVec4s& value) = 0;
+
+    virtual void UniformU32(const epiChar* name, epiU32 value) = 0;
+    virtual void UniformVec2u(const epiChar* name, const epiVec2u& value) = 0;
+    virtual void UniformVec3u(const epiChar* name, const epiVec3u& value) = 0;
+    virtual void UniformVec4u(const epiChar* name, const epiVec4u& value) = 0;
 };
 
 EPI_NAMESPACE_END()

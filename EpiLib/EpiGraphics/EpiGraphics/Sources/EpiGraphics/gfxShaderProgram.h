@@ -95,8 +95,90 @@ public:
     void Bind() override;
     void UnBind() override;
 
+    template<typename T>
+    void Uniform(const epiChar* name, const T& value);
+
+    void UniformFloat(const epiChar* name, epiFloat value);
+    void UniformVec2f(const epiChar* name, const epiVec2f& value);
+    void UniformVec3f(const epiChar* name, const epiVec3f& value);
+    void UniformVec4f(const epiChar* name, const epiVec4f& value);
+    void UniformMat4x4f(const epiChar* name, const epiMat4x4f& value, epiBool transpose = false);
+
+    void UniformS32(const epiChar* name, epiS32 value);
+    void UniformVec2s(const epiChar* name, const epiVec2s& value);
+    void UniformVec3s(const epiChar* name, const epiVec3s& value);
+    void UniformVec4s(const epiChar* name, const epiVec4s& value);
+
+    void UniformU32(const epiChar* name, epiU32 value);
+    void UniformVec2u(const epiChar* name, const epiVec2u& value);
+    void UniformVec3u(const epiChar* name, const epiVec3u& value);
+    void UniformVec4u(const epiChar* name, const epiVec4u& value);
+
 protected:
     std::unique_ptr<gfxShaderProgramImpl> m_Impl;
 };
+
+template<typename T>
+void gfxShaderProgram::Uniform(const epiChar* name, const T& value)
+{
+    using T_ = std::decay_t<T>;
+
+    if constexpr (std::is_same_v<epiFloat, T_>)
+    {
+        UniformFloat(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec2f, T_>)
+    {
+        UniformVec2f(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec3f, T_>)
+    {
+        UniformVec3f(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec4f, T_>)
+    {
+        UniformVec4f(name, value);
+    }
+    else if constexpr (std::is_same_v<epiMat4x4f, T_>)
+    {
+        UniformMat4x4f(name, value);
+    }
+    else if constexpr (std::is_same_v<epiS32, T_>)
+    {
+        UniformS32(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec2s, T_>)
+    {
+        UniformVec2s(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec3s, T_>)
+    {
+        UniformVec3s(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec4s, T_>)
+    {
+        UniformVec4s(name, value);
+    }
+    else if constexpr (std::is_same_v<epiU32, T_>)
+    {
+        UniformU32(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec2u, T_>)
+    {
+        UniformVec2u(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec3u, T_>)
+    {
+        UniformVec3u(name, value);
+    }
+    else if constexpr (std::is_same_v<epiVec4u, T_>)
+    {
+        UniformVec4u(name, value);
+    }
+    else
+    {
+        static_assert(false);
+    }
+}
 
 EPI_NAMESPACE_END()

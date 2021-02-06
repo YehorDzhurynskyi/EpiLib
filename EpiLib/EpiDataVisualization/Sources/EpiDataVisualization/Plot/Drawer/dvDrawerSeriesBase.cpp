@@ -5,8 +5,6 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/Color.h"
 
-#include <glad/glad.h> // TODO: remove (should be visible only for gfx)
-
 namespace
 {
 
@@ -108,9 +106,8 @@ void dvDrawerSeriesBase::SceneEnd(const gfxCamera& camera)
     {
         gfxBindableScoped scope(m_ShaderProgramLineStrip, m_VertexArrayLineStrip);
 
-        const GLint locationVP = glGetUniformLocation(m_ShaderProgramLineStrip.GetProgramID(), "u_view_projection");
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
-        glUniformMatrix4fv(locationVP, 1, GL_FALSE, &VP[0][0]);
+        m_ShaderProgramLineStrip.Uniform("u_view_projection", VP);
 
         glLineWidth(2.0f);
         glDrawArrays(GL_LINE_STRIP, 0, lineStripVerticesCount);

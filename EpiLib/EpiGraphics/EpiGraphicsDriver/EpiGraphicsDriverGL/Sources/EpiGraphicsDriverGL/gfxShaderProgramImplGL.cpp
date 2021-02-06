@@ -208,4 +208,109 @@ void gfxShaderProgramImplGL::UnBind()
     glUseProgram(0);
 }
 
+void gfxShaderProgramImplGL::UniformFloat(const epiChar* name, epiFloat value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform1f(location, value);
+}
+
+void gfxShaderProgramImplGL::UniformVec2f(const epiChar* name, const epiVec2f& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform2fv(location, 1, &value[0]);
+}
+
+void gfxShaderProgramImplGL::UniformVec3f(const epiChar* name, const epiVec3f& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform3fv(location, 1, &value[0]);
+}
+
+void gfxShaderProgramImplGL::UniformVec4f(const epiChar* name, const epiVec4f& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform4fv(location, 1, &value[0]);
+}
+
+void gfxShaderProgramImplGL::UniformMat4x4f(const epiChar* name, const epiMat4x4f& value, epiBool transpose)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniformMatrix4fv(location, 1, transpose, &value[0][0]);
+}
+
+void gfxShaderProgramImplGL::UniformS32(const epiChar* name, epiS32 value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform1i(location, value);
+}
+
+void gfxShaderProgramImplGL::UniformVec2s(const epiChar* name, const epiVec2s& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform2iv(location, 1, &value[0]);
+}
+
+void gfxShaderProgramImplGL::UniformVec3s(const epiChar* name, const epiVec3s& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform3iv(location, 1, &value[0]);
+}
+
+void gfxShaderProgramImplGL::UniformVec4s(const epiChar* name, const epiVec4s& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform4iv(location, 1, &value[0]);
+}
+
+void gfxShaderProgramImplGL::UniformU32(const epiChar* name, epiU32 value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform1ui(location, value);
+}
+
+void gfxShaderProgramImplGL::UniformVec2u(const epiChar* name, const epiVec2u& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform2uiv(location, 1, &value[0]);
+}
+
+void gfxShaderProgramImplGL::UniformVec3u(const epiChar* name, const epiVec3u& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform3uiv(location, 1, &value[0]);
+}
+
+void gfxShaderProgramImplGL::UniformVec4u(const epiChar* name, const epiVec4u& value)
+{
+    const GLint location = glGetUniformLocation(m_ID, name);
+    epiExpect(location != -1);
+
+    glUniform4uiv(location, 1, &value[0]);
+}
+
+
 EPI_NAMESPACE_END()

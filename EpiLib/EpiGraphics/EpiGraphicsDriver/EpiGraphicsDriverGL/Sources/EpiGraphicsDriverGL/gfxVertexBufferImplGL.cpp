@@ -121,16 +121,6 @@ void gfxVertexBufferLayoutAttributeImplGL::Apply() const
     glVertexAttribPointer(m_Index, m_Size, gltype, m_Normalized, m_Stride, (const void*)m_Offset);
 }
 
-const epiArray<gfxVertexBufferLayoutAttributeImpl>& gfxVertexBufferLayoutImplGL::GetAttributes() const
-{
-    return m_Attributes;
-}
-
-void gfxVertexBufferLayoutImplGL::SetAttributes(const epiArray<gfxVertexBufferLayoutAttributeImpl>& value)
-{
-    m_Attributes = value;
-}
-
 void gfxVertexBufferLayoutImplGL::Apply() const
 {
     for (auto& attr : m_Attributes)

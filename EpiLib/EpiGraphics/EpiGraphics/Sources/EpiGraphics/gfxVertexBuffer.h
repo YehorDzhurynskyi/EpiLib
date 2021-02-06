@@ -64,13 +64,8 @@ public:
 
     enum gfxVertexBufferLayout_PIDs
     {
-        PID_Attributes = 0x7ec69da0,
-        PID_COUNT = 1
+        PID_COUNT = 0
     };
-
-protected:
-    const epiArray<gfxVertexBufferLayoutAttribute>& GetAttributes_Callback() const;
-    void SetAttributes_Callback(const epiArray<gfxVertexBufferLayoutAttribute>& value);
 
 EPI_GENREGION_END(gfxVertexBufferLayout)
 
@@ -82,7 +77,8 @@ public:
     void Add(epiSize_t size, gfxVertexBufferLayoutAttributeType type, epiBool normalized, epiSize_t stride, epiSize_t offset);
 
 protected:
-    std::unique_ptr<gfxVertexBufferLayout> m_Impl;
+    std::unique_ptr<gfxVertexBufferLayoutImpl> m_Impl;
+    epiSize_t m_Size{0};
 };
 
 class gfxVertexBuffer : public gfxBindable

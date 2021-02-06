@@ -13,10 +13,6 @@ class gfxVertexBufferLayoutAttribute
 
 class gfxVertexBufferLayout
 {
-    [Virtual]
-    {
-        epiArray<gfxVertexBufferLayoutAttribute> Attributes;
-    }
 };
 
 class gfxVertexBuffer : gfxBindable

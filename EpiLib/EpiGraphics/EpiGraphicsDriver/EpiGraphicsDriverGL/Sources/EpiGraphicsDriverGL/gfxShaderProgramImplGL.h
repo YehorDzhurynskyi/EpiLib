@@ -50,6 +50,22 @@ public:
     void Bind() override;
     void UnBind() override;
 
+    void UniformFloat(const epiChar* name, epiFloat value) override;
+    void UniformVec2f(const epiChar* name, const epiVec2f& value) override;
+    void UniformVec3f(const epiChar* name, const epiVec3f& value) override;
+    void UniformVec4f(const epiChar* name, const epiVec4f& value) override;
+    void UniformMat4x4f(const epiChar* name, const epiMat4x4f& value, epiBool transpose) override;
+
+    void UniformS32(const epiChar* name, epiS32 value) override;
+    void UniformVec2s(const epiChar* name, const epiVec2s& value) override;
+    void UniformVec3s(const epiChar* name, const epiVec3s& value) override;
+    void UniformVec4s(const epiChar* name, const epiVec4s& value) override;
+
+    void UniformU32(const epiChar* name, epiU32 value) override;
+    void UniformVec2u(const epiChar* name, const epiVec2u& value) override;
+    void UniformVec3u(const epiChar* name, const epiVec3u& value) override;
+    void UniformVec4u(const epiChar* name, const epiVec4u& value) override;
+
 protected:
     epiU32 m_ID{0};
     const gfxShaderImplGL* m_ShaderVertex{nullptr};
