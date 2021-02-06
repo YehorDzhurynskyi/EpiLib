@@ -1,25 +1,18 @@
-enum gfxShaderType
-{
-    None,
-    Vertex,
-    Geometry,
-    Pixel
-};
-
 class gfxShader
 {
     [Virtual, ReadOnly]
-    epiBool IsCreated;
-
-    [Transient]
-    epiU32 ShaderID;
+    {
+        epiBool IsCreated;
+        epiU32 ID;
+        gfxShaderType Type;
+    }
 };
 
 class gfxShaderProgram : gfxBindable
 {
     [Virtual, ReadOnly]
-    epiBool IsCreated;
-
-    [Transient]
-    epiU32 ProgramID;
+    {
+        epiBool IsCreated;
+        epiU32 ID;
+    }
 };

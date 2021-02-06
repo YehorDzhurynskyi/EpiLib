@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxDrawerPrimitive.cxx"
 EPI_GENREGION_END(include)
 
-#include <glad/glad.h>
-
 namespace
 {
 
@@ -128,28 +126,26 @@ gfxDrawerPrimitive::gfxDrawerPrimitive()
     : m_VertexBufferMappingLines(m_VertexBufferLines)
     , m_VertexBufferMappingQuads(m_VertexBufferQuads)
 {
-    m_VertexBufferLines.Create(nullptr, sizeof(VertexLine) * 2 * kMaxLineCount, gfxVertexBufferUsage::DynamicDraw);
-
     {
-        gfxBindableScoped scope(m_VertexArrayLines, m_VertexBufferLines);
+        gfxBindableScoped scope(m_VertexArrayLines);
 
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexLine), (void*)offsetof(VertexLine, Position));
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(VertexLine), (void*)offsetof(VertexLine, ColorTint));
+        gfxVertexBufferLayout layout;
+        layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLine), offsetof(VertexLine, Position));
+        layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLine), offsetof(VertexLine, ColorTint));
+
+        m_VertexBufferLines.Create(nullptr, sizeof(VertexLine) * 2 * kMaxLineCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
     m_ShaderProgramLines = CreateProgramLines();
 
-    m_VertexBufferQuads.Create(nullptr, sizeof(VertexQuad) * 6 * kMaxQuadCount, gfxVertexBufferUsage::DynamicDraw);
-
     {
-        gfxBindableScoped scope(m_VertexArrayQuads, m_VertexBufferQuads);
+        gfxBindableScoped scope(m_VertexArrayQuads);
 
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexQuad), (void*)offsetof(VertexQuad, Position));
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(VertexQuad), (void*)offsetof(VertexQuad, ColorTint));
+        gfxVertexBufferLayout layout;
+        layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexQuad), offsetof(VertexQuad, Position));
+        layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexQuad), offsetof(VertexQuad, ColorTint));
+
+        m_VertexBufferQuads.Create(nullptr, sizeof(VertexQuad) * 6 * kMaxQuadCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
     m_ShaderProgramQuads = CreateProgramQuad();

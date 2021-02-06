@@ -6,6 +6,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
+#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+
 EPI_NAMESPACE_BEGIN()
 
 class gfxVertexArray : public gfxBindable
@@ -26,9 +28,7 @@ public:
 
 protected:
     epiBool GetIsCreated_Callback() const;
-
-protected:
-    epiU32 m_ID{0};
+    epiU32 GetID_Callback() const;
 
 EPI_GENREGION_END(gfxVertexArray)
 
@@ -36,8 +36,8 @@ public:
     gfxVertexArray();
     gfxVertexArray(const gfxVertexArray& rhs) = delete;
     gfxVertexArray& operator=(const gfxVertexArray& rhs) = delete;
-    gfxVertexArray(gfxVertexArray&& rhs);
-    gfxVertexArray& operator=(gfxVertexArray&& rhs);
+    gfxVertexArray(gfxVertexArray&& rhs) = default;
+    gfxVertexArray& operator=(gfxVertexArray&& rhs) = default;
     ~gfxVertexArray();
 
 public:
@@ -46,6 +46,9 @@ public:
 
     void Bind() override;
     void UnBind() override;
+
+protected:
+    std::unique_ptr<gfxVertexArrayImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

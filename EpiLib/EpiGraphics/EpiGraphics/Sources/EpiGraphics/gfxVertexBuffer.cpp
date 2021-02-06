@@ -3,9 +3,85 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxVertexBuffer.cxx"
 EPI_GENREGION_END(include)
 
-#include <glad/glad.h>
-
 EPI_NAMESPACE_BEGIN()
+
+epiU32 gfxVertexBufferLayoutAttribute::GetIndex_Callback() const
+{
+    return m_Impl->GetIndex();
+}
+
+void gfxVertexBufferLayoutAttribute::SetIndex_Callback(epiU32 value)
+{
+    m_Impl->SetIndex(value);
+}
+
+epiSize_t gfxVertexBufferLayoutAttribute::GetSize_Callback() const
+{
+    return m_Impl->GetSize();
+}
+
+void gfxVertexBufferLayoutAttribute::SetSize_Callback(epiSize_t value)
+{
+    m_Impl->SetSize(value);
+}
+
+gfxVertexBufferLayoutAttributeType gfxVertexBufferLayoutAttribute::GetType_Callback() const
+{
+    return m_Impl->GetType();
+}
+
+void gfxVertexBufferLayoutAttribute::SetType_Callback(gfxVertexBufferLayoutAttributeType value)
+{
+    m_Impl->SetType(value);
+}
+
+epiBool gfxVertexBufferLayoutAttribute::GetNormalized_Callback() const
+{
+    return m_Impl->GetNormalized();
+}
+
+void gfxVertexBufferLayoutAttribute::SetNormalized_Callback(epiBool value)
+{
+    m_Impl->SetNormalized(value);
+}
+
+epiSize_t gfxVertexBufferLayoutAttribute::GetStride_Callback() const
+{
+    return m_Impl->GetStride();
+}
+
+void gfxVertexBufferLayoutAttribute::SetStride_Callback(epiSize_t value)
+{
+    m_Impl->SetStride(value);
+}
+
+epiSize_t gfxVertexBufferLayoutAttribute::GetOffset_Callback() const
+{
+    return m_Impl->GetOffset();
+}
+
+void gfxVertexBufferLayoutAttribute::SetOffset_Callback(epiSize_t value)
+{
+    m_Impl->SetOffset(value);
+}
+
+void gfxVertexBufferLayout::Add(gfxVertexBufferLayoutAttribute&& attr)
+{
+    m_Impl->Add(std::move(*attr.m_Impl));
+}
+
+void gfxVertexBufferLayout::Add(epiSize_t size, gfxVertexBufferLayoutAttributeType type, epiBool normalized, epiSize_t stride, epiSize_t offset)
+{
+    gfxVertexBufferLayoutAttribute attr;
+    attr.SetIndex(m_Impl->GetAttributes().Size());
+    attr.SetSize(size);
+    attr.SetType(type);
+    attr.SetNormalized(normalized);
+    attr.SetStride(stride);
+    attr.SetOffset(offset);
+
+    Add(std::move(attr));
+}
 
 gfxVertexBuffer::~gfxVertexBuffer()
 {
@@ -15,64 +91,34 @@ gfxVertexBuffer::~gfxVertexBuffer()
     }
 }
 
-gfxVertexBuffer::gfxVertexBuffer(gfxVertexBuffer&& rhs)
-{
-    m_ID = rhs.m_ID;
-    m_Capacity = rhs.m_Capacity;
-    rhs.m_ID = 0;
-    rhs.m_Capacity = 0;
-}
-
-gfxVertexBuffer& gfxVertexBuffer::operator=(gfxVertexBuffer&& rhs)
-{
-    m_ID = rhs.m_ID;
-    m_Capacity = rhs.m_Capacity;
-    rhs.m_ID = 0;
-    rhs.m_Capacity = 0;
-
-    return *this;
-}
-
-void gfxVertexBuffer::Create(void* initData, epiSize_t capacity, gfxVertexBufferUsage usage)
+void gfxVertexBuffer::Create(const epiByte* initData, epiSize_t capacity, gfxVertexBufferUsage usage, const gfxVertexBufferLayout& layout)
 {
     epiExpect(!GetIsCreated(), "Create method should be called on destroyed vertex buffer");
     epiExpect(capacity > 0, "Capacity of buffer should be greater than 0");
 
-    GLenum glUsage;
-    switch (usage)
-    {
-    case gfxVertexBufferUsage::StaticRead: glUsage = GL_STATIC_READ; break;
-    case gfxVertexBufferUsage::StaticDraw: glUsage = GL_STATIC_DRAW; break;
-    case gfxVertexBufferUsage::DynamicRead:  glUsage = GL_DYNAMIC_READ; break;
-    case gfxVertexBufferUsage::DynamicDraw: glUsage = GL_DYNAMIC_DRAW; break;
-    case gfxVertexBufferUsage::StreamRead:  glUsage = GL_STREAM_READ; break;
-    case gfxVertexBufferUsage::StreamDraw: glUsage = GL_STREAM_DRAW; break;
-    default: epiAssert(false, "Unhandled case"); return;
-    }
-
-    glGenBuffers(1, &m_ID);
-    if (m_ID == 0)
-    {
-        return;
-    }
-
-    Bind();
-    glBufferData(GL_ARRAY_BUFFER, capacity, initData, glUsage);
-    m_Capacity = capacity;
+    m_Impl->Create(initData, capacity, usage, *layout.m_Impl);
 }
 
 void gfxVertexBuffer::Destroy()
 {
     epiExpect(GetIsCreated(), "Destroy method should be called on already created vertex buffer");
 
-    glDeleteBuffers(1, &m_ID);
-    m_ID = 0;
-    m_Capacity = 0;
+    m_Impl->Destroy();
 }
 
 epiBool gfxVertexBuffer::GetIsCreated_Callback() const
 {
-    return m_ID != 0;
+    return m_Impl->GetIsCreated();
+}
+
+epiU32 gfxVertexBuffer::GetID_Callback() const
+{
+    return m_Impl->GetID();
+}
+
+epiSize_t gfxVertexBuffer::GetCapacity_Callback() const
+{
+    return m_Impl->GetCapacity();
 }
 
 void gfxVertexBuffer::Bind()
@@ -80,7 +126,8 @@ void gfxVertexBuffer::Bind()
     epiExpect(GetIsCreated(), "A vertex buffer expected to be created");
 
     super::Bind();
-    glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+
+    m_Impl->Bind();
 }
 
 void gfxVertexBuffer::UnBind()
@@ -88,26 +135,19 @@ void gfxVertexBuffer::UnBind()
     epiExpect(GetIsCreated(), "A vertex buffer expected to be created");
 
     super::UnBind();
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    m_Impl->UnBind();
 }
 
-void* gfxVertexBuffer::Map(gfxVertexBufferMapAccess access)
+epiByte* gfxVertexBuffer::Map(gfxVertexBufferMapAccess access)
 {
     epiExpect(GetIsCreated(), "A vertex buffer expected to be created");
     epiExpect(GetIsBounded(), "A vertex buffer expected to be bounded");
     epiExpect(!m_IsMapped, "A vertex buffer expected to be unmapped");
 
-    GLenum glAccess;
-    switch (access)
-    {
-    case gfxVertexBufferMapAccess::Read: glAccess = GL_READ_ONLY; break;
-    case gfxVertexBufferMapAccess::Write: glAccess = GL_WRITE_ONLY; break;
-    case gfxVertexBufferMapAccess::ReadWrite: glAccess = GL_READ_WRITE; break;
-    default: epiAssert(false, "Unhandled case"); return nullptr;
-    }
-
     m_IsMapped = true;
-    return glMapBuffer(GL_ARRAY_BUFFER, glAccess);
+
+    return m_Impl->Map(access);
 }
 
 epiBool gfxVertexBuffer::UnMap()
@@ -117,7 +157,8 @@ epiBool gfxVertexBuffer::UnMap()
     epiExpect(m_IsMapped, "A vertex buffer expected to be mapped");
 
     m_IsMapped = false;
-    return glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    return m_Impl->UnMap();
 }
 
 EPI_NAMESPACE_END()

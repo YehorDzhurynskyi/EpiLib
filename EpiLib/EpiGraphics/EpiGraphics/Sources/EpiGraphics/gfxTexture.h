@@ -6,39 +6,9 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
+#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+
 EPI_NAMESPACE_BEGIN()
-
-enum class gfxTextureType : epiS32
-{
-EPI_GENREGION_BEGIN(gfxTextureType)
-    None = 0,
-    Texture2D = 1
-EPI_GENREGION_END(gfxTextureType)
-};
-
-enum class gfxTextureFormat : epiS32
-{
-EPI_GENREGION_BEGIN(gfxTextureFormat)
-    R = 0,
-    RG = 1,
-    RGB = 2,
-    BGR = 3,
-    RGBA = 4,
-    BGRA = 5
-EPI_GENREGION_END(gfxTextureFormat)
-};
-
-enum class gfxTexturePixelType : epiS32
-{
-EPI_GENREGION_BEGIN(gfxTexturePixelType)
-    BYTE = 0,
-    UBYTE = 1,
-    SHORT = 2,
-    USHORT = 3,
-    INT = 4,
-    UINT = 5
-EPI_GENREGION_END(gfxTexturePixelType)
-};
 
 class gfxTexture : public gfxBindable
 {
@@ -55,16 +25,16 @@ public:
         PID_Height = 0xf2e1e039,
         PID_IsCreated = 0x560b66db,
         PID_ID = 0x11d3633a,
-        PID_COUNT = 4
+        PID_Type = 0x2cecf817,
+        PID_COUNT = 5
     };
 
 protected:
+    epiU32 GetWidth_Callback() const;
+    epiU32 GetHeight_Callback() const;
     epiBool GetIsCreated_Callback() const;
-
-protected:
-    epiSize_t m_Width{0};
-    epiSize_t m_Height{0};
-    epiU32 m_ID{0};
+    epiU32 GetID_Callback() const;
+    gfxTextureType GetType_Callback() const;
 
 EPI_GENREGION_END(gfxTexture)
 
@@ -72,24 +42,23 @@ public:
     gfxTexture() = default;
     gfxTexture(const gfxTexture& rhs) = delete;
     gfxTexture& operator=(const gfxTexture& rhs) = delete;
-    gfxTexture(gfxTexture&& rhs);
-    gfxTexture& operator=(gfxTexture&& rhs);
+    gfxTexture(gfxTexture&& rhs) = default;
+    gfxTexture& operator=(gfxTexture&& rhs) = default;
     ~gfxTexture();
 
 public:
-    void Create2D(void* initData,
-                  epiSize_t width,
-                  epiSize_t height,
+    void Create2D(const epiByte* initData,
+                  epiU32 width,
+                  epiU32 height,
                   gfxTextureFormat format,
                   gfxTexturePixelType pixelType);
-
     void Destroy();
 
     void Bind() override;
     void UnBind() override;
 
 protected:
-    gfxTextureType m_Type{gfxTextureType::None};
+    std::unique_ptr<gfxTextureImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

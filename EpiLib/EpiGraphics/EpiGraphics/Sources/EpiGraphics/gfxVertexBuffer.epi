@@ -1,27 +1,30 @@
-enum gfxVertexBufferUsage
+class gfxVertexBufferLayoutAttribute
 {
-    StaticRead,
-    StaticDraw,
-    DynamicRead,
-    DynamicDraw,
-    StreamRead,
-    StreamDraw
+    [Virtual]
+    {
+        epiU32 Index;
+        epiSize_t Size;
+        gfxVertexBufferLayoutAttributeType Type;
+        epiBool Normalized;
+        epiSize_t Stride;
+        epiSize_t Offset;
+    }
 };
 
-enum gfxVertexBufferMapAccess
+class gfxVertexBufferLayout
 {
-    Read,
-    Write,
-    ReadWrite
+    [Virtual]
+    {
+        epiArray<gfxVertexBufferLayoutAttribute> Attributes;
+    }
 };
 
 class gfxVertexBuffer : gfxBindable
 {
     [Virtual, ReadOnly]
-    epiBool IsCreated;
-
-    [Transient]
-    epiU32 ID;
-
-    epiSize_t Capacity;
+    {
+        epiBool IsCreated;
+        epiU32 ID;
+        epiSize_t Capacity;
+    }
 };

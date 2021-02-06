@@ -74,15 +74,14 @@ EPI_NAMESPACE_BEGIN()
 dvDrawerSeriesBase::dvDrawerSeriesBase()
     : m_VertexBufferMappingLineStrip(m_VertexBufferLineStrip)
 {
-    m_VertexBufferLineStrip.Create(nullptr, sizeof(VertexLineStip) * kMaxLineStripVerticesCount, gfxVertexBufferUsage::DynamicDraw);
-
     {
-        gfxBindableScoped scope(m_VertexArrayLineStrip, m_VertexBufferLineStrip);
+        gfxBindableScoped scope(m_VertexArrayLineStrip);
 
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexLineStip), (void*)offsetof(VertexLineStip, Position));
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(VertexLineStip), (void*)offsetof(VertexLineStip, ColorTint));
+        gfxVertexBufferLayout layout;
+        layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLineStip), offsetof(VertexLineStip, Position));
+        layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLineStip), offsetof(VertexLineStip, ColorTint));
+
+        m_VertexBufferLineStrip.Create(nullptr, sizeof(VertexLineStip) * kMaxLineStripVerticesCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
     m_ShaderProgramLineStrip = CreateProgramLineStrip();

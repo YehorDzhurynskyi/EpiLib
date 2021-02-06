@@ -81,4 +81,3 @@ target_link_libraries(EpiGraphics
 epi_module_register(EpiGraphics
     FOLDER "EpiLib"
 )
-

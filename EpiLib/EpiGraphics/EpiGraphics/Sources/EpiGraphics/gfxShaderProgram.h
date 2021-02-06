@@ -6,17 +6,9 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
-EPI_NAMESPACE_BEGIN()
+#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
 
-enum class gfxShaderType : epiS32
-{
-EPI_GENREGION_BEGIN(gfxShaderType)
-    None = 0,
-    Vertex = 1,
-    Geometry = 2,
-    Pixel = 3
-EPI_GENREGION_END(gfxShaderType)
-};
+EPI_NAMESPACE_BEGIN()
 
 class gfxShader final : public Object
 {
@@ -30,34 +22,35 @@ public:
     enum gfxShader_PIDs
     {
         PID_IsCreated = 0x560b66db,
-        PID_ShaderID = 0xa24fee76,
-        PID_COUNT = 2
+        PID_ID = 0x11d3633a,
+        PID_Type = 0x2cecf817,
+        PID_COUNT = 3
     };
 
 protected:
     epiBool GetIsCreated_Callback() const;
-
-protected:
-    epiU32 m_ShaderID{0};
+    epiU32 GetID_Callback() const;
+    gfxShaderType GetType_Callback() const;
 
 EPI_GENREGION_END(gfxShader)
+
+public:
+    friend class gfxShaderProgram;
 
 public:
     gfxShader() = default;
     gfxShader(const gfxShader& rhs) = delete;
     gfxShader& operator=(const gfxShader& rhs) = delete;
-    gfxShader(gfxShader&& rhs);
-    gfxShader& operator=(gfxShader&& rhs);
+    gfxShader(gfxShader&& rhs) = default;
+    gfxShader& operator=(gfxShader&& rhs) = default;
     ~gfxShader();
 
 public:
     void CreateFromSource(const epiChar* source, gfxShaderType type);
     void Destroy();
 
-    gfxShaderType GetType() const { return m_Type; }
-
 protected:
-    gfxShaderType m_Type{gfxShaderType::None};
+    std::unique_ptr<gfxShaderImpl> m_Impl;
 };
 
 class gfxShaderProgram final : public gfxBindable
@@ -72,15 +65,13 @@ public:
     enum gfxShaderProgram_PIDs
     {
         PID_IsCreated = 0x560b66db,
-        PID_ProgramID = 0x2accaa4,
+        PID_ID = 0x11d3633a,
         PID_COUNT = 2
     };
 
 protected:
     epiBool GetIsCreated_Callback() const;
-
-protected:
-    epiU32 m_ProgramID{0};
+    epiU32 GetID_Callback() const;
 
 EPI_GENREGION_END(gfxShaderProgram)
 
@@ -88,8 +79,8 @@ public:
     gfxShaderProgram();
     gfxShaderProgram(const gfxShaderProgram& rhs) = delete;
     gfxShaderProgram& operator=(const gfxShaderProgram& rhs) = delete;
-    gfxShaderProgram(gfxShaderProgram&& rhs);
-    gfxShaderProgram& operator=(gfxShaderProgram&& rhs);
+    gfxShaderProgram(gfxShaderProgram&& rhs) = default;
+    gfxShaderProgram& operator=(gfxShaderProgram&& rhs) = default;
     ~gfxShaderProgram();
 
 public:
@@ -104,10 +95,8 @@ public:
     void Bind() override;
     void UnBind() override;
 
-private:
-    const gfxShader* m_ShaderVertex{nullptr};
-    const gfxShader* m_ShaderGeometry{nullptr};
-    const gfxShader* m_ShaderPixel{nullptr};
+protected:
+    std::unique_ptr<gfxShaderProgramImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxVertexArray.cxx"
 EPI_GENREGION_END(include)
 
-#include <glad/glad.h>
-
 EPI_NAMESPACE_BEGIN()
 
 gfxVertexArray::gfxVertexArray()
@@ -20,38 +18,28 @@ gfxVertexArray::~gfxVertexArray()
     }
 }
 
-gfxVertexArray::gfxVertexArray(gfxVertexArray&& rhs)
-{
-    m_ID = rhs.m_ID;
-    rhs.m_ID = 0;
-}
-
-gfxVertexArray& gfxVertexArray::operator=(gfxVertexArray&& rhs)
-{
-    m_ID = rhs.m_ID;
-    rhs.m_ID = 0;
-
-    return *this;
-}
-
 void gfxVertexArray::Create()
 {
     epiExpect(!GetIsCreated(), "Create method should be called on destroyed vertex array");
 
-    glGenVertexArrays(1, &m_ID);
+    m_Impl->Create();
 }
 
 void gfxVertexArray::Destroy()
 {
     epiExpect(GetIsCreated(), "Destroy method should be called on already created vertex array");
 
-    glDeleteVertexArrays(1, &m_ID);
-    m_ID = 0;
+    m_Impl->Destroy();
 }
 
 epiBool gfxVertexArray::GetIsCreated_Callback() const
 {
-    return m_ID != 0;
+    return m_Impl->GetIsCreated();
+}
+
+epiU32 gfxVertexArray::GetID_Callback() const
+{
+    return m_Impl->GetID();
 }
 
 void gfxVertexArray::Bind()
@@ -59,7 +47,8 @@ void gfxVertexArray::Bind()
     epiExpect(GetIsCreated(), "A vertex array expected to be created");
 
     super::Bind();
-    glBindVertexArray(m_ID);
+
+    m_Impl->Bind();
 }
 
 void gfxVertexArray::UnBind()
@@ -67,7 +56,8 @@ void gfxVertexArray::UnBind()
     epiExpect(GetIsCreated(), "A vertex array expected to be created");
 
     super::UnBind();
-    glBindVertexArray(0);
+
+    m_Impl->UnBind();
 }
 
 EPI_NAMESPACE_END()

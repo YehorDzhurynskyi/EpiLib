@@ -6,27 +6,83 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
+#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+
 EPI_NAMESPACE_BEGIN()
 
-enum class gfxVertexBufferUsage : epiS32
+class gfxVertexBufferLayoutAttribute : public Object
 {
-EPI_GENREGION_BEGIN(gfxVertexBufferUsage)
-    StaticRead = 0,
-    StaticDraw = 1,
-    DynamicRead = 2,
-    DynamicDraw = 3,
-    StreamRead = 4,
-    StreamDraw = 5
-EPI_GENREGION_END(gfxVertexBufferUsage)
+EPI_GENREGION_BEGIN(gfxVertexBufferLayoutAttribute)
+
+EPI_GENHIDDEN_gfxVertexBufferLayoutAttribute()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x166eaa8f};
+
+    enum gfxVertexBufferLayoutAttribute_PIDs
+    {
+        PID_Index = 0x41b24805,
+        PID_Size = 0x57f28b54,
+        PID_Type = 0x2cecf817,
+        PID_Normalized = 0x364083c7,
+        PID_Stride = 0x8df33e39,
+        PID_Offset = 0x5ea6cfe6,
+        PID_COUNT = 6
+    };
+
+protected:
+    epiU32 GetIndex_Callback() const;
+    void SetIndex_Callback(epiU32 value);
+    epiSize_t GetSize_Callback() const;
+    void SetSize_Callback(epiSize_t value);
+    gfxVertexBufferLayoutAttributeType GetType_Callback() const;
+    void SetType_Callback(gfxVertexBufferLayoutAttributeType value);
+    epiBool GetNormalized_Callback() const;
+    void SetNormalized_Callback(epiBool value);
+    epiSize_t GetStride_Callback() const;
+    void SetStride_Callback(epiSize_t value);
+    epiSize_t GetOffset_Callback() const;
+    void SetOffset_Callback(epiSize_t value);
+
+EPI_GENREGION_END(gfxVertexBufferLayoutAttribute)
+
+public:
+    friend class gfxVertexBufferLayout;
+
+protected:
+    std::unique_ptr<gfxVertexBufferLayoutAttributeImpl> m_Impl;
 };
 
-enum class gfxVertexBufferMapAccess : epiS32
+class gfxVertexBufferLayout : public Object
 {
-EPI_GENREGION_BEGIN(gfxVertexBufferMapAccess)
-    Read = 0,
-    Write = 1,
-    ReadWrite = 2
-EPI_GENREGION_END(gfxVertexBufferMapAccess)
+EPI_GENREGION_BEGIN(gfxVertexBufferLayout)
+
+EPI_GENHIDDEN_gfxVertexBufferLayout()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x7ff14d8b};
+
+    enum gfxVertexBufferLayout_PIDs
+    {
+        PID_Attributes = 0x7ec69da0,
+        PID_COUNT = 1
+    };
+
+protected:
+    const epiArray<gfxVertexBufferLayoutAttribute>& GetAttributes_Callback() const;
+    void SetAttributes_Callback(const epiArray<gfxVertexBufferLayoutAttribute>& value);
+
+EPI_GENREGION_END(gfxVertexBufferLayout)
+
+public:
+    friend class gfxVertexBuffer;
+
+public:
+    void Add(gfxVertexBufferLayoutAttribute&& attr);
+    void Add(epiSize_t size, gfxVertexBufferLayoutAttributeType type, epiBool normalized, epiSize_t stride, epiSize_t offset);
+
+protected:
+    std::unique_ptr<gfxVertexBufferLayout> m_Impl;
 };
 
 class gfxVertexBuffer : public gfxBindable
@@ -48,10 +104,8 @@ public:
 
 protected:
     epiBool GetIsCreated_Callback() const;
-
-protected:
-    epiU32 m_ID{0};
-    epiSize_t m_Capacity{0};
+    epiU32 GetID_Callback() const;
+    epiSize_t GetCapacity_Callback() const;
 
 EPI_GENREGION_END(gfxVertexBuffer)
 
@@ -59,21 +113,22 @@ public:
     gfxVertexBuffer() = default;
     gfxVertexBuffer(const gfxVertexBuffer& rhs) = delete;
     gfxVertexBuffer& operator=(const gfxVertexBuffer& rhs) = delete;
-    gfxVertexBuffer(gfxVertexBuffer&& rhs);
-    gfxVertexBuffer& operator=(gfxVertexBuffer&& rhs);
+    gfxVertexBuffer(gfxVertexBuffer&& rhs) = default;
+    gfxVertexBuffer& operator=(gfxVertexBuffer&& rhs) = default;
     ~gfxVertexBuffer();
 
 public:
-    void Create(void* initData, epiSize_t capacity, gfxVertexBufferUsage usage);
+    void Create(const epiByte* initData, epiSize_t capacity, gfxVertexBufferUsage usage, const gfxVertexBufferLayout& layout);
     void Destroy();
 
     void Bind() override;
     void UnBind() override;
 
-    void* Map(gfxVertexBufferMapAccess access);
+    epiByte* Map(gfxVertexBufferMapAccess access);
     epiBool UnMap();
 
-private:
+protected:
+    std::unique_ptr<gfxVertexBufferImpl> m_Impl;
     epiBool m_IsMapped{false};
 };
 

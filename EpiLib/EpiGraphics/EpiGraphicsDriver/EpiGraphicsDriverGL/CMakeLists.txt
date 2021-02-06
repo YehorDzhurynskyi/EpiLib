@@ -3,6 +3,14 @@ project(EpiGraphicsDriverGL)
 add_library(EpiGraphicsDriverGL
     Sources/EpiGraphicsDriverGL/gfxDriverGL.h
     Sources/EpiGraphicsDriverGL/gfxDriverGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxVertexArrayImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxVertexArrayImplGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxVertexBufferImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxVertexBufferImplGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxTextureImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxTextureImplGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxShaderProgramImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxShaderProgramImplGL.cpp
 )
 get_target_property(EpiGraphicsDriverGL_SOURCES EpiGraphicsDriverGL SOURCES)
 epi_pack_sources(${EpiGraphicsDriverGL_SOURCES})

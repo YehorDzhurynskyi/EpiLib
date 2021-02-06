@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxDrawerText.cxx"
 EPI_GENREGION_END(include)
 
-#include <glad/glad.h>
-
 namespace
 {
 
@@ -120,17 +118,15 @@ EPI_NAMESPACE_BEGIN()
 gfxDrawerText::gfxDrawerText()
     : m_VertexBufferMappingText(m_VertexBufferText)
 {
-    m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw);
-
     {
-        gfxBindableScoped scope(m_VertexArrayText, m_VertexBufferText);
+        gfxBindableScoped scope(m_VertexArrayText);
 
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexText), (void*)offsetof(VertexText, Position));
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(VertexText), (void*)offsetof(VertexText, UV));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 4, GL_FLOAT, false, sizeof(VertexText), (void*)offsetof(VertexText, ColorTint));
+        gfxVertexBufferLayout layout;
+        layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, Position));
+        layout.Add(2, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, UV));
+        layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, ColorTint));
+
+        m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
     m_ShaderProgramText = CreateProgramText();
