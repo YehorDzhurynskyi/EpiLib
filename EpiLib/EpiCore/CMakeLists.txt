@@ -124,6 +124,7 @@ target_precompile_headers(EpiCore
         <condition_variable>
         <atomic>
         <future>
+        <optional>
 
         [["EpiCore/epi_config.h"]]
         [["EpiCore/types.h"]]

@@ -208,6 +208,12 @@ void gfxShaderProgramImplGL::UnBind()
     glUseProgram(0);
 }
 
+void gfxShaderProgramImplGL::Texture(const epiChar* name, epiU32 value)
+{
+    glActiveTexture(GL_TEXTURE0 + value);
+    UniformU32(name, value);
+}
+
 void gfxShaderProgramImplGL::UniformFloat(const epiChar* name, epiFloat value)
 {
     const GLint location = glGetUniformLocation(m_ID, name);

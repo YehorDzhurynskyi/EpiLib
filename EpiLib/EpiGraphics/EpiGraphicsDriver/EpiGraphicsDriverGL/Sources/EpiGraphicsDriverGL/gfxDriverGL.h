@@ -7,7 +7,9 @@ EPI_NAMESPACE_BEGIN()
 class gfxDriverGL : public gfxDriver
 {
 public:
-    void Init() override;
+    gfxDriverGL();
+
+    epiPtrArray<gfxPhysicalDeviceImpl> ListOfPhysicalDevices() const override;
 };
 
 EPI_NAMESPACE_END()

@@ -29,10 +29,12 @@ if (EPI_GRAPHICS_DRIVER_VK)
     target_sources(EpiwxWidgets
         PUBLIC
             Sources/EpiwxWidgets/Vulkan/epiWXVulkanContext.h
-            Sources/EpiwxWidgets/Vulkan/epiWXVulkanContext.cpp
             Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvasBase.h
-            Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvasBase.cpp
             Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h
+
+        PRIVATE
+            Sources/EpiwxWidgets/Vulkan/epiWXVulkanContext.cpp
+            Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvasBase.cpp
             Sources/EpiwxWidgets/Vulkan/epiWXVulkanCanvas.cpp
     )
 endif()

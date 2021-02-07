@@ -44,11 +44,6 @@ epiWXPlot::epiWXPlot(wxWindow* parent,
     }
     SetCurrent(*m_GLContext);
 
-    if (!gladLoadGL())
-    {
-        epiLogFatal("OpenGL Failed to `GetProcAddress`!");
-    }
-
     m_UIContext = new uiContext();
     m_UIContext->GetGFXContext().SetCamera(new uiCamera());
     if (gfxCamera* camera = m_UIContext->GetGFXContext().GetCamera())

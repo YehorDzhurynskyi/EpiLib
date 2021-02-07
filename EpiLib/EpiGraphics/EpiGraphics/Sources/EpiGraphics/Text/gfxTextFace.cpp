@@ -72,7 +72,8 @@ gfxTextRenderedABC gfxTextFace::CreateRenderedABC(const epiWChar* abc, epiU32 fo
 {
     gfxTextRenderedABC target;
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // TODO: move to proper place
+    // TODO: restore
+    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // TODO: move to proper place
     const epiSize_t abclen = wcslen(abc); // TODO: replace all wcslen with safe version
     for (epiU32 i = 0; i < abclen; ++i)
     {
@@ -95,7 +96,8 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
 {
     gfxTextRenderedAtlas target;
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // TODO: move to proper place
+    // TODO: restore
+    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // TODO: move to proper place
 
     PrepareFontMetrics(fontSize);
 

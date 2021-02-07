@@ -1,6 +1,6 @@
 #include "EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h"
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 
 epiWXVulkanCanvas::epiWXVulkanCanvas(wxWindow* parent,
                                      wxWindowID id,

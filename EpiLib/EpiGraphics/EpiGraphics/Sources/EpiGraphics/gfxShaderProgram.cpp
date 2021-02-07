@@ -119,6 +119,13 @@ void gfxShaderProgram::UnBind()
     m_Impl->UnBind();
 }
 
+void gfxShaderProgram::Texture(const epiChar* name, epiU32 value)
+{
+    epiExpect(GetIsBounded());
+
+    m_Impl->Texture(name, value);
+}
+
 void gfxShaderProgram::UniformFloat(const epiChar* name, epiFloat value)
 {
     epiExpect(GetIsBounded());

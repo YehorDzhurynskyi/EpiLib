@@ -239,8 +239,7 @@ void gfxDrawerText::SceneEnd(const gfxCamera& camera)
     {
         gfxBindableScoped scope(m_ShaderProgramText, m_VertexArrayText, m_TextAtlas);
 
-        glActiveTexture(GL_TEXTURE0);
-        m_ShaderProgramText.Uniform("u_texture", 0);
+        m_ShaderProgramText.Texture("u_texture", 0);
 
         m_ShaderProgramText.Uniform("u_shift", 0.0f);
         m_ShaderProgramText.Uniform("u_gamma", 1.43f);
@@ -253,7 +252,8 @@ void gfxDrawerText::SceneEnd(const gfxCamera& camera)
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         m_ShaderProgramText.Uniform("u_view_projection", VP);
 
-        glDrawArrays(GL_TRIANGLES, 0, textVerticesCount);
+        // TODO: restore
+        // glDrawArrays(GL_TRIANGLES, 0, textVerticesCount);
     }
 }
 

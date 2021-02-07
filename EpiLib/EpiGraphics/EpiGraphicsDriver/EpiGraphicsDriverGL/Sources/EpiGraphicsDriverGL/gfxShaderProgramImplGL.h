@@ -50,6 +50,8 @@ public:
     void Bind() override;
     void UnBind() override;
 
+    void Texture(const epiChar* name, epiU32 value) override;
+
     void UniformFloat(const epiChar* name, epiFloat value) override;
     void UniformVec2f(const epiChar* name, const epiVec2f& value) override;
     void UniformVec3f(const epiChar* name, const epiVec3f& value) override;

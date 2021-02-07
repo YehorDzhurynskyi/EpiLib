@@ -95,6 +95,8 @@ public:
     void Bind() override;
     void UnBind() override;
 
+    void Texture(const epiChar* name, epiU32 value);
+
     template<typename T>
     void Uniform(const epiChar* name, const T& value);
 

@@ -11,6 +11,14 @@ add_library(EpiGraphicsDriverGL
     Sources/EpiGraphicsDriverGL/gfxTextureImplGL.cpp
     Sources/EpiGraphicsDriverGL/gfxShaderProgramImplGL.h
     Sources/EpiGraphicsDriverGL/gfxShaderProgramImplGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxPhysicalDeviceImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxPhysicalDeviceImplGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxDeviceImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxDeviceImplGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxQueueImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxQueueImplGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxSurfaceImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxSurfaceImplGL.cpp
 )
 get_target_property(EpiGraphicsDriverGL_SOURCES EpiGraphicsDriverGL SOURCES)
 epi_pack_sources(${EpiGraphicsDriverGL_SOURCES})

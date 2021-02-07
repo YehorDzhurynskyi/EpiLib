@@ -4,12 +4,77 @@
 
 EPI_NAMESPACE_BEGIN()
 
+class gfxQueueImpl
+{
+public:
+    gfxQueueImpl() = default;
+    gfxQueueImpl(const gfxQueueImpl& rhs) = delete;
+    gfxQueueImpl& operator=(const gfxQueueImpl& rhs) = delete;
+    gfxQueueImpl(gfxQueueImpl&& rhs) = default;
+    gfxQueueImpl& operator=(gfxQueueImpl&& rhs) = default;
+    virtual ~gfxQueueImpl() = default;
+};
+
+class gfxPhysicalDeviceImpl
+{
+public:
+    struct QueueFamilyIndices
+    {
+        std::optional<epiU32> FamilyGraphics;
+        std::optional<epiU32> FamilyCompute;
+        std::optional<epiU32> FamilyTransfer;
+        std::optional<epiU32> FamilySparseBinding;
+        std::optional<epiU32> FamilyProtected;
+        std::optional<epiU32> FamilyPresentation;
+    };
+
+public:
+    gfxPhysicalDeviceImpl() = default;
+    gfxPhysicalDeviceImpl(const gfxPhysicalDeviceImpl& rhs) = delete;
+    gfxPhysicalDeviceImpl& operator=(const gfxPhysicalDeviceImpl& rhs) = delete;
+    gfxPhysicalDeviceImpl(gfxPhysicalDeviceImpl&& rhs) = default;
+    gfxPhysicalDeviceImpl& operator=(gfxPhysicalDeviceImpl&& rhs) = default;
+    virtual ~gfxPhysicalDeviceImpl() = default;
+
+    virtual epiString GetName() const = 0;
+    virtual gfxPhysicalDeviceType GetType() const = 0;
+
+    virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
+    virtual epiBool IsQueueFamilySupported(gfxQueueFamily mask) const = 0;
+
+    virtual QueueFamilyIndices GetQueueFamilyIndices() const = 0;
+};
+
+class gfxDeviceImpl
+{
+public:
+    gfxDeviceImpl() = default;
+    gfxDeviceImpl(const gfxDeviceImpl& rhs) = delete;
+    gfxDeviceImpl& operator=(const gfxDeviceImpl& rhs) = delete;
+    gfxDeviceImpl(gfxDeviceImpl&& rhs) = default;
+    gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
+    virtual ~gfxDeviceImpl() = default;
+
+    virtual gfxQueueImpl* GetQueue(gfxQueueFamily family) const = 0;
+};
+
+class gfxSurfaceImpl
+{
+public:
+    gfxSurfaceImpl() = default;
+    gfxSurfaceImpl(const gfxSurfaceImpl& rhs) = delete;
+    gfxSurfaceImpl& operator=(const gfxSurfaceImpl& rhs) = delete;
+    gfxSurfaceImpl(gfxSurfaceImpl&& rhs) = default;
+    gfxSurfaceImpl& operator=(gfxSurfaceImpl&& rhs) = default;
+    virtual ~gfxSurfaceImpl() = default;
+};
+
 class gfxDriver
 {
 public:
     virtual ~gfxDriver() = default;
 
-    virtual void Init() = 0;
+    virtual epiPtrArray<gfxPhysicalDeviceImpl> ListOfPhysicalDevices() const = 0;
 };
 
 class gfxVertexArrayImpl
@@ -165,6 +230,8 @@ public:
 
     virtual void Bind() = 0;
     virtual void UnBind() = 0;
+
+    virtual void Texture(const epiChar* name, epiU32 value) = 0;
 
     virtual void UniformFloat(const epiChar* name, epiFloat value) = 0;
     virtual void UniformVec2f(const epiChar* name, const epiVec2f& value) = 0;

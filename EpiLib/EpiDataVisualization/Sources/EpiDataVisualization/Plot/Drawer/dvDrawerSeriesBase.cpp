@@ -109,9 +109,10 @@ void dvDrawerSeriesBase::SceneEnd(const gfxCamera& camera)
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         m_ShaderProgramLineStrip.Uniform("u_view_projection", VP);
 
-        glLineWidth(2.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, lineStripVerticesCount);
-        glLineWidth(1.0f);
+        // TODO: restore
+        // glLineWidth(2.0f);
+        // glDrawArrays(GL_LINE_STRIP, 0, lineStripVerticesCount);
+        // glLineWidth(1.0f);
     }
 }
 

@@ -11,6 +11,14 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxTextureImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxShaderProgramImplVK.h
     Sources/EpiGraphicsDriverVK/gfxShaderProgramImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxDeviceImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxDeviceImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxQueueImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxQueueImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxSurfaceImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxSurfaceImplVK.cpp
 )
 get_target_property(EpiGraphicsDriverVK_SOURCES EpiGraphicsDriverVK SOURCES)
 epi_pack_sources(${EpiGraphicsDriverVK_SOURCES})

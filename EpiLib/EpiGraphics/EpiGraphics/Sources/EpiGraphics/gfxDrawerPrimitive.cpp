@@ -233,7 +233,8 @@ void gfxDrawerPrimitive::SceneEnd(const gfxCamera& camera)
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         m_ShaderProgramLines.Uniform("u_view_projection", VP);
 
-        glDrawArrays(GL_LINES, 0, lineVerticesCount);
+        // TODO: restore
+        // glDrawArrays(GL_LINES, 0, lineVerticesCount);
     }
 
     {
@@ -243,7 +244,8 @@ void gfxDrawerPrimitive::SceneEnd(const gfxCamera& camera)
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
         m_ShaderProgramQuads.Uniform("u_view_projection", VP);
 
-        glDrawArrays(GL_TRIANGLES, 0, quadVerticesCount);
+        // TODO: restore
+        // glDrawArrays(GL_TRIANGLES, 0, quadVerticesCount);
     }
 }
 

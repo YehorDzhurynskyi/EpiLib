@@ -62,3 +62,53 @@ enum gfxVertexBufferLayoutAttributeType
     FLOAT,
     DOUBLE
 };
+
+enum gfxPhysicalDeviceType
+{
+    None,
+    IntegratedGPU,
+    DiscreteGPU,
+    VirtualGPU,
+    CPU,
+    Other
+};
+
+enum gfxPhysicalDeviceFeature
+{
+    GeometryShader,
+    TessellationShader,
+    ShaderFloat64,
+    ShaderInt64,
+    ShaderInt16,
+    COUNT
+};
+
+[FlagMask]
+enum gfxDriverExtension
+{
+    Surface,
+    SurfaceWin32,
+    MAX,
+    ALL = Surface | SurfaceWin32
+};
+
+[FlagMask]
+enum gfxPhysicalDeviceExtension
+{
+    SwapChain,
+    MAX,
+    ALL = SwapChain
+};
+
+[FlagMask]
+enum gfxQueueFamily
+{
+    Graphics,
+    Compute,
+    Transfer,
+    SparseBinding,
+    Protected,
+    Presentation,
+    MAX,
+    ALL = Graphics | Compute | Transfer | SparseBinding | Protected | Presentation
+};

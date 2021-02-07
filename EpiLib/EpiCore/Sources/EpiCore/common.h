@@ -36,6 +36,39 @@ using namespace std::chrono_literals;
 #define epiStringConcat(_X0, _X1) _X0 ## _X1
 
 template<typename T>
+constexpr size_t epiBitCount(T mask)
+{
+    // TODO: use POPCOUNT CPU feature
+    static_assert(std::is_integral_v<T> || std::is_enum_v<T>);
+
+    uint64_t mmask = static_cast<uint64_t>(mask);
+    size_t count = 0;
+    for (; mmask; ++count)
+    {
+        mmask &= mmask - 1;
+    }
+
+    return count;
+}
+
+template<typename T>
+constexpr uint32_t epiBitPositionOf(T mask)
+{
+    static_assert(std::is_integral_v<T> || std::is_enum_v<T>);
+
+    epiAssert(epiBitCount(mask) == 1);
+
+    uint64_t mmask = static_cast<uint64_t>(mask);
+    uint32_t position = 0;
+    for (; mmask; ++position)
+    {
+        mmask >>= 1;
+    }
+
+    return position;
+}
+
+template<typename T>
 constexpr bool epiEqual(const T& lhs, const T& rhs)
 {
     if constexpr (std::is_floating_point_v<T>)
