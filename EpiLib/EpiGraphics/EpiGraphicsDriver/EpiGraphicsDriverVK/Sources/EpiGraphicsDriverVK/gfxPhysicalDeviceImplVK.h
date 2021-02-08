@@ -1,8 +1,13 @@
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#pragma once
+
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
 #include <vulkan/vulkan.hpp>
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
 
 class gfxSurfaceImplVK;
 class gfxPhysicalDeviceImplVK : public gfxPhysicalDeviceImpl
@@ -32,5 +37,7 @@ protected:
     epiBool m_Features[static_cast<epiSize_t>(gfxPhysicalDeviceFeature::COUNT)];
     QueueFamilyIndices m_QueueFamilyIndices;
 };
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

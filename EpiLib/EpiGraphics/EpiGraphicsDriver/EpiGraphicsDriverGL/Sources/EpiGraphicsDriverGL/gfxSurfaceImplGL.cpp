@@ -4,6 +4,8 @@
 
 EPI_NAMESPACE_BEGIN()
 
+namespace internalgfx {
+
 gfxTextureImplGL::gfxTextureImplGL(gfxTextureImplGL&& rhs)
 {
     m_ID = rhs.m_ID;
@@ -110,5 +112,7 @@ void gfxTextureImplGL::UnBind()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

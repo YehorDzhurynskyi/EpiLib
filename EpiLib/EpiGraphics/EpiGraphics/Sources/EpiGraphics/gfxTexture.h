@@ -6,9 +6,16 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
+
+class gfxTextureImpl;
+
+} // namespace internalgfx
 
 class gfxTexture : public gfxBindable
 {
@@ -42,8 +49,8 @@ public:
     gfxTexture() = default;
     gfxTexture(const gfxTexture& rhs) = delete;
     gfxTexture& operator=(const gfxTexture& rhs) = delete;
-    gfxTexture(gfxTexture&& rhs) = default;
-    gfxTexture& operator=(gfxTexture&& rhs) = default;
+    gfxTexture(gfxTexture&& rhs);
+    gfxTexture& operator=(gfxTexture&& rhs);
     ~gfxTexture();
 
 public:
@@ -58,7 +65,7 @@ public:
     void UnBind() override;
 
 protected:
-    std::unique_ptr<gfxTextureImpl> m_Impl;
+    internalgfx::gfxTextureImpl* m_Impl{nullptr};
 };
 
 EPI_NAMESPACE_END()

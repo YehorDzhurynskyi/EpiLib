@@ -6,9 +6,18 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
+
+class gfxVertexBufferLayoutAttributeImpl;
+class gfxVertexBufferLayoutImpl;
+class gfxVertexBufferImpl;
+
+} // namespace internalgfx
 
 class gfxVertexBufferLayoutAttribute : public Object
 {
@@ -50,7 +59,7 @@ public:
     friend class gfxVertexBufferLayout;
 
 protected:
-    std::unique_ptr<gfxVertexBufferLayoutAttributeImpl> m_Impl;
+    std::unique_ptr<internalgfx::gfxVertexBufferLayoutAttributeImpl> m_Impl;
 };
 
 class gfxVertexBufferLayout : public Object
@@ -73,11 +82,19 @@ public:
     friend class gfxVertexBuffer;
 
 public:
+    gfxVertexBufferLayout() = default;
+    gfxVertexBufferLayout(const gfxVertexBufferLayout& rhs) = default;
+    gfxVertexBufferLayout& operator=(const gfxVertexBufferLayout& rhs) = default;
+    gfxVertexBufferLayout(gfxVertexBufferLayout&& rhs);
+    gfxVertexBufferLayout& operator=(gfxVertexBufferLayout&& rhs);
+    ~gfxVertexBufferLayout() override;
+
+public:
     void Add(gfxVertexBufferLayoutAttribute&& attr);
     void Add(epiSize_t size, gfxVertexBufferLayoutAttributeType type, epiBool normalized, epiSize_t stride, epiSize_t offset);
 
 protected:
-    std::unique_ptr<gfxVertexBufferLayoutImpl> m_Impl;
+    internalgfx::gfxVertexBufferLayoutImpl* m_Impl{nullptr};
     epiSize_t m_Size{0};
 };
 
@@ -109,8 +126,8 @@ public:
     gfxVertexBuffer() = default;
     gfxVertexBuffer(const gfxVertexBuffer& rhs) = delete;
     gfxVertexBuffer& operator=(const gfxVertexBuffer& rhs) = delete;
-    gfxVertexBuffer(gfxVertexBuffer&& rhs) = default;
-    gfxVertexBuffer& operator=(gfxVertexBuffer&& rhs) = default;
+    gfxVertexBuffer(gfxVertexBuffer&& rhs);
+    gfxVertexBuffer& operator=(gfxVertexBuffer&& rhs);
     ~gfxVertexBuffer();
 
 public:
@@ -124,7 +141,7 @@ public:
     epiBool UnMap();
 
 protected:
-    std::unique_ptr<gfxVertexBufferImpl> m_Impl;
+    internalgfx::gfxVertexBufferImpl* m_Impl{nullptr};
     epiBool m_IsMapped{false};
 };
 

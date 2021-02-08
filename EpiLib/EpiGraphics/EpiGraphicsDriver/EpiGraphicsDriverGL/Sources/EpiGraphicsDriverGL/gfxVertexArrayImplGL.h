@@ -1,8 +1,11 @@
 #pragma once
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
 
 class gfxVertexArrayImplGL : public gfxVertexArrayImpl
 {
@@ -26,5 +29,7 @@ public:
 protected:
     epiU32 m_ID{0};
 };
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

@@ -3,7 +3,23 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxTexture.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
+
 EPI_NAMESPACE_BEGIN()
+
+gfxTexture::gfxTexture(gfxTexture&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+}
+
+gfxTexture& gfxTexture::operator=(gfxTexture&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+
+    return *this;
+}
 
 gfxTexture::~gfxTexture()
 {
@@ -11,6 +27,8 @@ gfxTexture::~gfxTexture()
     {
         Destroy();
     }
+
+    delete m_Impl;
 }
 
 void gfxTexture::Create2D(const epiByte* initData,

@@ -1,4 +1,4 @@
-#include "EpiGraphicsDriverVK/gfxDriverVK.h"
+#include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
@@ -54,18 +54,21 @@ const epiChar* ExtensionNameOf(epi::gfxDriverExtension extension)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxDriverVK::gfxDriverVK(epiU32 apiVersionMajor,
-                         epiU32 apiVersionMinor,
-                         epiU32 apiVersionPatch,
-                         const epiChar* appName,
-                         gfxDriverExtension extensionMask,
-                         epiU32 appVersionMajor,
-                         epiU32 appVersionMinor,
-                         epiU32 appVersionPatch,
-                         const epiChar* engineName,
-                         epiU32 engineVersionMajor,
-                         epiU32 engineVersionMinor,
-                         epiU32 engineVersionPatch)
+namespace internalgfx
+{
+
+gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
+                                 epiU32 apiVersionMinor,
+                                 epiU32 apiVersionPatch,
+                                 const epiChar* appName,
+                                 gfxDriverExtension extensionMask,
+                                 epiU32 appVersionMajor,
+                                 epiU32 appVersionMinor,
+                                 epiU32 appVersionPatch,
+                                 const epiChar* engineName,
+                                 epiU32 engineVersionMajor,
+                                 epiU32 engineVersionMinor,
+                                 epiU32 engineVersionPatch)
 {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -146,7 +149,7 @@ gfxDriverVK::gfxDriverVK(epiU32 apiVersionMajor,
     m_Surface = std::make_unique<gfxSurfaceImplVK>(m_VkInstance);
 }
 
-gfxDriverVK::~gfxDriverVK()
+gfxDriverImplVK::~gfxDriverImplVK()
 {
 #ifdef EPI_BUILD_DEBUG
     if (m_VKDebugMessenger != VK_NULL_HANDLE)
@@ -162,11 +165,6 @@ gfxDriverVK::~gfxDriverVK()
     {
         vkDestroyInstance(m_VkInstance, nullptr);
     }
-}
-
-epiPtrArray<gfxPhysicalDeviceImpl> gfxDriverVK::ListOfPhysicalDevices() const
-{
-    epiPtrArray<gfxPhysicalDeviceImpl> devices;
 
     epiU32 deviceCount = 0;
     vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
@@ -177,15 +175,20 @@ epiPtrArray<gfxPhysicalDeviceImpl> gfxDriverVK::ListOfPhysicalDevices() const
 
     for (const auto& vkDevice : vkDevices)
     {
-        devices.push_back(new gfxPhysicalDeviceImplVK(vkDevice, *m_Surface));
+        m_PhysicalDevices.push_back(new gfxPhysicalDeviceImplVK(vkDevice, *m_Surface));
     }
-
-    return devices;
 }
 
-VkInstance gfxDriverVK::GetVkInstance() const
+const epiPtrArray<gfxPhysicalDeviceImpl>& gfxDriverImplVK::GetPhysicalDevices() const
+{
+    return m_PhysicalDevices;
+}
+
+VkInstance gfxDriverImplVK::GetVkInstance() const
 {
     return m_VkInstance;
 }
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

@@ -76,6 +76,9 @@ target_link_libraries(EpiGraphics
         EpiCore
         EpiGraphicsDriver
         freetype
+
+    PRIVATE
+        EpiGraphicsDriverImpl
 )
 
 epi_module_register(EpiGraphics

@@ -4,6 +4,9 @@
 
 EPI_NAMESPACE_BEGIN()
 
+namespace internalgfx
+{
+
 gfxVertexBufferLayoutAttributeImplGL::gfxVertexBufferLayoutAttributeImplGL(gfxVertexBufferLayoutAttributeImplGL&& rhs)
 {
     m_Index = rhs.m_Index;
@@ -229,5 +232,7 @@ epiBool gfxVertexBufferImplGL::UnMap()
 {
     return glUnmapBuffer(GL_ARRAY_BUFFER);
 }
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

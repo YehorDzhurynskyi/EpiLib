@@ -3,18 +3,21 @@ project(EpiGraphicsDriver)
 option(EPI_GRAPHICS_DRIVER_GL "Enable OpenGL Graphics API support" ON)
 option(EPI_GRAPHICS_DRIVER_VK "Enable Vulkan Graphics API support" ON)
 
-add_subdirectory(EpiGraphicsDriverAPI)
+add_subdirectory(EpiGraphicsDriverImpl)
 
 add_library(EpiGraphicsDriver
-    Sources/EpiGraphicsDriver/gfxDriverFacade.h
-    Sources/EpiGraphicsDriver/gfxDriverFacade.cpp
+    Sources/EpiGraphicsDriver/gfxDriver.h
+    Sources/EpiGraphicsDriver/gfxDriver.cpp
 )
 get_target_property(EpiGraphicsDriver_SOURCES EpiGraphicsDriver SOURCES)
 epi_pack_sources(${EpiGraphicsDriver_SOURCES})
 
 target_link_libraries(EpiGraphicsDriver
     PUBLIC
-        EpiGraphicsDriverAPI
+        EpiGraphicsEnum
+
+    PRIVATE
+        EpiGraphicsDriverImpl
 )
 
 if (EPI_GRAPHICS_DRIVER_GL)

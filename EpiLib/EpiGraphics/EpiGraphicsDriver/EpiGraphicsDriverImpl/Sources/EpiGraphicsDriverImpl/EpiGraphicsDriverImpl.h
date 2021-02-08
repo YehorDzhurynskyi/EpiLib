@@ -1,8 +1,11 @@
 #pragma once
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPIEnum.h"
+#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
 
 class gfxQueueImpl
 {
@@ -69,12 +72,12 @@ public:
     virtual ~gfxSurfaceImpl() = default;
 };
 
-class gfxDriver
+class gfxDriverImpl
 {
 public:
-    virtual ~gfxDriver() = default;
+    virtual ~gfxDriverImpl() = default;
 
-    virtual epiPtrArray<gfxPhysicalDeviceImpl> ListOfPhysicalDevices() const = 0;
+    virtual const epiPtrArray<gfxPhysicalDeviceImpl>& GetPhysicalDevices() const = 0;
 };
 
 class gfxVertexArrayImpl
@@ -249,5 +252,7 @@ public:
     virtual void UniformVec3u(const epiChar* name, const epiVec3u& value) = 0;
     virtual void UniformVec4u(const epiChar* name, const epiVec4u& value) = 0;
 };
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

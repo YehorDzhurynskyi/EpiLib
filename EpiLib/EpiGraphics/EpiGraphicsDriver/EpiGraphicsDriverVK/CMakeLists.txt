@@ -1,8 +1,8 @@
 project(EpiGraphicsDriverVK)
 
 add_library(EpiGraphicsDriverVK
-    Sources/EpiGraphicsDriverVK/gfxDriverVK.h
-    Sources/EpiGraphicsDriverVK/gfxDriverVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxDriverImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxDriverImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxVertexArrayImplVK.h
     Sources/EpiGraphicsDriverVK/gfxVertexArrayImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxVertexBufferImplVK.h
@@ -33,7 +33,7 @@ find_package(Vulkan REQUIRED FATAL_ERROR)
 
 target_link_libraries(EpiGraphicsDriverVK
     PRIVATE
-        EpiGraphicsDriverAPI
+        EpiGraphicsDriverImpl
         Vulkan::Vulkan
 )
 

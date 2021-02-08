@@ -1,10 +1,14 @@
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#pragma once
+
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
 #include <vulkan/vulkan.hpp>
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDriverVK;
+namespace internalgfx
+{
+
 class gfxSurfaceImplVK : public gfxSurfaceImpl
 {
 public:
@@ -21,5 +25,7 @@ protected:
     VkInstance m_VkInstance{VK_NULL_HANDLE};
     VkSurfaceKHR m_VkSurface{VK_NULL_HANDLE};
 };
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

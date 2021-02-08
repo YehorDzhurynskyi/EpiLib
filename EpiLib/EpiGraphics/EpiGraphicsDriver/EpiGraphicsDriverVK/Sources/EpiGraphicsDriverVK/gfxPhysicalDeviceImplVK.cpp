@@ -4,6 +4,9 @@
 
 EPI_NAMESPACE_BEGIN()
 
+namespace internalgfx
+{
+
 gfxPhysicalDeviceImplVK::gfxPhysicalDeviceImplVK(VkPhysicalDevice device, const gfxSurfaceImplVK& surface)
     : m_VkDevice{device}
 {
@@ -148,5 +151,7 @@ VkPhysicalDevice gfxPhysicalDeviceImplVK::GetVkPhysicalDevice() const
 {
     return m_VkDevice;
 }
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

@@ -3,6 +3,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxVertexArray.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
+
 EPI_NAMESPACE_BEGIN()
 
 gfxVertexArray::gfxVertexArray()

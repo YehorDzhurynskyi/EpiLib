@@ -4,6 +4,9 @@
 
 EPI_NAMESPACE_BEGIN()
 
+namespace internalgfx
+{
+
 gfxVertexArrayImplGL::gfxVertexArrayImplGL(gfxVertexArrayImplGL&& rhs)
 {
     m_ID = rhs.m_ID;
@@ -48,5 +51,7 @@ void gfxVertexArrayImplGL::UnBind()
 {
     glBindVertexArray(0);
 }
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

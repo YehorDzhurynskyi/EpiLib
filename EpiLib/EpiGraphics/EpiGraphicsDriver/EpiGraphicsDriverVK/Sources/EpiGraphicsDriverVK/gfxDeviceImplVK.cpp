@@ -26,6 +26,9 @@ const epiChar* ExtensionNameOf(epi::gfxPhysicalDeviceExtension extension)
 
 EPI_NAMESPACE_BEGIN()
 
+namespace internalgfx
+{
+
 gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, gfxQueueFamily queueFamilyMask, gfxPhysicalDeviceExtension extensionMask)
 {
     epiAssert(physicalDevice.IsQueueFamilySupported(queueFamilyMask));
@@ -215,5 +218,7 @@ VkDevice gfxDeviceImplVK::GetVkDevice() const
 {
     return m_VkDevice;
 }
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

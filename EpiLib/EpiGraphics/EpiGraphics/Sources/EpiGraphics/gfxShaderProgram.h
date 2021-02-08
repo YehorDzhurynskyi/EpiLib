@@ -6,9 +6,17 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
+
+class gfxShaderImpl;
+class gfxShaderProgramImpl;
+
+} // namespace internalgfx
 
 class gfxShader final : public Object
 {
@@ -41,8 +49,8 @@ public:
     gfxShader() = default;
     gfxShader(const gfxShader& rhs) = delete;
     gfxShader& operator=(const gfxShader& rhs) = delete;
-    gfxShader(gfxShader&& rhs) = default;
-    gfxShader& operator=(gfxShader&& rhs) = default;
+    gfxShader(gfxShader&& rhs);
+    gfxShader& operator=(gfxShader&& rhs);
     ~gfxShader();
 
 public:
@@ -50,7 +58,7 @@ public:
     void Destroy();
 
 protected:
-    std::unique_ptr<gfxShaderImpl> m_Impl;
+    internalgfx::gfxShaderImpl* m_Impl{nullptr};
 };
 
 class gfxShaderProgram final : public gfxBindable
@@ -79,8 +87,8 @@ public:
     gfxShaderProgram();
     gfxShaderProgram(const gfxShaderProgram& rhs) = delete;
     gfxShaderProgram& operator=(const gfxShaderProgram& rhs) = delete;
-    gfxShaderProgram(gfxShaderProgram&& rhs) = default;
-    gfxShaderProgram& operator=(gfxShaderProgram&& rhs) = default;
+    gfxShaderProgram(gfxShaderProgram&& rhs);
+    gfxShaderProgram& operator=(gfxShaderProgram&& rhs);
     ~gfxShaderProgram();
 
 public:
@@ -117,7 +125,7 @@ public:
     void UniformVec4u(const epiChar* name, const epiVec4u& value);
 
 protected:
-    std::unique_ptr<gfxShaderProgramImpl> m_Impl;
+    internalgfx::gfxShaderProgramImpl* m_Impl{nullptr};
 };
 
 template<typename T>

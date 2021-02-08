@@ -3,7 +3,23 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxShaderProgram.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
+
 EPI_NAMESPACE_BEGIN()
+
+gfxShader::gfxShader(gfxShader&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+}
+
+gfxShader& gfxShader::operator=(gfxShader&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+
+    return *this;
+}
 
 gfxShader::~gfxShader()
 {
@@ -11,6 +27,8 @@ gfxShader::~gfxShader()
     {
         Destroy();
     }
+
+    delete m_Impl;
 }
 
 void gfxShader::CreateFromSource(const epiChar* source, gfxShaderType type)
@@ -47,12 +65,28 @@ gfxShaderProgram::gfxShaderProgram()
     Create();
 }
 
+gfxShaderProgram::gfxShaderProgram(gfxShaderProgram&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+}
+
+gfxShaderProgram& gfxShaderProgram::operator=(gfxShaderProgram&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+
+    return *this;
+}
+
 gfxShaderProgram::~gfxShaderProgram()
 {
     if (GetIsCreated())
     {
         Destroy();
     }
+
+    delete m_Impl;
 }
 
 void gfxShaderProgram::Create()

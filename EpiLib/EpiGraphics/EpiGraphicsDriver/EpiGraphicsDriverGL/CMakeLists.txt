@@ -1,8 +1,8 @@
 project(EpiGraphicsDriverGL)
 
 add_library(EpiGraphicsDriverGL
-    Sources/EpiGraphicsDriverGL/gfxDriverGL.h
-    Sources/EpiGraphicsDriverGL/gfxDriverGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxDriverImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxDriverImplGL.cpp
     Sources/EpiGraphicsDriverGL/gfxVertexArrayImplGL.h
     Sources/EpiGraphicsDriverGL/gfxVertexArrayImplGL.cpp
     Sources/EpiGraphicsDriverGL/gfxVertexBufferImplGL.h
@@ -36,7 +36,7 @@ target_include_directories(EpiGraphicsDriverGL
 
 target_link_libraries(EpiGraphicsDriverGL
     PRIVATE
-        EpiGraphicsDriverAPI
+        EpiGraphicsDriverImpl
         glad
 )
 

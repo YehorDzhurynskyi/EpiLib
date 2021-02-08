@@ -1,10 +1,21 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPIEnum.hxx"
+#include "EpiGraphicsEnum/EpiGraphicsEnum.hxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
+
+enum class gfxDriverBackend : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDriverBackend)
+    None = -1,
+    OpenGL = 0,
+    Vulkan = 1,
+    Software = 2,
+    COUNT = 3
+EPI_GENREGION_END(gfxDriverBackend)
+};
 
 enum class gfxTextureType : epiS32
 {

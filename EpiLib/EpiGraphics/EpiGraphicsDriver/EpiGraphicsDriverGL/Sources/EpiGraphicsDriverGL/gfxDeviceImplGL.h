@@ -1,8 +1,11 @@
 #pragma once
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
 
 class gfxTextureImplGL : public gfxTextureImpl
 {
@@ -36,5 +39,7 @@ protected:
     epiU32 m_Height{0};
     gfxTextureType m_Type{gfxTextureType::None};
 };
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

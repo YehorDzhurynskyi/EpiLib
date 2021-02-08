@@ -11,7 +11,6 @@ private:
 public:
     explicit epiWXVulkanCanvas(wxWindow* parent,
                                wxWindowID id = wxID_ANY,
-                               const int* attribList = NULL,
                                const wxPoint& pos = wxDefaultPosition,
                                const wxSize& size = wxDefaultSize,
                                long style = 0,

@@ -6,9 +6,14 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
-
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
+
+class gfxVertexArrayImpl;
+
+} // namespace internalgfx
 
 class gfxVertexArray : public gfxBindable
 {
@@ -48,7 +53,7 @@ public:
     void UnBind() override;
 
 protected:
-    std::unique_ptr<gfxVertexArrayImpl> m_Impl;
+    std::unique_ptr<internalgfx::gfxVertexArrayImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

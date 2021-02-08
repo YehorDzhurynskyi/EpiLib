@@ -1,8 +1,13 @@
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#pragma once
+
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
 #include <vulkan/vulkan.hpp>
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
 
 class gfxDeviceImplVK;
 class gfxQueueImplVK : public gfxQueueImpl
@@ -18,5 +23,7 @@ public:
 protected:
     VkQueue m_VKQueue{VK_NULL_HANDLE};
 };
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

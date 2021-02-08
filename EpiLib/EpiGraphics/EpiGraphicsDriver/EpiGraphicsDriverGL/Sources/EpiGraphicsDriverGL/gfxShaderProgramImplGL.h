@@ -1,8 +1,11 @@
 #pragma once
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
 
 class gfxShaderImplGL : public gfxShaderImpl
 {
@@ -75,5 +78,6 @@ protected:
     const gfxShaderImplGL* m_ShaderPixel{nullptr};
 };
 
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

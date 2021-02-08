@@ -4,6 +4,9 @@
 
 EPI_NAMESPACE_BEGIN()
 
+namespace internalgfx
+{
+
 gfxShaderImplGL::gfxShaderImplGL(gfxShaderImplGL&& rhs)
 {
     m_ID = rhs.m_ID;
@@ -318,5 +321,6 @@ void gfxShaderProgramImplGL::UniformVec4u(const epiChar* name, const epiVec4u& v
     glUniform4uiv(location, 1, &value[0]);
 }
 
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

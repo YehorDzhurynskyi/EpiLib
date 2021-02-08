@@ -1,3 +1,12 @@
+enum gfxDriverBackend
+{
+    None = -1,
+    OpenGL,
+    Vulkan,
+    Software,
+    COUNT
+};
+
 enum gfxTextureType
 {
     None,

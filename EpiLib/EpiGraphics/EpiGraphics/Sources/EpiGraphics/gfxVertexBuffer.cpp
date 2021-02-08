@@ -3,6 +3,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxVertexBuffer.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
+
 EPI_NAMESPACE_BEGIN()
 
 epiU32 gfxVertexBufferLayoutAttribute::GetIndex_Callback() const
@@ -65,6 +67,25 @@ void gfxVertexBufferLayoutAttribute::SetOffset_Callback(epiSize_t value)
     m_Impl->SetOffset(value);
 }
 
+gfxVertexBufferLayout::gfxVertexBufferLayout(gfxVertexBufferLayout&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+}
+
+gfxVertexBufferLayout& gfxVertexBufferLayout::operator=(gfxVertexBufferLayout&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+
+    return *this;
+}
+
+gfxVertexBufferLayout::~gfxVertexBufferLayout()
+{
+    delete m_Impl;
+}
+
 void gfxVertexBufferLayout::Add(gfxVertexBufferLayoutAttribute&& attr)
 {
     m_Impl->Add(std::move(*attr.m_Impl));
@@ -84,12 +105,28 @@ void gfxVertexBufferLayout::Add(epiSize_t size, gfxVertexBufferLayoutAttributeTy
     Add(std::move(attr));
 }
 
+gfxVertexBuffer::gfxVertexBuffer(gfxVertexBuffer&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+}
+
+gfxVertexBuffer& gfxVertexBuffer::operator=(gfxVertexBuffer&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+    rhs.m_Impl = nullptr;
+
+    return *this;
+}
+
 gfxVertexBuffer::~gfxVertexBuffer()
 {
     if (GetIsCreated())
     {
         Destroy();
     }
+
+    delete m_Impl;
 }
 
 void gfxVertexBuffer::Create(const epiByte* initData, epiSize_t capacity, gfxVertexBufferUsage usage, const gfxVertexBufferLayout& layout)

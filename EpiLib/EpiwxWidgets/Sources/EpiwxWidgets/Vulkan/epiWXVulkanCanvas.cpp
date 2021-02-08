@@ -4,14 +4,12 @@
 
 epiWXVulkanCanvas::epiWXVulkanCanvas(wxWindow* parent,
                                      wxWindowID id,
-                                     const int* attribList,
                                      const wxPoint& pos,
                                      const wxSize& size,
                                      long style,
                                      const wxString& name,
                                      const wxPalette& palette)
 {
-    VkInstance instance;
     Create(parent, id, pos, size, style, name, palette);
 }
 

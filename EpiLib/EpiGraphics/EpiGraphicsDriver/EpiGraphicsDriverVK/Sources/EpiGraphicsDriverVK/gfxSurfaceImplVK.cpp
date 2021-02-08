@@ -1,6 +1,6 @@
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 
-#include "EpiGraphicsDriverVK/gfxDriverVK.h"
+#include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 
 #ifdef EPI_PLATFORM_WINDOWS
 #include <windows.h>
@@ -8,6 +8,9 @@
 #endif // EPI_PLATFORM_WINDOWS
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
 
 gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance intance)
     : m_VkInstance{intance}
@@ -35,5 +38,7 @@ VkSurfaceKHR gfxSurfaceImplVK::GetVkSurface() const
 {
     return m_VkSurface;
 }
+
+} // namespace internalgfx
 
 EPI_NAMESPACE_END()

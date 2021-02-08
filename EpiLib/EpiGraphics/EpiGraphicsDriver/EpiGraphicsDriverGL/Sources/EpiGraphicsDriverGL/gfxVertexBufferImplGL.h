@@ -1,8 +1,11 @@
 #pragma once
 
-#include "EpiGraphicsDriverAPI/EpiGraphicsDriverAPI.h"
+#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
 EPI_NAMESPACE_BEGIN()
+
+namespace internalgfx
+{
 
 class gfxVertexBufferLayoutAttributeImplGL : public gfxVertexBufferLayoutAttributeImpl
 {
@@ -83,5 +86,7 @@ protected:
     epiU32 m_ID{0};
     epiSize_t m_Capacity{0};
 };
+
+} // internalgfx
 
 EPI_NAMESPACE_END()
