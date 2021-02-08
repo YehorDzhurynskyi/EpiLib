@@ -24,14 +24,14 @@ EPI_GENREGION_END(uiSizeContraint)
 enum uiAlignment : epiS32
 {
 EPI_GENREGION_BEGIN(uiAlignment)
-    uiAlignment_Left = (1 << 1),
-    uiAlignment_Right = (1 << 2),
-    uiAlignment_HCenter = (1 << 3),
-    uiAlignment_Justify = (1 << 4),
-    uiAlignment_Top = (1 << 5),
-    uiAlignment_Bottom = (1 << 6),
-    uiAlignment_VCenter = (1 << 7),
-    uiAlignment_Baseline = (1 << 8),
+    uiAlignment_Left = (1 << 0),
+    uiAlignment_Right = (1 << 1),
+    uiAlignment_HCenter = (1 << 2),
+    uiAlignment_Justify = (1 << 3),
+    uiAlignment_Top = (1 << 4),
+    uiAlignment_Bottom = (1 << 5),
+    uiAlignment_VCenter = (1 << 6),
+    uiAlignment_Baseline = (1 << 7),
     uiAlignment_Center = uiAlignment_HCenter | uiAlignment_VCenter,
     uiAlignment_Horizontal_Mask = uiAlignment_Left | uiAlignment_Right | uiAlignment_HCenter | uiAlignment_Justify,
     uiAlignment_Vertical_Mask = uiAlignment_Top | uiAlignment_Bottom | uiAlignment_VCenter | uiAlignment_Baseline

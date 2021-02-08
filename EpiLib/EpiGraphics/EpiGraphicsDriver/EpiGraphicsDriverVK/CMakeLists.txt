@@ -24,7 +24,7 @@ get_target_property(EpiGraphicsDriverVK_SOURCES EpiGraphicsDriverVK SOURCES)
 epi_pack_sources(${EpiGraphicsDriverVK_SOURCES})
 
 target_include_directories(EpiGraphicsDriverVK
-    PRIVATE
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
 )

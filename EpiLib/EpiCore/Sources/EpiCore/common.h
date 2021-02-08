@@ -59,13 +59,13 @@ constexpr uint32_t epiBitPositionOf(T mask)
     epiAssert(epiBitCount(mask) == 1);
 
     uint64_t mmask = static_cast<uint64_t>(mask);
-    uint32_t position = 0;
+    int32_t position = -1;
     for (; mmask; ++position)
     {
         mmask >>= 1;
     }
 
-    return position;
+    return static_cast<uint32_t>(position);
 }
 
 template<typename T>

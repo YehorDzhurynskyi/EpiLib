@@ -3,8 +3,15 @@
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 
+#ifdef EPI_PLATFORM_WINDOWS
+#include <Windows.h>
+#include <vulkan/vulkan_win32.h>
+#endif // EPI_PLATFORM_WINDOWS
+
 namespace
 {
+
+EPI_NAMESPACE_USING()
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL epiVKDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                                          VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -23,8 +30,8 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL epiVKDebugCallback(VkDebugUtilsMessageSeve
     // TODO: retrieve additional info from `pCallbackData`
     switch (messageSeverity)
     {
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT: epiLogDebug("[{}]: {}", type, pCallbackData->pMessage); break;
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT: epiLogInfo("[{}]: {}", type, pCallbackData->pMessage); break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT: epiLogTrace("[{}]: {}", type, pCallbackData->pMessage); break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT: epiLogDebug("[{}]: {}", type, pCallbackData->pMessage); break;
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT: epiLogWarn("[{}]: {}", type, pCallbackData->pMessage); break;
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: epiLogError("[{}]: {}", type, pCallbackData->pMessage); break;
     default: epiAssert(!"Unhandled case!");
@@ -33,21 +40,49 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL epiVKDebugCallback(VkDebugUtilsMessageSeve
     return VK_FALSE;
 }
 
-const epiChar* ExtensionNameOf(epi::gfxDriverExtension extension)
+const epiChar* ExtensionNameOf(gfxDriverExtension extension)
 {
     // TODO: check whether single bit provided
     static constexpr const epiChar* kNames[]
     {
-        "VK_KHR_surface",
-        "VK_KHR_win32_surface"
+        VK_KHR_SURFACE_EXTENSION_NAME,
+        VK_KHR_WIN32_SURFACE_EXTENSION_NAME
     };
 
-    static_assert(epiArrLen(kNames) == epiBitCount(epi::gfxDriverExtension_ALL));
+    static_assert(epiArrLen(kNames) == epiBitCount(gfxDriverExtension_ALL));
 
     const epiU32 at = epiBitPositionOf(extension);
     epiAssert(at < epiArrLen(kNames));
 
     return kNames[at];
+}
+
+gfxDriverExtension SupportedInstanceExtensionMask()
+{
+    epiU32 supportedExtensionsCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionsCount, nullptr);
+
+    std::vector<VkExtensionProperties> supportedExtensions(supportedExtensionsCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionsCount, supportedExtensions.data());
+
+    epiU64 mask = 0;
+    for (const auto& extension : supportedExtensions)
+    {
+        if (strcmp(extension.extensionName, VK_KHR_SURFACE_EXTENSION_NAME) == 0)
+        {
+            mask |= gfxDriverExtension_Surface;
+        }
+        else if (strcmp(extension.extensionName, VK_KHR_WIN32_SURFACE_EXTENSION_NAME) == 0)
+        {
+            mask |= gfxDriverExtension_SurfaceWin32;
+        }
+        else
+        {
+            epiLogWarn("Unrecognized Vulkan instance extension=`{}`!", extension.extensionName);
+        }
+    }
+
+    return static_cast<gfxDriverExtension>(mask);
 }
 
 }
@@ -61,7 +96,7 @@ gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
                                  epiU32 apiVersionMinor,
                                  epiU32 apiVersionPatch,
                                  const epiChar* appName,
-                                 gfxDriverExtension extensionMask,
+                                 gfxDriverExtension extensionMaskRequired,
                                  epiU32 appVersionMajor,
                                  epiU32 appVersionMinor,
                                  epiU32 appVersionPatch,
@@ -113,27 +148,50 @@ gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
 
     VkDebugUtilsMessengerCreateInfoEXT createInfoDebugMessenger{};
     createInfoDebugMessenger.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    createInfoDebugMessenger.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT;
-    createInfoDebugMessenger.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_FLAG_BITS_MAX_ENUM_EXT;
+    createInfoDebugMessenger.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+                                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    createInfoDebugMessenger.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                                           VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                                           VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     createInfoDebugMessenger.pfnUserCallback = epiVKDebugCallback;
     createInfoDebugMessenger.pUserData = nullptr;
 
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&createInfoDebugMessenger;
 #endif // EPI_BUILD_DEBUG
 
+    m_ExtensionMaskSupported = SupportedInstanceExtensionMask();
+
+    epiS32 extensionMaskEnabled = 0;
     std::vector<const epiChar*> extensions;
     for (epiU32 bit = 1; bit < gfxDriverExtension_MAX; bit = bit << 1)
     {
         const gfxDriverExtension extension = static_cast<gfxDriverExtension>(bit);
-        if (extension & extensionMask == 0)
+        if (extension & extensionMaskRequired == 0)
         {
             continue;
         }
 
+        if (extension & m_ExtensionMaskSupported == 0)
+        {
+            // TODO: get string representation
+            epiLogFatal("Required Vulkan intance extension=`{}` is not supported!", extension);
+            continue;
+        }
+
+        extensionMaskEnabled |= extension;
+
         extensions.push_back(ExtensionNameOf(extension));
     }
+
+#ifdef EPI_BUILD_DEBUG
+    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
+
     createInfo.ppEnabledExtensionNames = extensions.data();
     createInfo.enabledExtensionCount = extensions.size();
+    m_ExtensionMaskEnabled = static_cast<gfxDriverExtension>(extensionMaskEnabled);
 
     VkResult resultCreateInstance = vkCreateInstance(&createInfo, nullptr, &m_VkInstance);
     epiAssert(resultCreateInstance == VK_SUCCESS);
@@ -182,6 +240,16 @@ gfxDriverImplVK::~gfxDriverImplVK()
 const epiPtrArray<gfxPhysicalDeviceImpl>& gfxDriverImplVK::GetPhysicalDevices() const
 {
     return m_PhysicalDevices;
+}
+
+const epiBool gfxDriverImplVK::IsExtensionsSupported(gfxDriverExtension mask) const
+{
+    return (m_ExtensionMaskSupported & mask) == mask;
+}
+
+const epiBool gfxDriverImplVK::IsExtensionsEnabled(gfxDriverExtension mask) const
+{
+    return (m_ExtensionMaskEnabled & mask) == mask;
 }
 
 VkInstance gfxDriverImplVK::GetVkInstance() const

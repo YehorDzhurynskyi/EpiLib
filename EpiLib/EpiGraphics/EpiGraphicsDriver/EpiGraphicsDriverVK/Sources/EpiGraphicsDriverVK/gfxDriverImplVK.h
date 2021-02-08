@@ -2,7 +2,8 @@
 
 #include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
-#include <vulkan/vulkan.hpp>
+struct VkDebugUtilsMessengerEXT_T;
+struct VkInstance_T;
 
 EPI_NAMESPACE_BEGIN()
 
@@ -17,7 +18,7 @@ public:
                     epiU32 apiVersionMinor,
                     epiU32 apiVersionPatch,
                     const epiChar* appName,
-                    gfxDriverExtension extensionMask,
+                    gfxDriverExtension extensionMaskRequired,
                     epiU32 appVersionMajor = 1u,
                     epiU32 appVersionMinor = 0u,
                     epiU32 appVersionPatch = 0u,
@@ -29,13 +30,18 @@ public:
 
     const epiPtrArray<gfxPhysicalDeviceImpl>& GetPhysicalDevices() const override;
 
-    VkInstance GetVkInstance() const;
+    const epiBool IsExtensionsSupported(gfxDriverExtension mask) const override;
+    const epiBool IsExtensionsEnabled(gfxDriverExtension mask) const override;
+
+    VkInstance_T* GetVkInstance() const;
 
 protected:
-    VkInstance m_VkInstance{VK_NULL_HANDLE};
-    EPI_BUILD_DEBUG_ONLY(VkDebugUtilsMessengerEXT m_VKDebugMessenger{VK_NULL_HANDLE});
+    VkInstance_T* m_VkInstance{nullptr};
+    EPI_BUILD_DEBUG_ONLY(VkDebugUtilsMessengerEXT_T* m_VKDebugMessenger{nullptr});
     std::unique_ptr<gfxSurfaceImplVK> m_Surface;
     epiPtrArray<gfxPhysicalDeviceImpl> m_PhysicalDevices;
+    gfxDriverExtension m_ExtensionMaskSupported{0};
+    gfxDriverExtension m_ExtensionMaskEnabled{0};
 };
 
 } // namespace internalgfx

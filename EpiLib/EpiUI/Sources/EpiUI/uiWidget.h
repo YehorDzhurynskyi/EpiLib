@@ -13,13 +13,13 @@ EPI_NAMESPACE_BEGIN()
 enum uiSizePolicy : epiS32
 {
 EPI_GENREGION_BEGIN(uiSizePolicy)
-    uiSizePolicy_Fixed = (1 << 1),
-    uiSizePolicy_Minimum = (1 << 2),
-    uiSizePolicy_Maximum = (1 << 3),
-    uiSizePolicy_Preferred = (1 << 4),
-    uiSizePolicy_Expanding = (1 << 5),
-    uiSizePolicy_MinimumExpanding = (1 << 6),
-    uiSizePolicy_Ignored = (1 << 7),
+    uiSizePolicy_Fixed = (1 << 0),
+    uiSizePolicy_Minimum = (1 << 1),
+    uiSizePolicy_Maximum = (1 << 2),
+    uiSizePolicy_Preferred = (1 << 3),
+    uiSizePolicy_Expanding = (1 << 4),
+    uiSizePolicy_MinimumExpanding = (1 << 5),
+    uiSizePolicy_Ignored = (1 << 6),
     uiSizePolicy_Grow_Mask = uiSizePolicy_Minimum | uiSizePolicy_Preferred | uiSizePolicy_Expanding | uiSizePolicy_MinimumExpanding | uiSizePolicy_Ignored,
     uiSizePolicy_Shrink_Mask = uiSizePolicy_Maximum | uiSizePolicy_Preferred | uiSizePolicy_Expanding | uiSizePolicy_Ignored,
     uiSizePolicy_Expand_Mask = uiSizePolicy_Expanding | uiSizePolicy_MinimumExpanding

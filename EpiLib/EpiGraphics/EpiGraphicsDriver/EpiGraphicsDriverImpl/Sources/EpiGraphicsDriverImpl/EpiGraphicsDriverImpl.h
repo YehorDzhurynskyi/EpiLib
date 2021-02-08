@@ -78,6 +78,9 @@ public:
     virtual ~gfxDriverImpl() = default;
 
     virtual const epiPtrArray<gfxPhysicalDeviceImpl>& GetPhysicalDevices() const = 0;
+
+    virtual const epiBool IsExtensionsSupported(gfxDriverExtension mask) const = 0;
+    virtual const epiBool IsExtensionsEnabled(gfxDriverExtension mask) const = 0;
 };
 
 class gfxVertexArrayImpl

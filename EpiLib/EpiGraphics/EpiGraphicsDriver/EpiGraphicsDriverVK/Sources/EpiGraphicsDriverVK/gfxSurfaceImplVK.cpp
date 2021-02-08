@@ -3,7 +3,7 @@
 #include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 
 #ifdef EPI_PLATFORM_WINDOWS
-#include <windows.h>
+#include <Windows.h>
 #include <vulkan/vulkan_win32.h>
 #endif // EPI_PLATFORM_WINDOWS
 

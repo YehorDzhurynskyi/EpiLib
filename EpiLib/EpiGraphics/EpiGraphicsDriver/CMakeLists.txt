@@ -12,6 +12,12 @@ add_library(EpiGraphicsDriver
 get_target_property(EpiGraphicsDriver_SOURCES EpiGraphicsDriver SOURCES)
 epi_pack_sources(${EpiGraphicsDriver_SOURCES})
 
+target_include_directories(EpiGraphicsDriver
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
+)
+
 target_link_libraries(EpiGraphicsDriver
     PUBLIC
         EpiGraphicsEnum

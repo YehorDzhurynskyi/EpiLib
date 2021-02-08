@@ -123,13 +123,13 @@ EPI_GENREGION_END(gfxPhysicalDeviceFeature)
 enum gfxQueueFamily : epiS32
 {
 EPI_GENREGION_BEGIN(gfxQueueFamily)
-    gfxQueueFamily_Graphics = (1 << 1),
-    gfxQueueFamily_Compute = (1 << 2),
-    gfxQueueFamily_Transfer = (1 << 3),
-    gfxQueueFamily_SparseBinding = (1 << 4),
-    gfxQueueFamily_Protected = (1 << 5),
-    gfxQueueFamily_Presentation = (1 << 6),
-    gfxQueueFamily_MAX = (1 << 7),
+    gfxQueueFamily_Graphics = (1 << 0),
+    gfxQueueFamily_Compute = (1 << 1),
+    gfxQueueFamily_Transfer = (1 << 2),
+    gfxQueueFamily_SparseBinding = (1 << 3),
+    gfxQueueFamily_Protected = (1 << 4),
+    gfxQueueFamily_Presentation = (1 << 5),
+    gfxQueueFamily_MAX = (1 << 6),
     gfxQueueFamily_ALL = gfxQueueFamily_Graphics | gfxQueueFamily_Compute | gfxQueueFamily_Transfer | gfxQueueFamily_SparseBinding | gfxQueueFamily_Protected | gfxQueueFamily_Presentation
 EPI_GENREGION_END(gfxQueueFamily)
 };
@@ -137,9 +137,9 @@ EPI_GENREGION_END(gfxQueueFamily)
 enum gfxDriverExtension : epiS32
 {
 EPI_GENREGION_BEGIN(gfxDriverExtension)
-    gfxDriverExtension_Surface = (1 << 1),
-    gfxDriverExtension_SurfaceWin32 = (1 << 2),
-    gfxDriverExtension_MAX = (1 << 3),
+    gfxDriverExtension_Surface = (1 << 0),
+    gfxDriverExtension_SurfaceWin32 = (1 << 1),
+    gfxDriverExtension_MAX = (1 << 2),
     gfxDriverExtension_ALL = gfxDriverExtension_Surface | gfxDriverExtension_SurfaceWin32
 EPI_GENREGION_END(gfxDriverExtension)
 };
@@ -147,8 +147,8 @@ EPI_GENREGION_END(gfxDriverExtension)
 enum gfxPhysicalDeviceExtension : epiS32
 {
 EPI_GENREGION_BEGIN(gfxPhysicalDeviceExtension)
-    gfxPhysicalDeviceExtension_SwapChain = (1 << 1),
-    gfxPhysicalDeviceExtension_MAX = (1 << 2),
+    gfxPhysicalDeviceExtension_SwapChain = (1 << 0),
+    gfxPhysicalDeviceExtension_MAX = (1 << 1),
     gfxPhysicalDeviceExtension_ALL = gfxPhysicalDeviceExtension_SwapChain
 EPI_GENREGION_END(gfxPhysicalDeviceExtension)
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EpiGraphicsDriver/gfxDriver.h"
+
 #include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/window.h>
@@ -34,6 +36,8 @@ int main(int argc, char* argv[])
 {
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
+
+    epi::gfxDriver::GetInstance().ChangeDriverBackend(epi::gfxDriverBackend::Vulkan);
 
     wxEntryStart(argc, argv);
     wxTheApp->CallOnInit();

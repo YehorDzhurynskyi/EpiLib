@@ -29,7 +29,7 @@ epi_module_register(glad EXTERN
 )
 
 target_include_directories(EpiGraphicsDriverGL
-    PRIVATE
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
 )
