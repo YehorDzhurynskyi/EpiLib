@@ -6,8 +6,15 @@ option(EPI_GRAPHICS_DRIVER_VK "Enable Vulkan Graphics API support" ON)
 add_subdirectory(EpiGraphicsDriverImpl)
 
 add_library(EpiGraphicsDriver
+    Sources/EpiGraphicsDriver/gfxDriver.epi
     Sources/EpiGraphicsDriver/gfxDriver.h
     Sources/EpiGraphicsDriver/gfxDriver.cpp
+    Sources/EpiGraphicsDriver/gfxPhysicalDevice.epi
+    Sources/EpiGraphicsDriver/gfxPhysicalDevice.h
+    Sources/EpiGraphicsDriver/gfxPhysicalDevice.cpp
+    Sources/EpiGraphicsDriver/gfxDevice.epi
+    Sources/EpiGraphicsDriver/gfxDevice.h
+    Sources/EpiGraphicsDriver/gfxDevice.cpp
 )
 get_target_property(EpiGraphicsDriver_SOURCES EpiGraphicsDriver SOURCES)
 epi_pack_sources(${EpiGraphicsDriver_SOURCES})

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EpiGraphicsDriver/gfxDriver.h"
+#include "EpiGraphicsDriver/gfxPhysicalDevice.h"
 
 #include <wx/app.h>
 #include <wx/frame.h>
@@ -37,7 +38,23 @@ int main(int argc, char* argv[])
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
 
-    epi::gfxDriver::GetInstance().ChangeDriverBackend(epi::gfxDriverBackend::Vulkan);
+    epi::gfxDriver::GetInstance().SetBackend(epi::gfxDriverBackend::Vulkan);
+    epi::epiArray<epi::gfxPhysicalDevice>& physicalDevices = epi::gfxDriver::GetInstance().GetPhysicalDevices();
+    auto devIt = std::find_if(physicalDevices.begin(), physicalDevices.end(), [](const epi::gfxPhysicalDevice& dev)
+    {
+        const epi::gfxQueueType requiredQueueTypes = epi::gfxQueueType_Graphics;
+
+        // TODO: epi::gfxPhysicalDeviceExtension should be filtered here
+        return dev.GetType() == epi::gfxPhysicalDeviceType::DiscreteGPU &&
+               dev.IsQueueTypeSupported(requiredQueueTypes) &&
+               dev.GetIsPresentSupported();
+    });
+    epiAssert(devIt != physicalDevices.end());
+    epi::gfxPhysicalDevice& dev = *devIt;
+
+    constexpr bool kIsPresentSupportRequired = true;
+    epi::gfxDevice* device = dev.AddDevice(epi::gfxQueueType_Graphics, epi::gfxPhysicalDeviceExtension_SwapChain, kIsPresentSupportRequired);
+    epiAssert(device != nullptr);
 
     wxEntryStart(argc, argv);
     wxTheApp->CallOnInit();

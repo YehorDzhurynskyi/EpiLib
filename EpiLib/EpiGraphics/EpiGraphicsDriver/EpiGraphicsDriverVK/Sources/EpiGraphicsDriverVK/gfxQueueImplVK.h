@@ -2,7 +2,7 @@
 
 #include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
-#include <vulkan/vulkan.hpp>
+struct VkQueue_T;
 
 EPI_NAMESPACE_BEGIN()
 
@@ -10,18 +10,22 @@ namespace internalgfx
 {
 
 class gfxDeviceImplVK;
+class gfxQueueFamilyImplVK;
 class gfxQueueImplVK : public gfxQueueImpl
 {
 public:
-    gfxQueueImplVK(const gfxDeviceImplVK& device, epiU32 queueFamilyIndex);
+    gfxQueueImplVK(const gfxDeviceImplVK& device, gfxQueueType type, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex);
     gfxQueueImplVK(const gfxQueueImplVK& rhs) = delete;
     gfxQueueImplVK& operator=(const gfxQueueImplVK& rhs) = delete;
-    gfxQueueImplVK(gfxQueueImplVK&& rhs) = default;
-    gfxQueueImplVK& operator=(gfxQueueImplVK&& rhs) = default;
+    gfxQueueImplVK(gfxQueueImplVK&& rhs);
+    gfxQueueImplVK& operator=(gfxQueueImplVK&& rhs);
     ~gfxQueueImplVK() override = default;
 
+    gfxQueueType Type() const override;
+
 protected:
-    VkQueue m_VKQueue{VK_NULL_HANDLE};
+    VkQueue_T* m_VkQueue{nullptr};
+    gfxQueueType m_Type{0};
 };
 
 } // namespace internalgfx

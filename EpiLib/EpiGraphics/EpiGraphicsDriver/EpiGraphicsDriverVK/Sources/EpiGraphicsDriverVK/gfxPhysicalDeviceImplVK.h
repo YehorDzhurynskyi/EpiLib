@@ -23,10 +23,13 @@ public:
     epiString GetName() const override;
     gfxPhysicalDeviceType GetType() const override;
 
-    epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
-    epiBool IsQueueFamilySupported(gfxQueueFamily mask) const override;
+    gfxDeviceImpl* CreateDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired) const override;
 
-    QueueFamilyIndices GetQueueFamilyIndices() const override;
+    epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
+    epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
+    epiBool IsPresentSupported() const override;
+
+    const epiPtrArray<gfxQueueFamilyImpl>& GetQueueFamilies() const override;
 
     VkPhysicalDevice GetVkPhysicalDevice() const;
 
@@ -35,7 +38,7 @@ protected:
     epiString m_Name{};
     gfxPhysicalDeviceType m_Type{gfxPhysicalDeviceType::None};
     epiBool m_Features[static_cast<epiSize_t>(gfxPhysicalDeviceFeature::COUNT)];
-    QueueFamilyIndices m_QueueFamilyIndices;
+    epiPtrArray<gfxQueueFamilyImpl> m_QueueFamilies;
 };
 
 } // namespace internalgfx

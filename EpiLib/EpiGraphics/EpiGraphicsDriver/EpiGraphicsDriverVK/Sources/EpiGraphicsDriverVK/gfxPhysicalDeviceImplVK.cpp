@@ -1,6 +1,8 @@
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
+#include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
+#include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -51,37 +53,38 @@ gfxPhysicalDeviceImplVK::gfxPhysicalDeviceImplVK(VkPhysicalDevice device, const 
     epiU32 queueFamilyIndex = 0;
     for (const auto& queueFamily : queueFamilies)
     {
+        epiU32 mask = 0;
         if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
         {
-            m_QueueFamilyIndices.FamilyGraphics = queueFamilyIndex;
+            mask |= gfxQueueType_Graphics;
         }
 
         if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
         {
-            m_QueueFamilyIndices.FamilyCompute = queueFamilyIndex;
+            mask |= gfxQueueType_Compute;
         }
 
         if (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)
         {
-            m_QueueFamilyIndices.FamilyTransfer = queueFamilyIndex;
+            mask |= gfxQueueType_Transfer;
         }
 
         if (queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT)
         {
-            m_QueueFamilyIndices.FamilySparseBinding = queueFamilyIndex;
+            mask |= gfxQueueType_SparseBinding;
         }
 
         if (queueFamily.queueFlags & VK_QUEUE_PROTECTED_BIT)
         {
-            m_QueueFamilyIndices.FamilyProtected = queueFamilyIndex;
+            mask |= gfxQueueType_Protected;
         }
+
+        const gfxQueueType supportedQueueTypes = static_cast<gfxQueueType>(mask);
 
         VkBool32 presentSupported = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(m_VkDevice, queueFamilyIndex, surface.GetVkSurface(), &presentSupported);
-        if (presentSupported)
-        {
-            m_QueueFamilyIndices.FamilyPresentation = queueFamilyIndex;
-        }
+
+        m_QueueFamilies.push_back(new gfxQueueFamilyImplVK(queueFamilyIndex, queueFamily.queueCount, supportedQueueTypes, presentSupported));
 
         ++queueFamilyIndex;
     }
@@ -97,6 +100,11 @@ gfxPhysicalDeviceType gfxPhysicalDeviceImplVK::GetType() const
     return m_Type;
 }
 
+gfxDeviceImpl* gfxPhysicalDeviceImplVK::CreateDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired) const
+{
+    return new gfxDeviceImplVK(*this, queueTypeMask, extensionMask, presentSupportRequired);
+}
+
 epiBool gfxPhysicalDeviceImplVK::IsFeatureSupported(gfxPhysicalDeviceFeature feature) const
 {
     const epiS32 at = static_cast<epiS32>(feature);
@@ -105,46 +113,25 @@ epiBool gfxPhysicalDeviceImplVK::IsFeatureSupported(gfxPhysicalDeviceFeature fea
     return m_Features[at];
 }
 
-epiBool gfxPhysicalDeviceImplVK::IsQueueFamilySupported(gfxQueueFamily mask) const
+epiBool gfxPhysicalDeviceImplVK::IsQueueTypeSupported(gfxQueueType mask) const
 {
-    epiBool supported = true;
-
-    if (mask & gfxQueueFamily_Graphics)
+    return std::any_of(m_QueueFamilies.begin(), m_QueueFamilies.end(), [mask](const gfxQueueFamilyImpl* family)
     {
-        supported = supported && m_QueueFamilyIndices.FamilyGraphics.has_value();
-    }
-
-    if (mask & gfxQueueFamily_Compute)
-    {
-        supported = supported && m_QueueFamilyIndices.FamilyCompute.has_value();
-    }
-
-    if (mask & gfxQueueFamily_Transfer)
-    {
-        supported = supported && m_QueueFamilyIndices.FamilyTransfer.has_value();
-    }
-
-    if (mask & gfxQueueFamily_SparseBinding)
-    {
-        supported = supported && m_QueueFamilyIndices.FamilySparseBinding.has_value();
-    }
-
-    if (mask & gfxQueueFamily_Protected)
-    {
-        supported = supported && m_QueueFamilyIndices.FamilyProtected.has_value();
-    }
-
-    if (mask & gfxQueueFamily_Presentation)
-    {
-        supported = supported && m_QueueFamilyIndices.FamilyPresentation.has_value();
-    }
-
-    return supported;
+        return family->IsQueueTypeSupported(mask);
+    });
 }
 
-gfxPhysicalDeviceImpl::QueueFamilyIndices gfxPhysicalDeviceImplVK::GetQueueFamilyIndices() const
+epiBool gfxPhysicalDeviceImplVK::IsPresentSupported() const
 {
-    return m_QueueFamilyIndices;
+    return std::any_of(m_QueueFamilies.begin(), m_QueueFamilies.end(), [](const gfxQueueFamilyImpl* family)
+    {
+        return family->IsPresentSupported();
+    });
+}
+
+const epiPtrArray<gfxQueueFamilyImpl>& gfxPhysicalDeviceImplVK::GetQueueFamilies() const
+{
+    return m_QueueFamilies;
 }
 
 VkPhysicalDevice gfxPhysicalDeviceImplVK::GetVkPhysicalDevice() const

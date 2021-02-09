@@ -16,36 +16,24 @@ public:
     gfxQueueImpl(gfxQueueImpl&& rhs) = default;
     gfxQueueImpl& operator=(gfxQueueImpl&& rhs) = default;
     virtual ~gfxQueueImpl() = default;
+
+    virtual gfxQueueType Type() const = 0;
 };
 
-class gfxPhysicalDeviceImpl
+class gfxQueueFamilyImpl
 {
 public:
-    struct QueueFamilyIndices
-    {
-        std::optional<epiU32> FamilyGraphics;
-        std::optional<epiU32> FamilyCompute;
-        std::optional<epiU32> FamilyTransfer;
-        std::optional<epiU32> FamilySparseBinding;
-        std::optional<epiU32> FamilyProtected;
-        std::optional<epiU32> FamilyPresentation;
-    };
+    gfxQueueFamilyImpl() = default;
+    gfxQueueFamilyImpl(const gfxQueueFamilyImpl& rhs) = delete;
+    gfxQueueFamilyImpl& operator=(const gfxQueueFamilyImpl& rhs) = delete;
+    gfxQueueFamilyImpl(gfxQueueFamilyImpl&& rhs) = default;
+    gfxQueueFamilyImpl& operator=(gfxQueueFamilyImpl&& rhs) = default;
+    virtual ~gfxQueueFamilyImpl() = default;
 
-public:
-    gfxPhysicalDeviceImpl() = default;
-    gfxPhysicalDeviceImpl(const gfxPhysicalDeviceImpl& rhs) = delete;
-    gfxPhysicalDeviceImpl& operator=(const gfxPhysicalDeviceImpl& rhs) = delete;
-    gfxPhysicalDeviceImpl(gfxPhysicalDeviceImpl&& rhs) = default;
-    gfxPhysicalDeviceImpl& operator=(gfxPhysicalDeviceImpl&& rhs) = default;
-    virtual ~gfxPhysicalDeviceImpl() = default;
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+    virtual epiU32 QueueTypeSupportedCount() const = 0;
 
-    virtual epiString GetName() const = 0;
-    virtual gfxPhysicalDeviceType GetType() const = 0;
-
-    virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
-    virtual epiBool IsQueueFamilySupported(gfxQueueFamily mask) const = 0;
-
-    virtual QueueFamilyIndices GetQueueFamilyIndices() const = 0;
+    virtual epiBool IsPresentSupported() const = 0;
 };
 
 class gfxDeviceImpl
@@ -58,7 +46,29 @@ public:
     gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
     virtual ~gfxDeviceImpl() = default;
 
-    virtual gfxQueueImpl* GetQueue(gfxQueueFamily family) const = 0;
+    virtual gfxQueueImpl* CreateQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const = 0;
+};
+
+class gfxPhysicalDeviceImpl
+{
+public:
+    gfxPhysicalDeviceImpl() = default;
+    gfxPhysicalDeviceImpl(const gfxPhysicalDeviceImpl& rhs) = delete;
+    gfxPhysicalDeviceImpl& operator=(const gfxPhysicalDeviceImpl& rhs) = delete;
+    gfxPhysicalDeviceImpl(gfxPhysicalDeviceImpl&& rhs) = default;
+    gfxPhysicalDeviceImpl& operator=(gfxPhysicalDeviceImpl&& rhs) = default;
+    virtual ~gfxPhysicalDeviceImpl() = default;
+
+    virtual epiString GetName() const = 0;
+    virtual gfxPhysicalDeviceType GetType() const = 0;
+
+    virtual gfxDeviceImpl* CreateDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired) const = 0;
+
+    virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+    virtual epiBool IsPresentSupported() const = 0;
+
+    virtual const epiPtrArray<gfxQueueFamilyImpl>& GetQueueFamilies() const = 0;
 };
 
 class gfxSurfaceImpl

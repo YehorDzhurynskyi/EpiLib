@@ -17,6 +17,8 @@ add_library(EpiGraphicsDriverGL
     Sources/EpiGraphicsDriverGL/gfxDeviceImplGL.cpp
     Sources/EpiGraphicsDriverGL/gfxQueueImplGL.h
     Sources/EpiGraphicsDriverGL/gfxQueueImplGL.cpp
+    Sources/EpiGraphicsDriverGL/gfxQueueFamilyImplGL.h
+    Sources/EpiGraphicsDriverGL/gfxQueueFamilyImplGL.cpp
     Sources/EpiGraphicsDriverGL/gfxSurfaceImplGL.h
     Sources/EpiGraphicsDriverGL/gfxSurfaceImplGL.cpp
 )

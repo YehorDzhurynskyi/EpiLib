@@ -17,6 +17,8 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxDeviceImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxQueueImplVK.h
     Sources/EpiGraphicsDriverVK/gfxQueueImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxQueueFamilyImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxSurfaceImplVK.h
     Sources/EpiGraphicsDriverVK/gfxSurfaceImplVK.cpp
 )

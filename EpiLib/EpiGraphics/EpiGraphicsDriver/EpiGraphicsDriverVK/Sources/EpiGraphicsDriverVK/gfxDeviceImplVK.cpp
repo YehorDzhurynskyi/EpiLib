@@ -1,6 +1,7 @@
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
+#include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
 
 namespace
@@ -29,75 +30,62 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, gfxQueueFamily queueFamilyMask, gfxPhysicalDeviceExtension extensionMask)
+gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired)
 {
-    epiAssert(physicalDevice.IsQueueFamilySupported(queueFamilyMask));
-
-    gfxPhysicalDeviceImpl::QueueFamilyIndices queueFamilyIndices = physicalDevice.GetQueueFamilyIndices();
+    epiAssert(physicalDevice.IsQueueTypeSupported(queueTypeMask));
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
+    epiU32 queueTypeMaskLeft = queueTypeMask;
+    epiBool presentSupportRequiredLeft = presentSupportRequired;
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    for (epiU32 bit = 1; bit < gfxQueueFamily_MAX; bit = bit << 1)
+    std::vector<std::vector<epiFloat>> queuePrioritiesVec;
+    for (const auto& queueFamily : physicalDevice.GetQueueFamilies())
     {
-        const gfxQueueFamily family = static_cast<gfxQueueFamily>(bit);
-        if (family & queueFamilyMask == 0)
+        epiU32 availableQueueTypesOnFamily = 0;
+        std::vector<epiFloat>& queuePriorities = queuePrioritiesVec.emplace_back();
+        for (epiU32 bit = 1; bit < gfxQueueType_MAX; bit = bit << 1)
+        {
+            const gfxQueueType type = static_cast<gfxQueueType>(bit);
+            if ((type & queueTypeMaskLeft) == 0)
+            {
+                continue;
+            }
+
+            queueTypeMaskLeft ^= bit;
+
+            ++availableQueueTypesOnFamily;
+
+            // TODO: prioritize via arguments
+            epiFloat priority = 0.0f;
+            switch (type)
+            {
+            case gfxQueueType_Graphics: priority = 1.0f; break;
+            case gfxQueueType_Compute: priority = 1.0f; break;
+            case gfxQueueType_Transfer: priority = 0.8f; break;
+            case gfxQueueType_SparseBinding: priority = 0.3f; break;
+            case gfxQueueType_Protected: priority = 0.3f; break;
+            default: epiAssert(!"Unhandled case!");
+            }
+            queuePriorities.push_back(priority);
+        }
+
+        if (availableQueueTypesOnFamily == 0)
         {
             continue;
         }
 
+        if (presentSupportRequiredLeft && queueFamily->IsPresentSupported())
+        {
+            presentSupportRequiredLeft = false;
+        }
+
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueCreateInfo.queueCount = 1;
-
-        // TODO: provide `queuePriority` through parameters
-        switch (family)
-        {
-        case gfxQueueFamily_Graphics:
-        {
-            epiAssert(queueFamilyIndices.FamilyGraphics.has_value());
-            const epiFloat queuePriority = 1.0f;
-            queueCreateInfo.queueFamilyIndex = queueFamilyIndices.FamilyGraphics.value();
-            queueCreateInfo.pQueuePriorities = &queuePriority;
-        } break;
-        case gfxQueueFamily_Compute:
-        {
-            epiAssert(queueFamilyIndices.FamilyCompute.has_value());
-            const epiFloat queuePriority = 0.8f;
-            queueCreateInfo.queueFamilyIndex = queueFamilyIndices.FamilyCompute.value();
-            queueCreateInfo.pQueuePriorities = &queuePriority;
-        } break;
-        case gfxQueueFamily_Transfer:
-        {
-            epiAssert(queueFamilyIndices.FamilyTransfer.has_value());
-            const epiFloat queuePriority = 0.7f;
-            queueCreateInfo.queueFamilyIndex = queueFamilyIndices.FamilyTransfer.value();
-            queueCreateInfo.pQueuePriorities = &queuePriority;
-        } break;
-        case gfxQueueFamily_SparseBinding:
-        {
-            epiAssert(queueFamilyIndices.FamilySparseBinding.has_value());
-            const epiFloat queuePriority = 0.6f;
-            queueCreateInfo.queueFamilyIndex = queueFamilyIndices.FamilySparseBinding.value();
-            queueCreateInfo.pQueuePriorities = &queuePriority;
-        } break;
-        case gfxQueueFamily_Protected:
-        {
-            epiAssert(queueFamilyIndices.FamilyProtected.has_value());
-            const epiFloat queuePriority = 0.5f;
-            queueCreateInfo.queueFamilyIndex = queueFamilyIndices.FamilyProtected.value();
-            queueCreateInfo.pQueuePriorities = &queuePriority;
-        } break;
-        case gfxQueueFamily_Presentation:
-        {
-            epiAssert(queueFamilyIndices.FamilyPresentation.has_value());
-            const epiFloat queuePriority = 1.0f;
-            queueCreateInfo.queueFamilyIndex = queueFamilyIndices.FamilyPresentation.value();
-            queueCreateInfo.pQueuePriorities = &queuePriority;
-        } break;
-        default: epiAssert(!"Unhandled case!");
-        }
+        queueCreateInfo.queueCount = availableQueueTypesOnFamily;
+        queueCreateInfo.queueFamilyIndex = static_cast<gfxQueueFamilyImplVK*>(queueFamily)->GetIndex();
+        queueCreateInfo.pQueuePriorities = queuePriorities.data();
 
         queueCreateInfos.push_back(queueCreateInfo);
     }
@@ -109,7 +97,7 @@ gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, 
     for (epiU32 bit = 1; bit < gfxPhysicalDeviceExtension_MAX; bit = bit << 1)
     {
         const gfxPhysicalDeviceExtension extension = static_cast<gfxPhysicalDeviceExtension>(bit);
-        if (extension & extensionMask == 0)
+        if ((extension & extensionMask) == 0)
         {
             continue;
         }
@@ -125,50 +113,6 @@ gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, 
 
     const VkResult resultCreateDevice = vkCreateDevice(physicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice);
     epiAssert(resultCreateDevice == VK_SUCCESS);
-
-    for (epiU32 bit = 1; bit < gfxQueueFamily_MAX; bit = bit << 1)
-    {
-        const gfxQueueFamily family = static_cast<gfxQueueFamily>(bit);
-        if (family & queueFamilyMask == 0)
-        {
-            continue;
-        }
-
-        switch (family)
-        {
-        case gfxQueueFamily_Graphics:
-        {
-            epiAssert(queueFamilyIndices.FamilyGraphics.has_value());
-            m_QueueGraphics = std::make_unique<gfxQueueImplVK>(*this, queueFamilyIndices.FamilyGraphics.value());
-        } break;
-        case gfxQueueFamily_Compute:
-        {
-            epiAssert(queueFamilyIndices.FamilyCompute.has_value());
-            m_QueueCompute = std::make_unique<gfxQueueImplVK>(*this, queueFamilyIndices.FamilyCompute.value());
-        } break;
-        case gfxQueueFamily_Transfer:
-        {
-            epiAssert(queueFamilyIndices.FamilyTransfer.has_value());
-            m_QueueCompute = std::make_unique<gfxQueueImplVK>(*this, queueFamilyIndices.FamilyTransfer.value());
-        } break;
-        case gfxQueueFamily_SparseBinding:
-        {
-            epiAssert(queueFamilyIndices.FamilySparseBinding.has_value());
-            m_QueueSparseBinding = std::make_unique<gfxQueueImplVK>(*this, queueFamilyIndices.FamilySparseBinding.value());
-        } break;
-        case gfxQueueFamily_Protected:
-        {
-            epiAssert(queueFamilyIndices.FamilyProtected.has_value());
-            m_QueueProtected = std::make_unique<gfxQueueImplVK>(*this, queueFamilyIndices.FamilyProtected.value());
-        } break;
-        case gfxQueueFamily_Presentation:
-        {
-            epiAssert(queueFamilyIndices.FamilyPresentation.has_value());
-            m_QueuePresentation = std::make_unique<gfxQueueImplVK>(*this, queueFamilyIndices.FamilyPresentation.value());
-        } break;
-        default: epiAssert(!"Unhandled case!");
-        }
-    }
 }
 
 gfxDeviceImplVK::~gfxDeviceImplVK()
@@ -177,41 +121,6 @@ gfxDeviceImplVK::~gfxDeviceImplVK()
     {
         vkDestroyDevice(m_VkDevice, nullptr);
     }
-}
-
-gfxQueueImpl* gfxDeviceImplVK::GetQueue(gfxQueueFamily family) const
-{
-    gfxQueueImplVK* queue = nullptr;
-
-    // TODO: check whether family is only single value
-    if (family & gfxQueueFamily_Graphics)
-    {
-        queue = m_QueueGraphics.get();
-    }
-    else if (family & gfxQueueFamily_Compute)
-    {
-        queue = m_QueueCompute.get();
-    }
-    else if (family & gfxQueueFamily_Transfer)
-    {
-        queue = m_QueueTransfer.get();
-    }
-    else if (family & gfxQueueFamily_SparseBinding)
-    {
-        queue = m_QueueSparseBinding.get();
-    }
-    else if (family & gfxQueueFamily_Protected)
-    {
-        queue = m_QueueProtected.get();
-    }
-    else if (family & gfxQueueFamily_Presentation)
-    {
-        queue = m_QueuePresentation.get();
-    }
-
-    epiAssert(queue != nullptr);
-
-    return queue;
 }
 
 VkDevice gfxDeviceImplVK::GetVkDevice() const

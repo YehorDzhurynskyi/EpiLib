@@ -120,18 +120,17 @@ EPI_GENREGION_BEGIN(gfxPhysicalDeviceFeature)
 EPI_GENREGION_END(gfxPhysicalDeviceFeature)
 };
 
-enum gfxQueueFamily : epiS32
+enum gfxQueueType : epiS32
 {
-EPI_GENREGION_BEGIN(gfxQueueFamily)
-    gfxQueueFamily_Graphics = (1 << 0),
-    gfxQueueFamily_Compute = (1 << 1),
-    gfxQueueFamily_Transfer = (1 << 2),
-    gfxQueueFamily_SparseBinding = (1 << 3),
-    gfxQueueFamily_Protected = (1 << 4),
-    gfxQueueFamily_Presentation = (1 << 5),
-    gfxQueueFamily_MAX = (1 << 6),
-    gfxQueueFamily_ALL = gfxQueueFamily_Graphics | gfxQueueFamily_Compute | gfxQueueFamily_Transfer | gfxQueueFamily_SparseBinding | gfxQueueFamily_Protected | gfxQueueFamily_Presentation
-EPI_GENREGION_END(gfxQueueFamily)
+EPI_GENREGION_BEGIN(gfxQueueType)
+    gfxQueueType_Graphics = (1 << 0),
+    gfxQueueType_Compute = (1 << 1),
+    gfxQueueType_Transfer = (1 << 2),
+    gfxQueueType_SparseBinding = (1 << 3),
+    gfxQueueType_Protected = (1 << 4),
+    gfxQueueType_MAX = (1 << 5),
+    gfxQueueType_ALL = gfxQueueType_Graphics | gfxQueueType_Compute | gfxQueueType_Transfer | gfxQueueType_SparseBinding | gfxQueueType_Protected
+EPI_GENREGION_END(gfxQueueType)
 };
 
 enum gfxDriverExtension : epiS32

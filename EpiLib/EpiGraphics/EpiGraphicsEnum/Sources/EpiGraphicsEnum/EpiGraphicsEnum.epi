@@ -110,14 +110,13 @@ enum gfxPhysicalDeviceExtension
 };
 
 [FlagMask]
-enum gfxQueueFamily
+enum gfxQueueType
 {
     Graphics,
     Compute,
     Transfer,
     SparseBinding,
     Protected,
-    Presentation,
     MAX,
-    ALL = Graphics | Compute | Transfer | SparseBinding | Protected | Presentation
+    ALL = Graphics | Compute | Transfer | SparseBinding | Protected
 };

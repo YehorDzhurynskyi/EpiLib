@@ -204,6 +204,16 @@ public:
         m_Vector.push_back(std::forward<T&&>(value));
     }
 
+    T& back()
+    {
+        return m_Vector.back();
+    }
+
+    const T& back() const
+    {
+        return m_Vector.back();
+    }
+
 protected:
     std::vector<T> m_Vector;
 };

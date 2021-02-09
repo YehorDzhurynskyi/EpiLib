@@ -168,12 +168,12 @@ gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
     for (epiU32 bit = 1; bit < gfxDriverExtension_MAX; bit = bit << 1)
     {
         const gfxDriverExtension extension = static_cast<gfxDriverExtension>(bit);
-        if (extension & extensionMaskRequired == 0)
+        if ((extension & extensionMaskRequired) == 0)
         {
             continue;
         }
 
-        if (extension & m_ExtensionMaskSupported == 0)
+        if ((extension & m_ExtensionMaskSupported) == 0)
         {
             // TODO: get string representation
             epiLogFatal("Required Vulkan intance extension=`{}` is not supported!", extension);
@@ -205,6 +205,18 @@ gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
 #endif // EPI_BUILD_DEBUG
 
     m_Surface = std::make_unique<gfxSurfaceImplVK>(m_VkInstance);
+
+    epiU32 deviceCount = 0;
+    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
+    epiAssert(deviceCount != 0);
+
+    std::vector<VkPhysicalDevice> vkDevices(deviceCount);
+    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, vkDevices.data());
+
+    for (const auto& vkDevice : vkDevices)
+    {
+        m_PhysicalDevices.push_back(new gfxPhysicalDeviceImplVK(vkDevice, *m_Surface));
+    }
 }
 
 gfxDriverImplVK::~gfxDriverImplVK()
@@ -222,18 +234,6 @@ gfxDriverImplVK::~gfxDriverImplVK()
     if (m_VkInstance != VK_NULL_HANDLE)
     {
         vkDestroyInstance(m_VkInstance, nullptr);
-    }
-
-    epiU32 deviceCount = 0;
-    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
-    epiAssert(deviceCount != 0);
-
-    std::vector<VkPhysicalDevice> vkDevices(deviceCount);
-    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, vkDevices.data());
-
-    for (const auto& vkDevice : vkDevices)
-    {
-        m_PhysicalDevices.push_back(new gfxPhysicalDeviceImplVK(vkDevice, *m_Surface));
     }
 }
 

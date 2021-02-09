@@ -2,7 +2,9 @@
 
 #include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
 
-#include <vulkan/vulkan.hpp>
+#include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
+
+struct VkDevice_T;
 
 EPI_NAMESPACE_BEGIN()
 
@@ -10,29 +12,22 @@ namespace internalgfx
 {
 
 class gfxPhysicalDeviceImplVK;
-class gfxQueueImplVK;
 class gfxDeviceImplVK : public gfxDeviceImpl
 {
 public:
-    gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, gfxQueueFamily queueFamilyMask, gfxPhysicalDeviceExtension extensionMask);
+    gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired);
     gfxDeviceImplVK(const gfxDeviceImplVK& rhs) = delete;
     gfxDeviceImplVK& operator=(const gfxDeviceImplVK& rhs) = delete;
     gfxDeviceImplVK(gfxDeviceImplVK&& rhs) = default;
     gfxDeviceImplVK& operator=(gfxDeviceImplVK&& rhs) = default;
     ~gfxDeviceImplVK() override;
 
-    gfxQueueImpl* GetQueue(gfxQueueFamily family) const override;
+    gfxQueueImpl* CreateQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const override;
 
-    VkDevice GetVkDevice() const;
+    VkDevice_T* GetVkDevice() const;
 
 protected:
-    VkDevice m_VkDevice{VK_NULL_HANDLE};
-    std::unique_ptr<gfxQueueImplVK> m_QueueGraphics;
-    std::unique_ptr<gfxQueueImplVK> m_QueueCompute;
-    std::unique_ptr<gfxQueueImplVK> m_QueueTransfer;
-    std::unique_ptr<gfxQueueImplVK> m_QueueSparseBinding;
-    std::unique_ptr<gfxQueueImplVK> m_QueueProtected;
-    std::unique_ptr<gfxQueueImplVK> m_QueuePresentation;
+    VkDevice_T* m_VkDevice{nullptr};
 };
 
 } // namespace internalgfx
