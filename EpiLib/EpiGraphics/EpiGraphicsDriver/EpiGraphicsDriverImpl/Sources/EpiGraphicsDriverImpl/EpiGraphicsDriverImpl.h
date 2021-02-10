@@ -17,7 +17,8 @@ public:
     gfxQueueImpl& operator=(gfxQueueImpl&& rhs) = default;
     virtual ~gfxQueueImpl() = default;
 
-    virtual gfxQueueType Type() const = 0;
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+    virtual epiBool IsPresentSupported() const = 0;
 };
 
 class gfxQueueFamilyImpl
@@ -46,7 +47,7 @@ public:
     gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
     virtual ~gfxDeviceImpl() = default;
 
-    virtual gfxQueueImpl* CreateQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const = 0;
+    virtual gfxQueueImpl* GetQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const = 0;
 };
 
 class gfxPhysicalDeviceImpl
@@ -64,6 +65,7 @@ public:
 
     virtual gfxDeviceImpl* CreateDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired) const = 0;
 
+    virtual epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const = 0;
     virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
     virtual epiBool IsPresentSupported() const = 0;
@@ -89,8 +91,8 @@ public:
 
     virtual const epiPtrArray<gfxPhysicalDeviceImpl>& GetPhysicalDevices() const = 0;
 
-    virtual const epiBool IsExtensionsSupported(gfxDriverExtension mask) const = 0;
-    virtual const epiBool IsExtensionsEnabled(gfxDriverExtension mask) const = 0;
+    virtual epiBool IsExtensionsSupported(gfxDriverExtension mask) const = 0;
+    virtual epiBool IsExtensionsEnabled(gfxDriverExtension mask) const = 0;
 };
 
 class gfxVertexArrayImpl

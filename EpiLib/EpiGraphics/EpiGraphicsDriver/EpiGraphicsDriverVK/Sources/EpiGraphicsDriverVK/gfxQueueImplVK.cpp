@@ -10,36 +10,40 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-gfxQueueImplVK::gfxQueueImplVK(const gfxDeviceImplVK& device, gfxQueueType type, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex)
-    : m_Type(type)
+gfxQueueImplVK::gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex)
+    : m_QueueFamily{&queueFamily}
 {
-    vkGetDeviceQueue(device.GetVkDevice(), queueFamily.GetIndex(), queueIndex, &m_VkQueue);
+    vkGetDeviceQueue(device.GetVkDevice(), m_QueueFamily->GetIndex(), queueIndex, &m_VkQueue);
 }
 
 gfxQueueImplVK::gfxQueueImplVK(gfxQueueImplVK&& rhs)
 {
     m_VkQueue = rhs.m_VkQueue;
-    m_Type = rhs.m_Type;
+    m_QueueFamily = rhs.m_QueueFamily;
 
     rhs.m_VkQueue = nullptr;
-    rhs.m_Type = static_cast<gfxQueueType>(0);
+    rhs.m_QueueFamily = nullptr;
 }
 
 gfxQueueImplVK& gfxQueueImplVK::operator=(gfxQueueImplVK&& rhs)
 {
     m_VkQueue = rhs.m_VkQueue;
-    m_Type = rhs.m_Type;
+    m_QueueFamily = rhs.m_QueueFamily;
 
     rhs.m_VkQueue = nullptr;
-    rhs.m_Type = static_cast<gfxQueueType>(0);
+    rhs.m_QueueFamily = nullptr;
 
     return *this;
 }
 
-gfxQueueType gfxQueueImplVK::Type() const
+epiBool gfxQueueImplVK::IsQueueTypeSupported(gfxQueueType mask) const
 {
-    epiAssert(epiBitCount(m_Type) == 1);
-    return m_Type;
+    return m_QueueFamily->IsQueueTypeSupported(mask);
+}
+
+epiBool gfxQueueImplVK::IsPresentSupported() const
+{
+    return m_QueueFamily->IsPresentSupported();
 }
 
 } // namespace internalgfx

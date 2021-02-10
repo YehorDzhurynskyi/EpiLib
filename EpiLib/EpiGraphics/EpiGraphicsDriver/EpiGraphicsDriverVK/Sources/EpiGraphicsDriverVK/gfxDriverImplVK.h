@@ -30,8 +30,8 @@ public:
 
     const epiPtrArray<gfxPhysicalDeviceImpl>& GetPhysicalDevices() const override;
 
-    const epiBool IsExtensionsSupported(gfxDriverExtension mask) const override;
-    const epiBool IsExtensionsEnabled(gfxDriverExtension mask) const override;
+    epiBool IsExtensionsSupported(gfxDriverExtension mask) const override;
+    epiBool IsExtensionsEnabled(gfxDriverExtension mask) const override;
 
     VkInstance_T* GetVkInstance() const;
 

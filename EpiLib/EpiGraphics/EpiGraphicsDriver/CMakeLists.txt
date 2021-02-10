@@ -15,6 +15,9 @@ add_library(EpiGraphicsDriver
     Sources/EpiGraphicsDriver/gfxDevice.epi
     Sources/EpiGraphicsDriver/gfxDevice.h
     Sources/EpiGraphicsDriver/gfxDevice.cpp
+    Sources/EpiGraphicsDriver/gfxQueue.epi
+    Sources/EpiGraphicsDriver/gfxQueue.h
+    Sources/EpiGraphicsDriver/gfxQueue.cpp
 )
 get_target_property(EpiGraphicsDriver_SOURCES EpiGraphicsDriver SOURCES)
 epi_pack_sources(${EpiGraphicsDriver_SOURCES})

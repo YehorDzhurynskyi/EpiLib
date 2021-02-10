@@ -1,3 +1,5 @@
 class gfxDevice
 {
+    [ReadOnly]
+    epiArray<gfxQueue> Queues;
 };

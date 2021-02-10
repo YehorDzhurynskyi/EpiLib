@@ -242,12 +242,12 @@ const epiPtrArray<gfxPhysicalDeviceImpl>& gfxDriverImplVK::GetPhysicalDevices() 
     return m_PhysicalDevices;
 }
 
-const epiBool gfxDriverImplVK::IsExtensionsSupported(gfxDriverExtension mask) const
+epiBool gfxDriverImplVK::IsExtensionsSupported(gfxDriverExtension mask) const
 {
     return (m_ExtensionMaskSupported & mask) == mask;
 }
 
-const epiBool gfxDriverImplVK::IsExtensionsEnabled(gfxDriverExtension mask) const
+epiBool gfxDriverImplVK::IsExtensionsEnabled(gfxDriverExtension mask) const
 {
     return (m_ExtensionMaskEnabled & mask) == mask;
 }

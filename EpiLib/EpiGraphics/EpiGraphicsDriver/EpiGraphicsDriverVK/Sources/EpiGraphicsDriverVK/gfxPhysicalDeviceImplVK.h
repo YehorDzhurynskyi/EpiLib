@@ -25,6 +25,7 @@ public:
 
     gfxDeviceImpl* CreateDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired) const override;
 
+    epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const override;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
     epiBool IsPresentSupported() const override;
@@ -35,6 +36,7 @@ public:
 
 protected:
     VkPhysicalDevice m_VkDevice{VK_NULL_HANDLE};
+    gfxPhysicalDeviceExtension m_ExtensionMaskSupported{0};
     epiString m_Name{};
     gfxPhysicalDeviceType m_Type{gfxPhysicalDeviceType::None};
     epiBool m_Features[static_cast<epiSize_t>(gfxPhysicalDeviceFeature::COUNT)];

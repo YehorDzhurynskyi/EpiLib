@@ -4,6 +4,37 @@
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 
+namespace
+{
+
+EPI_NAMESPACE_USING()
+
+gfxPhysicalDeviceExtension SupportedPhysicalDeviceExtensionMask(VkPhysicalDevice device)
+{
+    epiU32 supportedExtensionsCount = 0;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &supportedExtensionsCount, nullptr);
+
+    std::vector<VkExtensionProperties> supportedExtensions(supportedExtensionsCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &supportedExtensionsCount, supportedExtensions.data());
+
+    epiU64 mask = 0;
+    for (const auto& extension : supportedExtensions)
+    {
+        if (strcmp(extension.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0)
+        {
+            mask |= gfxDriverExtension_Surface;
+        }
+        else
+        {
+            epiLogWarn("Unrecognized Vulkan instance extension=`{}`!", extension.extensionName);
+        }
+    }
+
+    return static_cast<gfxPhysicalDeviceExtension>(mask);
+}
+
+}
+
 EPI_NAMESPACE_BEGIN()
 
 namespace internalgfx
@@ -43,6 +74,8 @@ gfxPhysicalDeviceImplVK::gfxPhysicalDeviceImplVK(VkPhysicalDevice device, const 
         default: epiAssert(!"Unhandled case");
         }
     }
+
+    m_ExtensionMaskSupported = SupportedPhysicalDeviceExtensionMask(m_VkDevice);
 
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(m_VkDevice, &queueFamilyCount, nullptr);
@@ -102,7 +135,21 @@ gfxPhysicalDeviceType gfxPhysicalDeviceImplVK::GetType() const
 
 gfxDeviceImpl* gfxPhysicalDeviceImplVK::CreateDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired) const
 {
+    const epiBool isSuitable = IsQueueTypeSupported(queueTypeMask) &&
+                               IsExtensionsSupported(extensionMask) &&
+                               (!presentSupportRequired || IsPresentSupported());
+
+    if (!isSuitable)
+    {
+        return nullptr;
+    }
+
     return new gfxDeviceImplVK(*this, queueTypeMask, extensionMask, presentSupportRequired);
+}
+
+epiBool gfxPhysicalDeviceImplVK::IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const
+{
+    return (m_ExtensionMaskSupported & mask) == mask;
 }
 
 epiBool gfxPhysicalDeviceImplVK::IsFeatureSupported(gfxPhysicalDeviceFeature feature) const

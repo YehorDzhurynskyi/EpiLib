@@ -6,6 +6,10 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
+#include "EpiGraphicsDriver/gfxQueue.h"
+
+#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
+
 EPI_NAMESPACE_BEGIN()
 
 namespace internalgfx
@@ -26,8 +30,12 @@ public:
 
     enum gfxDevice_PIDs
     {
-        PID_COUNT = 0
+        PID_Queues = 0xc86607a0,
+        PID_COUNT = 1
     };
+
+protected:
+    epiArray<gfxQueue> m_Queues{};
 
 EPI_GENREGION_END(gfxDevice)
 
@@ -39,6 +47,8 @@ public:
     gfxDevice(gfxDevice&& rhs);
     gfxDevice& operator=(gfxDevice&& rhs);
     ~gfxDevice();
+
+    gfxQueue* GetQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired);
 
 protected:
     internalgfx::gfxDeviceImpl* m_Impl{nullptr};

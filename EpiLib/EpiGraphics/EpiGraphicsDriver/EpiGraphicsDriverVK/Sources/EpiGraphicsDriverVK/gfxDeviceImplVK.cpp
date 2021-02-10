@@ -7,7 +7,9 @@
 namespace
 {
 
-const epiChar* ExtensionNameOf(epi::gfxPhysicalDeviceExtension extension)
+EPI_NAMESPACE_USING()
+
+const epiChar* ExtensionNameOf(gfxPhysicalDeviceExtension extension)
 {
     // TODO: check whether single bit provided
     static constexpr const epiChar* kNames[]
@@ -15,7 +17,7 @@ const epiChar* ExtensionNameOf(epi::gfxPhysicalDeviceExtension extension)
         "VK_KHR_swapchain"
     };
 
-    static_assert(epiArrLen(kNames) == epiBitCount(epi::gfxPhysicalDeviceExtension_ALL));
+    static_assert(epiArrLen(kNames) == epiBitCount(gfxPhysicalDeviceExtension_ALL));
 
     const epiU32 at = epiBitPositionOf(extension);
     epiAssert(at < epiArrLen(kNames));
@@ -31,8 +33,11 @@ namespace internalgfx
 {
 
 gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired)
+    : m_PhysicalDevice{physicalDevice}
 {
-    epiAssert(physicalDevice.IsQueueTypeSupported(queueTypeMask));
+    epiAssert(m_PhysicalDevice.IsQueueTypeSupported(queueTypeMask));
+    epiAssert(m_PhysicalDevice.IsExtensionsSupported(extensionMask));
+    epiAssert(!presentSupportRequired || m_PhysicalDevice.IsPresentSupported());
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -41,7 +46,7 @@ gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, 
     epiBool presentSupportRequiredLeft = presentSupportRequired;
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::vector<std::vector<epiFloat>> queuePrioritiesVec;
-    for (const auto& queueFamily : physicalDevice.GetQueueFamilies())
+    for (const auto& queueFamily : m_PhysicalDevice.GetQueueFamilies())
     {
         epiU32 availableQueueTypesOnFamily = 0;
         std::vector<epiFloat>& queuePriorities = queuePrioritiesVec.emplace_back();
@@ -56,19 +61,6 @@ gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, 
             queueTypeMaskLeft ^= bit;
 
             ++availableQueueTypesOnFamily;
-
-            // TODO: prioritize via arguments
-            epiFloat priority = 0.0f;
-            switch (type)
-            {
-            case gfxQueueType_Graphics: priority = 1.0f; break;
-            case gfxQueueType_Compute: priority = 1.0f; break;
-            case gfxQueueType_Transfer: priority = 0.8f; break;
-            case gfxQueueType_SparseBinding: priority = 0.3f; break;
-            case gfxQueueType_Protected: priority = 0.3f; break;
-            default: epiAssert(!"Unhandled case!");
-            }
-            queuePriorities.push_back(priority);
         }
 
         if (availableQueueTypesOnFamily == 0)
@@ -81,9 +73,13 @@ gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, 
             presentSupportRequiredLeft = false;
         }
 
+        // TODO: prioritize via arguments
+        epiFloat priority = 1.0f;
+        queuePriorities.push_back(priority);
+
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueCreateInfo.queueCount = availableQueueTypesOnFamily;
+        queueCreateInfo.queueCount = 1;
         queueCreateInfo.queueFamilyIndex = static_cast<gfxQueueFamilyImplVK*>(queueFamily)->GetIndex();
         queueCreateInfo.pQueuePriorities = queuePriorities.data();
 
@@ -92,6 +88,9 @@ gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, 
 
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.queueCreateInfoCount = queueCreateInfos.size();
+
+    epiAssert(queueTypeMaskLeft == 0);
+    epiAssert(presentSupportRequiredLeft == false);
 
     std::vector<const epiChar*> extensions;
     for (epiU32 bit = 1; bit < gfxPhysicalDeviceExtension_MAX; bit = bit << 1)
@@ -111,8 +110,18 @@ gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, 
     VkPhysicalDeviceFeatures deviceFeatures{};
     createInfo.pEnabledFeatures = &deviceFeatures;
 
-    const VkResult resultCreateDevice = vkCreateDevice(physicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice);
+    const VkResult resultCreateDevice = vkCreateDevice(m_PhysicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice);
     epiAssert(resultCreateDevice == VK_SUCCESS);
+
+    const epiPtrArray<gfxQueueFamilyImpl>& queueFamilies = m_PhysicalDevice.GetQueueFamilies();
+    for (const auto& queueInfo : queueCreateInfos)
+    {
+        const gfxQueueFamilyImplVK* queueFamily = static_cast<const gfxQueueFamilyImplVK*>(queueFamilies[queueInfo.queueFamilyIndex]);
+        for (epiU32 queueIndex = 0; queueIndex < queueInfo.queueCount; ++queueIndex)
+        {
+            m_Queues.push_back(new gfxQueueImplVK(*this, *queueFamily, queueIndex));
+        }
+    }
 }
 
 gfxDeviceImplVK::~gfxDeviceImplVK()
@@ -121,6 +130,16 @@ gfxDeviceImplVK::~gfxDeviceImplVK()
     {
         vkDestroyDevice(m_VkDevice, nullptr);
     }
+}
+
+gfxQueueImpl* gfxDeviceImplVK::GetQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const
+{
+    auto it = std::find_if(m_Queues.begin(), m_Queues.end(), [queueTypeMask, presentSupportRequired](const gfxQueueImpl* queue)
+    {
+        return queue->IsQueueTypeSupported(queueTypeMask) && (!presentSupportRequired || queue->IsPresentSupported());
+    });
+
+    return it != m_Queues.end() ? *it : nullptr;
 }
 
 VkDevice gfxDeviceImplVK::GetVkDevice() const

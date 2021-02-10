@@ -22,12 +22,15 @@ public:
     gfxDeviceImplVK& operator=(gfxDeviceImplVK&& rhs) = default;
     ~gfxDeviceImplVK() override;
 
-    gfxQueueImpl* CreateQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const override;
+    gfxQueueImpl* GetQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const override;
 
     VkDevice_T* GetVkDevice() const;
 
 protected:
     VkDevice_T* m_VkDevice{nullptr};
+
+    const gfxPhysicalDeviceImplVK& m_PhysicalDevice;
+    epiPtrArray<gfxQueueImpl> m_Queues;
 };
 
 } // namespace internalgfx

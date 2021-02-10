@@ -56,6 +56,9 @@ int main(int argc, char* argv[])
     epi::gfxDevice* device = dev.AddDevice(epi::gfxQueueType_Graphics, epi::gfxPhysicalDeviceExtension_SwapChain, kIsPresentSupportRequired);
     epiAssert(device != nullptr);
 
+    epi::gfxQueue* queue = device->GetQueue(epi::gfxQueueType_Graphics, kIsPresentSupportRequired);
+    epiAssert(queue != nullptr);
+
     wxEntryStart(argc, argv);
     wxTheApp->CallOnInit();
     wxTheApp->OnRun();
