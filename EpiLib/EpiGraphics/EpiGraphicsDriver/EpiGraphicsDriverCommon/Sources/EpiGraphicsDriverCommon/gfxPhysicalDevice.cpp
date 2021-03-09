@@ -1,9 +1,9 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriver/gfxPhysicalDevice.h"
-#include "EpiGraphicsDriver/gfxPhysicalDevice.cxx"
+#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
+#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -31,18 +31,17 @@ gfxPhysicalDevice::~gfxPhysicalDevice()
     delete m_Impl;
 }
 
-gfxDevice* gfxPhysicalDevice::AddDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired)
+std::optional<gfxDevice> gfxPhysicalDevice::CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
+                                                         gfxPhysicalDeviceExtension extensionMask)
 {
-    internalgfx::gfxDeviceImpl* impl = m_Impl->CreateDevice(queueTypeMask, extensionMask, presentSupportRequired);
-    if (impl == nullptr)
+    std::optional<gfxDevice> device;
+
+    if (std::unique_ptr<internalgfx::gfxDeviceImpl> impl = m_Impl->CreateDevice(queueDescriptorList, extensionMask))
     {
-        return nullptr;
+        device = gfxDevice(impl.release());
     }
 
-    gfxDevice dev(impl);
-    m_Devices.push_back(std::move(dev));
-
-    return &m_Devices.back();
+    return device;
 }
 
 epiString gfxPhysicalDevice::GetName_Callback() const
@@ -53,11 +52,6 @@ epiString gfxPhysicalDevice::GetName_Callback() const
 gfxPhysicalDeviceType gfxPhysicalDevice::GetType_Callback() const
 {
     return m_Impl->GetType();
-}
-
-epiBool gfxPhysicalDevice::GetIsPresentSupported_Callback() const
-{
-    return m_Impl->IsPresentSupported();
 }
 
 epiBool gfxPhysicalDevice::IsFeatureSupported(gfxPhysicalDeviceFeature feature) const

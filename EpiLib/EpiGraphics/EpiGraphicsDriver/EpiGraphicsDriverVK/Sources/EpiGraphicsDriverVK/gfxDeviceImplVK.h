@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
+#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
 #include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
 
@@ -15,22 +15,24 @@ class gfxPhysicalDeviceImplVK;
 class gfxDeviceImplVK : public gfxDeviceImpl
 {
 public:
-    gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice, gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired);
+    gfxDeviceImplVK() = default;
     gfxDeviceImplVK(const gfxDeviceImplVK& rhs) = delete;
     gfxDeviceImplVK& operator=(const gfxDeviceImplVK& rhs) = delete;
     gfxDeviceImplVK(gfxDeviceImplVK&& rhs) = default;
     gfxDeviceImplVK& operator=(gfxDeviceImplVK&& rhs) = default;
     ~gfxDeviceImplVK() override;
 
-    gfxQueueImpl* GetQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const override;
+    epiBool Init(const gfxPhysicalDeviceImplVK& physicalDevice,
+                 gfxQueueDescriptorList& queueDescriptorList,
+                 gfxPhysicalDeviceExtension extensionMask);
 
     VkDevice_T* GetVkDevice() const;
 
 protected:
     VkDevice_T* m_VkDevice{nullptr};
 
-    const gfxPhysicalDeviceImplVK& m_PhysicalDevice;
     epiPtrArray<gfxQueueImpl> m_Queues;
+    gfxPhysicalDeviceExtension m_ExtensionMaskEnabled{0};
 };
 
 } // namespace internalgfx

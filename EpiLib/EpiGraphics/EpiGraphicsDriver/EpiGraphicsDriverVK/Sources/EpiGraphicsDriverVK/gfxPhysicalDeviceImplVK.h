@@ -1,8 +1,10 @@
 #pragma once
 
-#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
+#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
-#include <vulkan/vulkan.hpp>
+#include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
+
+struct VkPhysicalDevice_T;
 
 EPI_NAMESPACE_BEGIN()
 
@@ -13,34 +15,27 @@ class gfxSurfaceImplVK;
 class gfxPhysicalDeviceImplVK : public gfxPhysicalDeviceImpl
 {
 public:
-    gfxPhysicalDeviceImplVK(VkPhysicalDevice device, const gfxSurfaceImplVK& surface);
-    gfxPhysicalDeviceImplVK(const gfxPhysicalDeviceImplVK& rhs) = default;
-    gfxPhysicalDeviceImplVK& operator=(const gfxPhysicalDeviceImplVK& rhs) = default;
-    gfxPhysicalDeviceImplVK(gfxPhysicalDeviceImplVK&& rhs) = default;
-    gfxPhysicalDeviceImplVK& operator=(gfxPhysicalDeviceImplVK&& rhs) = default;
-    ~gfxPhysicalDeviceImplVK() override = default;
+    void Init(VkPhysicalDevice_T* device);
 
     epiString GetName() const override;
     gfxPhysicalDeviceType GetType() const override;
 
-    gfxDeviceImpl* CreateDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired) const override;
+    std::unique_ptr<gfxDeviceImpl> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
+                                                gfxPhysicalDeviceExtension extensionMask) const override;
 
+    epiBool IsPresentSupported(const gfxSurfaceImpl& surface) const override;
+    epiBool IsPresentSupported(const gfxSurfaceImpl& surface, const gfxQueueFamilyImpl& queueFamily) const override;
     epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const override;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
-    epiBool IsPresentSupported() const override;
 
-    const epiPtrArray<gfxQueueFamilyImpl>& GetQueueFamilies() const override;
+    const epiArray<gfxQueueFamilyImplVK>& GetQueueFamilies() const;
 
-    VkPhysicalDevice GetVkPhysicalDevice() const;
+    VkPhysicalDevice_T* GetVkPhysicalDevice() const;
 
 protected:
-    VkPhysicalDevice m_VkDevice{VK_NULL_HANDLE};
-    gfxPhysicalDeviceExtension m_ExtensionMaskSupported{0};
-    epiString m_Name{};
-    gfxPhysicalDeviceType m_Type{gfxPhysicalDeviceType::None};
-    epiBool m_Features[static_cast<epiSize_t>(gfxPhysicalDeviceFeature::COUNT)];
-    epiPtrArray<gfxQueueFamilyImpl> m_QueueFamilies;
+    VkPhysicalDevice_T* m_VkDevice{nullptr};
+    epiArray<gfxQueueFamilyImplVK> m_QueueFamilies;
 };
 
 } // namespace internalgfx

@@ -1,12 +1,12 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriver/gfxQueue.hxx"
+#include "EpiGraphicsDriverCommon/gfxQueue.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -15,7 +15,7 @@ namespace internalgfx
 
 class gfxQueueImpl;
 
-} // namespace internalgfx
+} // internalgfx
 
 class gfxQueue : public Object
 {
@@ -28,12 +28,12 @@ public:
 
     enum gfxQueue_PIDs
     {
-        PID_IsPresentSupported = 0xa555aead,
+        PID_Type = 0x2cecf817,
         PID_COUNT = 1
     };
 
 protected:
-    epiBool GetIsPresentSupported_Callback() const;
+    gfxQueueType GetType_Callback() const;
 
 EPI_GENREGION_END(gfxQueue)
 
@@ -45,8 +45,6 @@ public:
     gfxQueue(gfxQueue&& rhs);
     gfxQueue& operator=(gfxQueue&& rhs);
     ~gfxQueue();
-
-    epiBool IsQueueTypeSupported(gfxQueueType mask) const;
 
 protected:
     internalgfx::gfxQueueImpl* m_Impl{nullptr};

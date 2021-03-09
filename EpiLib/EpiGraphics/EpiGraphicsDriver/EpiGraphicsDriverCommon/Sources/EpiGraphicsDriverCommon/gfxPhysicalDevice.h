@@ -1,14 +1,15 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriver/gfxPhysicalDevice.hxx"
+#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphicsDriver/gfxDevice.h"
+#include "EpiGraphicsDriverCommon/gfxDevice.h"
 
-#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -30,20 +31,14 @@ public:
 
     enum gfxPhysicalDevice_PIDs
     {
-        PID_Devices = 0xdeba7706,
         PID_Name = 0xfe11d138,
         PID_Type = 0x2cecf817,
-        PID_IsPresentSupported = 0xa555aead,
-        PID_COUNT = 4
+        PID_COUNT = 2
     };
 
 protected:
     epiString GetName_Callback() const;
     gfxPhysicalDeviceType GetType_Callback() const;
-    epiBool GetIsPresentSupported_Callback() const;
-
-protected:
-    epiArray<gfxDevice> m_Devices{};
 
 EPI_GENREGION_END(gfxPhysicalDevice)
 
@@ -57,7 +52,8 @@ public:
     ~gfxPhysicalDevice();
 
 public:
-    gfxDevice* AddDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired);
+    std::optional<gfxDevice> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
+                                          gfxPhysicalDeviceExtension extensionMask);
 
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;

@@ -1,14 +1,13 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriver/gfxDevice.hxx"
+#include "EpiGraphicsDriverCommon/gfxDevice.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphicsDriver/gfxQueue.h"
-
-#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
+#include "EpiGraphicsDriverCommon/gfxQueue.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -30,25 +29,19 @@ public:
 
     enum gfxDevice_PIDs
     {
-        PID_Queues = 0xc86607a0,
-        PID_COUNT = 1
+        PID_COUNT = 0
     };
-
-protected:
-    epiArray<gfxQueue> m_Queues{};
 
 EPI_GENREGION_END(gfxDevice)
 
 public:
     gfxDevice() = default;
-    gfxDevice(internalgfx::gfxDeviceImpl* impl);
+    explicit gfxDevice(internalgfx::gfxDeviceImpl* impl);
     gfxDevice(const gfxDevice& rhs) = delete;
     gfxDevice& operator=(const gfxDevice& rhs) = delete;
     gfxDevice(gfxDevice&& rhs);
     gfxDevice& operator=(gfxDevice&& rhs);
     ~gfxDevice();
-
-    gfxQueue* GetQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired);
 
 protected:
     internalgfx::gfxDeviceImpl* m_Impl{nullptr};

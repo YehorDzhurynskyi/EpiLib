@@ -35,7 +35,7 @@ find_package(Vulkan REQUIRED FATAL_ERROR)
 
 target_link_libraries(EpiGraphicsDriverVK
     PRIVATE
-        EpiGraphicsDriverImpl
+        EpiGraphicsDriverCommon
         Vulkan::Vulkan
 )
 

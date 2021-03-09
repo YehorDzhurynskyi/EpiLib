@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EpiGraphicsDriverImpl/EpiGraphicsDriverImpl.h"
+#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
 struct VkQueue_T;
 
@@ -21,13 +21,12 @@ public:
     gfxQueueImplVK& operator=(gfxQueueImplVK&& rhs);
     ~gfxQueueImplVK() override = default;
 
+    gfxQueueType GetType() const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
-    epiBool IsPresentSupported() const override;
 
 protected:
     VkQueue_T* m_VkQueue{nullptr};
-
-    const gfxQueueFamilyImplVK* m_QueueFamily{nullptr};
+    gfxQueueType m_Type{0};
 };
 
 } // namespace internalgfx

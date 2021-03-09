@@ -1,14 +1,10 @@
 class gfxPhysicalDevice
 {
-    [ReadOnly]
-    epiArray<gfxDevice> Devices;
-
     [Virtual, ReadOnly]
     {
         [ReadCallback(SuppressRef=true)]
         epiString Name;
 
         gfxPhysicalDeviceType Type;
-        epiBool IsPresentSupported;
     }
 };

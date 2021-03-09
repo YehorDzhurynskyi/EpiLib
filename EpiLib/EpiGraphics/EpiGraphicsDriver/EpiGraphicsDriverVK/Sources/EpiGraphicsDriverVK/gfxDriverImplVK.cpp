@@ -1,7 +1,8 @@
 #include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 
-#include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
+
+#include <vulkan/vulkan.hpp>
 
 #ifdef EPI_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -92,18 +93,18 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
-                                 epiU32 apiVersionMinor,
-                                 epiU32 apiVersionPatch,
-                                 const epiChar* appName,
-                                 gfxDriverExtension extensionMaskRequired,
-                                 epiU32 appVersionMajor,
-                                 epiU32 appVersionMinor,
-                                 epiU32 appVersionPatch,
-                                 const epiChar* engineName,
-                                 epiU32 engineVersionMajor,
-                                 epiU32 engineVersionMinor,
-                                 epiU32 engineVersionPatch)
+void gfxDriverImplVK::Init(epiU32 apiVersionMajor,
+                           epiU32 apiVersionMinor,
+                           epiU32 apiVersionPatch,
+                           const epiChar* appName,
+                           gfxDriverExtension extensionMaskRequired,
+                           epiU32 appVersionMajor,
+                           epiU32 appVersionMinor,
+                           epiU32 appVersionPatch,
+                           const epiChar* engineName,
+                           epiU32 engineVersionMajor,
+                           epiU32 engineVersionMinor,
+                           epiU32 engineVersionPatch)
 {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -161,8 +162,6 @@ gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&createInfoDebugMessenger;
 #endif // EPI_BUILD_DEBUG
 
-    m_ExtensionMaskSupported = SupportedInstanceExtensionMask();
-
     epiS32 extensionMaskEnabled = 0;
     std::vector<const epiChar*> extensions;
     for (epiU32 bit = 1; bit < gfxDriverExtension_MAX; bit = bit << 1)
@@ -173,7 +172,7 @@ gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
             continue;
         }
 
-        if ((extension & m_ExtensionMaskSupported) == 0)
+        if (!IsExtensionsSupported(extension))
         {
             // TODO: get string representation
             epiLogFatal("Required Vulkan intance extension=`{}` is not supported!", extension);
@@ -203,20 +202,6 @@ gfxDriverImplVK::gfxDriverImplVK(epiU32 apiVersionMajor,
     VkResult resultCreateDebugMessenger = vkCreateDebugUtilsMessengerEXTFunc(m_VkInstance, &createInfoDebugMessenger, nullptr, &m_VKDebugMessenger);
     epiAssert(resultCreateDebugMessenger == VK_SUCCESS);
 #endif // EPI_BUILD_DEBUG
-
-    m_Surface = std::make_unique<gfxSurfaceImplVK>(m_VkInstance);
-
-    epiU32 deviceCount = 0;
-    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
-    epiAssert(deviceCount != 0);
-
-    std::vector<VkPhysicalDevice> vkDevices(deviceCount);
-    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, vkDevices.data());
-
-    for (const auto& vkDevice : vkDevices)
-    {
-        m_PhysicalDevices.push_back(new gfxPhysicalDeviceImplVK(vkDevice, *m_Surface));
-    }
 }
 
 gfxDriverImplVK::~gfxDriverImplVK()
@@ -237,14 +222,66 @@ gfxDriverImplVK::~gfxDriverImplVK()
     }
 }
 
-const epiPtrArray<gfxPhysicalDeviceImpl>& gfxDriverImplVK::GetPhysicalDevices() const
+std::unique_ptr<gfxSurfaceImpl> gfxDriverImplVK::CreateSurface(const gfxWindow& window)
 {
-    return m_PhysicalDevices;
+    return std::make_unique<gfxSurfaceImplVK>(m_VkInstance, window);
+}
+
+std::unique_ptr<gfxPhysicalDeviceImpl> gfxDriverImplVK::CreatePhysicalDevice(gfxPhysicalDeviceType deviceType,
+                                                                             gfxPhysicalDeviceExtension deviceExtensionMask,
+                                                                             gfxQueueType queueTypeMask,
+                                                                             const gfxPhysicalDeviceFeature* features,
+                                                                             size_t featureCount,
+                                                                             const gfxSurfaceImpl* targetSurface)
+{
+    epiU32 deviceCount = 0;
+    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
+    epiAssert(deviceCount != 0);
+
+    std::vector<VkPhysicalDevice> vkDevices(deviceCount);
+    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, vkDevices.data());
+
+    auto it = std::find_if(vkDevices.begin(),
+                           vkDevices.end(),
+                           [deviceType, deviceExtensionMask, queueTypeMask, features, featureCount, targetSurface](const VkPhysicalDevice& vkDevice) {
+        gfxPhysicalDeviceImplVK device;
+        device.Init(vkDevice);
+
+        epiBool isAppropriate = device.GetType() == deviceType &&
+                                device.IsExtensionsSupported(deviceExtensionMask) &&
+                                device.IsQueueTypeSupported(queueTypeMask);
+
+        if (!isAppropriate)
+        {
+            return false;
+        }
+
+        isAppropriate = std::all_of(features, features + featureCount, [&device](const gfxPhysicalDeviceFeature& feature) {
+            return device.IsFeatureSupported(feature);
+        });
+
+        if (!isAppropriate)
+        {
+            return false;
+        }
+
+        return targetSurface ? device.IsPresentSupported(*targetSurface) : true;
+    });
+
+    if (it == vkDevices.end())
+    {
+        return nullptr;
+    }
+
+    std::unique_ptr<gfxPhysicalDeviceImplVK> device = std::make_unique<gfxPhysicalDeviceImplVK>();
+    device->Init(*it);
+
+    return device;
 }
 
 epiBool gfxDriverImplVK::IsExtensionsSupported(gfxDriverExtension mask) const
 {
-    return (m_ExtensionMaskSupported & mask) == mask;
+    return (SupportedInstanceExtensionMask() & mask) == mask;
 }
 
 epiBool gfxDriverImplVK::IsExtensionsEnabled(gfxDriverExtension mask) const

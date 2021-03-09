@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsEnum/EpiGraphicsEnum.hxx"
+#include "EpiGraphicsDriverCommon/gfxEnum.hxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
@@ -128,8 +128,9 @@ EPI_GENREGION_BEGIN(gfxQueueType)
     gfxQueueType_Transfer = (1 << 2),
     gfxQueueType_SparseBinding = (1 << 3),
     gfxQueueType_Protected = (1 << 4),
-    gfxQueueType_MAX = (1 << 5),
-    gfxQueueType_ALL = gfxQueueType_Graphics | gfxQueueType_Compute | gfxQueueType_Transfer | gfxQueueType_SparseBinding | gfxQueueType_Protected
+    gfxQueueType_Present = (1 << 5),
+    gfxQueueType_MAX = (1 << 6),
+    gfxQueueType_ALL = gfxQueueType_Graphics | gfxQueueType_Compute | gfxQueueType_Transfer | gfxQueueType_SparseBinding | gfxQueueType_Protected | gfxQueueType_Present
 EPI_GENREGION_END(gfxQueueType)
 };
 

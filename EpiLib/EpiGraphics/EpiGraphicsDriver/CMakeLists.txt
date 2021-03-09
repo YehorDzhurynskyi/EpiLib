@@ -1,40 +1,8 @@
-project(EpiGraphicsDriver)
-
 option(EPI_GRAPHICS_DRIVER_GL "Enable OpenGL Graphics API support" ON)
 option(EPI_GRAPHICS_DRIVER_VK "Enable Vulkan Graphics API support" ON)
 
-add_subdirectory(EpiGraphicsDriverImpl)
-
-add_library(EpiGraphicsDriver
-    Sources/EpiGraphicsDriver/gfxDriver.epi
-    Sources/EpiGraphicsDriver/gfxDriver.h
-    Sources/EpiGraphicsDriver/gfxDriver.cpp
-    Sources/EpiGraphicsDriver/gfxPhysicalDevice.epi
-    Sources/EpiGraphicsDriver/gfxPhysicalDevice.h
-    Sources/EpiGraphicsDriver/gfxPhysicalDevice.cpp
-    Sources/EpiGraphicsDriver/gfxDevice.epi
-    Sources/EpiGraphicsDriver/gfxDevice.h
-    Sources/EpiGraphicsDriver/gfxDevice.cpp
-    Sources/EpiGraphicsDriver/gfxQueue.epi
-    Sources/EpiGraphicsDriver/gfxQueue.h
-    Sources/EpiGraphicsDriver/gfxQueue.cpp
-)
-get_target_property(EpiGraphicsDriver_SOURCES EpiGraphicsDriver SOURCES)
-epi_pack_sources(${EpiGraphicsDriver_SOURCES})
-
-target_include_directories(EpiGraphicsDriver
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
-)
-
-target_link_libraries(EpiGraphicsDriver
-    PUBLIC
-        EpiGraphicsEnum
-
-    PRIVATE
-        EpiGraphicsDriverImpl
-)
+add_subdirectory(EpiGraphicsDriverCommon)
+add_subdirectory(EpiGraphicsDriver)
 
 if (EPI_GRAPHICS_DRIVER_GL)
     find_package(OpenGL)
@@ -62,7 +30,3 @@ if (EPI_GRAPHICS_DRIVER_VK)
         endif()
     endif()
 endif()
-
-epi_module_register(EpiGraphicsDriver
-    FOLDER "EpiLib"
-)

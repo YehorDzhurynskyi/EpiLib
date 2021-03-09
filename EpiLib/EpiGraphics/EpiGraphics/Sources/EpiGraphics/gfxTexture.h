@@ -6,7 +6,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
 
-#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
 
 EPI_NAMESPACE_BEGIN()
 

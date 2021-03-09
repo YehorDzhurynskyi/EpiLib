@@ -5,11 +5,10 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-gfxQueueFamilyImplVK::gfxQueueFamilyImplVK(epiU32 queueFamilyIndex, epiU32 queueCount, gfxQueueType supportedQueueTypes, epiBool isPresentSupported)
+gfxQueueFamilyImplVK::gfxQueueFamilyImplVK(epiU32 queueFamilyIndex, epiU32 queueCount, gfxQueueType supportedQueueTypes)
     : m_Index{queueFamilyIndex}
     , m_QueueCount{queueCount}
     , m_QueueTypeSupported{supportedQueueTypes}
-    , m_IsPresentSupported{isPresentSupported}
 {
 }
 
@@ -21,11 +20,6 @@ epiBool gfxQueueFamilyImplVK::IsQueueTypeSupported(gfxQueueType mask) const
 epiU32 gfxQueueFamilyImplVK::QueueTypeSupportedCount() const
 {
     return epiBitCount(m_QueueTypeSupported);
-}
-
-epiBool gfxQueueFamilyImplVK::IsPresentSupported() const
-{
-    return m_IsPresentSupported;
 }
 
 epiU32 gfxQueueFamilyImplVK::GetIndex() const

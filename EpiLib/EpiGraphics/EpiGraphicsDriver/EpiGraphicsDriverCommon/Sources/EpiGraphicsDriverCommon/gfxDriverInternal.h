@@ -1,6 +1,12 @@
 #pragma once
 
-#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
+#include "EpiGraphicsDriverCommon/gfxWindow.h"
+
+#include "EpiCore/common.h"
+#include "EpiCore/types.h"
+#include "EpiCore/Containers/Array.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -17,8 +23,8 @@ public:
     gfxQueueImpl& operator=(gfxQueueImpl&& rhs) = default;
     virtual ~gfxQueueImpl() = default;
 
+    virtual gfxQueueType GetType() const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
-    virtual epiBool IsPresentSupported() const = 0;
 };
 
 class gfxQueueFamilyImpl
@@ -33,8 +39,6 @@ public:
 
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
     virtual epiU32 QueueTypeSupportedCount() const = 0;
-
-    virtual epiBool IsPresentSupported() const = 0;
 };
 
 class gfxDeviceImpl
@@ -46,8 +50,17 @@ public:
     gfxDeviceImpl(gfxDeviceImpl&& rhs) = default;
     gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
     virtual ~gfxDeviceImpl() = default;
+};
 
-    virtual gfxQueueImpl* GetQueue(gfxQueueType queueTypeMask, epiBool presentSupportRequired) const = 0;
+class gfxSurfaceImpl
+{
+public:
+    gfxSurfaceImpl() = default;
+    gfxSurfaceImpl(const gfxSurfaceImpl& rhs) = delete;
+    gfxSurfaceImpl& operator=(const gfxSurfaceImpl& rhs) = delete;
+    gfxSurfaceImpl(gfxSurfaceImpl&& rhs) = default;
+    gfxSurfaceImpl& operator=(gfxSurfaceImpl&& rhs) = default;
+    virtual ~gfxSurfaceImpl() = default;
 };
 
 class gfxPhysicalDeviceImpl
@@ -63,25 +76,14 @@ public:
     virtual epiString GetName() const = 0;
     virtual gfxPhysicalDeviceType GetType() const = 0;
 
-    virtual gfxDeviceImpl* CreateDevice(gfxQueueType queueTypeMask, gfxPhysicalDeviceExtension extensionMask, epiBool presentSupportRequired) const = 0;
+    virtual std::unique_ptr<gfxDeviceImpl> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
+                                                        gfxPhysicalDeviceExtension extensionMask) const = 0;
 
+    virtual epiBool IsPresentSupported(const gfxSurfaceImpl& surface) const = 0;
+    virtual epiBool IsPresentSupported(const gfxSurfaceImpl& surface, const gfxQueueFamilyImpl& queueFamily) const = 0;
     virtual epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const = 0;
     virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
-    virtual epiBool IsPresentSupported() const = 0;
-
-    virtual const epiPtrArray<gfxQueueFamilyImpl>& GetQueueFamilies() const = 0;
-};
-
-class gfxSurfaceImpl
-{
-public:
-    gfxSurfaceImpl() = default;
-    gfxSurfaceImpl(const gfxSurfaceImpl& rhs) = delete;
-    gfxSurfaceImpl& operator=(const gfxSurfaceImpl& rhs) = delete;
-    gfxSurfaceImpl(gfxSurfaceImpl&& rhs) = default;
-    gfxSurfaceImpl& operator=(gfxSurfaceImpl&& rhs) = default;
-    virtual ~gfxSurfaceImpl() = default;
 };
 
 class gfxDriverImpl
@@ -89,7 +91,13 @@ class gfxDriverImpl
 public:
     virtual ~gfxDriverImpl() = default;
 
-    virtual const epiPtrArray<gfxPhysicalDeviceImpl>& GetPhysicalDevices() const = 0;
+    virtual std::unique_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) = 0;
+    virtual std::unique_ptr<gfxPhysicalDeviceImpl> CreatePhysicalDevice(gfxPhysicalDeviceType deviceType,
+                                                                        gfxPhysicalDeviceExtension deviceExtensionMask,
+                                                                        gfxQueueType queueTypeMask,
+                                                                        const gfxPhysicalDeviceFeature* features,
+                                                                        size_t featureCount,
+                                                                        const gfxSurfaceImpl* targetSurface) = 0;
 
     virtual epiBool IsExtensionsSupported(gfxDriverExtension mask) const = 0;
     virtual epiBool IsExtensionsEnabled(gfxDriverExtension mask) const = 0;

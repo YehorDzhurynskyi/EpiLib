@@ -204,6 +204,12 @@ public:
         m_Vector.push_back(std::forward<T&&>(value));
     }
 
+    template<typename ...Args>
+    T& emplace_back(Args&& ...args)
+    {
+        return m_Vector.emplace_back(std::forward<Args&&>(args)...);
+    }
+
     T& back()
     {
         return m_Vector.back();

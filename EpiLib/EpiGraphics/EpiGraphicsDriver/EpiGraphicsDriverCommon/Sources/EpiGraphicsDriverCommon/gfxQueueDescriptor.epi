@@ -1,0 +1,16 @@
+class gfxQueueDescriptor
+{
+    gfxQueueType Type;
+
+    [ReadOnly]
+    {
+        epiArray<epiFloat> Priorities;
+
+        [Virtual]
+        epiU32 DesiredQueueCount;
+    }
+};
+
+class gfxQueueDescriptorList
+{
+};

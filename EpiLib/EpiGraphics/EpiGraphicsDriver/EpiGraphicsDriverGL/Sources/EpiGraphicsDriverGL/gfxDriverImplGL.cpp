@@ -15,12 +15,6 @@ gfxDriverImplGL::gfxDriverImplGL()
     }
 }
 
-const epiPtrArray<gfxPhysicalDeviceImpl>& gfxDriverImplGL::GetPhysicalDevices() const
-{
-    static epiPtrArray<gfxPhysicalDeviceImpl> devices{};
-    return devices;
-}
-
 } // namespace internalgfx
 
 EPI_NAMESPACE_END()

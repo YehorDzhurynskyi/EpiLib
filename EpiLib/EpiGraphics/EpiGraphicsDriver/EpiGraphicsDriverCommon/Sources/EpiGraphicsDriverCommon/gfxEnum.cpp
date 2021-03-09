@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
-#include "EpiGraphicsEnum/EpiGraphicsEnum.cxx"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.cxx"
 EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()

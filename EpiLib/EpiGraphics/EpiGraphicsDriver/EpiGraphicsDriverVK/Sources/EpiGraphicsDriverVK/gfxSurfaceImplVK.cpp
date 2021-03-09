@@ -2,6 +2,8 @@
 
 #include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 
+#include <vulkan/vulkan.hpp>
+
 #ifdef EPI_PLATFORM_WINDOWS
 #include <Windows.h>
 #include <vulkan/vulkan_win32.h>
@@ -12,12 +14,12 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance intance)
-    : m_VkInstance{intance}
+gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance_T* instance, const gfxWindow& window)
+    : m_VkInstance{instance}
 {
     VkWin32SurfaceCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-    createInfo.hwnd = GetActiveWindow(); // TODO: make possible to create surface for any Window even non-active
+    createInfo.hwnd = window.GetHWND();
     createInfo.hinstance = GetModuleHandle(nullptr);
 
     VkResult resultCreateWin32SurfaceKHR = vkCreateWin32SurfaceKHR(m_VkInstance, &createInfo, nullptr, &m_VkSurface);
@@ -26,8 +28,6 @@ gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance intance)
 
 gfxSurfaceImplVK::~gfxSurfaceImplVK()
 {
-    epiAssert(m_VkInstance != VK_NULL_HANDLE);
-
     if (m_VkSurface != VK_NULL_HANDLE)
     {
         vkDestroySurfaceKHR(m_VkInstance, m_VkSurface, nullptr);

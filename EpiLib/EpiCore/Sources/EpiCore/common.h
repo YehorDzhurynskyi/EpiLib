@@ -35,6 +35,13 @@ using namespace std::chrono_literals;
 #define epiStringify(_X) #_X
 #define epiStringConcat(_X0, _X1) _X0 ## _X1
 
+template<typename ...T>
+constexpr auto epiMask(T... args) -> typename std::tuple_element<0, std::tuple<T...>>::type
+{
+    using MaskT = typename std::tuple_element<0, std::tuple<T...>>::type;
+    return static_cast<MaskT>((... | args));
+}
+
 template<typename T>
 constexpr size_t epiBitCount(T mask)
 {

@@ -4,9 +4,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriver/gfxDriver.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphicsDriver/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxSurface.h"
+#include "EpiGraphicsDriverCommon/gfxWindow.h"
 
-#include "EpiGraphicsEnum/EpiGraphicsEnum.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
 
 #include "EpiCore/ObjectModel/Object.h"
 
@@ -31,8 +33,7 @@ public:
     enum gfxDriver_PIDs
     {
         PID_Backend = 0x4058f0ed,
-        PID_PhysicalDevices = 0x16b8cc07,
-        PID_COUNT = 2
+        PID_COUNT = 1
     };
 
 protected:
@@ -40,7 +41,6 @@ protected:
 
 protected:
     gfxDriverBackend m_Backend{};
-    epiArray<gfxPhysicalDevice> m_PhysicalDevices{};
 
 EPI_GENREGION_END(gfxDriver)
 
@@ -53,6 +53,15 @@ public:
     gfxDriver(gfxDriver&& rhs) = delete;
     gfxDriver& operator=(gfxDriver&& rhs) = delete;
     ~gfxDriver();
+
+    std::unique_ptr<gfxSurface> CreateSurface(const gfxWindow& window);
+
+    std::optional<gfxPhysicalDevice> CreatePhysicalDevice(gfxPhysicalDeviceType deviceType,
+                                                          gfxPhysicalDeviceExtension deviceExtensionMask,
+                                                          gfxQueueType queueTypeMask,
+                                                          const gfxPhysicalDeviceFeature* features = nullptr,
+                                                          size_t featureCount = 0,
+                                                          const gfxSurface* targetSurface = nullptr);
 
 protected:
     gfxDriver() = default;

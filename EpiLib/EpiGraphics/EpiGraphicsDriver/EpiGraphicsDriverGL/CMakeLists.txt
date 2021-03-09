@@ -38,7 +38,7 @@ target_include_directories(EpiGraphicsDriverGL
 
 target_link_libraries(EpiGraphicsDriverGL
     PRIVATE
-        EpiGraphicsDriverImpl
+        EpiGraphicsDriverCommon
         glad
 )
 

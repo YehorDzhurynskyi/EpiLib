@@ -1,7 +1,0 @@
-class gfxQueue
-{
-    [Virtual, ReadOnly]
-    {
-        epiBool IsPresentSupported;
-    }
-};

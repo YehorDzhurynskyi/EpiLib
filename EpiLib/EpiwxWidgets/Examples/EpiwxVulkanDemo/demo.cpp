@@ -1,7 +1,9 @@
 #pragma once
 
 #include "EpiGraphicsDriver/gfxDriver.h"
-#include "EpiGraphicsDriver/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
 
 #include <wx/app.h>
 #include <wx/frame.h>
@@ -39,25 +41,20 @@ int main(int argc, char* argv[])
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
 
     epi::gfxDriver::GetInstance().SetBackend(epi::gfxDriverBackend::Vulkan);
-    epi::epiArray<epi::gfxPhysicalDevice>& physicalDevices = epi::gfxDriver::GetInstance().GetPhysicalDevices();
-    auto devIt = std::find_if(physicalDevices.begin(), physicalDevices.end(), [](const epi::gfxPhysicalDevice& dev)
-    {
-        const epi::gfxQueueType requiredQueueTypes = epi::gfxQueueType_Graphics;
+    const std::unique_ptr<epi::gfxSurface> surface = epi::gfxDriver::GetInstance().CreateSurface(epi::gfxWindow());
+    std::optional<epi::gfxPhysicalDevice> dev = epi::gfxDriver::GetInstance().CreatePhysicalDevice(epi::gfxPhysicalDeviceType::DiscreteGPU,
+                                                                                                   epi::gfxPhysicalDeviceExtension_SwapChain,
+                                                                                                   epi::gfxQueueType_Graphics,
+                                                                                                   nullptr,
+                                                                                                   0,
+                                                                                                   surface.get());
+    epiAssert(dev.has_value());
 
-        // TODO: epi::gfxPhysicalDeviceExtension should be filtered here
-        return dev.GetType() == epi::gfxPhysicalDeviceType::DiscreteGPU &&
-               dev.IsQueueTypeSupported(requiredQueueTypes) &&
-               dev.GetIsPresentSupported();
-    });
-    epiAssert(devIt != physicalDevices.end());
-    epi::gfxPhysicalDevice& dev = *devIt;
+    epi::gfxQueueDescriptorList queueDescriptorList;
+    queueDescriptorList.Add(surface->CreateQueueDescriptor({1.0f}));
 
-    constexpr bool kIsPresentSupportRequired = true;
-    epi::gfxDevice* device = dev.AddDevice(epi::gfxQueueType_Graphics, epi::gfxPhysicalDeviceExtension_SwapChain, kIsPresentSupportRequired);
-    epiAssert(device != nullptr);
-
-    epi::gfxQueue* queue = device->GetQueue(epi::gfxQueueType_Graphics, kIsPresentSupportRequired);
-    epiAssert(queue != nullptr);
+    std::optional<epi::gfxDevice> device = dev->CreateDevice(queueDescriptorList, epi::gfxPhysicalDeviceExtension_SwapChain);
+    epiAssert(device.has_value());
 
     wxEntryStart(argc, argv);
     wxTheApp->CallOnInit();

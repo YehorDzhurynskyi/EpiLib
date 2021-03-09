@@ -117,6 +117,7 @@ enum gfxQueueType
     Transfer,
     SparseBinding,
     Protected,
+    Present,
     MAX,
-    ALL = Graphics | Compute | Transfer | SparseBinding | Protected
+    ALL = Graphics | Compute | Transfer | SparseBinding | Protected | Present
 };

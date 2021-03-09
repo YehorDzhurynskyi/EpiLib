@@ -2,7 +2,4 @@ class gfxDriver
 {
     [WriteCallback]
     gfxDriverBackend Backend; # TODO: = gfxDriverBackend::None;
-
-    [ReadOnly]
-    epiArray<gfxPhysicalDevice> PhysicalDevices;
 };
