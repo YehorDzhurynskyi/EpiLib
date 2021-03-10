@@ -62,22 +62,11 @@ std::unique_ptr<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
     return surface;
 }
 
-std::optional<gfxPhysicalDevice> gfxDriver::CreatePhysicalDevice(gfxPhysicalDeviceType deviceType,
-                                                                 gfxPhysicalDeviceExtension deviceExtensionMask,
-                                                                 gfxQueueType queueTypeMask,
-                                                                 const gfxPhysicalDeviceFeature* features,
-                                                                 size_t featureCount,
-                                                                 const gfxSurface* targetSurface)
+std::optional<gfxPhysicalDevice> gfxDriver::FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const
 {
     std::optional<gfxPhysicalDevice> device;
 
-    const internalgfx::gfxSurfaceImpl* targetSurfaceVk = targetSurface ? (const internalgfx::gfxSurfaceImpl*)targetSurface : nullptr;
-    if (std::unique_ptr<internalgfx::gfxPhysicalDeviceImpl> impl = m_Impl->CreatePhysicalDevice(deviceType,
-                                                                                                deviceExtensionMask,
-                                                                                                queueTypeMask,
-                                                                                                features,
-                                                                                                featureCount,
-                                                                                                targetSurfaceVk))
+    if (std::unique_ptr<internalgfx::gfxPhysicalDeviceImpl> impl = m_Impl->FindAppropriatePhysicalDevice(isAppropiateCallback))
     {
         device = gfxPhysicalDevice(impl.release());
     }

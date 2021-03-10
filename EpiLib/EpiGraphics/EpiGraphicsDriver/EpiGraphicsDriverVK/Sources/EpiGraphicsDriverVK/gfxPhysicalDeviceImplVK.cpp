@@ -44,6 +44,8 @@ namespace internalgfx
 
 void gfxPhysicalDeviceImplVK::Init(VkPhysicalDevice device)
 {
+    m_VkDevice = device;
+
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(m_VkDevice, &queueFamilyCount, nullptr);
 

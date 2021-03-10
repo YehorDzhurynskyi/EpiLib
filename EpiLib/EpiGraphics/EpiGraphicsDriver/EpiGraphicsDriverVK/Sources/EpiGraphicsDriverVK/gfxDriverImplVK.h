@@ -38,12 +38,7 @@ public:
 
     std::unique_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) override;
 
-    std::unique_ptr<gfxPhysicalDeviceImpl> CreatePhysicalDevice(gfxPhysicalDeviceType deviceType,
-                                                                gfxPhysicalDeviceExtension deviceExtensionMask,
-                                                                gfxQueueType queueTypeMask,
-                                                                const gfxPhysicalDeviceFeature* features,
-                                                                size_t featureCount,
-                                                                const gfxSurfaceImpl* targetSurface) override;
+    std::unique_ptr<gfxPhysicalDeviceImpl> FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const override;
 
     epiBool IsExtensionsSupported(gfxDriverExtension mask) const override;
     epiBool IsExtensionsEnabled(gfxDriverExtension mask) const override;

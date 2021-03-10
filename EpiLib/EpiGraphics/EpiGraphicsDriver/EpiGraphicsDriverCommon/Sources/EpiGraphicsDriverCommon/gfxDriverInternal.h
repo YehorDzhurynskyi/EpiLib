@@ -3,6 +3,7 @@
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
 #include "EpiGraphicsDriverCommon/gfxWindow.h"
+#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
 
 #include "EpiCore/common.h"
 #include "EpiCore/types.h"
@@ -92,12 +93,7 @@ public:
     virtual ~gfxDriverImpl() = default;
 
     virtual std::unique_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) = 0;
-    virtual std::unique_ptr<gfxPhysicalDeviceImpl> CreatePhysicalDevice(gfxPhysicalDeviceType deviceType,
-                                                                        gfxPhysicalDeviceExtension deviceExtensionMask,
-                                                                        gfxQueueType queueTypeMask,
-                                                                        const gfxPhysicalDeviceFeature* features,
-                                                                        size_t featureCount,
-                                                                        const gfxSurfaceImpl* targetSurface) = 0;
+    virtual std::unique_ptr<gfxPhysicalDeviceImpl> FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const = 0;
 
     virtual epiBool IsExtensionsSupported(gfxDriverExtension mask) const = 0;
     virtual epiBool IsExtensionsEnabled(gfxDriverExtension mask) const = 0;

@@ -40,22 +40,6 @@ int main(int argc, char* argv[])
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
 
-    epi::gfxDriver::GetInstance().SetBackend(epi::gfxDriverBackend::Vulkan);
-    const std::unique_ptr<epi::gfxSurface> surface = epi::gfxDriver::GetInstance().CreateSurface(epi::gfxWindow());
-    std::optional<epi::gfxPhysicalDevice> dev = epi::gfxDriver::GetInstance().CreatePhysicalDevice(epi::gfxPhysicalDeviceType::DiscreteGPU,
-                                                                                                   epi::gfxPhysicalDeviceExtension_SwapChain,
-                                                                                                   epi::gfxQueueType_Graphics,
-                                                                                                   nullptr,
-                                                                                                   0,
-                                                                                                   surface.get());
-    epiAssert(dev.has_value());
-
-    epi::gfxQueueDescriptorList queueDescriptorList;
-    queueDescriptorList.Add(surface->CreateQueueDescriptor({1.0f}));
-
-    std::optional<epi::gfxDevice> device = dev->CreateDevice(queueDescriptorList, epi::gfxPhysicalDeviceExtension_SwapChain);
-    epiAssert(device.has_value());
-
     wxEntryStart(argc, argv);
     wxTheApp->CallOnInit();
     wxTheApp->OnRun();
@@ -81,6 +65,28 @@ bool EpiwxVulkanDemo::OnInit()
     m_Frame->Show(true);
 
     SetTopWindow(m_Frame);
+
+    epi::gfxDriver::GetInstance().SetBackend(epi::gfxDriverBackend::Vulkan);
+    const std::unique_ptr<epi::gfxSurface> surface = epi::gfxDriver::GetInstance().CreateSurface(epi::gfxWindow());
+    std::optional<epi::gfxPhysicalDevice> dev = epi::gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface](const epi::gfxPhysicalDevice& device) {
+        if (device.GetType() != epi::gfxPhysicalDeviceType::DiscreteGPU ||
+            !device.IsExtensionsSupported(epi::gfxPhysicalDeviceExtension_SwapChain) ||
+            !device.IsQueueTypeSupported(epi::gfxQueueType_Graphics))
+        {
+            return false;
+        }
+
+        return PhysicalDeviceIsCompatibleWithSurfaceForPresentation(device, *surface);
+    });
+
+    epiAssert(dev.has_value());
+
+    epi::gfxQueueDescriptorList queueDescriptorList;
+    queueDescriptorList.Add(surface->CreateQueueDescriptor({1.0f}));
+
+    std::optional<epi::gfxDevice> device = dev->CreateDevice(queueDescriptorList, epi::gfxPhysicalDeviceExtension_SwapChain);
+    epiAssert(device.has_value());
+
 
     return true;
 }

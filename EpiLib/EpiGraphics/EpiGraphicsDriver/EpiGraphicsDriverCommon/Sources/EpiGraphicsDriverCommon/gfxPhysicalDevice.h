@@ -20,6 +20,7 @@ class gfxPhysicalDeviceImpl;
 
 } // namespace internalgfx
 
+class gfxSurface;
 class gfxPhysicalDevice : public Object
 {
 EPI_GENREGION_BEGIN(gfxPhysicalDevice)
@@ -55,8 +56,11 @@ public:
     std::optional<gfxDevice> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
                                           gfxPhysicalDeviceExtension extensionMask);
 
+    epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
+
+    friend epiBool PhysicalDeviceIsCompatibleWithSurfaceForPresentation(const gfxPhysicalDevice& device, const gfxSurface& surface);
 
 protected:
     internalgfx::gfxPhysicalDeviceImpl* m_Impl{nullptr};

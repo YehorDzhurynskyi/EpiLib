@@ -32,9 +32,7 @@ epiBool gfxQueueDescriptor::TryResolveQueue(gfxQueue&& queue)
 
 epiBool gfxQueueDescriptor::IsPresentRequired() const
 {
-    epiAssert((m_Type & gfxQueueType_Present) == 0 || m_PresentSurface != nullptr);
-
-    return (m_Type & gfxQueueType_Present) && (m_PresentSurface != nullptr);
+    return m_PresentSurface != nullptr;
 }
 
 void gfxQueueDescriptor::AddDesiredQueue(epiFloat priority)

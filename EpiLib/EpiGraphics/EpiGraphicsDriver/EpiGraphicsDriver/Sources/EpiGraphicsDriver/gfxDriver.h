@@ -56,12 +56,7 @@ public:
 
     std::unique_ptr<gfxSurface> CreateSurface(const gfxWindow& window);
 
-    std::optional<gfxPhysicalDevice> CreatePhysicalDevice(gfxPhysicalDeviceType deviceType,
-                                                          gfxPhysicalDeviceExtension deviceExtensionMask,
-                                                          gfxQueueType queueTypeMask,
-                                                          const gfxPhysicalDeviceFeature* features = nullptr,
-                                                          size_t featureCount = 0,
-                                                          const gfxSurface* targetSurface = nullptr);
+    std::optional<gfxPhysicalDevice> FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const;
 
 protected:
     gfxDriver() = default;

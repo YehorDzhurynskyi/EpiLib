@@ -4,6 +4,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
+#include "EpiGraphicsDriverCommon/gfxSurface.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -54,6 +55,11 @@ gfxPhysicalDeviceType gfxPhysicalDevice::GetType_Callback() const
     return m_Impl->GetType();
 }
 
+epiBool gfxPhysicalDevice::IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const
+{
+    return m_Impl->IsExtensionsSupported(mask);
+}
+
 epiBool gfxPhysicalDevice::IsFeatureSupported(gfxPhysicalDeviceFeature feature) const
 {
     return m_Impl->IsFeatureSupported(feature);
@@ -62,6 +68,13 @@ epiBool gfxPhysicalDevice::IsFeatureSupported(gfxPhysicalDeviceFeature feature) 
 epiBool gfxPhysicalDevice::IsQueueTypeSupported(gfxQueueType mask) const
 {
     return m_Impl->IsQueueTypeSupported(mask);
+}
+
+epiBool PhysicalDeviceIsCompatibleWithSurfaceForPresentation(const gfxPhysicalDevice& device, const gfxSurface& surface)
+{
+    epiAssert(device.m_Impl != nullptr && surface.m_Impl != nullptr);
+
+    return device.m_Impl->IsPresentSupported(*surface.m_Impl);
 }
 
 EPI_NAMESPACE_END()

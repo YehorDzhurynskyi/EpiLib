@@ -128,9 +128,8 @@ EPI_GENREGION_BEGIN(gfxQueueType)
     gfxQueueType_Transfer = (1 << 2),
     gfxQueueType_SparseBinding = (1 << 3),
     gfxQueueType_Protected = (1 << 4),
-    gfxQueueType_Present = (1 << 5),
-    gfxQueueType_MAX = (1 << 6),
-    gfxQueueType_ALL = gfxQueueType_Graphics | gfxQueueType_Compute | gfxQueueType_Transfer | gfxQueueType_SparseBinding | gfxQueueType_Protected | gfxQueueType_Present
+    gfxQueueType_MAX = (1 << 5),
+    gfxQueueType_ALL = gfxQueueType_Graphics | gfxQueueType_Compute | gfxQueueType_Transfer | gfxQueueType_SparseBinding | gfxQueueType_Protected
 EPI_GENREGION_END(gfxQueueType)
 };
 

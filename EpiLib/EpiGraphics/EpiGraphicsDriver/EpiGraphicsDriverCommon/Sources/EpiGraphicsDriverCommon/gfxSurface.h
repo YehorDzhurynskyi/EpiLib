@@ -15,9 +15,11 @@ namespace internalgfx
 {
 
 class gfxSurfaceImpl;
+class gfxPhysicalDeviceImpl;
 
 } // internalgfx
 
+class gfxPhysicalDevice;
 class gfxSurface : public Object
 {
 EPI_GENREGION_BEGIN(gfxSurface)
@@ -44,7 +46,9 @@ public:
     ~gfxSurface();
 
 public:
-    gfxQueueDescriptor CreateQueueDescriptor(const epiArray<epiFloat>& priorities) const;
+    gfxQueueDescriptor CreateQueueDescriptor(const epiArray<epiFloat>& priorities, gfxQueueType type = gfxQueueType{0}) const;
+
+    friend epiBool PhysicalDeviceIsCompatibleWithSurfaceForPresentation(const gfxPhysicalDevice& device, const gfxSurface& surface);
 
 protected:
     internalgfx::gfxSurfaceImpl* m_Impl{nullptr};

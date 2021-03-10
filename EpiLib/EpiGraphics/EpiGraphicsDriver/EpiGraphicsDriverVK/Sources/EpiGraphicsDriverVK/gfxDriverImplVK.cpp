@@ -227,12 +227,7 @@ std::unique_ptr<gfxSurfaceImpl> gfxDriverImplVK::CreateSurface(const gfxWindow& 
     return std::make_unique<gfxSurfaceImplVK>(m_VkInstance, window);
 }
 
-std::unique_ptr<gfxPhysicalDeviceImpl> gfxDriverImplVK::CreatePhysicalDevice(gfxPhysicalDeviceType deviceType,
-                                                                             gfxPhysicalDeviceExtension deviceExtensionMask,
-                                                                             gfxQueueType queueTypeMask,
-                                                                             const gfxPhysicalDeviceFeature* features,
-                                                                             size_t featureCount,
-                                                                             const gfxSurfaceImpl* targetSurface)
+std::unique_ptr<gfxPhysicalDeviceImpl> gfxDriverImplVK::FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const
 {
     epiU32 deviceCount = 0;
     vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
@@ -243,29 +238,13 @@ std::unique_ptr<gfxPhysicalDeviceImpl> gfxDriverImplVK::CreatePhysicalDevice(gfx
 
     auto it = std::find_if(vkDevices.begin(),
                            vkDevices.end(),
-                           [deviceType, deviceExtensionMask, queueTypeMask, features, featureCount, targetSurface](const VkPhysicalDevice& vkDevice) {
-        gfxPhysicalDeviceImplVK device;
-        device.Init(vkDevice);
+                           [&isAppropiateCallback](const VkPhysicalDevice& vkDevice) {
+        gfxPhysicalDeviceImplVK deviceImpl;
+        deviceImpl.Init(vkDevice);
 
-        epiBool isAppropriate = device.GetType() == deviceType &&
-                                device.IsExtensionsSupported(deviceExtensionMask) &&
-                                device.IsQueueTypeSupported(queueTypeMask);
+        gfxPhysicalDevice device(&deviceImpl);
 
-        if (!isAppropriate)
-        {
-            return false;
-        }
-
-        isAppropriate = std::all_of(features, features + featureCount, [&device](const gfxPhysicalDeviceFeature& feature) {
-            return device.IsFeatureSupported(feature);
-        });
-
-        if (!isAppropriate)
-        {
-            return false;
-        }
-
-        return targetSurface ? device.IsPresentSupported(*targetSurface) : true;
+        return isAppropiateCallback(device);
     });
 
     if (it == vkDevices.end())

@@ -33,10 +33,10 @@ gfxSurface::~gfxSurface()
     delete m_Impl;
 }
 
-gfxQueueDescriptor gfxSurface::CreateQueueDescriptor(const epiArray<epiFloat>& priorities) const
+gfxQueueDescriptor gfxSurface::CreateQueueDescriptor(const epiArray<epiFloat>& priorities, gfxQueueType type) const
 {
     gfxQueueDescriptor desc;
-    desc.SetType(epiMask(gfxQueueType_Graphics, gfxQueueType_Present));
+    desc.SetType(epiMask(gfxQueueType_Graphics, type));
     desc.SetPresentSurface(m_Impl);
 
     for (const epiFloat priority : priorities)
