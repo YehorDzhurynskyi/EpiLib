@@ -59,8 +59,7 @@ public:
     epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
-
-    friend epiBool PhysicalDeviceIsCompatibleWithSurfaceForPresentation(const gfxPhysicalDevice& device, const gfxSurface& surface);
+    epiBool IsPresentSupported(const gfxSurface& surface) const;
 
 protected:
     internalgfx::gfxPhysicalDeviceImpl* m_Impl{nullptr};

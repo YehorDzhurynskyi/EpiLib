@@ -76,7 +76,7 @@ bool EpiwxVulkanDemo::OnInit()
             return false;
         }
 
-        return PhysicalDeviceIsCompatibleWithSurfaceForPresentation(device, *surface);
+        return device.IsPresentSupported(*surface);
     });
 
     epiAssert(dev.has_value());
@@ -86,7 +86,6 @@ bool EpiwxVulkanDemo::OnInit()
 
     std::optional<epi::gfxDevice> device = dev->CreateDevice(queueDescriptorList, epi::gfxPhysicalDeviceExtension_SwapChain);
     epiAssert(device.has_value());
-
 
     return true;
 }

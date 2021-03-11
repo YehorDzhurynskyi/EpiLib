@@ -17,8 +17,9 @@ public:
     gfxQueueFamilyImplVK& operator=(gfxQueueFamilyImplVK&& rhs) = default;
     ~gfxQueueFamilyImplVK() override = default;
 
+    gfxQueueType GetQueueTypeSupported() const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
-    epiU32 QueueTypeSupportedCount() const override;
+    epiU32 GetQueueCount() const override;
 
     epiU32 GetIndex() const;
 

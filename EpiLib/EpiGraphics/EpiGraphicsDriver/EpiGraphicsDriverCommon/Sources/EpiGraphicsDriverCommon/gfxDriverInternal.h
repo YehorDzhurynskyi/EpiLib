@@ -38,8 +38,9 @@ public:
     gfxQueueFamilyImpl& operator=(gfxQueueFamilyImpl&& rhs) = default;
     virtual ~gfxQueueFamilyImpl() = default;
 
+    virtual gfxQueueType GetQueueTypeSupported() const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
-    virtual epiU32 QueueTypeSupportedCount() const = 0;
+    virtual epiU32 GetQueueCount() const = 0;
 };
 
 class gfxDeviceImpl

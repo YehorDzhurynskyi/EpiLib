@@ -37,6 +37,9 @@ public:
 EPI_GENREGION_END(gfxSurface)
 
 public:
+    friend class gfxPhysicalDevice;
+
+public:
     gfxSurface() = default;
     gfxSurface(internalgfx::gfxSurfaceImpl* impl);
     gfxSurface(const gfxSurface& rhs) = delete;
@@ -47,8 +50,6 @@ public:
 
 public:
     gfxQueueDescriptor CreateQueueDescriptor(const epiArray<epiFloat>& priorities, gfxQueueType type = gfxQueueType{0}) const;
-
-    friend epiBool PhysicalDeviceIsCompatibleWithSurfaceForPresentation(const gfxPhysicalDevice& device, const gfxSurface& surface);
 
 protected:
     internalgfx::gfxSurfaceImpl* m_Impl{nullptr};

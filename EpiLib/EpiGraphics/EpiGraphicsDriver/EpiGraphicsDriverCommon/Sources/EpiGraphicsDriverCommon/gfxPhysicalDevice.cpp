@@ -70,11 +70,11 @@ epiBool gfxPhysicalDevice::IsQueueTypeSupported(gfxQueueType mask) const
     return m_Impl->IsQueueTypeSupported(mask);
 }
 
-epiBool PhysicalDeviceIsCompatibleWithSurfaceForPresentation(const gfxPhysicalDevice& device, const gfxSurface& surface)
+epiBool gfxPhysicalDevice::IsPresentSupported(const gfxSurface& surface) const
 {
-    epiAssert(device.m_Impl != nullptr && surface.m_Impl != nullptr);
+    epiAssert(m_Impl != nullptr && surface.m_Impl != nullptr);
 
-    return device.m_Impl->IsPresentSupported(*surface.m_Impl);
+    return m_Impl->IsPresentSupported(*surface.m_Impl);
 }
 
 EPI_NAMESPACE_END()

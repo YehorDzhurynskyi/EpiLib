@@ -239,10 +239,10 @@ std::unique_ptr<gfxPhysicalDeviceImpl> gfxDriverImplVK::FindAppropriatePhysicalD
     auto it = std::find_if(vkDevices.begin(),
                            vkDevices.end(),
                            [&isAppropiateCallback](const VkPhysicalDevice& vkDevice) {
-        gfxPhysicalDeviceImplVK deviceImpl;
-        deviceImpl.Init(vkDevice);
+        gfxPhysicalDeviceImplVK* deviceImpl = new gfxPhysicalDeviceImplVK();
+        deviceImpl->Init(vkDevice);
 
-        gfxPhysicalDevice device(&deviceImpl);
+        gfxPhysicalDevice device(deviceImpl);
 
         return isAppropiateCallback(device);
     });

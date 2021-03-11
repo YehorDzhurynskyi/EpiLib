@@ -12,14 +12,19 @@ gfxQueueFamilyImplVK::gfxQueueFamilyImplVK(epiU32 queueFamilyIndex, epiU32 queue
 {
 }
 
+gfxQueueType gfxQueueFamilyImplVK::GetQueueTypeSupported() const
+{
+    return m_QueueTypeSupported;
+}
+
 epiBool gfxQueueFamilyImplVK::IsQueueTypeSupported(gfxQueueType mask) const
 {
     return (m_QueueTypeSupported & mask) == mask;
 }
 
-epiU32 gfxQueueFamilyImplVK::QueueTypeSupportedCount() const
+epiU32 gfxQueueFamilyImplVK::GetQueueCount() const
 {
-    return epiBitCount(m_QueueTypeSupported);
+    return m_QueueCount;
 }
 
 epiU32 gfxQueueFamilyImplVK::GetIndex() const

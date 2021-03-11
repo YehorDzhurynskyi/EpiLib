@@ -57,14 +57,26 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
+    struct gfxQueueCreateInfo
+    {
+        gfxQueueCreateInfo(gfxQueueDescriptor& desc, const gfxQueueFamilyImplVK& queueFamily)
+            : Desc{desc}
+            , QueueFamily{queueFamily} {}
+
+        gfxQueueDescriptor& Desc;
+        const gfxQueueFamilyImplVK& QueueFamily;
+    };
+
+    std::vector<gfxQueueCreateInfo> queueDescCreateInfos;
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     for (auto& queueDescriptor : queueDescriptorList)
     {
         epiAssert(!queueDescriptor.IsResolved());
 
-        for (const auto& queueFamily : physicalDevice.GetQueueFamilies())
+        for (const gfxQueueFamilyImplVK& queueFamily : physicalDevice.GetQueueFamilies())
         {
-            if (!queueFamily.IsQueueTypeSupported(queueDescriptor.GetType()))
+            if (queueFamily.GetQueueCount() < queueDescriptor.GetDesiredQueueCount() ||
+               !queueFamily.IsQueueTypeSupported(queueDescriptor.GetType()))
             {
                 continue;
             }
@@ -87,6 +99,10 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
             queueCreateInfo.pQueuePriorities = queueDescriptor.GetPriorities().data();
 
             queueCreateInfos.push_back(queueCreateInfo);
+
+            queueDescCreateInfos.emplace_back(queueDescriptor, queueFamily);
+
+            break;
         }
     }
 
@@ -112,15 +128,30 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     createInfo.pEnabledFeatures = &deviceFeatures;
 
     const VkResult resultCreateDevice = vkCreateDevice(physicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice);
-    epiAssert(resultCreateDevice == VK_SUCCESS);
-
-    const epiArray<gfxQueueFamilyImplVK>& queueFamilies = physicalDevice.GetQueueFamilies();
-    for (const auto& queueInfo : queueCreateInfos)
+    if (resultCreateDevice != VK_SUCCESS)
     {
-        for (epiU32 queueIndex = 0; queueIndex < queueInfo.queueCount; ++queueIndex)
+        return false;
+    }
+
+    for (gfxQueueCreateInfo& queueDescCreateInfo : queueDescCreateInfos)
+    {
+        for (epiU32 queueIndex = 0; queueIndex < queueDescCreateInfo.Desc.GetDesiredQueueCount(); ++queueIndex)
         {
-            m_Queues.push_back(new gfxQueueImplVK(*this, queueFamilies[queueInfo.queueFamilyIndex], queueIndex));
+            gfxQueue queue(new gfxQueueImplVK(*this, queueDescCreateInfo.QueueFamily, queueIndex));
+            queueDescCreateInfo.Desc.TryResolveQueue(std::move(queue));
         }
+    }
+
+    const epiBool allQueueDescriptorsResolved = std::all_of(queueDescriptorList.begin(),
+                                                            queueDescriptorList.end(),
+                                                            [](const gfxQueueDescriptor& desc)
+    {
+        return desc.IsResolved();
+    });
+
+    if (!allQueueDescriptorsResolved)
+    {
+        return false;
     }
 
     return true;

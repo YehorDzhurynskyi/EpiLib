@@ -31,7 +31,6 @@ public:
 protected:
     VkDevice_T* m_VkDevice{nullptr};
 
-    epiPtrArray<gfxQueueImpl> m_Queues;
     gfxPhysicalDeviceExtension m_ExtensionMaskEnabled{0};
 };
 
