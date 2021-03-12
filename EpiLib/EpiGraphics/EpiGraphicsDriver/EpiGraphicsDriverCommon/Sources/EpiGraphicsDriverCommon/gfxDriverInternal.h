@@ -4,6 +4,7 @@
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
 #include "EpiGraphicsDriverCommon/gfxWindow.h"
 #include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxSurface.h"
 
 #include "EpiCore/common.h"
 #include "EpiCore/types.h"
@@ -54,17 +55,6 @@ public:
     virtual ~gfxDeviceImpl() = default;
 };
 
-class gfxSurfaceImpl
-{
-public:
-    gfxSurfaceImpl() = default;
-    gfxSurfaceImpl(const gfxSurfaceImpl& rhs) = delete;
-    gfxSurfaceImpl& operator=(const gfxSurfaceImpl& rhs) = delete;
-    gfxSurfaceImpl(gfxSurfaceImpl&& rhs) = default;
-    gfxSurfaceImpl& operator=(gfxSurfaceImpl&& rhs) = default;
-    virtual ~gfxSurfaceImpl() = default;
-};
-
 class gfxPhysicalDeviceImpl
 {
 public:
@@ -81,11 +71,26 @@ public:
     virtual std::unique_ptr<gfxDeviceImpl> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
                                                         gfxPhysicalDeviceExtension extensionMask) const = 0;
 
-    virtual epiBool IsPresentSupported(const gfxSurfaceImpl& surface) const = 0;
-    virtual epiBool IsPresentSupported(const gfxSurfaceImpl& surface, const gfxQueueFamilyImpl& queueFamily) const = 0;
     virtual epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const = 0;
     virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+};
+
+class gfxSurfaceImpl
+{
+public:
+    gfxSurfaceImpl() = default;
+    gfxSurfaceImpl(const gfxSurfaceImpl& rhs) = delete;
+    gfxSurfaceImpl& operator=(const gfxSurfaceImpl& rhs) = delete;
+    gfxSurfaceImpl(gfxSurfaceImpl&& rhs) = default;
+    gfxSurfaceImpl& operator=(gfxSurfaceImpl&& rhs) = default;
+    virtual ~gfxSurfaceImpl() = default;
+
+    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const = 0;
+    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const = 0;
+    virtual gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const = 0;
+    virtual epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDeviceImpl& device) const = 0;
+    virtual epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDeviceImpl& device) const = 0;
 };
 
 class gfxDriverImpl

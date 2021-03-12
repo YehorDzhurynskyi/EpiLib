@@ -104,24 +104,6 @@ std::unique_ptr<gfxDeviceImpl> gfxPhysicalDeviceImplVK::CreateDevice(gfxQueueDes
     return device;
 }
 
-epiBool gfxPhysicalDeviceImplVK::IsPresentSupported(const gfxSurfaceImpl& surface) const
-{
-    return std::any_of(m_QueueFamilies.begin(), m_QueueFamilies.end(), [this, &surface](const gfxQueueFamilyImpl& queueFamily) {
-        return IsPresentSupported(surface, queueFamily);
-    });
-}
-
-epiBool gfxPhysicalDeviceImplVK::IsPresentSupported(const gfxSurfaceImpl& surface, const gfxQueueFamilyImpl& queueFamily) const
-{
-    const gfxSurfaceImplVK& surfaceVk = static_cast<const gfxSurfaceImplVK&>(surface);
-    const gfxQueueFamilyImplVK& queueFamilyVk = static_cast<const gfxQueueFamilyImplVK&>(queueFamily);
-
-    VkBool32 presentSupported = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(m_VkDevice, queueFamilyVk.GetIndex(), surfaceVk.GetVkSurface(), &presentSupported);
-
-    return presentSupported;
-}
-
 epiBool gfxPhysicalDeviceImplVK::IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const
 {
     return (SupportedPhysicalDeviceExtensionMask(m_VkDevice) & mask) == mask;

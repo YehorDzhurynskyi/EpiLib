@@ -23,8 +23,6 @@ public:
     std::unique_ptr<gfxDeviceImpl> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
                                                 gfxPhysicalDeviceExtension extensionMask) const override;
 
-    epiBool IsPresentSupported(const gfxSurfaceImpl& surface) const override;
-    epiBool IsPresentSupported(const gfxSurfaceImpl& surface, const gfxQueueFamilyImpl& queueFamily) const override;
     epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const override;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;

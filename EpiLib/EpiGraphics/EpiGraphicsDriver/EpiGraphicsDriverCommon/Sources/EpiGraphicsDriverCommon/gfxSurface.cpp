@@ -47,4 +47,32 @@ gfxQueueDescriptor gfxSurface::CreateQueueDescriptor(const epiArray<epiFloat>& p
     return desc;
 }
 
+epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device) const
+{
+    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
+
+    return m_Impl->IsPresentSupportedFor(*device.m_Impl);
+}
+
+gfxSurfaceCapabilities gfxSurface::GetCapabilitiesFor(const gfxPhysicalDevice& device) const
+{
+    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
+
+    return m_Impl->GetCapabilitiesFor(*device.m_Impl);
+}
+
+epiArray<gfxSurfaceFormat> gfxSurface::GetSupportedFormatsFor(const gfxPhysicalDevice& device) const
+{
+    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
+
+    return m_Impl->GetSupportedFormatsFor(*device.m_Impl);
+}
+
+epiArray<gfxSurfacePresentMode> gfxSurface::GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const
+{
+    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
+
+    return m_Impl->GetSupportedPresentModesFor(*device.m_Impl);
+}
+
 EPI_NAMESPACE_END()

@@ -86,7 +86,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
                 const gfxSurfaceImpl* surfaceVk = queueDescriptor.GetPresentSurface();
                 epiAssert(surfaceVk != nullptr);
 
-                if (!physicalDevice.IsPresentSupported(*surfaceVk, queueFamily))
+                if (!surfaceVk->IsPresentSupportedFor(physicalDevice, queueFamily))
                 {
                     continue;
                 }

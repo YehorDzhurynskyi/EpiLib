@@ -68,7 +68,7 @@ bool EpiwxVulkanDemo::OnInit()
 
     epi::gfxDriver::GetInstance().SetBackend(epi::gfxDriverBackend::Vulkan);
     const std::unique_ptr<epi::gfxSurface> surface = epi::gfxDriver::GetInstance().CreateSurface(epi::gfxWindow());
-    std::optional<epi::gfxPhysicalDevice> dev = epi::gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface](const epi::gfxPhysicalDevice& device) {
+    std::optional<epi::gfxPhysicalDevice> physicalDevice = epi::gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface](const epi::gfxPhysicalDevice& device) {
         if (device.GetType() != epi::gfxPhysicalDeviceType::DiscreteGPU ||
             !device.IsExtensionsSupported(epi::gfxPhysicalDeviceExtension_SwapChain) ||
             !device.IsQueueTypeSupported(epi::gfxQueueType_Graphics))
@@ -76,15 +76,20 @@ bool EpiwxVulkanDemo::OnInit()
             return false;
         }
 
-        return device.IsPresentSupported(*surface);
+        const epi::epiArray<epi::gfxSurfaceFormat> supportedFormats = surface->GetSupportedFormatsFor(device);
+        const epiBool formatIsAppropriate = std::any_of(supportedFormats.begin(), supportedFormats.end(), [](const epi::gfxSurfaceFormat& format) {
+            return format.GetFormat() == epi::gfxFormat::R8G8B8_SRGB && format.GetColorSpace() == epi::gfxSurfaceColorSpace::SRGB_NONLINEAR;
+        });
+
+        return formatIsAppropriate && surface->IsPresentSupportedFor(device);
     });
 
-    epiAssert(dev.has_value());
+    epiAssert(physicalDevice.has_value());
 
     epi::gfxQueueDescriptorList queueDescriptorList;
     queueDescriptorList.Add(surface->CreateQueueDescriptor({1.0f}));
 
-    std::optional<epi::gfxDevice> device = dev->CreateDevice(queueDescriptorList, epi::gfxPhysicalDeviceExtension_SwapChain);
+    std::optional<epi::gfxDevice> device = physicalDevice->CreateDevice(queueDescriptorList, epi::gfxPhysicalDeviceExtension_SwapChain);
     epiAssert(device.has_value());
 
     return true;

@@ -1,3 +1,19 @@
+class gfxSurfaceCapabilities
+{
+    epiU32 MinImageCount;
+    epiU32 MaxImageCount;
+    epiU32 MaxImageArrayLayers;
+    epiSize2u CurrentExtent;
+    epiSize2u MinImageExtent;
+    epiSize2u MaxImageExtent;
+};
+
+class gfxSurfaceFormat
+{
+    gfxFormat Format;
+    gfxSurfaceColorSpace ColorSpace;
+};
+
 class gfxSurface
 {
 };

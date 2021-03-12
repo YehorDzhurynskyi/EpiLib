@@ -44,6 +44,9 @@ protected:
 EPI_GENREGION_END(gfxPhysicalDevice)
 
 public:
+    friend class gfxSurface;
+
+public:
     gfxPhysicalDevice() = default;
     gfxPhysicalDevice(internalgfx::gfxPhysicalDeviceImpl* impl);
     gfxPhysicalDevice(const gfxPhysicalDevice& rhs) = delete;
@@ -59,7 +62,6 @@ public:
     epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
-    epiBool IsPresentSupported(const gfxSurface& surface) const;
 
 protected:
     internalgfx::gfxPhysicalDeviceImpl* m_Impl{nullptr};
