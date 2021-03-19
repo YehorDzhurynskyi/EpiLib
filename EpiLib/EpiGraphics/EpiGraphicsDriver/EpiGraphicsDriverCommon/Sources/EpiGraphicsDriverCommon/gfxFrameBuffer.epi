@@ -1,0 +1,11 @@
+class gfxFrameBufferCreateInfo
+{
+    epiSize2u Size;
+
+    [WriteCallback(RValueRef=true)]
+    gfxRenderPass RenderPass;
+};
+
+class gfxFrameBuffer
+{
+};

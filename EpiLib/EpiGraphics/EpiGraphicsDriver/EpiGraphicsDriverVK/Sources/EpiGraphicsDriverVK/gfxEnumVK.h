@@ -29,5 +29,8 @@ VkColorComponentFlagBits gfxColorComponentTo(gfxColorComponent colorComponent);
 VkBlendFactor gfxBlendFactorTo(gfxBlendFactor blendFactor);
 VkBlendOp gfxBlendOpTo(gfxBlendOp blendOp);
 VkLogicOp gfxLogicOpTo(gfxLogicOp logicOp);
+VkImageType gfxTextureTypeTo(gfxTextureType type);
+VkImageViewType gfxTextureViewTypeTo(gfxTextureViewType viewType);
+VkImageUsageFlagBits gfxImageUsageTo(gfxImageUsage usage);
 
 EPI_NAMESPACE_END()

@@ -21,32 +21,10 @@ enum class gfxTextureType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxTextureType)
     None = 0,
-    Texture2D = 1
+    Texture1D = 1,
+    Texture2D = 2,
+    Texture3D = 3
 EPI_GENREGION_END(gfxTextureType)
-};
-
-enum class gfxTextureFormat : epiS32
-{
-EPI_GENREGION_BEGIN(gfxTextureFormat)
-    R = 0,
-    RG = 1,
-    RGB = 2,
-    BGR = 3,
-    RGBA = 4,
-    BGRA = 5
-EPI_GENREGION_END(gfxTextureFormat)
-};
-
-enum class gfxTexturePixelType : epiS32
-{
-EPI_GENREGION_BEGIN(gfxTexturePixelType)
-    BYTE = 0,
-    UBYTE = 1,
-    SHORT = 2,
-    USHORT = 3,
-    INT = 4,
-    UINT = 5
-EPI_GENREGION_END(gfxTexturePixelType)
 };
 
 enum class gfxVertexBufferUsage : epiS32
@@ -678,6 +656,20 @@ EPI_GENREGION_BEGIN(gfxLogicOp)
     Nand = 14,
     Set = 15
 EPI_GENREGION_END(gfxLogicOp)
+};
+
+enum class gfxTextureViewType : epiS32
+{
+EPI_GENREGION_BEGIN(gfxTextureViewType)
+    None = 0,
+    TextureView1D = 1,
+    TextureView2D = 2,
+    TextureView3D = 3,
+    TextureViewCube = 4,
+    TextureView1DArray = 5,
+    TextureView2DArray = 6,
+    TextureViewCubeArray = 7
+EPI_GENREGION_END(gfxTextureViewType)
 };
 
 EPI_NAMESPACE_END()

@@ -10,6 +10,9 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 #include "EpiGraphicsDriverCommon/gfxPipeline.h"
+#include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxTexture.h"
+#include "EpiGraphicsDriverCommon/gfxTextureView.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -52,6 +55,9 @@ public:
     std::optional<gfxPipeline> CreatePipeline(const gfxPipelineCreateInfo& info) const;
     std::optional<gfxShader> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const;
     std::optional<gfxShaderProgram> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const;
+    std::optional<gfxFrameBuffer> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const;
+    std::optional<gfxTexture> CreateTexture(const gfxTextureCreateInfo& info) const;
+    std::optional<gfxTextureView> CreateTextureView(const gfxTextureViewCreateInfo& info) const;
 
 protected:
     internalgfx::gfxDeviceImpl* m_Impl{nullptr};

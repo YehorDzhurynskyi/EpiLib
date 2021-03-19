@@ -858,4 +858,44 @@ VkLogicOp gfxLogicOpTo(gfxLogicOp logicOp)
     }
 }
 
+VkImageType gfxTextureTypeTo(gfxTextureType type)
+{
+    switch (type)
+    {
+    case gfxTextureType::Texture1D: return VK_IMAGE_TYPE_1D;
+    case gfxTextureType::Texture2D: return VK_IMAGE_TYPE_2D;
+    case gfxTextureType::Texture3D: return VK_IMAGE_TYPE_3D;
+    default: epiLogError("Unhandled gfxTextureType=`{}`", type); return VK_IMAGE_TYPE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkImageViewType gfxTextureViewTypeTo(gfxTextureViewType viewType)
+{
+    switch (viewType)
+    {
+    case gfxTextureViewType::TextureView1D: return VK_IMAGE_VIEW_TYPE_1D;
+    case gfxTextureViewType::TextureView2D: return VK_IMAGE_VIEW_TYPE_2D;
+    case gfxTextureViewType::TextureView3D: return VK_IMAGE_VIEW_TYPE_3D;
+    case gfxTextureViewType::TextureViewCube: return VK_IMAGE_VIEW_TYPE_CUBE;
+    case gfxTextureViewType::TextureView1DArray: return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+    case gfxTextureViewType::TextureView2DArray: return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+    case gfxTextureViewType::TextureViewCubeArray: return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+    default: epiLogError("Unhandled gfxTextureViewType=`{}`", viewType); return VK_IMAGE_VIEW_TYPE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkImageUsageFlagBits gfxImageUsageTo(gfxImageUsage usage)
+{
+    return epiMask((usage & gfxImageUsage_TRANSFER_SRC) ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_TRANSFER_DST) ? VK_IMAGE_USAGE_TRANSFER_DST_BIT : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_SAMPLED) ? VK_IMAGE_USAGE_SAMPLED_BIT : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_STORAGE) ? VK_IMAGE_USAGE_STORAGE_BIT : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_COLOR_ATTACHMENT) ? VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_DEPTH_STENCIL_ATTACHMENT) ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_TRANSIENT_ATTACHMENT) ? VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_INPUT_ATTACHMENT) ? VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_SHADING_RATE_IMAGE) ? VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV : VkImageUsageFlagBits{},
+                   (usage & gfxImageUsage_FRAGMENT_DENSITY_MAP) ? VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT : VkImageUsageFlagBits{});
+}
+
 EPI_NAMESPACE_END()

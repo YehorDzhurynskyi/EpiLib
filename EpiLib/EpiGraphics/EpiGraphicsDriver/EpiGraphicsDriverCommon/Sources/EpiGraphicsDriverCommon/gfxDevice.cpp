@@ -81,4 +81,41 @@ std::optional<gfxShaderProgram> gfxDevice::CreateShaderProgram(const gfxShaderPr
     return shaderProgram;
 }
 
+std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const
+{
+    std::optional<gfxFrameBuffer> frameBuffer;
+
+    if (std::unique_ptr<internalgfx::gfxFrameBufferImpl> impl = m_Impl->CreateFrameBuffer(info))
+    {
+        frameBuffer = gfxFrameBuffer(impl.release());
+    }
+
+    return frameBuffer;
+}
+
+std::optional<gfxTexture> gfxDevice::CreateTexture(const gfxTextureCreateInfo& info) const
+{
+    std::optional<gfxTexture> texture;
+
+    if (std::unique_ptr<internalgfx::gfxTextureImpl> impl = m_Impl->CreateTexture(info))
+    {
+        texture = gfxTexture(impl.release());
+    }
+
+    return texture;
+}
+
+std::optional<gfxTextureView> gfxDevice::CreateTextureView(const gfxTextureViewCreateInfo& info) const
+{
+    std::optional<gfxTextureView> textureView;
+
+    const internalgfx::gfxTextureImpl* textureImpl = info.GetTexture().m_Impl;
+    if (std::unique_ptr<internalgfx::gfxTextureViewImpl> impl = m_Impl->CreateTextureView(info, textureImpl))
+    {
+        textureView = gfxTextureView(impl.release());
+    }
+
+    return textureView;
+}
+
 EPI_NAMESPACE_END()

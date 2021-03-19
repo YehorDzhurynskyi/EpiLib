@@ -44,6 +44,17 @@ public:
     virtual epiU32 GetQueueCount() const = 0;
 };
 
+class gfxFrameBufferImpl
+{
+public:
+    gfxFrameBufferImpl() = default;
+    gfxFrameBufferImpl(const gfxFrameBufferImpl& rhs) = delete;
+    gfxFrameBufferImpl& operator=(const gfxFrameBufferImpl& rhs) = delete;
+    gfxFrameBufferImpl(gfxFrameBufferImpl&& rhs) = default;
+    gfxFrameBufferImpl& operator=(gfxFrameBufferImpl&& rhs) = default;
+    virtual ~gfxFrameBufferImpl() = default;
+};
+
 class gfxDeviceImpl
 {
 public:
@@ -58,6 +69,9 @@ public:
     virtual std::unique_ptr<gfxPipelineImpl> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl) const = 0;
     virtual std::unique_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
     virtual std::unique_ptr<gfxShaderProgramImpl> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const = 0;
+    virtual std::unique_ptr<gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const = 0;
+    virtual std::unique_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
+    virtual std::unique_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl* textureImpl) const = 0;
 };
 
 class gfxPhysicalDeviceImpl
@@ -218,22 +232,17 @@ public:
     gfxTextureImpl(gfxTextureImpl&& rhs) = default;
     gfxTextureImpl& operator=(gfxTextureImpl&& rhs) = default;
     virtual ~gfxTextureImpl() = default;
+};
 
-    virtual epiBool Create2D(const epiByte* initData,
-                             epiU32 width,
-                             epiU32 height,
-                             gfxFormat format,
-                             gfxTexturePixelType pixelType) = 0;
-    virtual void Destroy() = 0;
-
-    virtual epiU32 GetWidth() const = 0;
-    virtual epiU32 GetHeight() const = 0;
-    virtual epiBool GetIsCreated() const = 0;
-    virtual epiU32 GetID() const = 0;
-    virtual gfxTextureType GetType() const = 0;
-
-    virtual void Bind() = 0;
-    virtual void UnBind() = 0;
+class gfxTextureViewImpl
+{
+public:
+    gfxTextureViewImpl() = default;
+    gfxTextureViewImpl(const gfxTextureViewImpl& rhs) = delete;
+    gfxTextureViewImpl& operator=(const gfxTextureViewImpl& rhs) = delete;
+    gfxTextureViewImpl(gfxTextureViewImpl&& rhs) = default;
+    gfxTextureViewImpl& operator=(gfxTextureViewImpl&& rhs) = default;
+    virtual ~gfxTextureViewImpl() = default;
 };
 
 class gfxShaderImpl

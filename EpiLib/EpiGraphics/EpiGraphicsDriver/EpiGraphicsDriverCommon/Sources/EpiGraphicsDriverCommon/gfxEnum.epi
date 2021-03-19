@@ -10,17 +10,21 @@ enum gfxDriverBackend
 enum gfxTextureType
 {
     None,
-    Texture2D
+    Texture1D,
+    Texture2D,
+    Texture3D
 };
 
-enum gfxTexturePixelType
+enum gfxTextureViewType
 {
-    BYTE,
-    UBYTE,
-    SHORT,
-    USHORT,
-    INT,
-    UINT
+    None,
+    TextureView1D,
+    TextureView2D,
+    TextureView3D,
+    TextureViewCube,
+    TextureView1DArray,
+    TextureView2DArray,
+    TextureViewCubeArray
 };
 
 enum gfxVertexBufferUsage

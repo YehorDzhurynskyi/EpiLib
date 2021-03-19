@@ -1,11 +1,15 @@
-class gfxTexture : gfxBindable
+class gfxTextureCreateInfo
 {
-    [Virtual, ReadOnly]
-    {
-        epiU32 Width;
-        epiU32 Height;
-        epiBool IsCreated;
-        epiU32 ID;
-        gfxTextureType Type;
-    }
+    gfxTextureType Type = gfxTextureType::None;
+    gfxFormat Format = gfxFormat::UNDEFINED;
+    epiVec3u Extent;
+    epiU32 MipLevels;
+    epiU32 ArrayLayers;
+    gfxSampleCount SampleCount = gfxSampleCount::Sample1;
+    gfxImageUsage Usage;
+    gfxImageLayout InitialLayout = gfxImageLayout::Undefined;
+};
+
+class gfxTexture
+{
 };

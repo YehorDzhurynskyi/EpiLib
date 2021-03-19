@@ -47,9 +47,15 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxTexture.epi
     Sources/EpiGraphicsDriverCommon/gfxTexture.h
     Sources/EpiGraphicsDriverCommon/gfxTexture.cpp
+    Sources/EpiGraphicsDriverCommon/gfxTextureView.epi
+    Sources/EpiGraphicsDriverCommon/gfxTextureView.h
+    Sources/EpiGraphicsDriverCommon/gfxTextureView.cpp
     Sources/EpiGraphicsDriverCommon/gfxShaderProgram.epi
     Sources/EpiGraphicsDriverCommon/gfxShaderProgram.h
     Sources/EpiGraphicsDriverCommon/gfxShaderProgram.cpp
+    Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.epi
+    Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.h
+    Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.cpp
 )
 get_target_property(EpiGraphicsDriverCommon_SOURCES EpiGraphicsDriverCommon SOURCES)
 epi_pack_sources(${EpiGraphicsDriverCommon_SOURCES})

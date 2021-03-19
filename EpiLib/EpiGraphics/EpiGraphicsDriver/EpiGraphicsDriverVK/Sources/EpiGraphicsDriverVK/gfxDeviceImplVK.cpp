@@ -6,6 +6,9 @@
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
+#include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
+#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
+#include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 
@@ -205,6 +208,39 @@ std::unique_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const
 {
     std::unique_ptr<gfxShaderProgramImplVK> impl = std::make_unique<gfxShaderProgramImplVK>();
     if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::unique_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const
+{
+    std::unique_ptr<gfxFrameBufferImplVK> impl = std::make_unique<gfxFrameBufferImplVK>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::unique_ptr<gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
+{
+    std::unique_ptr<gfxTextureImplVK> impl = std::make_unique<gfxTextureImplVK>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::unique_ptr<gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl* textureImpl) const
+{
+    std::unique_ptr<gfxTextureViewImplVK> impl = std::make_unique<gfxTextureViewImplVK>(m_VkDevice);
+    if (!impl->Init(info, textureImpl))
     {
         impl.reset();
     }

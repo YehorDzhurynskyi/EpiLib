@@ -1,0 +1,12 @@
+class gfxTextureViewCreateInfo
+{
+    [WriteCallback(RValueRef=true)]
+    gfxTexture Texture;
+
+    gfxTextureViewType ViewType = gfxTextureViewType::None;
+    gfxFormat Format = gfxFormat::UNDEFINED;
+};
+
+class gfxTextureView
+{
+};
