@@ -6,6 +6,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
+#include "EpiGraphicsDriverCommon/gfxSwapChain.h"
+#include "EpiGraphicsDriverCommon/gfxDevice.h"
 
 #include "EpiCore/ObjectModel/Object.h"
 
@@ -36,7 +38,11 @@ public:
         PID_CurrentExtent = 0xbcfa8c13,
         PID_MinImageExtent = 0x3e399bbd,
         PID_MaxImageExtent = 0x871f00cc,
-        PID_COUNT = 6
+        PID_SupportedTransforms = 0x999bc07e,
+        PID_SupportedCompositeAlpha = 0xd2ebb762,
+        PID_SupportedUsage = 0xbc2208b2,
+        PID_CurrentTransform = 0x51c44739,
+        PID_COUNT = 10
     };
 
 protected:
@@ -46,6 +52,10 @@ protected:
     epiSize2u m_CurrentExtent{};
     epiSize2u m_MinImageExtent{};
     epiSize2u m_MaxImageExtent{};
+    gfxSurfaceTransform m_SupportedTransforms{};
+    gfxCompositeAlpha m_SupportedCompositeAlpha{};
+    gfxImageUsage m_SupportedUsage{};
+    gfxSurfaceTransform m_CurrentTransform{};
 
 EPI_GENREGION_END(gfxSurfaceCapabilities)
 };
@@ -101,6 +111,11 @@ public:
 
 public:
     gfxQueueDescriptor CreateQueueDescriptor(const epiArray<epiFloat>& priorities, gfxQueueType type = gfxQueueType{0}) const;
+    std::optional<gfxSwapChain> CreateSwapChain(const gfxDevice& device,
+                                                const gfxSurfaceCapabilities& capabilities,
+                                                const gfxSurfaceFormat& format,
+                                                gfxSurfacePresentMode presentMode,
+                                                const epiSize2u& extent);
 
     epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device) const;
     gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDevice& device) const;

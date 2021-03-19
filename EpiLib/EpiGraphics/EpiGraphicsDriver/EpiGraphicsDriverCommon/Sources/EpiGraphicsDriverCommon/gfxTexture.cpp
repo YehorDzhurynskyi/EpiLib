@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/gfxTexture.h"
-#include "EpiGraphics/gfxTexture.cxx"
+#include "EpiGraphicsDriverCommon/gfxTexture.h"
+#include "EpiGraphicsDriverCommon/gfxTexture.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"

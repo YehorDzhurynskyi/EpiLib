@@ -26,6 +26,11 @@ public:
                  gfxQueueDescriptorList& queueDescriptorList,
                  gfxPhysicalDeviceExtension extensionMask);
 
+    std::unique_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const override;
+    std::unique_ptr<gfxPipelineImpl> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl) const override;
+    std::unique_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const override;
+    std::unique_ptr<gfxShaderProgramImpl> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const override;
+
     VkDevice_T* GetVkDevice() const;
 
 protected:

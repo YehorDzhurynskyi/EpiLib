@@ -8,6 +8,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxQueue.h"
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxRenderPass.h"
+#include "EpiGraphicsDriverCommon/gfxPipeline.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -35,6 +37,9 @@ public:
 EPI_GENREGION_END(gfxDevice)
 
 public:
+    friend class gfxSurface;
+
+public:
     gfxDevice() = default;
     explicit gfxDevice(internalgfx::gfxDeviceImpl* impl);
     gfxDevice(const gfxDevice& rhs) = delete;
@@ -42,6 +47,11 @@ public:
     gfxDevice(gfxDevice&& rhs);
     gfxDevice& operator=(gfxDevice&& rhs);
     ~gfxDevice();
+
+    std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
+    std::optional<gfxPipeline> CreatePipeline(const gfxPipelineCreateInfo& info) const;
+    std::optional<gfxShader> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const;
+    std::optional<gfxShaderProgram> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const;
 
 protected:
     internalgfx::gfxDeviceImpl* m_Impl{nullptr};

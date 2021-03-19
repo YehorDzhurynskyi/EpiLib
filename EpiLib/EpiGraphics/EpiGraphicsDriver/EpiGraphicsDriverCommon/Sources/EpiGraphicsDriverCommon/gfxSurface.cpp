@@ -47,6 +47,24 @@ gfxQueueDescriptor gfxSurface::CreateQueueDescriptor(const epiArray<epiFloat>& p
     return desc;
 }
 
+std::optional<gfxSwapChain> gfxSurface::CreateSwapChain(const gfxDevice& device,
+                                                        const gfxSurfaceCapabilities& capabilities,
+                                                        const gfxSurfaceFormat& format,
+                                                        gfxSurfacePresentMode presentMode,
+                                                        const epiSize2u& extent)
+{
+    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
+
+    std::optional<gfxSwapChain> swapchain;
+
+    if (std::unique_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(*device.m_Impl, capabilities, format, presentMode, extent))
+    {
+        swapchain = gfxSwapChain(impl.release());
+    }
+
+    return swapchain;
+}
+
 epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device) const
 {
     epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);

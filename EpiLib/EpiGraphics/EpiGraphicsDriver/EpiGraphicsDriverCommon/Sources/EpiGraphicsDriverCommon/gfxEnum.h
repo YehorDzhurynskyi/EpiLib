@@ -76,24 +76,9 @@ EPI_GENREGION_BEGIN(gfxShaderType)
     None = 0,
     Vertex = 1,
     Geometry = 2,
-    Pixel = 3
+    Tesselation = 3,
+    Fragment = 4
 EPI_GENREGION_END(gfxShaderType)
-};
-
-enum class gfxVertexBufferLayoutAttributeType : epiS32
-{
-EPI_GENREGION_BEGIN(gfxVertexBufferLayoutAttributeType)
-    NONE = 0,
-    BYTE = 1,
-    UBYTE = 2,
-    SHORT = 3,
-    USHORT = 4,
-    INT = 5,
-    UINT = 6,
-    HALF_FLOAT = 7,
-    FLOAT = 8,
-    DOUBLE = 9
-EPI_GENREGION_END(gfxVertexBufferLayoutAttributeType)
 };
 
 enum class gfxPhysicalDeviceType : epiS32
@@ -433,6 +418,266 @@ EPI_GENREGION_BEGIN(gfxFormat)
     A4R4G4B4_UNORM_PACK16_EXT = 241,
     A4B4G4R4_UNORM_PACK16_EXT = 242
 EPI_GENREGION_END(gfxFormat)
+};
+
+enum gfxSurfaceTransform : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSurfaceTransform)
+    gfxSurfaceTransform_IDENTITY = (1 << 0),
+    gfxSurfaceTransform_ROTATE_90 = (1 << 1),
+    gfxSurfaceTransform_ROTATE_180 = (1 << 2),
+    gfxSurfaceTransform_ROTATE_270 = (1 << 3),
+    gfxSurfaceTransform_HORIZONTAL_MIRROR = (1 << 4),
+    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_90 = (1 << 5),
+    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_180 = (1 << 6),
+    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_270 = (1 << 7),
+    gfxSurfaceTransform_INHERIT = (1 << 8)
+EPI_GENREGION_END(gfxSurfaceTransform)
+};
+
+enum gfxCompositeAlpha : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCompositeAlpha)
+    gfxCompositeAlpha_OPAQUE = (1 << 0),
+    gfxCompositeAlpha_PRE_MULTIPLIED = (1 << 1),
+    gfxCompositeAlpha_POST_MULTIPLIED = (1 << 2),
+    gfxCompositeAlpha_INHERIT = (1 << 3)
+EPI_GENREGION_END(gfxCompositeAlpha)
+};
+
+enum gfxImageUsage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxImageUsage)
+    gfxImageUsage_TRANSFER_SRC = (1 << 0),
+    gfxImageUsage_TRANSFER_DST = (1 << 1),
+    gfxImageUsage_SAMPLED = (1 << 2),
+    gfxImageUsage_STORAGE = (1 << 3),
+    gfxImageUsage_COLOR_ATTACHMENT = (1 << 4),
+    gfxImageUsage_DEPTH_STENCIL_ATTACHMENT = (1 << 5),
+    gfxImageUsage_TRANSIENT_ATTACHMENT = (1 << 6),
+    gfxImageUsage_INPUT_ATTACHMENT = (1 << 7),
+    gfxImageUsage_SHADING_RATE_IMAGE = (1 << 8),
+    gfxImageUsage_FRAGMENT_DENSITY_MAP = (1 << 9)
+EPI_GENREGION_END(gfxImageUsage)
+};
+
+enum class gfxPipelineInputAssemblyType : epiS32
+{
+EPI_GENREGION_BEGIN(gfxPipelineInputAssemblyType)
+    None = 0,
+    PointList = 1,
+    LineList = 2,
+    LineStrip = 3,
+    TriangleList = 4,
+    TriangleStrip = 5
+EPI_GENREGION_END(gfxPipelineInputAssemblyType)
+};
+
+enum class gfxSampleCount : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSampleCount)
+    Sample1 = 0,
+    Sample2 = 1,
+    Sample4 = 2,
+    Sample8 = 3,
+    Sample16 = 4,
+    Sample32 = 5,
+    Sample64 = 6
+EPI_GENREGION_END(gfxSampleCount)
+};
+
+enum class gfxAttachmentLoadOp : epiS32
+{
+EPI_GENREGION_BEGIN(gfxAttachmentLoadOp)
+    Load = 0,
+    Clear = 1,
+    DontCare = 2
+EPI_GENREGION_END(gfxAttachmentLoadOp)
+};
+
+enum class gfxAttachmentStoreOp : epiS32
+{
+EPI_GENREGION_BEGIN(gfxAttachmentStoreOp)
+    Store = 0,
+    DontCare = 1
+EPI_GENREGION_END(gfxAttachmentStoreOp)
+};
+
+enum class gfxImageLayout : epiS32
+{
+EPI_GENREGION_BEGIN(gfxImageLayout)
+    Undefined = 0,
+    General = 1,
+    ColorAttachmentOptimal = 2,
+    DepthStencilAttachmentOptimal = 3,
+    DepthStencilReadOnlyOptimal = 4,
+    ShaderReadOnlyOptimal = 5,
+    TransferSrcOptimal = 6,
+    TransferDstOptimal = 7,
+    Preinitialized = 8,
+    DepthReadOnlyStencilAttachmentOptimal = 9,
+    DepthAttachmentStencilReadOnlyOptimal = 10,
+    DepthAttachmentOptimal = 11,
+    DepthReadOnlyOptimal = 12,
+    StencilAttachmentOptimal = 13,
+    StencilReadOnlyOptimal = 14,
+    PresentSrc = 15,
+    SharedPresent = 16,
+    ShadingRateOptimal = 17,
+    FragmentDensityMapOptimal = 18
+EPI_GENREGION_END(gfxImageLayout)
+};
+
+enum class gfxPipelineBindPoint : epiS32
+{
+EPI_GENREGION_BEGIN(gfxPipelineBindPoint)
+    Graphics = 0,
+    Compute = 1,
+    RayTracing = 2
+EPI_GENREGION_END(gfxPipelineBindPoint)
+};
+
+enum class gfxPolygonMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxPolygonMode)
+    Fill = 0,
+    Line = 1,
+    Point = 2
+EPI_GENREGION_END(gfxPolygonMode)
+};
+
+enum class gfxCullMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCullMode)
+    None = 0,
+    Front = 1,
+    Back = 2,
+    FrontBack = 3
+EPI_GENREGION_END(gfxCullMode)
+};
+
+enum class gfxFrontFace : epiS32
+{
+EPI_GENREGION_BEGIN(gfxFrontFace)
+    CW = 0,
+    CCW = 1
+EPI_GENREGION_END(gfxFrontFace)
+};
+
+enum class gfxBlendFactor : epiS32
+{
+EPI_GENREGION_BEGIN(gfxBlendFactor)
+    Zero = 0,
+    One = 1,
+    SrcColor = 2,
+    OneMinusSrcColor = 3,
+    DstColor = 4,
+    OneMinusDstColor = 5,
+    SrcAlpha = 6,
+    OneMinusSrcAlpha = 7,
+    DstAlpha = 8,
+    OneMinusDstAlpha = 9,
+    ConstantColor = 10,
+    OneMinusConstantColor = 11,
+    ConstantAlpha = 12,
+    OneMinusConstantAlpha = 13,
+    SrcAlphaSaturate = 14,
+    Src1Color = 15,
+    OneMinusSrc1Color = 16,
+    Src1Alpha = 17,
+    OneMinusSrc1Alpha = 18
+EPI_GENREGION_END(gfxBlendFactor)
+};
+
+enum class gfxBlendOp : epiS32
+{
+EPI_GENREGION_BEGIN(gfxBlendOp)
+    Add = 0,
+    Subtract = 1,
+    ReverseSubtract = 2,
+    MIN = 3,
+    MAX = 4,
+    Zero = 5,
+    Src = 6,
+    Dst = 7,
+    SrcOver = 8,
+    DstOver = 9,
+    SrcIn = 10,
+    DstIn = 11,
+    SrcOut = 12,
+    DstOut = 13,
+    SrcAtop = 14,
+    DstAtop = 15,
+    Xor = 16,
+    Multiply = 17,
+    Screen = 18,
+    Overlay = 19,
+    Darken = 20,
+    Lighten = 21,
+    ColorDodge = 22,
+    ColorBurn = 23,
+    Hardlight = 24,
+    Softlight = 25,
+    Difference = 26,
+    Exclusion = 27,
+    Invert = 28,
+    InvertRGB = 29,
+    LinearDodge = 30,
+    LinearBurn = 31,
+    VividLight = 32,
+    LinearLight = 33,
+    PinLight = 34,
+    HardMix = 35,
+    HSL_HUE = 36,
+    HSL_Saturation = 37,
+    HSL_Color = 38,
+    HSL_Luminosity = 39,
+    Plus = 40,
+    PlusClamped = 41,
+    PlusClampedAlpha = 42,
+    PlusDarker = 43,
+    Minus = 44,
+    MinusClamped = 45,
+    Contrast = 46,
+    InvertOVG = 47,
+    Red = 48,
+    Green = 49,
+    Blue = 50
+EPI_GENREGION_END(gfxBlendOp)
+};
+
+enum gfxColorComponent : epiS32
+{
+EPI_GENREGION_BEGIN(gfxColorComponent)
+    gfxColorComponent_R = (1 << 0),
+    gfxColorComponent_G = (1 << 1),
+    gfxColorComponent_B = (1 << 2),
+    gfxColorComponent_A = (1 << 3),
+    gfxColorComponent_RGB = gfxColorComponent_R | gfxColorComponent_G | gfxColorComponent_B,
+    gfxColorComponent_RGBA = gfxColorComponent_R | gfxColorComponent_G | gfxColorComponent_B | gfxColorComponent_A
+EPI_GENREGION_END(gfxColorComponent)
+};
+
+enum class gfxLogicOp : epiS32
+{
+EPI_GENREGION_BEGIN(gfxLogicOp)
+    Clear = 0,
+    And = 1,
+    AndReverse = 2,
+    Copy = 3,
+    AndInverted = 4,
+    None = 5,
+    Xor = 6,
+    Or = 7,
+    Nor = 8,
+    Equivalent = 9,
+    Invert = 10,
+    OrReverse = 11,
+    CopyInverted = 12,
+    OrInverted = 13,
+    Nand = 14,
+    Set = 15
+EPI_GENREGION_END(gfxLogicOp)
 };
 
 EPI_NAMESPACE_END()

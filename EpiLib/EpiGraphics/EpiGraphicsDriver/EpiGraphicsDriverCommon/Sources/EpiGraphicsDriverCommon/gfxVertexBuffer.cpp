@@ -1,20 +1,20 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/gfxVertexBuffer.h"
-#include "EpiGraphics/gfxVertexBuffer.cxx"
+#include "EpiGraphicsDriverCommon/gfxVertexBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxVertexBuffer.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
 EPI_NAMESPACE_BEGIN()
 
-epiU32 gfxVertexBufferLayoutAttribute::GetIndex_Callback() const
+epiU32 gfxVertexBufferLayoutAttribute::GetLocation_Callback() const
 {
-    return m_Impl->GetIndex();
+    return m_Impl->GetLocation();
 }
 
-void gfxVertexBufferLayoutAttribute::SetIndex_Callback(epiU32 value)
+void gfxVertexBufferLayoutAttribute::SetLocation_Callback(epiU32 value)
 {
-    m_Impl->SetIndex(value);
+    m_Impl->SetLocation(value);
 }
 
 epiSize_t gfxVertexBufferLayoutAttribute::GetSize_Callback() const

@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/gfxVertexArray.h"
-#include "EpiGraphics/gfxVertexArray.cxx"
+#include "EpiGraphicsDriverCommon/gfxVertexArray.h"
+#include "EpiGraphicsDriverCommon/gfxVertexArray.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"

@@ -1,0 +1,68 @@
+class gfxPipelineViewport
+{
+    epiRect2f ViewportRect;
+    epiFloat ViewportMinDepth = 0.0f;
+    epiFloat ViewportMaxDepth = 1.0f;
+};
+
+class gfxPipelineColorBlendAttachment
+{
+    epiBool BlendEnable;
+    gfxBlendFactor SrcColorBlendFactor;
+    gfxBlendFactor DstColorBlendFactor;
+    gfxBlendOp ColorBlendOp;
+    gfxBlendFactor SrcAlphaBlendFactor;
+    gfxBlendFactor DstAlphaBlendFactor;
+    gfxBlendOp AlphaBlendOp;
+    gfxColorComponent ColorWriteMask = gfxColorComponent::RGBA;
+};
+
+class gfxPipelineLayout
+{
+};
+
+class gfxPipelineCreateInfo
+{
+    gfxPipelineLayout PipelineLayout;
+
+    [WriteCallback(RValueRef=true)]
+    {
+        gfxShaderProgram ShaderProgram;
+        gfxRenderPass RenderPass;
+    }
+
+    epiU32 RenderSubPassIndex;
+
+    gfxPipelineInputAssemblyType InputAssemblyType = gfxPipelineInputAssemblyType::None;
+
+    [ReadOnly]
+    {
+        epiArray<gfxPipelineViewport> Viewports;
+        epiArray<epiRect2s> Scissors;
+    }
+
+    epiBool DepthClampEnable = false;
+    epiBool RasterizerDiscardEnable = false;
+    gfxPolygonMode PolygonMode = gfxPolygonMode::Fill;
+    epiFloat LineWidth = 1.0f;
+    gfxCullMode CullMode = gfxCullMode::None;
+    gfxFrontFace FrontFace = gfxFrontFace::CW;
+
+    epiBool DepthBiasEnable = false;
+    epiFloat DepthBiasConstantFactor = 0.0f;
+    epiFloat DepthBiasClamp = 0.0f;
+    epiFloat DepthBiasSlopeFactor = 0.0f;
+
+    [ReadOnly]
+    {
+        epiArray<gfxPipelineColorBlendAttachment> ColorBlendAttachments;
+    }
+
+    epiBool ColorBlendLogicOpEnable;
+    gfxLogicOp ColorBlendLogicOp;
+    epiVec4f ColorBlendConstants;
+};
+
+class gfxPipeline
+{
+};

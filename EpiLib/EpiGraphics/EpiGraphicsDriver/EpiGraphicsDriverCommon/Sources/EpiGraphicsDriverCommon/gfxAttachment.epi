@@ -1,0 +1,11 @@
+class gfxAttachment
+{
+    gfxFormat Format = gfxFormat::UNDEFINED;
+    gfxSampleCount SampleCount = gfxSampleCount::Sample1;
+    gfxAttachmentLoadOp LoadOp = gfxAttachmentLoadOp::DontCare;
+    gfxAttachmentStoreOp StoreOp = gfxAttachmentStoreOp::DontCare;
+    gfxAttachmentLoadOp StencilLoadOp = gfxAttachmentLoadOp::DontCare;
+    gfxAttachmentStoreOp StencilStoreOp = gfxAttachmentStoreOp::DontCare;
+    gfxImageLayout InitialLayout = gfxImageLayout::Undefined;
+    gfxImageLayout FinalLayout = gfxImageLayout::Undefined;
+};

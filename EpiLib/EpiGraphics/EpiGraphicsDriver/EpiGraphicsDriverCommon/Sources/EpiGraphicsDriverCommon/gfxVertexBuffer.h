@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/gfxVertexBuffer.hxx"
+#include "EpiGraphicsDriverCommon/gfxVertexBuffer.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"
@@ -30,26 +30,17 @@ public:
 
     enum gfxVertexBufferLayoutAttribute_PIDs
     {
-        PID_Index = 0x41b24805,
-        PID_Size = 0x57f28b54,
-        PID_Type = 0x2cecf817,
-        PID_Normalized = 0x364083c7,
-        PID_Stride = 0x8df33e39,
+        PID_Location = 0xa7e8eb9d,
+        PID_Format = 0xd91677e9,
         PID_Offset = 0x5ea6cfe6,
-        PID_COUNT = 6
+        PID_COUNT = 3
     };
 
 protected:
-    epiU32 GetIndex_Callback() const;
-    void SetIndex_Callback(epiU32 value);
-    epiSize_t GetSize_Callback() const;
-    void SetSize_Callback(epiSize_t value);
-    gfxVertexBufferLayoutAttributeType GetType_Callback() const;
-    void SetType_Callback(gfxVertexBufferLayoutAttributeType value);
-    epiBool GetNormalized_Callback() const;
-    void SetNormalized_Callback(epiBool value);
-    epiSize_t GetStride_Callback() const;
-    void SetStride_Callback(epiSize_t value);
+    epiU32 GetLocation_Callback() const;
+    void SetLocation_Callback(epiU32 value);
+    gfxFormat GetFormat_Callback() const;
+    void SetFormat_Callback(gfxFormat value);
     epiSize_t GetOffset_Callback() const;
     void SetOffset_Callback(epiSize_t value);
 

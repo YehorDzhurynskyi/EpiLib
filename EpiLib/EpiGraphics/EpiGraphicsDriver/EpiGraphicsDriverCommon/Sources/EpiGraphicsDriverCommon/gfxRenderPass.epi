@@ -1,0 +1,14 @@
+class gfxRenderPassCreateInfo
+{
+    [ReadOnly]
+    epiArray<gfxRenderSubPass> SubPasses;
+
+    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
+    {
+        epiArray<gfxAttachment> Attachments;
+    }
+};
+
+class gfxRenderPass
+{
+};

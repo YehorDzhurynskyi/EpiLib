@@ -23,6 +23,33 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxWindow.epi
     Sources/EpiGraphicsDriverCommon/gfxWindow.h
     Sources/EpiGraphicsDriverCommon/gfxWindow.cpp
+    Sources/EpiGraphicsDriverCommon/gfxSwapChain.epi
+    Sources/EpiGraphicsDriverCommon/gfxSwapChain.h
+    Sources/EpiGraphicsDriverCommon/gfxSwapChain.cpp
+    Sources/EpiGraphicsDriverCommon/gfxAttachment.epi
+    Sources/EpiGraphicsDriverCommon/gfxAttachment.h
+    Sources/EpiGraphicsDriverCommon/gfxAttachment.cpp
+    Sources/EpiGraphicsDriverCommon/gfxRenderPass.epi
+    Sources/EpiGraphicsDriverCommon/gfxRenderPass.h
+    Sources/EpiGraphicsDriverCommon/gfxRenderPass.cpp
+    Sources/EpiGraphicsDriverCommon/gfxRenderSubPass.epi
+    Sources/EpiGraphicsDriverCommon/gfxRenderSubPass.h
+    Sources/EpiGraphicsDriverCommon/gfxRenderSubPass.cpp
+    Sources/EpiGraphicsDriverCommon/gfxPipeline.epi
+    Sources/EpiGraphicsDriverCommon/gfxPipeline.h
+    Sources/EpiGraphicsDriverCommon/gfxPipeline.cpp
+    Sources/EpiGraphicsDriverCommon/gfxVertexArray.epi
+    Sources/EpiGraphicsDriverCommon/gfxVertexArray.h
+    Sources/EpiGraphicsDriverCommon/gfxVertexArray.cpp
+    Sources/EpiGraphicsDriverCommon/gfxVertexBuffer.epi
+    Sources/EpiGraphicsDriverCommon/gfxVertexBuffer.h
+    Sources/EpiGraphicsDriverCommon/gfxVertexBuffer.cpp
+    Sources/EpiGraphicsDriverCommon/gfxTexture.epi
+    Sources/EpiGraphicsDriverCommon/gfxTexture.h
+    Sources/EpiGraphicsDriverCommon/gfxTexture.cpp
+    Sources/EpiGraphicsDriverCommon/gfxShaderProgram.epi
+    Sources/EpiGraphicsDriverCommon/gfxShaderProgram.h
+    Sources/EpiGraphicsDriverCommon/gfxShaderProgram.cpp
 )
 get_target_property(EpiGraphicsDriverCommon_SOURCES EpiGraphicsDriverCommon SOURCES)
 epi_pack_sources(${EpiGraphicsDriverCommon_SOURCES})

@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/gfxVertexArray.hxx"
+#include "EpiGraphicsDriverCommon/gfxVertexArray.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxBindable.h"

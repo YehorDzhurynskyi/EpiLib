@@ -37,7 +37,7 @@ IMPLEMENT_WX_THEME_SUPPORT;
 
 int main(int argc, char* argv[])
 {
-    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
 
     wxEntryStart(argc, argv);
@@ -68,7 +68,8 @@ bool EpiwxVulkanDemo::OnInit()
 
     epi::gfxDriver::GetInstance().SetBackend(epi::gfxDriverBackend::Vulkan);
     const std::unique_ptr<epi::gfxSurface> surface = epi::gfxDriver::GetInstance().CreateSurface(epi::gfxWindow());
-    std::optional<epi::gfxPhysicalDevice> physicalDevice = epi::gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface](const epi::gfxPhysicalDevice& device) {
+    std::optional<epi::gfxPhysicalDevice> physicalDevice = epi::gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface](const epi::gfxPhysicalDevice& device)
+    {
         if (device.GetType() != epi::gfxPhysicalDeviceType::DiscreteGPU ||
             !device.IsExtensionsSupported(epi::gfxPhysicalDeviceExtension_SwapChain) ||
             !device.IsQueueTypeSupported(epi::gfxQueueType_Graphics))
@@ -77,11 +78,28 @@ bool EpiwxVulkanDemo::OnInit()
         }
 
         const epi::epiArray<epi::gfxSurfaceFormat> supportedFormats = surface->GetSupportedFormatsFor(device);
-        const epiBool formatIsAppropriate = std::any_of(supportedFormats.begin(), supportedFormats.end(), [](const epi::gfxSurfaceFormat& format) {
-            return format.GetFormat() == epi::gfxFormat::R8G8B8_SRGB && format.GetColorSpace() == epi::gfxSurfaceColorSpace::SRGB_NONLINEAR;
+        const epiBool formatIsAppropriate = std::any_of(supportedFormats.begin(), supportedFormats.end(), [](const epi::gfxSurfaceFormat& format)
+        {
+            return format.GetFormat() == epi::gfxFormat::B8G8R8A8_SRGB && format.GetColorSpace() == epi::gfxSurfaceColorSpace::SRGB_NONLINEAR;
         });
 
-        return formatIsAppropriate && surface->IsPresentSupportedFor(device);
+        if (!formatIsAppropriate)
+        {
+            return false;
+        }
+
+        const epi::epiArray<epi::gfxSurfacePresentMode> supportedPresentModes = surface->GetSupportedPresentModesFor(device);
+        const epiBool presentModeIsAppropriate = std::any_of(supportedPresentModes.begin(), supportedPresentModes.end(), [](const epi::gfxSurfacePresentMode& presentMode)
+        {
+            return presentMode == epi::gfxSurfacePresentMode::MAILBOX;
+        });
+
+        if (!presentModeIsAppropriate)
+        {
+            return false;
+        }
+
+        return surface->IsPresentSupportedFor(device);
     });
 
     epiAssert(physicalDevice.has_value());
@@ -91,6 +109,31 @@ bool EpiwxVulkanDemo::OnInit()
 
     std::optional<epi::gfxDevice> device = physicalDevice->CreateDevice(queueDescriptorList, epi::gfxPhysicalDeviceExtension_SwapChain);
     epiAssert(device.has_value());
+
+    epi::gfxSurfaceFormat surfaceFormat;
+    surfaceFormat.SetFormat(epi::gfxFormat::B8G8R8A8_SRGB);
+    surfaceFormat.SetColorSpace(epi::gfxSurfaceColorSpace::SRGB_NONLINEAR);
+
+    const epi::gfxSurfaceCapabilities surfaceCapabilities = surface->GetCapabilitiesFor(*physicalDevice);
+    epiSize2u extent{};
+    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
+    {
+        extent = surfaceCapabilities.GetCurrentExtent();
+    }
+    else
+    {
+        const wxSize frameSize = m_Frame->GetSize();
+
+        extent.x = std::clamp(static_cast<epiU32>(frameSize.x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
+        extent.y = std::clamp(static_cast<epiU32>(frameSize.y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
+    }
+
+    std::optional<epi::gfxSwapChain> swapChain = surface->CreateSwapChain(*device,
+                                                                          surfaceCapabilities,
+                                                                          surfaceFormat,
+                                                                          epi::gfxSurfacePresentMode::MAILBOX,
+                                                                          extent);
+    epiAssert(swapChain.has_value());
 
     return true;
 }

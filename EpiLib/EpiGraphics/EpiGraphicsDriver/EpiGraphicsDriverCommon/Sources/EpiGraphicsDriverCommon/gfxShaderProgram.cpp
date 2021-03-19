@@ -1,11 +1,16 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphics/gfxShaderProgram.h"
-#include "EpiGraphics/gfxShaderProgram.cxx"
+#include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
+#include "EpiGraphicsDriverCommon/gfxShaderProgram.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
 EPI_NAMESPACE_BEGIN()
+
+gfxShader::gfxShader(internalgfx::gfxShaderImpl* impl)
+    : m_Impl{impl}
+{
+}
 
 gfxShader::gfxShader(gfxShader&& rhs)
 {
@@ -23,26 +28,14 @@ gfxShader& gfxShader::operator=(gfxShader&& rhs)
 
 gfxShader::~gfxShader()
 {
-    if (GetIsCreated())
-    {
-        Destroy();
-    }
-
     delete m_Impl;
 }
 
-void gfxShader::CreateFromSource(const epiChar* source, gfxShaderType type)
+epiBool gfxShader::InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint)
 {
     epiExpect(!GetIsCreated(), "Create method should be called on destroyed shader");
 
-    m_Impl->CreateFromSource(source, type);
-}
-
-void gfxShader::Destroy()
-{
-    epiExpect(GetIsCreated(), "Destroy method should be called on already created shader");
-
-    m_Impl->Destroy();
+    return m_Impl->InitFromSource(source, type, entryPoint);
 }
 
 epiBool gfxShader::GetIsCreated_Callback() const
@@ -50,19 +43,20 @@ epiBool gfxShader::GetIsCreated_Callback() const
     return m_Impl->GetIsCreated();
 }
 
-epiU32 gfxShader::GetID_Callback() const
-{
-    return m_Impl->GetID();
-}
-
 gfxShaderType gfxShader::GetType_Callback() const
 {
     return m_Impl->GetType();
 }
 
-gfxShaderProgram::gfxShaderProgram()
+epiBool gfxShaderProgramCreateInfo::GetIsEmpty_Callback() const
 {
-    Create();
+    static_assert(gfxShaderProgramCreateInfo::PID_COUNT == 4); // add another shader type or change counter
+    return m_Vertex != nullptr || m_Geometry != nullptr || m_Fragment != nullptr;
+}
+
+gfxShaderProgram::gfxShaderProgram(internalgfx::gfxShaderProgramImpl* impl)
+    : m_Impl{impl}
+{
 }
 
 gfxShaderProgram::gfxShaderProgram(gfxShaderProgram&& rhs)
@@ -81,26 +75,7 @@ gfxShaderProgram& gfxShaderProgram::operator=(gfxShaderProgram&& rhs)
 
 gfxShaderProgram::~gfxShaderProgram()
 {
-    if (GetIsCreated())
-    {
-        Destroy();
-    }
-
     delete m_Impl;
-}
-
-void gfxShaderProgram::Create()
-{
-    epiExpect(!GetIsCreated(), "Create method should be called on destroyed shader program");
-
-    m_Impl->Create();
-}
-
-void gfxShaderProgram::Destroy()
-{
-    epiExpect(GetIsCreated(), "Destroy method should be called on already created shader program");
-
-    m_Impl->Destroy();
 }
 
 epiBool gfxShaderProgram::GetIsCreated_Callback() const
@@ -108,51 +83,7 @@ epiBool gfxShaderProgram::GetIsCreated_Callback() const
     return m_Impl->GetIsCreated();
 }
 
-epiU32 gfxShaderProgram::GetID_Callback() const
-{
-    return m_Impl->GetID();
-}
-
-void gfxShaderProgram::ShaderAttach(const gfxShader& shader)
-{
-    epiExpect(GetIsCreated(), "A program expected to be created");
-    epiExpect(shader.GetIsCreated(), "A shader expected to be created");
-
-    m_Impl->ShaderAttach(*shader.m_Impl);
-}
-
-void gfxShaderProgram::ShaderDettach(gfxShaderType type)
-{
-    epiExpect(GetIsCreated(), "A program expected to be created");
-
-    m_Impl->ShaderDettach(type);
-}
-
-void gfxShaderProgram::Build()
-{
-    epiExpect(GetIsCreated(), "A program expected to be created");
-
-    m_Impl->Build();
-}
-
-void gfxShaderProgram::Bind()
-{
-    epiExpect(GetIsCreated(), "A program expected to be created");
-
-    super::Bind();
-
-    m_Impl->Bind();
-}
-
-void gfxShaderProgram::UnBind()
-{
-    epiExpect(GetIsCreated(), "A program expected to be created");
-
-    super::UnBind();
-
-    m_Impl->UnBind();
-}
-
+#if 0
 void gfxShaderProgram::Texture(const epiChar* name, epiU32 value)
 {
     epiExpect(GetIsBounded());
@@ -250,5 +181,6 @@ void gfxShaderProgram::UniformVec4u(const epiChar* name, const epiVec4u& value)
 
     m_Impl->UniformVec4u(name, value);
 }
+#endif
 
 EPI_NAMESPACE_END()

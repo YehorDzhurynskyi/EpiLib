@@ -1,6 +1,8 @@
 project(EpiGraphicsDriverVK)
 
 add_library(EpiGraphicsDriverVK
+    Sources/EpiGraphicsDriverVK/gfxEnumVK.h
+    Sources/EpiGraphicsDriverVK/gfxEnumVK.cpp
     Sources/EpiGraphicsDriverVK/gfxDriverImplVK.h
     Sources/EpiGraphicsDriverVK/gfxDriverImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxVertexArrayImplVK.h
@@ -21,6 +23,16 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxQueueFamilyImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxSurfaceImplVK.h
     Sources/EpiGraphicsDriverVK/gfxSurfaceImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxSwapChainImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxSwapChainImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxPipelineImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxPipelineImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxAttachmentImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxAttachmentImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxRenderPassImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxRenderPassImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxRenderSubPassVK.h
+    Sources/EpiGraphicsDriverVK/gfxRenderSubPassVK.cpp
 )
 get_target_property(EpiGraphicsDriverVK_SOURCES EpiGraphicsDriverVK SOURCES)
 epi_pack_sources(${EpiGraphicsDriverVK_SOURCES})
@@ -37,6 +49,7 @@ target_link_libraries(EpiGraphicsDriverVK
     PRIVATE
         EpiGraphicsDriverCommon
         Vulkan::Vulkan
+        Vulkan::glslc
 )
 
 epi_module_register(EpiGraphicsDriverVK

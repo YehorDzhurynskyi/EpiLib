@@ -9,21 +9,6 @@ add_library(EpiGraphics
     Sources/EpiGraphics/gfxBindable.h
     Sources/EpiGraphics/gfxBindable.cpp
 
-    Sources/EpiGraphics/gfxVertexArray.epi
-    Sources/EpiGraphics/gfxVertexArray.h
-    Sources/EpiGraphics/gfxVertexArray.cpp
-    Sources/EpiGraphics/gfxVertexBuffer.epi
-    Sources/EpiGraphics/gfxVertexBuffer.h
-    Sources/EpiGraphics/gfxVertexBuffer.cpp
-
-    Sources/EpiGraphics/gfxTexture.epi
-    Sources/EpiGraphics/gfxTexture.h
-    Sources/EpiGraphics/gfxTexture.cpp
-
-    Sources/EpiGraphics/gfxShaderProgram.epi
-    Sources/EpiGraphics/gfxShaderProgram.h
-    Sources/EpiGraphics/gfxShaderProgram.cpp
-
     Sources/EpiGraphics/gfxDrawer.epi
     Sources/EpiGraphics/gfxDrawer.h
     Sources/EpiGraphics/gfxDrawer.cpp

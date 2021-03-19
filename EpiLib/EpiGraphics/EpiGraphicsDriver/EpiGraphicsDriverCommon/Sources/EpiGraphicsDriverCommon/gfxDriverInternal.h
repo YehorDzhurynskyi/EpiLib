@@ -53,6 +53,11 @@ public:
     gfxDeviceImpl(gfxDeviceImpl&& rhs) = default;
     gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
     virtual ~gfxDeviceImpl() = default;
+
+    virtual std::unique_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
+    virtual std::unique_ptr<gfxPipelineImpl> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl) const = 0;
+    virtual std::unique_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
+    virtual std::unique_ptr<gfxShaderProgramImpl> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const = 0;
 };
 
 class gfxPhysicalDeviceImpl
@@ -86,11 +91,28 @@ public:
     gfxSurfaceImpl& operator=(gfxSurfaceImpl&& rhs) = default;
     virtual ~gfxSurfaceImpl() = default;
 
+    virtual std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxDeviceImpl& device,
+                                                              const gfxSurfaceCapabilities& capabilities,
+                                                              const gfxSurfaceFormat& format,
+                                                              gfxSurfacePresentMode presentMode,
+                                                              const epiSize2u& extent) = 0;
+
     virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const = 0;
     virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const = 0;
     virtual gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const = 0;
     virtual epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDeviceImpl& device) const = 0;
     virtual epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDeviceImpl& device) const = 0;
+};
+
+class gfxSwapChainImpl
+{
+public:
+    gfxSwapChainImpl() = default;
+    gfxSwapChainImpl(const gfxSwapChainImpl& rhs) = delete;
+    gfxSwapChainImpl& operator=(const gfxSwapChainImpl& rhs) = delete;
+    gfxSwapChainImpl(gfxSwapChainImpl&& rhs) = default;
+    gfxSwapChainImpl& operator=(gfxSwapChainImpl&& rhs) = default;
+    virtual ~gfxSwapChainImpl() = default;
 };
 
 class gfxDriverImpl
@@ -135,18 +157,12 @@ public:
     gfxVertexBufferLayoutAttributeImpl& operator=(gfxVertexBufferLayoutAttributeImpl&& rhs) = default;
     virtual ~gfxVertexBufferLayoutAttributeImpl() = default;
 
-    virtual epiU32 GetIndex() const = 0;
-    virtual void SetIndex(epiU32 value) = 0;
-    virtual epiSize_t GetSize() const = 0;
-    virtual void SetSize(epiSize_t value) = 0;
-    virtual gfxVertexBufferLayoutAttributeType GetType() const = 0;
-    virtual void SetType(gfxVertexBufferLayoutAttributeType value) = 0;
-    virtual epiBool GetNormalized() const = 0;
-    virtual void SetNormalized(epiBool value) = 0;
-    virtual epiSize_t GetStride() const = 0;
-    virtual void SetStride(epiSize_t value) = 0;
+    virtual epiU32 GetLocation() const = 0;
+    virtual void SetLocation(epiU32 value) = 0;
     virtual epiSize_t GetOffset() const = 0;
     virtual void SetOffset(epiSize_t value) = 0;
+    virtual gfxFormat GetFormat() const = 0;
+    virtual void SetFormat(gfxFormat value) = 0;
 
     virtual void Apply() const = 0;
 };
@@ -160,6 +176,9 @@ public:
     gfxVertexBufferLayoutImpl(gfxVertexBufferLayoutImpl&& rhs) = default;
     gfxVertexBufferLayoutImpl& operator=(gfxVertexBufferLayoutImpl&& rhs) = default;
     virtual ~gfxVertexBufferLayoutImpl() = default;
+
+    virtual epiU32 GetStride() const = 0;
+    virtual void SetStride(epiU32 value) = 0;
 
     virtual void Apply() const = 0;
 
@@ -200,11 +219,11 @@ public:
     gfxTextureImpl& operator=(gfxTextureImpl&& rhs) = default;
     virtual ~gfxTextureImpl() = default;
 
-    virtual void Create2D(const epiByte* initData,
-                          epiU32 width,
-                          epiU32 height,
-                          gfxTextureFormat format,
-                          gfxTexturePixelType pixelType) = 0;
+    virtual epiBool Create2D(const epiByte* initData,
+                             epiU32 width,
+                             epiU32 height,
+                             gfxFormat format,
+                             gfxTexturePixelType pixelType) = 0;
     virtual void Destroy() = 0;
 
     virtual epiU32 GetWidth() const = 0;
@@ -227,12 +246,10 @@ public:
     gfxShaderImpl& operator=(gfxShaderImpl&& rhs) = default;
     virtual ~gfxShaderImpl() = default;
 
-    virtual void CreateFromSource(const epiChar* source, gfxShaderType type) = 0;
-    virtual void Destroy() = 0;
-
     virtual epiBool GetIsCreated() const = 0;
-    virtual epiU32 GetID() const = 0;
     virtual gfxShaderType GetType() const = 0;
+
+    virtual epiBool InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") = 0;
 };
 
 class gfxShaderProgramImpl
@@ -245,20 +262,9 @@ public:
     gfxShaderProgramImpl& operator=(gfxShaderProgramImpl&& rhs) = default;
     virtual ~gfxShaderProgramImpl() = default;
 
-    virtual void Create() = 0;
-    virtual void Destroy() = 0;
-
     virtual epiBool GetIsCreated() const = 0;
-    virtual epiU32 GetID() const = 0;
 
-    virtual void ShaderAttach(const gfxShaderImpl& shader) = 0;
-    virtual void ShaderDettach(gfxShaderType type) = 0;
-
-    virtual void Build() = 0;
-
-    virtual void Bind() = 0;
-    virtual void UnBind() = 0;
-
+#if 0 // TODO: handle
     virtual void Texture(const epiChar* name, epiU32 value) = 0;
 
     virtual void UniformFloat(const epiChar* name, epiFloat value) = 0;
@@ -276,6 +282,51 @@ public:
     virtual void UniformVec2u(const epiChar* name, const epiVec2u& value) = 0;
     virtual void UniformVec3u(const epiChar* name, const epiVec3u& value) = 0;
     virtual void UniformVec4u(const epiChar* name, const epiVec4u& value) = 0;
+#endif
+};
+
+class gfxPipelineImpl
+{
+public:
+    gfxPipelineImpl() = default;
+    gfxPipelineImpl(const gfxPipelineImpl& rhs) = delete;
+    gfxPipelineImpl& operator=(const gfxPipelineImpl& rhs) = delete;
+    gfxPipelineImpl(gfxPipelineImpl&& rhs) = default;
+    gfxPipelineImpl& operator=(gfxPipelineImpl&& rhs) = default;
+    virtual ~gfxPipelineImpl() = default;
+};
+
+class gfxGraphicsPipelineImpl
+{
+public:
+    gfxGraphicsPipelineImpl() = default;
+    gfxGraphicsPipelineImpl(const gfxGraphicsPipelineImpl& rhs) = delete;
+    gfxGraphicsPipelineImpl& operator=(const gfxGraphicsPipelineImpl& rhs) = delete;
+    gfxGraphicsPipelineImpl(gfxGraphicsPipelineImpl&& rhs) = default;
+    gfxGraphicsPipelineImpl& operator=(gfxGraphicsPipelineImpl&& rhs) = default;
+    virtual ~gfxGraphicsPipelineImpl() = default;
+};
+
+class gfxRenderPassImpl
+{
+public:
+    gfxRenderPassImpl() = default;
+    gfxRenderPassImpl(const gfxRenderPassImpl& rhs) = delete;
+    gfxRenderPassImpl& operator=(const gfxRenderPassImpl& rhs) = delete;
+    gfxRenderPassImpl(gfxRenderPassImpl&& rhs) = default;
+    gfxRenderPassImpl& operator=(gfxRenderPassImpl&& rhs) = default;
+    virtual ~gfxRenderPassImpl() = default;
+};
+
+class gfxAttachmentImpl
+{
+public:
+    gfxAttachmentImpl() = default;
+    gfxAttachmentImpl(const gfxAttachmentImpl& rhs) = delete;
+    gfxAttachmentImpl& operator=(const gfxAttachmentImpl& rhs) = delete;
+    gfxAttachmentImpl(gfxAttachmentImpl&& rhs) = default;
+    gfxAttachmentImpl& operator=(gfxAttachmentImpl&& rhs) = default;
+    virtual ~gfxAttachmentImpl() = default;
 };
 
 } // namespace internalgfx

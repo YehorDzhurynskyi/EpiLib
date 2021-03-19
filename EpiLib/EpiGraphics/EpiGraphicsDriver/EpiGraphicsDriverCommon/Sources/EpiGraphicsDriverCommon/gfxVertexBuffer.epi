@@ -2,11 +2,8 @@ class gfxVertexBufferLayoutAttribute
 {
     [Virtual]
     {
-        epiU32 Index;
-        epiSize_t Size;
-        gfxVertexBufferLayoutAttributeType Type;
-        epiBool Normalized;
-        epiSize_t Stride;
+        epiU32 Location;
+        gfxFormat Format;
         epiSize_t Offset;
     }
 };

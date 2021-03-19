@@ -3,6 +3,9 @@
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
+#include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
+#include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
+#include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 
@@ -163,6 +166,50 @@ gfxDeviceImplVK::~gfxDeviceImplVK()
     {
         vkDestroyDevice(m_VkDevice, nullptr);
     }
+}
+
+std::unique_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
+{
+    std::unique_ptr<gfxRenderPassImplVK> impl = std::make_unique<gfxRenderPassImplVK>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::unique_ptr<gfxPipelineImpl> gfxDeviceImplVK::CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl) const
+{
+    std::unique_ptr<gfxPipelineImplVK> impl = std::make_unique<gfxPipelineImplVK>(m_VkDevice);
+    if (!impl->Init(info, shaderProgramImpl, renderPassImpl))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::unique_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint) const
+{
+    std::unique_ptr<gfxShaderImplVK> impl = std::make_unique<gfxShaderImplVK>(m_VkDevice);
+    if (!impl->InitFromSource(source, type, entryPoint))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::unique_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const
+{
+    std::unique_ptr<gfxShaderProgramImplVK> impl = std::make_unique<gfxShaderProgramImplVK>();
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
 }
 
 VkDevice gfxDeviceImplVK::GetVkDevice() const

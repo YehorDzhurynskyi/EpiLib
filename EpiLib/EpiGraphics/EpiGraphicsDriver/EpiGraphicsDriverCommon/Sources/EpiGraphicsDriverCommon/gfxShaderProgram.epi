@@ -3,16 +3,24 @@ class gfxShader
     [Virtual, ReadOnly]
     {
         epiBool IsCreated;
-        epiU32 ID;
         gfxShaderType Type;
     }
 };
 
-class gfxShaderProgram : gfxBindable
+class gfxShaderProgramCreateInfo
+{
+    [Virtual, ReadOnly]
+    epiBool IsEmpty;
+
+    gfxShader* Vertex;
+    gfxShader* Geometry;
+    gfxShader* Fragment;
+};
+
+class gfxShaderProgram
 {
     [Virtual, ReadOnly]
     {
         epiBool IsCreated;
-        epiU32 ID;
     }
 };

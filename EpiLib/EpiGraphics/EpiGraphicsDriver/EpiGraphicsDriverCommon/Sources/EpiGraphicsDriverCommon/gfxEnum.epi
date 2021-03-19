@@ -13,16 +13,6 @@ enum gfxTextureType
     Texture2D
 };
 
-enum gfxTextureFormat
-{
-    R,
-    RG,
-    RGB,
-    BGR,
-    RGBA,
-    BGRA
-};
-
 enum gfxTexturePixelType
 {
     BYTE,
@@ -55,21 +45,8 @@ enum gfxShaderType
     None,
     Vertex,
     Geometry,
-    Pixel
-};
-
-enum gfxVertexBufferLayoutAttributeType
-{
-    NONE,
-    BYTE,
-    UBYTE,
-    SHORT,
-    USHORT,
-    INT,
-    UINT,
-    HALF_FLOAT,
-    FLOAT,
-    DOUBLE
+    Tesselation,
+    Fragment
 };
 
 enum gfxPhysicalDeviceType
@@ -396,4 +373,236 @@ enum gfxSurfacePresentMode
     FIFO_RELAXED,
     SHARED_DEMAND_REFRESH,
     SHARED_CONTINUOUS_REFRESH
+};
+
+[FlagMask]
+enum gfxSurfaceTransform
+{
+    IDENTITY,
+    ROTATE_90,
+    ROTATE_180,
+    ROTATE_270,
+    HORIZONTAL_MIRROR,
+    HORIZONTAL_MIRROR_ROTATE_90,
+    HORIZONTAL_MIRROR_ROTATE_180,
+    HORIZONTAL_MIRROR_ROTATE_270,
+    INHERIT
+};
+
+[FlagMask]
+enum gfxCompositeAlpha
+{
+    OPAQUE,
+    PRE_MULTIPLIED,
+    POST_MULTIPLIED,
+    INHERIT
+};
+
+[FlagMask]
+enum gfxImageUsage
+{
+    TRANSFER_SRC,
+    TRANSFER_DST,
+    SAMPLED,
+    STORAGE,
+    COLOR_ATTACHMENT,
+    DEPTH_STENCIL_ATTACHMENT,
+    TRANSIENT_ATTACHMENT,
+    INPUT_ATTACHMENT,
+    SHADING_RATE_IMAGE,
+    FRAGMENT_DENSITY_MAP
+};
+
+enum gfxPipelineInputAssemblyType
+{
+    None,
+    PointList,
+    LineList,
+    LineStrip,
+    TriangleList,
+    TriangleStrip
+};
+
+enum gfxSampleCount
+{
+    Sample1,
+    Sample2,
+    Sample4,
+    Sample8,
+    Sample16,
+    Sample32,
+    Sample64
+};
+
+enum gfxAttachmentLoadOp
+{
+    Load,
+    Clear,
+    DontCare
+};
+
+enum gfxAttachmentStoreOp
+{
+    Store,
+    DontCare
+};
+
+enum gfxImageLayout
+{
+    Undefined,
+    General,
+    ColorAttachmentOptimal,
+    DepthStencilAttachmentOptimal,
+    DepthStencilReadOnlyOptimal,
+    ShaderReadOnlyOptimal,
+    TransferSrcOptimal,
+    TransferDstOptimal,
+    Preinitialized,
+    DepthReadOnlyStencilAttachmentOptimal,
+    DepthAttachmentStencilReadOnlyOptimal,
+    DepthAttachmentOptimal,
+    DepthReadOnlyOptimal,
+    StencilAttachmentOptimal,
+    StencilReadOnlyOptimal,
+    PresentSrc,
+    SharedPresent,
+    ShadingRateOptimal,
+    FragmentDensityMapOptimal
+};
+
+enum gfxPipelineBindPoint
+{
+    Graphics,
+    Compute,
+    RayTracing
+};
+
+enum gfxPolygonMode
+{
+    Fill,
+    Line,
+    Point
+};
+
+enum gfxCullMode
+{
+    None,
+    Front,
+    Back,
+    FrontBack
+};
+
+enum gfxFrontFace
+{
+    CW,
+    CCW
+};
+
+enum gfxBlendFactor
+{
+    Zero,
+    One,
+    SrcColor,
+    OneMinusSrcColor,
+    DstColor,
+    OneMinusDstColor,
+    SrcAlpha,
+    OneMinusSrcAlpha,
+    DstAlpha,
+    OneMinusDstAlpha,
+    ConstantColor,
+    OneMinusConstantColor,
+    ConstantAlpha,
+    OneMinusConstantAlpha,
+    SrcAlphaSaturate,
+    Src1Color,
+    OneMinusSrc1Color,
+    Src1Alpha,
+    OneMinusSrc1Alpha
+};
+
+enum gfxBlendOp
+{
+    Add,
+    Subtract,
+    ReverseSubtract,
+    MIN, # TODO: make as Min/Max (conflicting with attribute)
+    MAX,
+    Zero,
+    Src,
+    Dst,
+    SrcOver,
+    DstOver,
+    SrcIn,
+    DstIn,
+    SrcOut,
+    DstOut,
+    SrcAtop,
+    DstAtop,
+    Xor,
+    Multiply,
+    Screen,
+    Overlay,
+    Darken,
+    Lighten,
+    ColorDodge,
+    ColorBurn,
+    Hardlight,
+    Softlight,
+    Difference,
+    Exclusion,
+    Invert,
+    InvertRGB,
+    LinearDodge,
+    LinearBurn,
+    VividLight,
+    LinearLight,
+    PinLight,
+    HardMix,
+    HSL_HUE,
+    HSL_Saturation,
+    HSL_Color,
+    HSL_Luminosity,
+    Plus,
+    PlusClamped,
+    PlusClampedAlpha,
+    PlusDarker,
+    Minus,
+    MinusClamped,
+    Contrast,
+    InvertOVG,
+    Red,
+    Green,
+    Blue
+};
+
+[FlagMask]
+enum gfxColorComponent
+{
+    R,
+    G,
+    B,
+    A,
+    RGB = R | G | B,
+    RGBA = R | G | B | A
+};
+
+enum gfxLogicOp
+{
+    Clear,
+    And,
+    AndReverse,
+    Copy,
+    AndInverted,
+    None,
+    Xor,
+    Or,
+    Nor,
+    Equivalent,
+    Invert,
+    OrReverse,
+    CopyInverted,
+    OrInverted,
+    Nand,
+    Set
 };
