@@ -2,6 +2,9 @@ class gfxQueueDescriptor
 {
     gfxQueueType Type;
 
+    [WriteCallback(RValueRef=true)]
+    gfxQueueFamily QueueFamily;
+
     [ReadOnly]
     {
         epiArray<epiFloat> Priorities;
@@ -13,4 +16,6 @@ class gfxQueueDescriptor
 
 class gfxQueueDescriptorList
 {
+    [Virtual, ReadOnly]
+    epiSize_t Size;
 };

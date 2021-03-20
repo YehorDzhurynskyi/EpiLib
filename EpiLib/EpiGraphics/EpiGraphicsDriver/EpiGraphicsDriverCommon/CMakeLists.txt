@@ -11,6 +11,9 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxEnum.epi
     Sources/EpiGraphicsDriverCommon/gfxEnum.h
     Sources/EpiGraphicsDriverCommon/gfxEnum.cpp
+    Sources/EpiGraphicsDriverCommon/gfxQueueFamily.epi
+    Sources/EpiGraphicsDriverCommon/gfxQueueFamily.h
+    Sources/EpiGraphicsDriverCommon/gfxQueueFamily.cpp
     Sources/EpiGraphicsDriverCommon/gfxQueue.epi
     Sources/EpiGraphicsDriverCommon/gfxQueue.h
     Sources/EpiGraphicsDriverCommon/gfxQueue.cpp
@@ -56,6 +59,9 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.epi
     Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.h
     Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.cpp
+    Sources/EpiGraphicsDriverCommon/gfxCommandPool.epi
+    Sources/EpiGraphicsDriverCommon/gfxCommandPool.h
+    Sources/EpiGraphicsDriverCommon/gfxCommandPool.cpp
 )
 get_target_property(EpiGraphicsDriverCommon_SOURCES EpiGraphicsDriverCommon SOURCES)
 epi_pack_sources(${EpiGraphicsDriverCommon_SOURCES})

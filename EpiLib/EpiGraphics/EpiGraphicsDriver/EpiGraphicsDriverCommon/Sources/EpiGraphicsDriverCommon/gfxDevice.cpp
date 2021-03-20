@@ -85,7 +85,8 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
 {
     std::optional<gfxFrameBuffer> frameBuffer;
 
-    if (std::unique_ptr<internalgfx::gfxFrameBufferImpl> impl = m_Impl->CreateFrameBuffer(info))
+    const internalgfx::gfxRenderPassImpl* renderPassImpl = info.GetRenderPass().m_Impl;
+    if (std::unique_ptr<internalgfx::gfxFrameBufferImpl> impl = m_Impl->CreateFrameBuffer(info, renderPassImpl))
     {
         frameBuffer = gfxFrameBuffer(impl.release());
     }

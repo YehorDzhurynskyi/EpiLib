@@ -10,7 +10,7 @@ EPI_NAMESPACE_BEGIN()
 
 epiBool gfxQueueDescriptor::IsResolved() const
 {
-    return m_Queues.size() == GetDesiredQueueCount();
+    return m_Queues.size() == GetDesiredQueueCount() && m_QueueFamily.HasImpl();
 }
 
 epiBool gfxQueueDescriptor::TryResolveQueue(gfxQueue&& queue)
@@ -82,6 +82,11 @@ void gfxQueueDescriptorList::Add(gfxQueueDescriptor&& desc)
     }
 
     m_QueueDescriptors.push_back(std::move(desc));
+}
+
+epiSize_t gfxQueueDescriptorList::GetSize_Callback() const
+{
+    return m_QueueDescriptors.size();
 }
 
 EPI_NAMESPACE_END()

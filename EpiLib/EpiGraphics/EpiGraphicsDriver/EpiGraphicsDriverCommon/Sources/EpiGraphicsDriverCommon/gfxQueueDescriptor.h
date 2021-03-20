@@ -8,6 +8,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxQueue.h"
+#include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -31,16 +32,19 @@ public:
     enum gfxQueueDescriptor_PIDs
     {
         PID_Type = 0x2cecf817,
+        PID_QueueFamily = 0xfa954047,
         PID_Priorities = 0x96844307,
         PID_DesiredQueueCount = 0xbfd2ceb,
-        PID_COUNT = 3
+        PID_COUNT = 4
     };
 
 protected:
+    void SetQueueFamily_Callback(gfxQueueFamily&& value);
     epiU32 GetDesiredQueueCount_Callback() const;
 
 protected:
     gfxQueueType m_Type{};
+    gfxQueueFamily m_QueueFamily{};
     epiArray<epiFloat> m_Priorities{};
 
 EPI_GENREGION_END(gfxQueueDescriptor)
@@ -59,7 +63,7 @@ public:
     void SetPresentSurface(const internalgfx::gfxSurfaceImpl* surfaceImpl);
 
 protected:
-    std::vector<gfxQueue> m_Queues;
+    std::vector<gfxQueue> m_Queues; // TODO: epiArray can't be used with move only types. should be fixed
     const internalgfx::gfxSurfaceImpl* m_PresentSurface{nullptr};
 };
 
@@ -74,8 +78,12 @@ public:
 
     enum gfxQueueDescriptorList_PIDs
     {
-        PID_COUNT = 0
+        PID_Size = 0x57f28b54,
+        PID_COUNT = 1
     };
+
+protected:
+    epiSize_t GetSize_Callback() const;
 
 EPI_GENREGION_END(gfxQueueDescriptorList)
 

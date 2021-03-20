@@ -63,19 +63,23 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-    struct gfxQueueCreateInfo
+    struct gfxQueueDescriptorBinding
     {
-        gfxQueueCreateInfo(gfxQueueDescriptor& desc, const gfxQueueFamilyImplVK& queueFamily)
+        gfxQueueDescriptorBinding(gfxQueueDescriptor& desc, std::unique_ptr<gfxQueueFamilyImplVK>&& queueFamily)
             : Desc{desc}
-            , QueueFamily{queueFamily} {}
+            , QueueFamily{std::move(queueFamily)}
+        {
+        }
 
         gfxQueueDescriptor& Desc;
-        const gfxQueueFamilyImplVK& QueueFamily;
+        std::unique_ptr<gfxQueueFamilyImplVK> QueueFamily;
     };
 
-    std::vector<gfxQueueCreateInfo> queueDescCreateInfos;
+    std::vector<gfxQueueDescriptorBinding> queueDescriptorBindings;
+    queueDescriptorBindings.reserve(queueDescriptorList.GetSize());
+
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    for (auto& queueDescriptor : queueDescriptorList)
+    for (gfxQueueDescriptor& queueDescriptor : queueDescriptorList)
     {
         epiAssert(!queueDescriptor.IsResolved());
 
@@ -104,9 +108,12 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
             queueCreateInfo.queueFamilyIndex = queueFamily.GetIndex();
             queueCreateInfo.pQueuePriorities = queueDescriptor.GetPriorities().data();
 
-            queueCreateInfos.push_back(queueCreateInfo);
+            std::unique_ptr<gfxQueueFamilyImplVK> family = std::make_unique<gfxQueueFamilyImplVK>(queueFamily.GetIndex(),
+                                                                                                  queueFamily.GetQueueCount(),
+                                                                                                  queueFamily.GetQueueTypeSupported());
+            queueDescriptorBindings.emplace_back(queueDescriptor, std::move(family));
 
-            queueDescCreateInfos.emplace_back(queueDescriptor, queueFamily);
+            queueCreateInfos.push_back(queueCreateInfo);
 
             break;
         }
@@ -139,13 +146,15 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
         return false;
     }
 
-    for (gfxQueueCreateInfo& queueDescCreateInfo : queueDescCreateInfos)
+    for (gfxQueueDescriptorBinding& queueDescBinding : queueDescriptorBindings)
     {
-        for (epiU32 queueIndex = 0; queueIndex < queueDescCreateInfo.Desc.GetDesiredQueueCount(); ++queueIndex)
+        for (epiU32 queueIndex = 0; queueIndex < queueDescBinding.Desc.GetDesiredQueueCount(); ++queueIndex)
         {
-            gfxQueue queue(new gfxQueueImplVK(*this, queueDescCreateInfo.QueueFamily, queueIndex));
-            queueDescCreateInfo.Desc.TryResolveQueue(std::move(queue));
+            gfxQueue queue(new gfxQueueImplVK(*this, *queueDescBinding.QueueFamily, queueIndex));
+            queueDescBinding.Desc.TryResolveQueue(std::move(queue));
         }
+
+        queueDescBinding.Desc.SetQueueFamily(gfxQueueFamily(queueDescBinding.QueueFamily.release()));
     }
 
     const epiBool allQueueDescriptorsResolved = std::all_of(queueDescriptorList.begin(),
@@ -184,7 +193,7 @@ std::unique_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRe
 
 std::unique_ptr<gfxPipelineImpl> gfxDeviceImplVK::CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl) const
 {
-    std::unique_ptr<gfxPipelineImplVK> impl = std::make_unique<gfxPipelineImplVK>(m_VkDevice);
+    std::unique_ptr<gfxPipelineImplVK> impl = std::make_unique<gfxPipelineImplVK>(*this);
     if (!impl->Init(info, shaderProgramImpl, renderPassImpl))
     {
         impl.reset();
@@ -215,10 +224,10 @@ std::unique_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const
     return impl;
 }
 
-std::unique_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const
+std::unique_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl* renderPassImpl) const
 {
     std::unique_ptr<gfxFrameBufferImplVK> impl = std::make_unique<gfxFrameBufferImplVK>(m_VkDevice);
-    if (!impl->Init(info))
+    if (!impl->Init(info, renderPassImpl))
     {
         impl.reset();
     }

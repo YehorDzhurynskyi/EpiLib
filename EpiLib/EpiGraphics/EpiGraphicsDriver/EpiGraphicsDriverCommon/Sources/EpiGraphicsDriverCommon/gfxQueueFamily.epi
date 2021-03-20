@@ -1,0 +1,8 @@
+class gfxQueueFamily
+{
+    [Virtual, ReadOnly]
+    {
+        gfxQueueType QueueTypeSupported;
+        epiSize_t QueueCount;
+    }
+};
