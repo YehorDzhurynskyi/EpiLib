@@ -20,12 +20,6 @@ public:
     gfxSurfaceImplVK& operator=(gfxSurfaceImplVK&& rhs) = default;
     ~gfxSurfaceImplVK() override;
 
-    std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxDeviceImpl& device,
-                                                      const gfxSurfaceCapabilities& capabilities,
-                                                      const gfxSurfaceFormat& format,
-                                                      gfxSurfacePresentMode presentMode,
-                                                      const epiSize2u& extent) override;
-
     epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const;
     epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const;
     gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const;

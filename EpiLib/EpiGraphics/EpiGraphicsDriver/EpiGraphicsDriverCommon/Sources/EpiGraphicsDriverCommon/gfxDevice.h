@@ -8,11 +8,13 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxQueue.h"
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxSwapChain.h"
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 #include "EpiGraphicsDriverCommon/gfxPipeline.h"
 #include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxTexture.h"
 #include "EpiGraphicsDriverCommon/gfxTextureView.h"
+#include "EpiGraphicsDriverCommon/gfxCommandPool.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -40,9 +42,6 @@ public:
 EPI_GENREGION_END(gfxDevice)
 
 public:
-    friend class gfxSurface;
-
-public:
     gfxDevice() = default;
     explicit gfxDevice(internalgfx::gfxDeviceImpl* impl);
     gfxDevice(const gfxDevice& rhs) = delete;
@@ -51,6 +50,7 @@ public:
     gfxDevice& operator=(gfxDevice&& rhs);
     ~gfxDevice();
 
+    std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
     std::optional<gfxPipeline> CreatePipeline(const gfxPipelineCreateInfo& info) const;
     std::optional<gfxShader> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const;
@@ -58,6 +58,7 @@ public:
     std::optional<gfxFrameBuffer> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const;
     std::optional<gfxTexture> CreateTexture(const gfxTextureCreateInfo& info) const;
     std::optional<gfxTextureView> CreateTextureView(const gfxTextureViewCreateInfo& info) const;
+    std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
 
 protected:
     internalgfx::gfxDeviceImpl* m_Impl{nullptr};

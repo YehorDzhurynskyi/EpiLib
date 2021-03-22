@@ -37,23 +37,6 @@ gfxSurfaceImplVK::~gfxSurfaceImplVK()
     }
 }
 
-std::unique_ptr<gfxSwapChainImpl> gfxSurfaceImplVK::CreateSwapChain(const gfxDeviceImpl& device,
-                                                                    const gfxSurfaceCapabilities& capabilities,
-                                                                    const gfxSurfaceFormat& format,
-                                                                    gfxSurfacePresentMode presentMode,
-                                                                    const epiSize2u& extent)
-{
-    const gfxDeviceImplVK& deviceVk = static_cast<const gfxDeviceImplVK&>(device);
-
-    std::unique_ptr<gfxSwapChainImplVK> impl = std::make_unique<gfxSwapChainImplVK>();
-    if (!impl->Init(deviceVk.GetVkDevice(), GetVkSurface(), capabilities, format, presentMode, extent))
-    {
-        impl.reset();
-    }
-
-    return impl;
-}
-
 epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const
 {
     const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);

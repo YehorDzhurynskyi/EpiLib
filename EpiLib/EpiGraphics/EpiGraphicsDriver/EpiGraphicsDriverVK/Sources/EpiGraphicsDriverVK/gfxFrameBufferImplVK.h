@@ -20,7 +20,9 @@ public:
     gfxFrameBufferImplVK& operator=(gfxFrameBufferImplVK&& rhs) = default;
     ~gfxFrameBufferImplVK() override;
 
-    epiBool Init(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl* renderPassImpl);
+    epiBool Init(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl);
+
+    VkFramebuffer_T* GetVkFrameBuffer() const;
 
 protected:
     VkDevice_T* m_VkDevice{nullptr};

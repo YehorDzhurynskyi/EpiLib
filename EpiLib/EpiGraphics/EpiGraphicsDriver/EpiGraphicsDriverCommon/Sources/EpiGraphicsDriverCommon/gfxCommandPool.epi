@@ -1,5 +1,29 @@
+class gfxRenderPassClearValue
+{
+    epiVec4f Color;
+    epiFloat Depth;
+    epiU32 Stencil;
+};
+
+class gfxRenderPassBeginInfo
+{
+    gfxFrameBuffer* FrameBuffer;
+    gfxRenderPass* RenderPass;
+    epiRect2s RenderArea;
+    epiArray<gfxRenderPassClearValue> ClearValues;
+};
+
 class gfxCommandBuffer
 {
+    [Virtual, ReadOnly]
+    epiBool IsPrimary;
+};
+
+class gfxCommandPoolCreateInfo
+{
+    gfxQueueFamily* QueueFamily;
+    epiU32 PrimaryCommandBufferCount;
+    epiU32 SecondaryCommandBufferCount;
 };
 
 class gfxCommandPool

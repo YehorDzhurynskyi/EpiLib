@@ -5,6 +5,11 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+void gfxFrameBufferCreateInfo::AddAttachment(gfxFramebufferAttachmentImageInfo&& info)
+{
+    m_AttachmentImageInfos.push_back(std::move(info));
+}
+
 gfxFrameBuffer::gfxFrameBuffer(internalgfx::gfxFrameBufferImpl* impl)
     : m_Impl{impl}
 {

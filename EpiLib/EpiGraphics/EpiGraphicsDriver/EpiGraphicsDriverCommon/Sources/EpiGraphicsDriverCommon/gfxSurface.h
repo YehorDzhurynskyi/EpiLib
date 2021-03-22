@@ -101,6 +101,9 @@ public:
 EPI_GENREGION_END(gfxSurface)
 
 public:
+    friend class gfxDevice;
+
+public:
     gfxSurface() = default;
     gfxSurface(internalgfx::gfxSurfaceImpl* impl);
     gfxSurface(const gfxSurface& rhs) = delete;
@@ -111,11 +114,6 @@ public:
 
 public:
     gfxQueueDescriptor CreateQueueDescriptor(const epiArray<epiFloat>& priorities, gfxQueueType type = gfxQueueType{0}) const;
-    std::optional<gfxSwapChain> CreateSwapChain(const gfxDevice& device,
-                                                const gfxSurfaceCapabilities& capabilities,
-                                                const gfxSurfaceFormat& format,
-                                                gfxSurfacePresentMode presentMode,
-                                                const epiSize2u& extent);
 
     epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device) const;
     gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDevice& device) const;

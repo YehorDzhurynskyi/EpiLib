@@ -35,10 +35,7 @@ public:
     };
 
 protected:
-    void SetTexture_Callback(gfxTexture&& value);
-
-protected:
-    gfxTexture m_Texture{};
+    gfxTexture* m_Texture{nullptr};
     gfxTextureViewType m_ViewType{gfxTextureViewType::None};
     gfxFormat m_Format{gfxFormat::UNDEFINED};
 

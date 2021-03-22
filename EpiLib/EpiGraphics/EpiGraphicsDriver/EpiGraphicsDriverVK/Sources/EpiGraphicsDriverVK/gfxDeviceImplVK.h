@@ -26,6 +26,7 @@ public:
                  gfxQueueDescriptorList& queueDescriptorList,
                  gfxPhysicalDeviceExtension extensionMask);
 
+    std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl) const override;
     std::unique_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const override;
     std::unique_ptr<gfxPipelineImpl> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl) const override;
     std::unique_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const override;
@@ -33,6 +34,7 @@ public:
     std::unique_ptr<gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl* renderPassImpl) const override;
     std::unique_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const override;
     std::unique_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl* textureImpl) const override;
+    std::unique_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl* queueFamilyImpl) const override;
 
     VkDevice_T* GetVkDevice() const;
 

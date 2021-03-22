@@ -37,6 +37,8 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxRenderSubPassVK.cpp
     Sources/EpiGraphicsDriverVK/gfxFrameBufferImplVK.h
     Sources/EpiGraphicsDriverVK/gfxFrameBufferImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxCommandPoolImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxCommandPoolImplVK.cpp
 )
 get_target_property(EpiGraphicsDriverVK_SOURCES EpiGraphicsDriverVK SOURCES)
 epi_pack_sources(${EpiGraphicsDriverVK_SOURCES})
@@ -53,7 +55,7 @@ target_link_libraries(EpiGraphicsDriverVK
     PRIVATE
         EpiGraphicsDriverCommon
         Vulkan::Vulkan
-        Vulkan::glslc
+        #Vulkan::glslc
 )
 
 epi_module_register(EpiGraphicsDriverVK

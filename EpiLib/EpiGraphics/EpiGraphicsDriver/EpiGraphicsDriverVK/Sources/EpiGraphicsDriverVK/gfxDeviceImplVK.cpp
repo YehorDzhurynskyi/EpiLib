@@ -3,12 +3,14 @@
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
+#include "EpiGraphicsDriverVK/gfxSwapChainImplVK.h"
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
+#include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 
@@ -180,6 +182,17 @@ gfxDeviceImplVK::~gfxDeviceImplVK()
     }
 }
 
+std::unique_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl) const
+{
+    std::unique_ptr<gfxSwapChainImplVK> impl = std::make_unique<gfxSwapChainImplVK>(*this);
+    if (!impl->Init(info, surfaceImpl, renderPassImpl))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
 std::unique_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
 {
     std::unique_ptr<gfxRenderPassImplVK> impl = std::make_unique<gfxRenderPassImplVK>(m_VkDevice);
@@ -250,6 +263,17 @@ std::unique_ptr<gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfx
 {
     std::unique_ptr<gfxTextureViewImplVK> impl = std::make_unique<gfxTextureViewImplVK>(m_VkDevice);
     if (!impl->Init(info, textureImpl))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::unique_ptr<gfxCommandPoolImpl> gfxDeviceImplVK::CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl* queueFamilyImpl) const
+{
+    std::unique_ptr<gfxCommandPoolImplVK> impl = std::make_unique<gfxCommandPoolImplVK>(m_VkDevice);
+    if (!impl->Init(info, queueFamilyImpl))
     {
         impl.reset();
     }

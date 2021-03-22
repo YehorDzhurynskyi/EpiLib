@@ -40,12 +40,15 @@ protected:
 EPI_GENREGION_END(gfxQueueFamily)
 
 public:
+    friend class gfxDevice;
+
+public:
     gfxQueueFamily() = default;
     gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl);
     gfxQueueFamily(const gfxQueueFamily & rhs) = delete;
     gfxQueueFamily& operator=(const gfxQueueFamily & rhs) = delete;
-    gfxQueueFamily(gfxQueueFamily && rhs);
-    gfxQueueFamily& operator=(gfxQueueFamily && rhs);
+    gfxQueueFamily(gfxQueueFamily&& rhs);
+    gfxQueueFamily& operator=(gfxQueueFamily&& rhs);
     ~gfxQueueFamily();
 
     epiBool HasImpl() const;

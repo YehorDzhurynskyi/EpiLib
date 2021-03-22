@@ -55,6 +55,31 @@ public:
     virtual ~gfxFrameBufferImpl() = default;
 };
 
+class gfxCommandPoolImpl
+{
+public:
+    gfxCommandPoolImpl() = default;
+    gfxCommandPoolImpl(const gfxCommandPoolImpl& rhs) = delete;
+    gfxCommandPoolImpl& operator=(const gfxCommandPoolImpl& rhs) = delete;
+    gfxCommandPoolImpl(gfxCommandPoolImpl&& rhs) = default;
+    gfxCommandPoolImpl& operator=(gfxCommandPoolImpl&& rhs) = default;
+    virtual ~gfxCommandPoolImpl() = default;
+};
+
+class gfxCommandBufferImpl
+{
+public:
+    gfxCommandBufferImpl() = default;
+    gfxCommandBufferImpl(const gfxCommandBufferImpl& rhs) = delete;
+    gfxCommandBufferImpl& operator=(const gfxCommandBufferImpl& rhs) = delete;
+    gfxCommandBufferImpl(gfxCommandBufferImpl&& rhs) = default;
+    gfxCommandBufferImpl& operator=(gfxCommandBufferImpl&& rhs) = default;
+    virtual ~gfxCommandBufferImpl() = default;
+
+    virtual epiBool RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) const = 0;
+    virtual epiBool RenderPassEnd() const = 0;
+};
+
 class gfxDeviceImpl
 {
 public:
@@ -65,6 +90,7 @@ public:
     gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
     virtual ~gfxDeviceImpl() = default;
 
+    virtual std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
     virtual std::unique_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
     virtual std::unique_ptr<gfxPipelineImpl> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl) const = 0;
     virtual std::unique_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
@@ -72,6 +98,7 @@ public:
     virtual std::unique_ptr<gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl* renderPassImpl) const = 0;
     virtual std::unique_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::unique_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl* textureImpl) const = 0;
+    virtual std::unique_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl* queueFamilyImpl) const = 0;
 };
 
 class gfxPhysicalDeviceImpl
@@ -104,12 +131,6 @@ public:
     gfxSurfaceImpl(gfxSurfaceImpl&& rhs) = default;
     gfxSurfaceImpl& operator=(gfxSurfaceImpl&& rhs) = default;
     virtual ~gfxSurfaceImpl() = default;
-
-    virtual std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxDeviceImpl& device,
-                                                              const gfxSurfaceCapabilities& capabilities,
-                                                              const gfxSurfaceFormat& format,
-                                                              gfxSurfacePresentMode presentMode,
-                                                              const epiSize2u& extent) = 0;
 
     virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const = 0;
     virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const = 0;

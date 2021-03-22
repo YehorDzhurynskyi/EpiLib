@@ -1,3 +1,13 @@
+class gfxSwapChainCreateInfo
+{
+    gfxSurface* Surface;
+    gfxRenderPass* RenderPass;
+    gfxSurfaceCapabilities Capabilities;
+    gfxSurfaceFormat Format;
+    gfxSurfacePresentMode PresentMode;
+    epiSize2u Extent;
+};
+
 class gfxSwapChain
 {
 };

@@ -4,6 +4,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
+#include "EpiGraphicsDriverCommon/gfxSurface.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -29,6 +30,44 @@ gfxDevice& gfxDevice::operator=(gfxDevice&& rhs)
 gfxDevice::~gfxDevice()
 {
     delete m_Impl;
+}
+
+std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateInfo& info) const
+{
+    std::optional<gfxSwapChain> swapChain;
+
+    const gfxSurface* surface = info.GetSurface();
+    if (surface == nullptr)
+    {
+        epiLogError("Failed to create SwapChain! Surface isn't provided!");
+        return swapChain;
+    }
+    const internalgfx::gfxSurfaceImpl* surfaceImpl = surface->m_Impl;
+    if (surfaceImpl == nullptr)
+    {
+        epiLogError("Failed to create SwapChain! Surface has no implementation!");
+        return swapChain;
+    }
+
+    const gfxRenderPass* renderPass = info.GetRenderPass();
+    if (renderPass == nullptr)
+    {
+        epiLogError("Failed to create SwapChain! RenderPass isn't provided!");
+        return swapChain;
+    }
+    const internalgfx::gfxRenderPassImpl* renderPassImpl = renderPass->m_Impl;
+    if (renderPassImpl == nullptr)
+    {
+        epiLogError("Failed to create SwapChain! RenderPass has no implementation!");
+        return swapChain;
+    }
+
+    if (std::unique_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(info, *surfaceImpl, *renderPassImpl))
+    {
+        swapChain = gfxSwapChain(impl.release());
+    }
+
+    return swapChain;
 }
 
 std::optional<gfxRenderPass> gfxDevice::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
@@ -117,6 +156,29 @@ std::optional<gfxTextureView> gfxDevice::CreateTextureView(const gfxTextureViewC
     }
 
     return textureView;
+}
+
+std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolCreateInfo& info) const
+{
+    std::optional<gfxCommandPool> commnadPool;
+
+    const internalgfx::gfxQueueFamilyImpl* queueFamilyImpl = nullptr;
+    if (const gfxQueueFamily* queueFamily = info.GetQueueFamily())
+    {
+        queueFamilyImpl = queueFamily->m_Impl;
+    }
+    else
+    {
+        epiLogError("gfxCommandPoolCreateInfo QueueFamily has no implementation!");
+        return commnadPool;
+    }
+
+    if (std::unique_ptr<internalgfx::gfxCommandPoolImpl> impl = m_Impl->CreateCommandPool(info, queueFamilyImpl))
+    {
+        commnadPool = gfxCommandPool(impl.release());
+    }
+
+    return commnadPool;
 }
 
 EPI_NAMESPACE_END()

@@ -9,12 +9,23 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-gfxTextureImplVK::gfxTextureImplVK(VkDevice device)
-    : m_VkDevice{device}
+gfxTextureImplVK::gfxTextureImplVK(VkImage image)
+    : m_VkImage{image}
 {
 }
 
-epiBool gfxTextureImplVK::Init(const gfxTextureCreateInfo& info)
+VkImage gfxTextureImplVK::GetVkImage() const
+{
+    return m_VkImage;
+}
+
+gfxTextureImplVKOwner::gfxTextureImplVKOwner(VkDevice device)
+    : gfxTextureImplVK{nullptr}
+    , m_VkDevice{device}
+{
+}
+
+epiBool gfxTextureImplVKOwner::Init(const gfxTextureCreateInfo& info)
 {
     VkImageCreateInfo imageCreateInfo{};
     imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -41,14 +52,9 @@ epiBool gfxTextureImplVK::Init(const gfxTextureCreateInfo& info)
     return true;
 }
 
-gfxTextureImplVK::~gfxTextureImplVK()
+gfxTextureImplVKOwner::~gfxTextureImplVKOwner()
 {
     vkDestroyImage(m_VkDevice, m_VkImage, nullptr);
-}
-
-VkImage gfxTextureImplVK::GetVkImage() const
-{
-    return m_VkImage;
 }
 
 } // namespace internalgfx

@@ -3,6 +3,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriverCommon/gfxRenderPass.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
+
 EPI_NAMESPACE_BEGIN()
 
 gfxRenderPassCreateInfo& gfxRenderPassCreateInfo::AddSubPass(gfxRenderSubPass&& subpass)
