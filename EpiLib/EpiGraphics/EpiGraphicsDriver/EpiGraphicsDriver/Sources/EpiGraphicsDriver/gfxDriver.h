@@ -54,7 +54,7 @@ public:
     gfxDriver& operator=(gfxDriver&& rhs) = delete;
     ~gfxDriver();
 
-    std::unique_ptr<gfxSurface> CreateSurface(const gfxWindow& window);
+    std::optional<gfxSurface> CreateSurface(const gfxWindow& window);
 
     std::optional<gfxPhysicalDevice> FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const;
 

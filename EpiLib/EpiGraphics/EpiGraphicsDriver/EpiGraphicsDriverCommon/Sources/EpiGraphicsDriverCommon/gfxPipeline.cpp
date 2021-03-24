@@ -3,6 +3,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriverCommon/gfxPipeline.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
+
 EPI_NAMESPACE_BEGIN()
 
 gfxPipelineCreateInfo& gfxPipelineCreateInfo::AddScissor(const epiRect2s& scissor)

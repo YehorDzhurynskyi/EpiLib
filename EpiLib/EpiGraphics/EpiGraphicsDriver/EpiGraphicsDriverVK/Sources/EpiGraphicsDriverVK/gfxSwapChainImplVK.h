@@ -8,6 +8,8 @@ struct VkSwapchainKHR_T;
 struct VkSurfaceKHR_T;
 struct VkImage_T;
 struct VkImageView_T;
+struct VkSemaphore_T;
+struct VkFence_T;
 
 EPI_NAMESPACE_BEGIN()
 
@@ -24,14 +26,25 @@ public:
     gfxSwapChainImplVK& operator=(gfxSwapChainImplVK&& rhs) = default;
     ~gfxSwapChainImplVK() override;
 
-    epiBool Init(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl);
+    epiBool Init(const gfxSwapChainCreateInfo& info,
+                 const gfxSurfaceImpl& surfaceImpl,
+                 const gfxRenderPassImpl& renderPassImpl,
+                 const gfxQueueFamilyImpl& queueFamilyImpl);
+
+    epiBool Present(const gfxQueueImpl& queueImpl) override;
 
 protected:
     const gfxDeviceImplVK& m_Device;
     VkSwapchainKHR_T* m_VkSwapChain{nullptr};
-    std::vector<VkImage_T*> m_SwapChainImages;
     std::vector<std::unique_ptr<gfxTextureViewImpl>> m_SwapChainImageViews;
     std::vector<std::unique_ptr<gfxFrameBufferImpl>> m_SwapChainFrameBuffers;
+    std::unique_ptr<gfxCommandPoolImpl> m_CommandPool;
+
+    epiU32 m_CurrentFrame{0};
+    std::vector<VkSemaphore_T*> m_VkSemaphoreImageAvailable;
+    std::vector<VkSemaphore_T*> m_VkSemaphoreRenderFinished;
+    std::vector<VkFence_T*> m_VkFencesInFlight;
+    std::vector<VkFence_T*> m_VkFencesImagesInFlight;
 };
 
 } // namespace internalgfx

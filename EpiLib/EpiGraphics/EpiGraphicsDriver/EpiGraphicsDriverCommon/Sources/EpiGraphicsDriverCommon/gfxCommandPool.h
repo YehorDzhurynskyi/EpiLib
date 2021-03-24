@@ -93,11 +93,11 @@ EPI_GENREGION_END(gfxCommandBuffer)
 public:
     gfxCommandBuffer() = default;
     gfxCommandBuffer(internalgfx::gfxCommandBufferImpl* impl);
-    gfxCommandBuffer(const gfxCommandBuffer& rhs) = delete;
-    gfxCommandBuffer& operator=(const gfxCommandBuffer& rhs) = delete;
-    gfxCommandBuffer(gfxCommandBuffer&& rhs);
-    gfxCommandBuffer& operator=(gfxCommandBuffer&& rhs);
-    ~gfxCommandBuffer();
+    gfxCommandBuffer(const gfxCommandBuffer& rhs) = default;
+    gfxCommandBuffer& operator=(const gfxCommandBuffer& rhs) = default;
+    gfxCommandBuffer(gfxCommandBuffer&& rhs) = default;
+    gfxCommandBuffer& operator=(gfxCommandBuffer&& rhs) = default;
+    ~gfxCommandBuffer() = default;
 
     epiBool RenderPassBegin(const gfxRenderPassBeginInfo& info);
     epiBool RenderPassEnd();
@@ -156,9 +156,11 @@ public:
     gfxCommandPool& operator=(gfxCommandPool&& rhs);
     ~gfxCommandPool();
 
+    std::optional<gfxCommandBuffer> BufferAtPrimary(epiU32 index);
+    std::optional<gfxCommandBuffer> BufferAtSecondary(epiU32 index);
+
 protected:
     internalgfx::gfxCommandPoolImpl* m_Impl{nullptr};
-    std::vector<gfxCommandBuffer> m_Buffers;
 };
 
 EPI_NAMESPACE_END()

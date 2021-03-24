@@ -12,27 +12,6 @@ gfxCommandBuffer::gfxCommandBuffer(internalgfx::gfxCommandBufferImpl* impl)
 {
 }
 
-gfxCommandBuffer::gfxCommandBuffer(gfxCommandBuffer&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-}
-
-gfxCommandBuffer& gfxCommandBuffer::operator=(gfxCommandBuffer&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxCommandBuffer::~gfxCommandBuffer()
-{
-    delete m_Impl;
-}
-
 epiBool gfxCommandBuffer::RenderPassBegin(const gfxRenderPassBeginInfo & info)
 {
     if (info.GetFrameBuffer() == nullptr)
@@ -93,6 +72,30 @@ gfxCommandPool& gfxCommandPool::operator=(gfxCommandPool&& rhs)
 gfxCommandPool::~gfxCommandPool()
 {
     delete m_Impl;
+}
+
+std::optional<gfxCommandBuffer> gfxCommandPool::BufferAtPrimary(epiU32 index)
+{
+    std::optional<gfxCommandBuffer> commandBuffer;
+
+    if (internalgfx::gfxCommandBufferImpl* commandBufferImpl = m_Impl->BufferAtPrimary(index))
+    {
+        commandBuffer = gfxCommandBuffer(commandBufferImpl);
+    }
+
+    return commandBuffer;
+}
+
+std::optional<gfxCommandBuffer> gfxCommandPool::BufferAtSecondary(epiU32 index)
+{
+    std::optional<gfxCommandBuffer> commandBuffer;
+
+    if (internalgfx::gfxCommandBufferImpl* commandBufferImpl = m_Impl->BufferAtSecondary(index))
+    {
+        commandBuffer = gfxCommandBuffer(commandBufferImpl);
+    }
+
+    return commandBuffer;
 }
 
 EPI_NAMESPACE_END()

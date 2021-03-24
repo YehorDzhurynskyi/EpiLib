@@ -17,7 +17,7 @@ gfxCommandBufferImplVK::gfxCommandBufferImplVK(VkCommandBuffer commandBuffer, ep
 {
 }
 
-epiBool gfxCommandBufferImplVK::BeginRenderPass(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) const
+epiBool gfxCommandBufferImplVK::RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) const
 {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -63,7 +63,7 @@ epiBool gfxCommandBufferImplVK::BeginRenderPass(const gfxRenderPassBeginInfo& in
     return true;
 }
 
-epiBool gfxCommandBufferImplVK::EndRenderPass() const
+epiBool gfxCommandBufferImplVK::RenderPassEnd() const
 {
     vkCmdEndRenderPass(m_VkCommandBuffer);
 
@@ -122,18 +122,12 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
     }
 }
 
-epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl* queueFamilyImpl)
+epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl)
 {
-    if (queueFamilyImpl == nullptr)
-    {
-        epiLogError("Failed to initialize gfxCommandPool! QueueFamily has no implementation!");
-        return false;
-    }
-
-    const gfxQueueFamilyImplVK* queueFamilyImplVk = static_cast<const gfxQueueFamilyImplVK*>(queueFamilyImpl);
+    const gfxQueueFamilyImplVK& queueFamilyImplVk = static_cast<const gfxQueueFamilyImplVK&>(queueFamilyImpl);
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = queueFamilyImplVk->GetIndex();
+    poolInfo.queueFamilyIndex = queueFamilyImplVk.GetIndex();
     poolInfo.flags = 0; // TODO: configure via gfxCommandPoolCreateInfo
 
     if (vkCreateCommandPool(m_VkDevice, &poolInfo, nullptr, &m_VkCommandPool) != VK_SUCCESS)
@@ -186,6 +180,34 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const g
     }
 
     return true;
+}
+
+gfxCommandBufferImpl* gfxCommandPoolImplVK::BufferAtPrimary(epiU32 index)
+{
+    if (index >= m_PrimaryCommandBuffers.size())
+    {
+        epiLogError("Failed to get primary command buffer by index=`{}` (Primary command buffer count = `{}`)",
+                    index,
+                    m_PrimaryCommandBuffers.size());
+
+        return nullptr;
+    }
+
+    return m_PrimaryCommandBuffers[index].get();
+}
+
+gfxCommandBufferImpl* gfxCommandPoolImplVK::BufferAtSecondary(epiU32 index)
+{
+    if (index >= m_SecondaryCommandBuffers.size())
+    {
+        epiLogError("Failed to get secondary command buffer by index=`{}` (Secondary command buffer count = `{}`)",
+                    index,
+                    m_SecondaryCommandBuffers.size());
+
+        return nullptr;
+    }
+
+    return m_SecondaryCommandBuffers[index].get();
 }
 
 } // namespace internalgfx

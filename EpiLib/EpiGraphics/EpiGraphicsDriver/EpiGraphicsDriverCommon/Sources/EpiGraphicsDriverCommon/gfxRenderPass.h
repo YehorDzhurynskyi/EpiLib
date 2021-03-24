@@ -29,8 +29,9 @@ public:
     enum gfxRenderPassCreateInfo_PIDs
     {
         PID_SubPasses = 0x3289b30,
+        PID_SubPassDependencies = 0x86181723,
         PID_Attachments = 0xc1587501,
-        PID_COUNT = 2
+        PID_COUNT = 3
     };
 
 protected:
@@ -38,11 +39,13 @@ protected:
 
 protected:
     epiArray<gfxRenderSubPass> m_SubPasses{};
+    epiArray<gfxRenderSubPassDependency> m_SubPassDependencies{};
 
 EPI_GENREGION_END(gfxRenderPassCreateInfo)
 
 public:
-    gfxRenderPassCreateInfo& AddSubPass(gfxRenderSubPass&& subpass);
+    void AddSubPass(gfxRenderSubPass&& subpass);
+    void AddSubPassDependency(gfxRenderSubPassDependency&& subpassDependency);
 };
 
 class gfxRenderPass : public Object

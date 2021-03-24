@@ -32,5 +32,8 @@ VkLogicOp gfxLogicOpTo(gfxLogicOp logicOp);
 VkImageType gfxTextureTypeTo(gfxTextureType type);
 VkImageViewType gfxTextureViewTypeTo(gfxTextureViewType viewType);
 VkImageUsageFlagBits gfxImageUsageTo(gfxImageUsage usage);
+VkPipelineStageFlagBits gfxPipelineStageTo(gfxPipelineStage stage);
+VkAccessFlagBits gfxAccessTo(gfxAccess access);
+VkDependencyFlagBits gfxDependencyTo(gfxDependency dependency);
 
 EPI_NAMESPACE_END()

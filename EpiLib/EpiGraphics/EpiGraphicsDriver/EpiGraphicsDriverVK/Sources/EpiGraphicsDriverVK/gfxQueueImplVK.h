@@ -24,6 +24,8 @@ public:
     gfxQueueType GetType() const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
 
+    VkQueue_T* GetVkQueue() const;
+
 protected:
     VkQueue_T* m_VkQueue{nullptr};
     gfxQueueType m_Type{0};

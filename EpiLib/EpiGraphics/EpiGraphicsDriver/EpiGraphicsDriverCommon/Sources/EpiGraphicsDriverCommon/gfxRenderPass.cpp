@@ -7,11 +7,14 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxRenderPassCreateInfo& gfxRenderPassCreateInfo::AddSubPass(gfxRenderSubPass&& subpass)
+void gfxRenderPassCreateInfo::AddSubPass(gfxRenderSubPass&& subpass)
 {
     GetSubPasses().push_back(std::move(subpass));
+}
 
-    return *this;
+void gfxRenderPassCreateInfo::AddSubPassDependency(gfxRenderSubPassDependency&& subpassDependency)
+{
+    GetSubPassDependencies().push_back(std::move(subpassDependency));
 }
 
 epiArray<gfxAttachment> gfxRenderPassCreateInfo::GetAttachments_Callback() const

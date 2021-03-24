@@ -672,4 +672,79 @@ EPI_GENREGION_BEGIN(gfxTextureViewType)
 EPI_GENREGION_END(gfxTextureViewType)
 };
 
+enum gfxPipelineStage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxPipelineStage)
+    gfxPipelineStage_TopOfPipe = (1 << 0),
+    gfxPipelineStage_DrawIndirect = (1 << 1),
+    gfxPipelineStage_VertexInput = (1 << 2),
+    gfxPipelineStage_VertexShader = (1 << 3),
+    gfxPipelineStage_TessellationControlShader = (1 << 4),
+    gfxPipelineStage_TessellationEvaluationShader = (1 << 5),
+    gfxPipelineStage_GeometryShader = (1 << 6),
+    gfxPipelineStage_FragmentShader = (1 << 7),
+    gfxPipelineStage_EarlyFragmentTests = (1 << 8),
+    gfxPipelineStage_LateFragmentTests = (1 << 9),
+    gfxPipelineStage_ColorAttachmentOutput = (1 << 10),
+    gfxPipelineStage_ComputeShader = (1 << 11),
+    gfxPipelineStage_Transfer = (1 << 12),
+    gfxPipelineStage_BottomOfPipe = (1 << 13),
+    gfxPipelineStage_Host = (1 << 14),
+    gfxPipelineStage_AllGraphics = (1 << 15),
+    gfxPipelineStage_AllCommands = (1 << 16),
+    gfxPipelineStage_TransformFeedback = (1 << 17),
+    gfxPipelineStage_ConditionalRendering = (1 << 18),
+    gfxPipelineStage_AccelerationStructureBuild = (1 << 19),
+    gfxPipelineStage_RayTracingShader = (1 << 20),
+    gfxPipelineStage_ShadingRateImage = (1 << 21),
+    gfxPipelineStage_TaskShader = (1 << 22),
+    gfxPipelineStage_MeshShader = (1 << 23),
+    gfxPipelineStage_FragmentDensityProcess = (1 << 24),
+    gfxPipelineStage_CommandPreprocess = (1 << 25)
+EPI_GENREGION_END(gfxPipelineStage)
+};
+
+enum gfxAccess : epiS32
+{
+EPI_GENREGION_BEGIN(gfxAccess)
+    gfxAccess_IndirectCommandRead = (1 << 0),
+    gfxAccess_IndexRead = (1 << 1),
+    gfxAccess_VertexAttributeRead = (1 << 2),
+    gfxAccess_UniformRead = (1 << 3),
+    gfxAccess_InputAttachmentRead = (1 << 4),
+    gfxAccess_ShaderRead = (1 << 5),
+    gfxAccess_ShaderWrite = (1 << 6),
+    gfxAccess_ColorAttachmentRead = (1 << 7),
+    gfxAccess_ColorAttachmentWrite = (1 << 8),
+    gfxAccess_DepthStencilAttachmentRead = (1 << 9),
+    gfxAccess_DepthStencilAttachmentWrite = (1 << 10),
+    gfxAccess_TransferRead = (1 << 11),
+    gfxAccess_TransferWrite = (1 << 12),
+    gfxAccess_HostRead = (1 << 13),
+    gfxAccess_HostWrite = (1 << 14),
+    gfxAccess_MemoryRead = (1 << 15),
+    gfxAccess_MemoryWrite = (1 << 16),
+    gfxAccess_TransformFeedbackWrite = (1 << 17),
+    gfxAccess_TransformFeedbackCounterRead = (1 << 18),
+    gfxAccess_TransformFeedbackCounterWrite = (1 << 19),
+    gfxAccess_ConditionalRenderingRead = (1 << 20),
+    gfxAccess_ColorAttachmentReadNonCoherent = (1 << 21),
+    gfxAccess_AccelerationStructureRead = (1 << 22),
+    gfxAccess_AccelerationStructureWrite = (1 << 23),
+    gfxAccess_ShadingRateImageRead = (1 << 24),
+    gfxAccess_FragmentDensityMapRead = (1 << 25),
+    gfxAccess_CommandPreprocessRead = (1 << 26),
+    gfxAccess_CommandPreprocessWrite = (1 << 27)
+EPI_GENREGION_END(gfxAccess)
+};
+
+enum gfxDependency : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDependency)
+    gfxDependency_ByRegion = (1 << 0),
+    gfxDependency_DeviceGroup = (1 << 1),
+    gfxDependency_ViewLocal = (1 << 2)
+EPI_GENREGION_END(gfxDependency)
+};
+
 EPI_NAMESPACE_END()

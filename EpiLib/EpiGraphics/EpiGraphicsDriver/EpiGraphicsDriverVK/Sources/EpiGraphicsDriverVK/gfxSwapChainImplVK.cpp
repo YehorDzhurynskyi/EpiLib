@@ -3,9 +3,19 @@
 #include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
+#include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 
+#include "EpiGraphicsDriverCommon/gfxTextureView.h"
+
 #include <vulkan/vulkan.hpp>
+
+namespace
+{
+
+constexpr epiU32 kMaxFramesInFlight = 2;
+
+} // namespace
 
 EPI_NAMESPACE_BEGIN()
 
@@ -17,7 +27,10 @@ gfxSwapChainImplVK::gfxSwapChainImplVK(const gfxDeviceImplVK& device)
 {
 }
 
-epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl)
+epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
+                                 const gfxSurfaceImpl& surfaceImpl,
+                                 const gfxRenderPassImpl& renderPassImpl,
+                                 const gfxQueueFamilyImpl& queueFamilyImpl)
 {
     const gfxSurfaceCapabilities& capabilities = info.GetCapabilities();
 
@@ -52,10 +65,10 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info, const gfxSu
 
     vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, nullptr);
 
-    m_SwapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, m_SwapChainImages.data());
+    std::vector<VkImage> swapChainImages(imageCount);
+    vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, swapChainImages.data());
 
-    for (const VkImage& image : m_SwapChainImages)
+    for (const VkImage& image : swapChainImages)
     {
         VkImageViewCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -73,7 +86,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info, const gfxSu
         createInfo.subresourceRange.layerCount = 1;
 
         std::unique_ptr<gfxTextureImplVK> textureImpl = std::make_unique<gfxTextureImplVK>(image);
-        const gfxTextureImplVK* textureImplPtr = textureImpl.get();
+        gfxTextureImplVK* textureImplPtr = textureImpl.get();
 
         gfxTexture texture(textureImpl.release());
 
@@ -82,7 +95,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info, const gfxSu
         textureViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
         textureViewCreateInfo.SetTexture(&texture);
 
-        std::unique_ptr<gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, textureImplPtr);
+        std::unique_ptr<gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImplPtr);
         m_SwapChainImageViews.push_back(std::move(textureViewImpl));
     }
 
@@ -100,17 +113,135 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info, const gfxSu
 
         frameBufferCreateInfo.AddAttachment(std::move(imageInfo));
 
-        std::unique_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, &renderPassImpl);
+        std::unique_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, renderPassImpl);
         m_SwapChainFrameBuffers.push_back(std::move(frameBufferImpl));
     }
 
+    gfxCommandPoolCreateInfo commandPoolCreateInfo;
+    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChainFrameBuffers.size());
+
+    m_CommandPool = m_Device.CreateCommandPool(commandPoolCreateInfo, queueFamilyImpl);
+
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    m_VkSemaphoreImageAvailable.resize(kMaxFramesInFlight);
+    m_VkSemaphoreRenderFinished.resize(kMaxFramesInFlight);
+    m_VkFencesInFlight.resize(kMaxFramesInFlight);
+    m_VkFencesImagesInFlight.resize(m_SwapChainFrameBuffers.size(), VK_NULL_HANDLE);
+
+    for (epiU32 i = 0; i < kMaxFramesInFlight; ++i)
+    {
+        if (vkCreateSemaphore(m_Device.GetVkDevice(), &semaphoreInfo, nullptr, &m_VkSemaphoreImageAvailable[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(m_Device.GetVkDevice(), &semaphoreInfo, nullptr, &m_VkSemaphoreRenderFinished[i]) != VK_SUCCESS ||
+            vkCreateFence(m_Device.GetVkDevice(), &fenceInfo, nullptr, &m_VkFencesInFlight[i]) != VK_SUCCESS)
+        {
+            return false;
+        }
+    }
 
     return true;
 }
 
 gfxSwapChainImplVK::~gfxSwapChainImplVK()
 {
+    for (VkSemaphore semaphore : m_VkSemaphoreRenderFinished)
+    {
+        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
+    }
+
+    for (VkSemaphore semaphore : m_VkSemaphoreImageAvailable)
+    {
+        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
+    }
+
+    for (VkFence fence : m_VkFencesInFlight)
+    {
+        vkDestroyFence(m_Device.GetVkDevice(), fence, nullptr);
+    }
+
     vkDestroySwapchainKHR(m_Device.GetVkDevice(), m_VkSwapChain, nullptr);
+}
+
+epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queueImpl)
+{
+    const epiU32 frameIndex = m_CurrentFrame % kMaxFramesInFlight;
+
+    vkWaitForFences(m_Device.GetVkDevice(), 1, &m_VkFencesInFlight[frameIndex], VK_TRUE, UINT64_MAX);
+
+    epiU32 imageIndex;
+    if (vkAcquireNextImageKHR(m_Device.GetVkDevice(),
+                              m_VkSwapChain,
+                              std::numeric_limits<epiU64>::max(),
+                              m_VkSemaphoreImageAvailable[frameIndex],
+                              VK_NULL_HANDLE,
+                              &imageIndex) != VK_SUCCESS)
+    {
+        return false;
+    }
+
+    if (m_VkFencesImagesInFlight[imageIndex] != VK_NULL_HANDLE)
+    {
+        vkWaitForFences(m_Device.GetVkDevice(), 1, &m_VkFencesImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+    }
+    // Mark the image as now being in use by this frame
+    m_VkFencesImagesInFlight[imageIndex] = m_VkFencesInFlight[frameIndex];
+
+
+    VkSemaphore waitSemaphores[] = {m_VkSemaphoreImageAvailable[frameIndex]};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    VkCommandBuffer commandBuffers[] = {static_cast<gfxCommandBufferImplVK*>(m_CommandPool->BufferAtPrimary(imageIndex))->GetVkCommandBuffer()};
+    VkSemaphore signalSemaphores[] = {m_VkSemaphoreRenderFinished[frameIndex]};
+
+    static_assert(epiArrLen(waitSemaphores) == epiArrLen(waitStages));
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.waitSemaphoreCount = epiArrLen(waitSemaphores);
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.commandBufferCount = epiArrLen(commandBuffers);
+    submitInfo.pCommandBuffers = commandBuffers;
+    submitInfo.signalSemaphoreCount = epiArrLen(signalSemaphores);
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    vkResetFences(m_Device.GetVkDevice(), 1, &m_VkFencesInFlight[frameIndex]);
+
+    if (vkQueueSubmit(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue(), 1, &submitInfo, m_VkFencesInFlight[frameIndex]) != VK_SUCCESS)
+    {
+        return false;
+    }
+
+    VkSwapchainKHR swapChains[] = {m_VkSwapChain};
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+    presentInfo.swapchainCount = epiArrLen(swapChains);
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
+
+    if (vkQueuePresentKHR(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue(), &presentInfo) != VK_SUCCESS)
+    {
+        return false;
+    }
+
+#if 0 // TODO: figure out whether this sync point should be used
+    if (vkQueueWaitIdle(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue()) != VK_SUCCESS)
+    {
+        return false;
+    }
+#endif
+
+    ++m_CurrentFrame;
+
+    return true;
 }
 
 } // namespace internalgfx

@@ -41,7 +41,10 @@ public:
     gfxCommandPoolImplVK& operator=(gfxCommandPoolImplVK&& rhs) = default;
     ~gfxCommandPoolImplVK() override;
 
-    epiBool Init(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl* queueFamilyImpl);
+    epiBool Init(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl);
+
+    gfxCommandBufferImpl* BufferAtPrimary(epiU32 index) override;
+    gfxCommandBufferImpl* BufferAtSecondary(epiU32 index) override;
 
 protected:
     VkDevice_T* m_VkDevice{nullptr};

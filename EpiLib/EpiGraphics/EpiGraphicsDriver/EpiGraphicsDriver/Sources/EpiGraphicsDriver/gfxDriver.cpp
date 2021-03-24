@@ -50,13 +50,13 @@ gfxDriver::~gfxDriver()
     delete m_Impl;
 }
 
-std::unique_ptr<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
+std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
 {
-    std::unique_ptr<gfxSurface> surface;
+    std::optional<gfxSurface> surface;
 
     if (std::unique_ptr<internalgfx::gfxSurfaceImpl> surfaceImpl = m_Impl->CreateSurface(window))
     {
-        surface = std::make_unique<gfxSurface>(surfaceImpl.release());
+        surface = gfxSurface(surfaceImpl.release());
     }
 
     return surface;

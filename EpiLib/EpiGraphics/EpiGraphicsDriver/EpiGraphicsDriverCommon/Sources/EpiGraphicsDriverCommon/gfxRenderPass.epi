@@ -1,7 +1,10 @@
 class gfxRenderPassCreateInfo
 {
     [ReadOnly]
-    epiArray<gfxRenderSubPass> SubPasses;
+    {
+        epiArray<gfxRenderSubPass> SubPasses;
+        epiArray<gfxRenderSubPassDependency> SubPassDependencies;
+    }
 
     [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
     {

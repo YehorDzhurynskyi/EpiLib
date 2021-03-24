@@ -898,4 +898,73 @@ VkImageUsageFlagBits gfxImageUsageTo(gfxImageUsage usage)
                    (usage & gfxImageUsage_FRAGMENT_DENSITY_MAP) ? VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT : VkImageUsageFlagBits{});
 }
 
+VkPipelineStageFlagBits gfxPipelineStageTo(gfxPipelineStage stage)
+{
+    return epiMask((stage & gfxPipelineStage_TopOfPipe) ? VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_DrawIndirect) ? VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_VertexInput) ? VK_PIPELINE_STAGE_VERTEX_INPUT_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_VertexShader) ? VK_PIPELINE_STAGE_VERTEX_SHADER_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_TessellationControlShader) ? VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_TessellationEvaluationShader) ? VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_GeometryShader) ? VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_FragmentShader) ? VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_EarlyFragmentTests) ? VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_LateFragmentTests) ? VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_ColorAttachmentOutput) ? VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_ComputeShader) ? VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_Transfer) ? VK_PIPELINE_STAGE_TRANSFER_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_BottomOfPipe) ? VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_Host) ? VK_PIPELINE_STAGE_HOST_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_AllGraphics) ? VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_AllCommands) ? VK_PIPELINE_STAGE_ALL_COMMANDS_BIT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_TransformFeedback) ? VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_ConditionalRendering) ? VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_AccelerationStructureBuild) ? VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_RayTracingShader) ? VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_ShadingRateImage) ? VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_TaskShader) ? VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_MeshShader) ? VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_FragmentDensityProcess) ? VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT : VkPipelineStageFlagBits{},
+                   (stage & gfxPipelineStage_CommandPreprocess) ? VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV : VkPipelineStageFlagBits{});
+}
+
+VkAccessFlagBits gfxAccessTo(gfxAccess access)
+{
+    return epiMask((access & gfxAccess_IndirectCommandRead) ? VK_ACCESS_INDIRECT_COMMAND_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_IndexRead) ? VK_ACCESS_INDEX_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_VertexAttributeRead) ? VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_UniformRead) ? VK_ACCESS_UNIFORM_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_InputAttachmentRead) ? VK_ACCESS_INPUT_ATTACHMENT_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_ShaderRead) ? VK_ACCESS_SHADER_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_ShaderWrite) ? VK_ACCESS_SHADER_WRITE_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_ColorAttachmentRead) ? VK_ACCESS_COLOR_ATTACHMENT_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_ColorAttachmentWrite) ? VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_DepthStencilAttachmentRead) ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_DepthStencilAttachmentWrite) ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_TransferRead) ? VK_ACCESS_TRANSFER_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_TransferWrite) ? VK_ACCESS_TRANSFER_WRITE_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_HostRead) ? VK_ACCESS_HOST_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_HostWrite) ? VK_ACCESS_HOST_WRITE_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_MemoryRead) ? VK_ACCESS_MEMORY_READ_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_MemoryWrite) ? VK_ACCESS_MEMORY_WRITE_BIT : VkAccessFlagBits{},
+                   (access & gfxAccess_TransformFeedbackWrite) ? VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT : VkAccessFlagBits{},
+                   (access & gfxAccess_TransformFeedbackCounterRead) ? VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT : VkAccessFlagBits{},
+                   (access & gfxAccess_TransformFeedbackCounterWrite) ? VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT : VkAccessFlagBits{},
+                   (access & gfxAccess_ConditionalRenderingRead) ? VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT : VkAccessFlagBits{},
+                   (access & gfxAccess_ColorAttachmentReadNonCoherent) ? VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT : VkAccessFlagBits{},
+                   (access & gfxAccess_AccelerationStructureRead) ? VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR : VkAccessFlagBits{},
+                   (access & gfxAccess_AccelerationStructureWrite) ? VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR : VkAccessFlagBits{},
+                   (access & gfxAccess_ShadingRateImageRead) ? VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV : VkAccessFlagBits{},
+                   (access & gfxAccess_FragmentDensityMapRead) ? VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT : VkAccessFlagBits{},
+                   (access & gfxAccess_CommandPreprocessRead) ? VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV : VkAccessFlagBits{},
+                   (access & gfxAccess_CommandPreprocessWrite) ? VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV : VkAccessFlagBits{});
+}
+
+VkDependencyFlagBits gfxDependencyTo(gfxDependency dependency)
+{
+    return epiMask((dependency & gfxDependency_ByRegion) ? VK_DEPENDENCY_BY_REGION_BIT : VkDependencyFlagBits{},
+                   (dependency & gfxDependency_DeviceGroup) ? VK_DEPENDENCY_DEVICE_GROUP_BIT : VkDependencyFlagBits{},
+                   (dependency & gfxDependency_ViewLocal) ? VK_DEPENDENCY_VIEW_LOCAL_BIT : VkDependencyFlagBits{});
+}
+
 EPI_NAMESPACE_END()

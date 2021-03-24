@@ -67,7 +67,9 @@ bool EpiwxVulkanDemo::OnInit()
     SetTopWindow(m_Frame);
 
     epi::gfxDriver::GetInstance().SetBackend(epi::gfxDriverBackend::Vulkan);
-    const std::unique_ptr<epi::gfxSurface> surface = epi::gfxDriver::GetInstance().CreateSurface(epi::gfxWindow());
+    std::optional<epi::gfxSurface> surface = epi::gfxDriver::GetInstance().CreateSurface(epi::gfxWindow());
+    epiAssert(surface.has_value());
+
     std::optional<epi::gfxPhysicalDevice> physicalDevice = epi::gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface](const epi::gfxPhysicalDevice& device)
     {
         if (device.GetType() != epi::gfxPhysicalDeviceType::DiscreteGPU ||
@@ -128,12 +130,134 @@ bool EpiwxVulkanDemo::OnInit()
         extent.y = std::clamp(static_cast<epiU32>(frameSize.y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
     }
 
-    std::optional<epi::gfxSwapChain> swapChain = surface->CreateSwapChain(*device,
-                                                                          surfaceCapabilities,
-                                                                          surfaceFormat,
-                                                                          epi::gfxSurfacePresentMode::MAILBOX,
-                                                                          extent);
+    const std::string kVertexShaderModule = R"(
+        #version 450
+        #extension GL_ARB_separate_shader_objects : enable
+
+        layout(location = 0) out vec3 fragColor;
+
+        vec2 positions[3] = vec2[](
+            vec2(0.0, -0.5),
+            vec2(0.5, 0.5),
+            vec2(-0.5, 0.5)
+        );
+
+        vec3 colors[3] = vec3[](
+            vec3(1.0, 0.0, 0.0),
+            vec3(0.0, 1.0, 0.0),
+            vec3(0.0, 0.0, 1.0)
+        );
+
+        void main() {
+            gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
+            fragColor = colors[gl_VertexIndex];
+        }
+    )";
+
+    const std::string kFragmentShaderModule = R"(
+        #version 450
+        #extension GL_ARB_separate_shader_objects : enable
+
+        layout(location = 0) in vec3 fragColor;
+
+        layout(location = 0) out vec4 outColor;
+
+        void main() {
+            outColor = vec4(fragColor, 1.0);
+        }
+    )";
+
+    std::optional<epi::gfxShader> vertexShader = device->CreateShaderFromSource(kVertexShaderModule.c_str(), epi::gfxShaderType::Vertex);
+    std::optional<epi::gfxShader> fragmentShader = device->CreateShaderFromSource(kFragmentShaderModule.c_str(), epi::gfxShaderType::Fragment);
+
+    epiAssert(vertexShader.has_value());
+    epiAssert(fragmentShader.has_value());
+
+    epi::gfxShaderProgramCreateInfo shaderProgramCreateInfo;
+    shaderProgramCreateInfo.SetVertex(&*vertexShader);
+    shaderProgramCreateInfo.SetFragment(&*fragmentShader);
+
+    std::optional<epi::gfxShaderProgram> shaderProgram = device->CreateShaderProgram(shaderProgramCreateInfo);
+
+    epi::gfxAttachment attachment;
+    attachment.SetFormat(surfaceFormat.GetFormat());
+    attachment.SetSampleCount(epi::gfxSampleCount::Sample1);
+    attachment.SetLoadOp(epi::gfxAttachmentLoadOp::Clear);
+    attachment.SetStoreOp(epi::gfxAttachmentStoreOp::Store);
+    attachment.SetStencilLoadOp(epi::gfxAttachmentLoadOp::DontCare);
+    attachment.SetStencilStoreOp(epi::gfxAttachmentStoreOp::DontCare);
+    attachment.SetInitialLayout(epi::gfxImageLayout::Undefined);
+    attachment.SetFinalLayout(epi::gfxImageLayout::PresentSrc);
+
+    epi::gfxRenderSubPass renderSubPass;
+    renderSubPass.SetBindPoint(epi::gfxPipelineBindPoint::Graphics);
+    renderSubPass.AddAttachment(attachment, 0, epi::gfxImageLayout::ColorAttachmentOptimal);
+
+    epi::gfxRenderSubPassDependency renderSubPassDependency;
+    renderSubPassDependency.SetIsSrcSubPassExternal(true);
+    renderSubPassDependency.SetDstSubPass(0);
+    renderSubPassDependency.SetSrcStageMask(epi::gfxPipelineStage_ColorAttachmentOutput);
+    renderSubPassDependency.SetSrcAccessMask(epi::gfxAccess{0});
+    renderSubPassDependency.SetDstStageMask(epi::gfxPipelineStage_ColorAttachmentOutput);
+    renderSubPassDependency.SetDstAccessMask(epi::gfxAccess_ColorAttachmentWrite);
+
+    epi::gfxRenderPassCreateInfo renderPassCreateInfo;
+    renderPassCreateInfo.AddSubPass(std::move(renderSubPass));
+    renderPassCreateInfo.AddSubPassDependency(std::move(renderSubPassDependency));
+
+    std::optional<epi::gfxRenderPass> renderPass = device->CreateRenderPass(renderPassCreateInfo);
+    epiAssert(renderPass.has_value());
+
+    epi::gfxSwapChainCreateInfo swapChainCreateInfo;
+    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
+    swapChainCreateInfo.SetFormat(surfaceFormat);
+    swapChainCreateInfo.SetPresentMode(epi::gfxSurfacePresentMode::MAILBOX);
+    swapChainCreateInfo.SetExtent(extent);
+    swapChainCreateInfo.SetSurface(&*surface);
+    swapChainCreateInfo.SetRenderPass(&*renderPass);
+
+    std::optional<epi::gfxSwapChain> swapChain = device->CreateSwapChain(swapChainCreateInfo);
     epiAssert(swapChain.has_value());
+
+    epi::gfxPipelineViewport viewport;
+    viewport.SetViewportRect(epiRect2f(0.0f, 0.0f, extent.x, extent.y));
+    viewport.SetViewportMinDepth(0.0f);
+    viewport.SetViewportMaxDepth(1.0f);
+
+    epi::gfxPipelineColorBlendAttachment colorBlendAttachment;
+    colorBlendAttachment.SetColorWriteMask(epi::gfxColorComponent_RGBA);
+    colorBlendAttachment.SetBlendEnable(false);
+    colorBlendAttachment.SetSrcColorBlendFactor(epi::gfxBlendFactor::One);
+    colorBlendAttachment.SetDstColorBlendFactor(epi::gfxBlendFactor::Zero);
+    colorBlendAttachment.SetColorBlendOp(epi::gfxBlendOp::Add);
+    colorBlendAttachment.SetSrcAlphaBlendFactor(epi::gfxBlendFactor::One);
+    colorBlendAttachment.SetDstAlphaBlendFactor(epi::gfxBlendFactor::Zero);
+    colorBlendAttachment.SetAlphaBlendOp(epi::gfxBlendOp::Add);
+
+    epi::gfxPipelineCreateInfo pipelineCreateInfo;
+    pipelineCreateInfo.SetInputAssemblyType(epi::gfxPipelineInputAssemblyType::TriangleList);
+    pipelineCreateInfo.AddViewport(viewport);
+    pipelineCreateInfo.AddScissor(epiRect2s(0, 0, extent.x, extent.y));
+    pipelineCreateInfo.SetDepthClampEnable(false);
+    pipelineCreateInfo.SetRasterizerDiscardEnable(false);
+    pipelineCreateInfo.SetPolygonMode(epi::gfxPolygonMode::Fill);
+    pipelineCreateInfo.SetLineWidth(1.0f);
+    pipelineCreateInfo.SetCullMode(epi::gfxCullMode::Back);
+    pipelineCreateInfo.SetFrontFace(epi::gfxFrontFace::CW);
+    pipelineCreateInfo.SetDepthClampEnable(false);
+    pipelineCreateInfo.SetDepthBiasConstantFactor(0.0f);
+    pipelineCreateInfo.SetDepthBiasClamp(0.0f);
+    pipelineCreateInfo.SetDepthBiasSlopeFactor(0.0f);
+    pipelineCreateInfo.AddColorBlendAttachment(colorBlendAttachment);
+    pipelineCreateInfo.SetColorBlendLogicOpEnable(false);
+    pipelineCreateInfo.SetColorBlendLogicOp(epi::gfxLogicOp::Copy);
+    pipelineCreateInfo.SetColorBlendConstants(epiVec4f{0.0f, 0.0f, 0.0f, 0.0f});
+    pipelineCreateInfo.SetRenderPass(&*renderPass);
+    pipelineCreateInfo.SetRenderSubPassIndex(0);
+    pipelineCreateInfo.SetShaderProgram(&*shaderProgram);
+
+    std::optional<epi::gfxPipeline> pipeline = device->CreatePipeline(pipelineCreateInfo);
+    epiAssert(pipeline.has_value());
 
     return true;
 }

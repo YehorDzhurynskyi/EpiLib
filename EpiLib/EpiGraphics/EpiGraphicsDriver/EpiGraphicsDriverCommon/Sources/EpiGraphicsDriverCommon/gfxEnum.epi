@@ -610,3 +610,75 @@ enum gfxLogicOp
     Nand,
     Set
 };
+
+[FlagMask]
+enum gfxPipelineStage
+{
+    TopOfPipe,
+    DrawIndirect,
+    VertexInput,
+    VertexShader,
+    TessellationControlShader,
+    TessellationEvaluationShader,
+    GeometryShader,
+    FragmentShader,
+    EarlyFragmentTests,
+    LateFragmentTests,
+    ColorAttachmentOutput,
+    ComputeShader,
+    Transfer,
+    BottomOfPipe,
+    Host,
+    AllGraphics,
+    AllCommands,
+    TransformFeedback,
+    ConditionalRendering,
+    AccelerationStructureBuild,
+    RayTracingShader,
+    ShadingRateImage,
+    TaskShader,
+    MeshShader,
+    FragmentDensityProcess,
+    CommandPreprocess
+};
+
+[FlagMask]
+enum gfxAccess
+{
+    IndirectCommandRead,
+    IndexRead,
+    VertexAttributeRead,
+    UniformRead,
+    InputAttachmentRead,
+    ShaderRead,
+    ShaderWrite,
+    ColorAttachmentRead,
+    ColorAttachmentWrite,
+    DepthStencilAttachmentRead,
+    DepthStencilAttachmentWrite,
+    TransferRead,
+    TransferWrite,
+    HostRead,
+    HostWrite,
+    MemoryRead,
+    MemoryWrite,
+    TransformFeedbackWrite,
+    TransformFeedbackCounterRead,
+    TransformFeedbackCounterWrite,
+    ConditionalRenderingRead,
+    ColorAttachmentReadNonCoherent,
+    AccelerationStructureRead,
+    AccelerationStructureWrite,
+    ShadingRateImageRead,
+    FragmentDensityMapRead,
+    CommandPreprocessRead,
+    CommandPreprocessWrite
+};
+
+[FlagMask]
+enum gfxDependency
+{
+    ByRegion,
+    DeviceGroup,
+    ViewLocal
+};

@@ -70,4 +70,41 @@ public:
     void AddAttachment(const gfxAttachment& attachment, epiU32 attachmentIndex, gfxImageLayout layout);
 };
 
+class gfxRenderSubPassDependency : public Object
+{
+EPI_GENREGION_BEGIN(gfxRenderSubPassDependency)
+
+EPI_GENHIDDEN_gfxRenderSubPassDependency()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x94a8ddeb};
+
+    enum gfxRenderSubPassDependency_PIDs
+    {
+        PID_SrcSubPass = 0xd4bef645,
+        PID_DstSubPass = 0x70c940a5,
+        PID_IsSrcSubPassExternal = 0xe55095a5,
+        PID_IsDstSubPassExternal = 0xb6a5ce71,
+        PID_SrcStageMask = 0x5890cb97,
+        PID_DstStageMask = 0x24ec8ab5,
+        PID_SrcAccessMask = 0xe4d2b1e8,
+        PID_DstAccessMask = 0x31ce8c4d,
+        PID_DependencyFlags = 0x68167a5,
+        PID_COUNT = 9
+    };
+
+protected:
+    epiU32 m_SrcSubPass{0};
+    epiU32 m_DstSubPass{0};
+    epiBool m_IsSrcSubPassExternal{false};
+    epiBool m_IsDstSubPassExternal{false};
+    gfxPipelineStage m_SrcStageMask{};
+    gfxPipelineStage m_DstStageMask{};
+    gfxAccess m_SrcAccessMask{};
+    gfxAccess m_DstAccessMask{};
+    gfxDependency m_DependencyFlags{};
+
+EPI_GENREGION_END(gfxRenderSubPassDependency)
+};
+
 EPI_NAMESPACE_END()

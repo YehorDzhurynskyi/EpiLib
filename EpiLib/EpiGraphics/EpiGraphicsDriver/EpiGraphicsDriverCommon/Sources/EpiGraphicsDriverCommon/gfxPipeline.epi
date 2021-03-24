@@ -17,19 +17,10 @@ class gfxPipelineColorBlendAttachment
     gfxColorComponent ColorWriteMask = gfxColorComponent::RGBA;
 };
 
-class gfxPipelineLayout
-{
-};
-
 class gfxPipelineCreateInfo
 {
-    gfxPipelineLayout PipelineLayout;
-
-    [WriteCallback(RValueRef=true)]
-    {
-        gfxShaderProgram ShaderProgram;
-        gfxRenderPass RenderPass;
-    }
+    gfxShaderProgram* ShaderProgram;
+    gfxRenderPass* RenderPass;
 
     epiU32 RenderSubPassIndex;
 

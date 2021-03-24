@@ -86,9 +86,35 @@ std::optional<gfxPipeline> gfxDevice::CreatePipeline(const gfxPipelineCreateInfo
 {
     std::optional<gfxPipeline> pipeline;
 
-    const internalgfx::gfxShaderProgramImpl* shaderProgramImpl = info.GetShaderProgram().m_Impl;
-    const internalgfx::gfxRenderPassImpl* renderPassImpl = info.GetRenderPass().m_Impl;
-    if (std::unique_ptr<internalgfx::gfxPipelineImpl> impl = m_Impl->CreatePipeline(info, shaderProgramImpl, renderPassImpl))
+    const gfxShaderProgram* shaderProgram = info.GetShaderProgram();
+    if (shaderProgram == nullptr)
+    {
+        epiLogError("Failed to create Pipeline! ShaderProgram hasn't provided!");
+        return pipeline;
+    }
+
+    const internalgfx::gfxShaderProgramImpl* shaderProgramImpl = shaderProgram->m_Impl;
+    if (shaderProgramImpl == nullptr)
+    {
+        epiLogError("Failed to create Pipeline! ShaderProgram has no implementation!");
+        return pipeline;
+    }
+
+    const gfxRenderPass* renderPass = info.GetRenderPass();
+    if (renderPass == nullptr)
+    {
+        epiLogError("Failed to create Pipeline! RenderPass hasn't provided!");
+        return pipeline;
+    }
+
+    const internalgfx::gfxRenderPassImpl* renderPassImpl = renderPass->m_Impl;
+    if (renderPassImpl == nullptr)
+    {
+        epiLogError("Failed to create Pipeline! RenderPass has no implemetation!");
+        return pipeline;
+    }
+
+    if (std::unique_ptr<internalgfx::gfxPipelineImpl> impl = m_Impl->CreatePipeline(info, *shaderProgramImpl, *renderPassImpl))
     {
         pipeline = gfxPipeline(impl.release());
     }
@@ -124,8 +150,21 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
 {
     std::optional<gfxFrameBuffer> frameBuffer;
 
-    const internalgfx::gfxRenderPassImpl* renderPassImpl = info.GetRenderPass().m_Impl;
-    if (std::unique_ptr<internalgfx::gfxFrameBufferImpl> impl = m_Impl->CreateFrameBuffer(info, renderPassImpl))
+    const gfxRenderPass* renderPass = info.GetRenderPass();
+    if (renderPass == nullptr)
+    {
+        epiLogError("Failed to create FrameBuffer! RenderPass hasn't provided!");
+        return frameBuffer;
+    }
+
+    const internalgfx::gfxRenderPassImpl* renderPassImpl = renderPass->m_Impl;
+    if (renderPassImpl == nullptr)
+    {
+        epiLogError("Failed to create FrameBuffer! RenderPass has no implementation!");
+        return frameBuffer;
+    }
+
+    if (std::unique_ptr<internalgfx::gfxFrameBufferImpl> impl = m_Impl->CreateFrameBuffer(info, *renderPassImpl))
     {
         frameBuffer = gfxFrameBuffer(impl.release());
     }
@@ -149,8 +188,21 @@ std::optional<gfxTextureView> gfxDevice::CreateTextureView(const gfxTextureViewC
 {
     std::optional<gfxTextureView> textureView;
 
-    const internalgfx::gfxTextureImpl* textureImpl = info.GetTexture().m_Impl;
-    if (std::unique_ptr<internalgfx::gfxTextureViewImpl> impl = m_Impl->CreateTextureView(info, textureImpl))
+    const gfxTexture* texture = info.GetTexture();
+    if (texture == nullptr)
+    {
+        epiLogError("Failed to create TextureView! Texture hasn't provided!");
+        return textureView;
+    }
+
+    const internalgfx::gfxTextureImpl* textureImpl = texture->m_Impl;
+    if (textureImpl == nullptr)
+    {
+        epiLogError("Failed to create TextureView! Texture has no implementation!");
+        return textureView;
+    }
+
+    if (std::unique_ptr<internalgfx::gfxTextureViewImpl> impl = m_Impl->CreateTextureView(info, *textureImpl))
     {
         textureView = gfxTextureView(impl.release());
     }
@@ -162,18 +214,20 @@ std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolC
 {
     std::optional<gfxCommandPool> commnadPool;
 
-    const internalgfx::gfxQueueFamilyImpl* queueFamilyImpl = nullptr;
-    if (const gfxQueueFamily* queueFamily = info.GetQueueFamily())
+    const gfxQueueFamily* queueFamily = info.GetQueueFamily();
+    if (queueFamily == nullptr)
     {
-        queueFamilyImpl = queueFamily->m_Impl;
-    }
-    else
-    {
-        epiLogError("gfxCommandPoolCreateInfo QueueFamily has no implementation!");
+        epiLogError("Failed to create CommandPool! QueueFamily hasn't provided!");
         return commnadPool;
     }
 
-    if (std::unique_ptr<internalgfx::gfxCommandPoolImpl> impl = m_Impl->CreateCommandPool(info, queueFamilyImpl))
+    const internalgfx::gfxQueueFamilyImpl* queueFamilyImpl = queueFamily->m_Impl;
+    {
+        epiLogError("Failed to create CommandPool! QueueFamily has no implementation!");
+        return commnadPool;
+    }
+
+    if (std::unique_ptr<internalgfx::gfxCommandPoolImpl> impl = m_Impl->CreateCommandPool(info, *queueFamilyImpl))
     {
         commnadPool = gfxCommandPool(impl.release());
     }

@@ -5,6 +5,20 @@ class gfxAttachmentRef
     gfxImageLayout Layuot;
 };
 
+class gfxRenderSubPassDependency
+{
+    epiU32 SrcSubPass;
+    epiU32 DstSubPass;
+    epiBool IsSrcSubPassExternal;
+    epiBool IsDstSubPassExternal;
+
+    gfxPipelineStage SrcStageMask;
+    gfxPipelineStage DstStageMask;
+    gfxAccess SrcAccessMask;
+    gfxAccess DstAccessMask;
+    gfxDependency DependencyFlags;
+};
+
 class gfxRenderSubPass
 {
     gfxPipelineBindPoint BindPoint;

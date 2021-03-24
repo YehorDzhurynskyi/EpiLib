@@ -57,12 +57,31 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
         // TODO: handle other attachment types
     }
 
+    std::vector<VkSubpassDependency> dependencies;
+    dependencies.reserve(info.GetSubPassDependencies().Size());
+
+    for (const gfxRenderSubPassDependency& dependency : info.GetSubPassDependencies())
+    {
+        VkSubpassDependency& dep = dependencies.emplace_back();
+        dep = {};
+
+        dep.srcSubpass = dependency.GetIsSrcSubPassExternal() ? VK_SUBPASS_EXTERNAL : dependency.GetSrcSubPass();
+        dep.dstSubpass = dependency.GetIsDstSubPassExternal() ? VK_SUBPASS_EXTERNAL : dependency.GetDstSubPass();
+        dep.srcStageMask = gfxPipelineStageTo(dependency.GetSrcStageMask());
+        dep.dstStageMask = gfxPipelineStageTo(dependency.GetDstStageMask());
+        dep.srcAccessMask = gfxAccessTo(dependency.GetSrcAccessMask());
+        dep.dstAccessMask = gfxAccessTo(dependency.GetDstAccessMask());
+        dep.dependencyFlags = gfxDependencyTo(dependency.GetDependencyFlags());
+    }
+
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = attachments.size();
     renderPassInfo.pAttachments = attachments.data();
     renderPassInfo.subpassCount = subpasses.size();
     renderPassInfo.pSubpasses = subpasses.data();
+    renderPassInfo.dependencyCount = dependencies.size();
+    renderPassInfo.pDependencies = dependencies.data();
 
     if (vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass) != VK_SUCCESS)
     {

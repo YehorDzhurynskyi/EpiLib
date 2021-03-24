@@ -46,6 +46,11 @@ epiBool gfxQueueImplVK::IsQueueTypeSupported(gfxQueueType mask) const
     return (m_Type & mask) == mask;
 }
 
+VkQueue gfxQueueImplVK::GetVkQueue() const
+{
+    return m_VkQueue;
+}
+
 } // namespace internalgfx
 
 EPI_NAMESPACE_END()

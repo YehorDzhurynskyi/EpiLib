@@ -124,6 +124,7 @@ epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShad
     colorBlending.blendConstants[2] = info.GetColorBlendConstants().b;
     colorBlending.blendConstants[3] = info.GetColorBlendConstants().a;
 
+    // TODO: configure through gfxPipelineCreateInfo
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 0;
