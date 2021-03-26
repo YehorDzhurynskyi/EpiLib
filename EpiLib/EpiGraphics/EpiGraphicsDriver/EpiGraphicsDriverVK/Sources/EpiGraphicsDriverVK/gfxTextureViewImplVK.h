@@ -20,7 +20,7 @@ public:
     gfxTextureViewImplVK& operator=(gfxTextureViewImplVK&& rhs) = default;
     ~gfxTextureViewImplVK() override;
 
-    epiBool Init(const gfxTextureViewCreateInfo& info, const gfxTextureImpl* textureImpl);
+    epiBool Init(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl);
 
 protected:
     VkImageView_T* m_VkImageView{nullptr};

@@ -12,35 +12,23 @@ namespace internalgfx
 gfxVertexBufferLayoutAttributeImplVK::gfxVertexBufferLayoutAttributeImplVK(gfxVertexBufferLayoutAttributeImplVK&& rhs)
 {
     m_Location = rhs.m_Location;
-    m_Size = rhs.m_Size;
-    m_Type = rhs.m_Type;
-    m_Normalized = rhs.m_Normalized;
-    m_Stride = rhs.m_Stride;
+    m_Format = rhs.m_Format;
     m_Offset = rhs.m_Offset;
 
-    m_Location = 0;
-    m_Size = 0;
-    m_Type = gfxVertexBufferLayoutAttributeType::NONE;
-    m_Normalized = false;
-    m_Stride = 0;
-    m_Offset = 0;
+    rhs.m_Location = 0;
+    rhs.m_Format = gfxFormat::UNDEFINED;
+    rhs.m_Offset = 0;
 }
 
 gfxVertexBufferLayoutAttributeImplVK& gfxVertexBufferLayoutAttributeImplVK::operator=(gfxVertexBufferLayoutAttributeImplVK&& rhs)
 {
     m_Location = rhs.m_Location;
-    m_Size = rhs.m_Size;
-    m_Type = rhs.m_Type;
-    m_Normalized = rhs.m_Normalized;
-    m_Stride = rhs.m_Stride;
+    m_Format = rhs.m_Format;
     m_Offset = rhs.m_Offset;
 
-    m_Location = 0;
-    m_Size = 0;
-    m_Type = gfxVertexBufferLayoutAttributeType::NONE;
-    m_Normalized = false;
-    m_Stride = 0;
-    m_Offset = 0;
+    rhs.m_Location = 0;
+    rhs.m_Format = gfxFormat::UNDEFINED;
+    rhs.m_Offset = 0;
 
     return *this;
 }
@@ -99,27 +87,10 @@ void gfxVertexBufferLayoutImplVK::Apply() const
 
 void gfxVertexBufferLayoutImplVK::Add(gfxVertexBufferLayoutAttributeImpl&& attr)
 {
-    m_Attributes.push_back(std::move(static_cast<gfxVertexBufferLayoutAttributeImplGL&&>(attr)));
+    // TODO: implement
 }
 
-gfxVertexBufferImplVK::gfxVertexBufferImplVK(gfxVertexBufferImplVK&& rhs)
-{
-    m_ID = rhs.m_ID;
-    m_Capacity = rhs.m_Capacity;
-    rhs.m_ID = 0;
-    rhs.m_Capacity = 0;
-}
-
-gfxVertexBufferImplVK& gfxVertexBufferImplVK::operator=(gfxVertexBufferImplVK&& rhs)
-{
-    m_ID = rhs.m_ID;
-    m_Capacity = rhs.m_Capacity;
-    rhs.m_ID = 0;
-    rhs.m_Capacity = 0;
-
-    return *this;
-}
-
+#if 0
 epiBool gfxVertexBufferImplVK::Create(const epiByte* initData, epiSize_t capacity, gfxVertexBufferUsage usage, const gfxVertexBufferLayoutImpl& layout)
 {
     VkBufferCreateInfo bufferInfo{};
@@ -213,6 +184,7 @@ epiBool gfxVertexBufferImplVK::UnMap()
 {
     return glUnmapBuffer(GL_ARRAY_BUFFER);
 }
+#endif
 
 } // namespace internalgfx
 

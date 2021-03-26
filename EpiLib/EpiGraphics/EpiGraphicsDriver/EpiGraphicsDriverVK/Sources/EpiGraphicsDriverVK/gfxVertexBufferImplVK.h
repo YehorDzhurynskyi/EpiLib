@@ -63,27 +63,9 @@ public:
     gfxVertexBufferImplVK() = default;
     gfxVertexBufferImplVK(const gfxVertexBufferImplVK& rhs) = delete;
     gfxVertexBufferImplVK& operator=(const gfxVertexBufferImplVK& rhs) = delete;
-    gfxVertexBufferImplVK(gfxVertexBufferImplVK&& rhs);
-    gfxVertexBufferImplVK& operator=(gfxVertexBufferImplVK&& rhs);
+    gfxVertexBufferImplVK(gfxVertexBufferImplVK&& rhs) = default;
+    gfxVertexBufferImplVK& operator=(gfxVertexBufferImplVK&& rhs) = default;
     ~gfxVertexBufferImplVK() override = default;
-
-    epiBool Create(const epiByte* initData, epiSize_t capacity, gfxVertexBufferUsage usage, const gfxVertexBufferLayoutImpl& layout) override;
-    void Destroy() override;
-
-    epiBool GetIsCreated() const override;
-    epiU32 GetID() const override;
-    epiSize_t GetCapacity() const override;
-
-    void Bind() override;
-    void UnBind() override;
-
-    epiByte* Map(gfxVertexBufferMapAccess access) override;
-    epiBool UnMap() override;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkBuffer_T* m_VkBuffer{nullptr};
-    epiSize_t m_Capacity{0};
 };
 
 } // internalgfx

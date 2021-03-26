@@ -41,7 +41,7 @@ protected:
 EPI_GENREGION_END(gfxShader)
 
 public:
-    friend class gfxShaderProgram;
+    friend class gfxDevice;
 
 public:
     gfxShader() = default;

@@ -17,6 +17,11 @@ gfxCommandBufferImplVK::gfxCommandBufferImplVK(VkCommandBuffer commandBuffer, ep
 {
 }
 
+epiBool gfxCommandBufferImplVK::GetIsPrimary() const
+{
+    return m_IsPrimary;
+}
+
 epiBool gfxCommandBufferImplVK::RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) const
 {
     VkCommandBufferBeginInfo beginInfo{};

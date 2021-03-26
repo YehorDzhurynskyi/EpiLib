@@ -45,15 +45,16 @@ gfxShaderProgram CreateProgramLineStrip()
     gfxShader vertex;
     gfxShader pixel;
 
-    vertex.CreateFromSource(kShaderSourceLineStripVertex, gfxShaderType::Vertex);
-    pixel.CreateFromSource(kShaderSourceLineStripPixel, gfxShaderType::Pixel);
+    // TODO: restore
+    // vertex.CreateFromSource(kShaderSourceLineStripVertex, gfxShaderType::Vertex);
+    // pixel.CreateFromSource(kShaderSourceLineStripPixel, gfxShaderType::Pixel);
 
     gfxShaderProgram program;
 
-    program.ShaderAttach(vertex);
-    program.ShaderAttach(pixel);
+    // program.ShaderAttach(vertex);
+    // program.ShaderAttach(pixel);
 
-    program.Build();
+    // program.Build();
 
     return program;
 }
@@ -73,13 +74,14 @@ dvDrawerSeriesBase::dvDrawerSeriesBase()
     : m_VertexBufferMappingLineStrip(m_VertexBufferLineStrip)
 {
     {
-        gfxBindableScoped scope(m_VertexArrayLineStrip);
+        // TODO: restore
+        // gfxBindableScoped scope(m_VertexArrayLineStrip);
 
         gfxVertexBufferLayout layout;
-        layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLineStip), offsetof(VertexLineStip, Position));
-        layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLineStip), offsetof(VertexLineStip, ColorTint));
+        // layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLineStip), offsetof(VertexLineStip, Position));
+        // layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLineStip), offsetof(VertexLineStip, ColorTint));
 
-        m_VertexBufferLineStrip.Create(nullptr, sizeof(VertexLineStip) * kMaxLineStripVerticesCount, gfxVertexBufferUsage::DynamicDraw, layout);
+        // m_VertexBufferLineStrip.Create(nullptr, sizeof(VertexLineStip) * kMaxLineStripVerticesCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
     m_ShaderProgramLineStrip = CreateProgramLineStrip();
@@ -104,10 +106,11 @@ void dvDrawerSeriesBase::SceneEnd(const gfxCamera& camera)
     const epiSize_t lineStripVerticesCount = m_VertexBufferMappingLineStrip.UnMap() / sizeof(VertexLineStip);
 
     {
-        gfxBindableScoped scope(m_ShaderProgramLineStrip, m_VertexArrayLineStrip);
+        // TODO: restore
+        // gfxBindableScoped scope(m_ShaderProgramLineStrip, m_VertexArrayLineStrip);
 
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
-        m_ShaderProgramLineStrip.Uniform("u_view_projection", VP);
+        // m_ShaderProgramLineStrip.Uniform("u_view_projection", VP);
 
         // TODO: restore
         // glLineWidth(2.0f);

@@ -4,7 +4,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriverCommon/gfxVertexArray.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxBindable.h"
+#include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -15,7 +15,7 @@ class gfxVertexArrayImpl;
 
 } // namespace internalgfx
 
-class gfxVertexArray : public gfxBindable
+class gfxVertexArray : public Object
 {
 EPI_GENREGION_BEGIN(gfxVertexArray)
 
@@ -27,33 +27,25 @@ public:
     enum gfxVertexArray_PIDs
     {
         PID_IsCreated = 0x560b66db,
-        PID_ID = 0x11d3633a,
-        PID_COUNT = 2
+        PID_COUNT = 1
     };
 
 protected:
     epiBool GetIsCreated_Callback() const;
-    epiU32 GetID_Callback() const;
 
 EPI_GENREGION_END(gfxVertexArray)
 
 public:
-    gfxVertexArray();
+    gfxVertexArray() = default;
+    explicit gfxVertexArray(internalgfx::gfxVertexArrayImpl* impl);
     gfxVertexArray(const gfxVertexArray& rhs) = delete;
     gfxVertexArray& operator=(const gfxVertexArray& rhs) = delete;
-    gfxVertexArray(gfxVertexArray&& rhs) = default;
-    gfxVertexArray& operator=(gfxVertexArray&& rhs) = default;
+    gfxVertexArray(gfxVertexArray&& rhs);
+    gfxVertexArray& operator=(gfxVertexArray&& rhs);
     ~gfxVertexArray();
 
-public:
-    void Create();
-    void Destroy();
-
-    void Bind() override;
-    void UnBind() override;
-
 protected:
-    std::unique_ptr<internalgfx::gfxVertexArrayImpl> m_Impl;
+    internalgfx::gfxVertexArrayImpl* m_Impl{nullptr};
 };
 
 EPI_NAMESPACE_END()

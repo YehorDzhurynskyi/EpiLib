@@ -39,12 +39,11 @@ public:
     };
 
 protected:
-    void SetQueueFamily_Callback(gfxQueueFamily&& value);
     epiU32 GetDesiredQueueCount_Callback() const;
 
 protected:
     gfxQueueType m_Type{};
-    gfxQueueFamily m_QueueFamily{};
+    gfxQueueFamily* m_QueueFamily{nullptr};
     epiArray<epiFloat> m_Priorities{};
 
 EPI_GENREGION_END(gfxQueueDescriptor)

@@ -7,7 +7,6 @@ EPI_GENREGION_END(include)
 #include "EpiCore/ObjectModel/Object.h"
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
-#include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -18,6 +17,8 @@ class gfxSwapChainImpl;
 
 } // internalgfx
 
+class gfxRenderPass;
+class gfxQueueFamily;
 class gfxSwapChainCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxSwapChainCreateInfo)
@@ -31,16 +32,18 @@ public:
     {
         PID_Surface = 0x73fca7f2,
         PID_RenderPass = 0x662aa9d7,
+        PID_QueueFamily = 0xfa954047,
         PID_Capabilities = 0x50af605,
         PID_Format = 0xd91677e9,
         PID_PresentMode = 0x2430171b,
         PID_Extent = 0x21a25c7e,
-        PID_COUNT = 6
+        PID_COUNT = 7
     };
 
 protected:
     gfxSurface* m_Surface{nullptr};
     gfxRenderPass* m_RenderPass{nullptr};
+    gfxQueueFamily* m_QueueFamily{nullptr};
     gfxSurfaceCapabilities m_Capabilities{};
     gfxSurfaceFormat m_Format{};
     gfxSurfacePresentMode m_PresentMode{};

@@ -1,8 +1,7 @@
-class gfxVertexArray : gfxBindable
+class gfxVertexArray
 {
     [Virtual, ReadOnly]
     {
         epiBool IsCreated;
-        epiU32 ID;
     }
 };

@@ -41,7 +41,7 @@ epiBool gfxShaderImplVK::InitFromSource(const epiChar* source, gfxShaderType typ
     case gfxShaderType::Vertex: shaderKind = shaderc_vertex_shader; break;
     case gfxShaderType::Geometry: shaderKind = shaderc_geometry_shader; break;
     case gfxShaderType::Fragment: shaderKind = shaderc_fragment_shader; break;
-    default: epiAssert(false, "Unhandled case"); return;
+    default: epiLogError("Unrecognized ShaderType value=`{}`", type); return false; // TODO: use str repr
     }
 
     shaderc::CompileOptions options; // TODO: set compile options (optimization level etc)
@@ -96,7 +96,7 @@ VkShaderModule_T* gfxShaderImplVK::GetVkShaderModule() const
     return m_VkShaderModule;
 }
 
-epiBool gfxShaderProgramImplVK::Init(const gfxShaderProgramCreateInfo& info)
+epiBool gfxShaderProgramImplVK::Init(const gfxShaderProgramCreateInfoImpl& info)
 {
     m_ShaderProgramCreateInfo = info;
     return true;
@@ -104,26 +104,29 @@ epiBool gfxShaderProgramImplVK::Init(const gfxShaderProgramCreateInfo& info)
 
 epiBool gfxShaderProgramImplVK::GetIsCreated() const
 {
-    return !m_ShaderProgramCreateInfo.GetIsEmpty();
+    static_assert(sizeof(m_ShaderProgramCreateInfo) == sizeof(void*) * 3, "Add shader type");
+    return m_ShaderProgramCreateInfo.Vertex != nullptr ||
+           m_ShaderProgramCreateInfo.Geometry != nullptr ||
+           m_ShaderProgramCreateInfo.Fragment != nullptr;
 }
 
 epiArray<gfxShaderImplVK*> gfxShaderProgramImplVK::GetCompiledModules() const
 {
     epiArray<gfxShaderImplVK*> modules;
 
-    if (m_ShaderVertexModule != nullptr)
+    if (gfxShaderImpl* shader = m_ShaderProgramCreateInfo.Vertex; shader != nullptr)
     {
-        modules.push_back(m_ShaderVertexModule.get());
+        modules.push_back(static_cast<gfxShaderImplVK*>(shader));
     }
 
-    if (m_ShaderGeometryModule != nullptr)
+    if (gfxShaderImpl* shader = m_ShaderProgramCreateInfo.Geometry; shader != nullptr)
     {
-        modules.push_back(m_ShaderGeometryModule.get());
+        modules.push_back(static_cast<gfxShaderImplVK*>(shader));
     }
 
-    if (m_ShaderFragmentModule != nullptr)
+    if (gfxShaderImpl* shader = m_ShaderProgramCreateInfo.Fragment; shader != nullptr)
     {
-        modules.push_back(m_ShaderFragmentModule.get());
+        modules.push_back(static_cast<gfxShaderImplVK*>(shader));
     }
 
     return modules;

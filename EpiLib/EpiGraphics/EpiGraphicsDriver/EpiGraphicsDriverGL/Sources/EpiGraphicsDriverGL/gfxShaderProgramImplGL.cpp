@@ -32,7 +32,7 @@ void gfxShaderImplGL::CreateFromSource(const epiChar* source, gfxShaderType type
     {
     case gfxShaderType::Vertex: glType = GL_VERTEX_SHADER; break;
     case gfxShaderType::Geometry: glType = GL_GEOMETRY_SHADER; break;
-    case gfxShaderType::Pixel: glType = GL_FRAGMENT_SHADER; break;
+    case gfxShaderType::Fragment: glType = GL_FRAGMENT_SHADER; break;
     default: epiAssert(false, "Unhandled case"); return;
     }
 
@@ -140,7 +140,7 @@ void gfxShaderProgramImplGL::ShaderAttach(const gfxShaderImpl& shader)
     {
     case gfxShaderType::Vertex: attached = &m_ShaderVertex; break;
     case gfxShaderType::Geometry: attached = &m_ShaderGeometry; break;
-    case gfxShaderType::Pixel: attached = &m_ShaderPixel; break;
+    case gfxShaderType::Fragment: attached = &m_ShaderPixel; break;
     default: epiAssert(false, "Unhandled case"); return;
     }
 

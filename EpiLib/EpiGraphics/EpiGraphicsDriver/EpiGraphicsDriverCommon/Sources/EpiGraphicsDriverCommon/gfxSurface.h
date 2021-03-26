@@ -6,8 +6,6 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
-#include "EpiGraphicsDriverCommon/gfxSwapChain.h"
-#include "EpiGraphicsDriverCommon/gfxDevice.h"
 
 #include "EpiCore/ObjectModel/Object.h"
 

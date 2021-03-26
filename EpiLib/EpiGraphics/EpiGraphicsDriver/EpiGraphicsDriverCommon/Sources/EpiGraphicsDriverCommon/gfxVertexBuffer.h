@@ -4,7 +4,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriverCommon/gfxVertexBuffer.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxBindable.h"
+#include "EpiCore/ObjectModel/Object.h"
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 
@@ -82,14 +82,14 @@ public:
 
 public:
     void Add(gfxVertexBufferLayoutAttribute&& attr);
-    void Add(epiSize_t size, gfxVertexBufferLayoutAttributeType type, epiBool normalized, epiSize_t stride, epiSize_t offset);
+    void Add(epiU32 location, gfxFormat format, epiSize_t offset);
 
 protected:
     internalgfx::gfxVertexBufferLayoutImpl* m_Impl{nullptr};
     epiSize_t m_Size{0};
 };
 
-class gfxVertexBuffer : public gfxBindable
+class gfxVertexBuffer : public Object
 {
 EPI_GENREGION_BEGIN(gfxVertexBuffer)
 
@@ -101,14 +101,12 @@ public:
     enum gfxVertexBuffer_PIDs
     {
         PID_IsCreated = 0x560b66db,
-        PID_ID = 0x11d3633a,
         PID_Capacity = 0x4c9ed322,
-        PID_COUNT = 3
+        PID_COUNT = 2
     };
 
 protected:
     epiBool GetIsCreated_Callback() const;
-    epiU32 GetID_Callback() const;
     epiSize_t GetCapacity_Callback() const;
 
 EPI_GENREGION_END(gfxVertexBuffer)
@@ -121,19 +119,8 @@ public:
     gfxVertexBuffer& operator=(gfxVertexBuffer&& rhs);
     ~gfxVertexBuffer();
 
-public:
-    void Create(const epiByte* initData, epiSize_t capacity, gfxVertexBufferUsage usage, const gfxVertexBufferLayout& layout);
-    void Destroy();
-
-    void Bind() override;
-    void UnBind() override;
-
-    epiByte* Map(gfxVertexBufferMapAccess access);
-    epiBool UnMap();
-
 protected:
     internalgfx::gfxVertexBufferImpl* m_Impl{nullptr};
-    epiBool m_IsMapped{false};
 };
 
 class gfxVertexBufferMapping final
@@ -153,19 +140,14 @@ public:
 
     void Map(gfxVertexBufferMapAccess access)
     {
-        // TODO: make o
-        m_Buffer.Bind();
-        m_Mapped = reinterpret_cast<epiByte*>(m_Buffer.Map(access));
-        m_Buffer.UnBind();
+        // m_Mapped = reinterpret_cast<epiByte*>(m_Buffer.Map(access)); TODO: imeplement
     }
 
     epiSize_t UnMap()
     {
         const epiSize_t size = m_Size;
 
-        m_Buffer.Bind();
-        m_Buffer.UnMap();
-        m_Buffer.UnBind();
+        // m_Buffer.UnMap(); TODO: implement
         m_Mapped = nullptr;
         m_Size = 0;
 

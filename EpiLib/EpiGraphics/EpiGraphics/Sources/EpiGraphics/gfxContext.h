@@ -4,7 +4,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxContext.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxVertexArray.h"
+#include "EpiGraphicsDriverCommon/gfxVertexArray.h"
 #include "EpiGraphics/gfxDrawerPrimitive.h"
 #include "EpiGraphics/gfxDrawerText.h"
 #include "EpiGraphics/Text/gfxTextManager.h"

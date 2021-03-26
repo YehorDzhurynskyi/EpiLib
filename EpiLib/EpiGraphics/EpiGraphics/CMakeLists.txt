@@ -5,10 +5,6 @@ add_library(EpiGraphics
     Sources/EpiGraphics/gfxContext.h
     Sources/EpiGraphics/gfxContext.cpp
 
-    Sources/EpiGraphics/gfxBindable.epi
-    Sources/EpiGraphics/gfxBindable.h
-    Sources/EpiGraphics/gfxBindable.cpp
-
     Sources/EpiGraphics/gfxDrawer.epi
     Sources/EpiGraphics/gfxDrawer.h
     Sources/EpiGraphics/gfxDrawer.cpp

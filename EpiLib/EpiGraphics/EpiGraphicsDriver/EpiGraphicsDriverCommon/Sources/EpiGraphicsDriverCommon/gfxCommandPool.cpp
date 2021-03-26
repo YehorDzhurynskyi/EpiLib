@@ -4,12 +4,19 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
+#include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 
 EPI_NAMESPACE_BEGIN()
 
 gfxCommandBuffer::gfxCommandBuffer(internalgfx::gfxCommandBufferImpl* impl)
     : m_Impl{impl}
 {
+}
+
+epiBool gfxCommandBuffer::GetIsPrimary_Callback() const
+{
+    return m_Impl->GetIsPrimary();
 }
 
 epiBool gfxCommandBuffer::RenderPassBegin(const gfxRenderPassBeginInfo & info)

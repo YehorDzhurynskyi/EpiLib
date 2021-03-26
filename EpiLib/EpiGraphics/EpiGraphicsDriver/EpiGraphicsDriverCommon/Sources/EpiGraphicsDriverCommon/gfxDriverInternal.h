@@ -79,8 +79,17 @@ public:
     gfxCommandBufferImpl& operator=(gfxCommandBufferImpl&& rhs) = default;
     virtual ~gfxCommandBufferImpl() = default;
 
+    virtual epiBool GetIsPrimary() const = 0;
+
     virtual epiBool RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) const = 0;
     virtual epiBool RenderPassEnd() const = 0;
+};
+
+struct gfxShaderProgramCreateInfoImpl
+{
+    gfxShaderImpl* Vertex{nullptr};
+    gfxShaderImpl* Geometry{nullptr};
+    gfxShaderImpl* Fragment{nullptr};
 };
 
 class gfxDeviceImpl
@@ -93,11 +102,11 @@ public:
     gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
     virtual ~gfxDeviceImpl() = default;
 
-    virtual std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
+    virtual std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
     virtual std::unique_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
     virtual std::unique_ptr<gfxPipelineImpl> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
     virtual std::unique_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
-    virtual std::unique_ptr<gfxShaderProgramImpl> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const = 0;
+    virtual std::unique_ptr<gfxShaderProgramImpl> CreateShaderProgram(const gfxShaderProgramCreateInfoImpl& info) const = 0;
     virtual std::unique_ptr<gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl) const = 0;
     virtual std::unique_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::unique_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const = 0;
@@ -234,19 +243,6 @@ public:
     gfxVertexBufferImpl(gfxVertexBufferImpl&& rhs) = default;
     gfxVertexBufferImpl& operator=(gfxVertexBufferImpl&& rhs) = default;
     virtual ~gfxVertexBufferImpl() = default;
-
-    virtual void Create(const epiByte* initData, epiSize_t capacity, gfxVertexBufferUsage usage, const gfxVertexBufferLayoutImpl& layout) = 0;
-    virtual void Destroy() = 0;
-
-    virtual epiBool GetIsCreated() const = 0;
-    virtual epiU32 GetID() const = 0;
-    virtual epiSize_t GetCapacity() const = 0;
-
-    virtual void Bind() = 0;
-    virtual void UnBind() = 0;
-
-    virtual epiByte* Map(gfxVertexBufferMapAccess access) = 0;
-    virtual epiBool UnMap() = 0;
 };
 
 class gfxTextureImpl

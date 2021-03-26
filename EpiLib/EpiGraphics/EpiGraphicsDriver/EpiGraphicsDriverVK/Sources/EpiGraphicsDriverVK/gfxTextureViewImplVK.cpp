@@ -15,17 +15,11 @@ gfxTextureViewImplVK::gfxTextureViewImplVK(VkDevice device)
 {
 }
 
-epiBool gfxTextureViewImplVK::Init(const gfxTextureViewCreateInfo& info, const gfxTextureImpl* textureImpl)
+epiBool gfxTextureViewImplVK::Init(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl)
 {
-    if (textureImpl == nullptr)
-    {
-        epiLogError("Failed to create TextureView! Texture has no implementation!");
-        return false;
-    }
-
     VkImageViewCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    createInfo.image = static_cast<const gfxTextureImplVK*>(textureImpl)->GetVkImage();
+    createInfo.image = static_cast<const gfxTextureImplVK&>(textureImpl).GetVkImage();
     createInfo.viewType = gfxTextureViewTypeTo(info.GetViewType());
     createInfo.format = gfxFormatTo(info.GetFormat());
     createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;

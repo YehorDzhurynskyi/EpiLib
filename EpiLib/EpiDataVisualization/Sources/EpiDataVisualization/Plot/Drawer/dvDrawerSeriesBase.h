@@ -8,9 +8,9 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxContext.h"
 #include "EpiGraphics/gfxDrawer.h"
-#include "EpiGraphics/gfxVertexArray.h"
-#include "EpiGraphics/gfxVertexBuffer.h"
-#include "EpiGraphics/gfxShaderProgram.h"
+#include "EpiGraphicsDriverCommon/gfxVertexArray.h"
+#include "EpiGraphicsDriverCommon/gfxVertexBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
 
 EPI_NAMESPACE_BEGIN()
 

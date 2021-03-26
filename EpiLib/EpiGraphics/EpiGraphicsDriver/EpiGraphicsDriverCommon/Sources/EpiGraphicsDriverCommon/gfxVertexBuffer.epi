@@ -12,12 +12,11 @@ class gfxVertexBufferLayout
 {
 };
 
-class gfxVertexBuffer : gfxBindable
+class gfxVertexBuffer
 {
     [Virtual, ReadOnly]
     {
         epiBool IsCreated;
-        epiU32 ID;
         epiSize_t Capacity;
     }
 };

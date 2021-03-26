@@ -7,59 +7,35 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxVertexArray::gfxVertexArray()
+gfxVertexArray::gfxVertexArray(internalgfx::gfxVertexArrayImpl* impl)
+    : m_Impl{impl}
 {
-    Create();
+}
+
+gfxVertexArray::gfxVertexArray(gfxVertexArray&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+
+    rhs.m_Impl = nullptr;
+}
+
+gfxVertexArray& gfxVertexArray::operator=(gfxVertexArray&& rhs)
+{
+    m_Impl = rhs.m_Impl;
+
+    rhs.m_Impl = nullptr;
+
+    return *this;
 }
 
 gfxVertexArray::~gfxVertexArray()
 {
-    if (GetIsCreated())
-    {
-        Destroy();
-    }
-}
-
-void gfxVertexArray::Create()
-{
-    epiExpect(!GetIsCreated(), "Create method should be called on destroyed vertex array");
-
-    m_Impl->Create();
-}
-
-void gfxVertexArray::Destroy()
-{
-    epiExpect(GetIsCreated(), "Destroy method should be called on already created vertex array");
-
-    m_Impl->Destroy();
+    delete m_Impl;
 }
 
 epiBool gfxVertexArray::GetIsCreated_Callback() const
 {
     return m_Impl->GetIsCreated();
-}
-
-epiU32 gfxVertexArray::GetID_Callback() const
-{
-    return m_Impl->GetID();
-}
-
-void gfxVertexArray::Bind()
-{
-    epiExpect(GetIsCreated(), "A vertex array expected to be created");
-
-    super::Bind();
-
-    m_Impl->Bind();
-}
-
-void gfxVertexArray::UnBind()
-{
-    epiExpect(GetIsCreated(), "A vertex array expected to be created");
-
-    super::UnBind();
-
-    m_Impl->UnBind();
 }
 
 EPI_NAMESPACE_END()

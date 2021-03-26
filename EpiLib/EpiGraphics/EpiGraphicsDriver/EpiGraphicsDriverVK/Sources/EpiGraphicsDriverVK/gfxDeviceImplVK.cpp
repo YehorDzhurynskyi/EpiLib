@@ -156,7 +156,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
             queueDescBinding.Desc.TryResolveQueue(std::move(queue));
         }
 
-        queueDescBinding.Desc.SetQueueFamily(gfxQueueFamily(queueDescBinding.QueueFamily.release()));
+        queueDescBinding.Desc.SetQueueFamily(new gfxQueueFamily(queueDescBinding.QueueFamily.release())); // TODO: handle `new`
     }
 
     const epiBool allQueueDescriptorsResolved = std::all_of(queueDescriptorList.begin(),
@@ -182,10 +182,13 @@ gfxDeviceImplVK::~gfxDeviceImplVK()
     }
 }
 
-std::unique_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl) const
+std::unique_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info,
+                                                                   const gfxSurfaceImpl& surfaceImpl,
+                                                                   const gfxRenderPassImpl& renderPassImpl,
+                                                                   const gfxQueueFamilyImpl& queueFamilyImpl) const
 {
     std::unique_ptr<gfxSwapChainImplVK> impl = std::make_unique<gfxSwapChainImplVK>(*this);
-    if (!impl->Init(info, surfaceImpl, renderPassImpl))
+    if (!impl->Init(info, surfaceImpl, renderPassImpl, queueFamilyImpl))
     {
         impl.reset();
     }
@@ -228,7 +231,7 @@ std::unique_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epi
     return impl;
 }
 
-std::unique_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const
+std::unique_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const gfxShaderProgramCreateInfoImpl& info) const
 {
     std::unique_ptr<gfxShaderProgramImplVK> impl = std::make_unique<gfxShaderProgramImplVK>();
     if (!impl->Init(info))
@@ -252,7 +255,7 @@ std::unique_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfx
 
 std::unique_ptr<gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
 {
-    std::unique_ptr<gfxTextureImplVK> impl = std::make_unique<gfxTextureImplVK>(m_VkDevice);
+    std::unique_ptr<gfxTextureImplVKOwner> impl = std::make_unique<gfxTextureImplVKOwner>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();

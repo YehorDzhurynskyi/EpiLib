@@ -3,14 +3,14 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphicsDriverCommon/gfxSurface.h"
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
+#include "EpiGraphicsDriverCommon/gfxSurface.h"
 
 EPI_NAMESPACE_BEGIN()
 
 epiBool gfxQueueDescriptor::IsResolved() const
 {
-    return m_Queues.size() == GetDesiredQueueCount() && m_QueueFamily.HasImpl();
+    return m_Queues.size() == GetDesiredQueueCount() && m_QueueFamily != nullptr && m_QueueFamily->HasImpl();
 }
 
 epiBool gfxQueueDescriptor::TryResolveQueue(gfxQueue&& queue)

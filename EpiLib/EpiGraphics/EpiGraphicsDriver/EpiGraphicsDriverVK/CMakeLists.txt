@@ -43,6 +43,24 @@ add_library(EpiGraphicsDriverVK
 get_target_property(EpiGraphicsDriverVK_SOURCES EpiGraphicsDriverVK SOURCES)
 epi_pack_sources(${EpiGraphicsDriverVK_SOURCES})
 
+find_package(shaderc REQUIRED)
+
+message(STATUS "shaderc_INCLUDE_DIRS=${shaderc_INCLUDE_DIRS}")
+message(STATUS "shaderc_LIBRARIES=${shaderc_LIBRARIES}")
+message(STATUS "shaderc_LIBRARIES_DEBUG=${shaderc_LIBRARIES_DEBUG}")
+message(STATUS "shaderc_FOUND=${shaderc_FOUND}")
+
+if (TARGET shaderc)
+    message(STATUS "shaderc TARGET exists!")
+
+    get_target_property(shaderc_INTERFACE_LINK_LIBRARIES
+        shaderc
+        INTERFACE_LINK_LIBRARIES
+    )
+
+    message(STATUS "shaderc_INTERFACE_LINK_LIBRARIES=${shaderc_INTERFACE_LINK_LIBRARIES}")
+endif()
+
 target_include_directories(EpiGraphicsDriverVK
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
@@ -55,7 +73,7 @@ target_link_libraries(EpiGraphicsDriverVK
     PRIVATE
         EpiGraphicsDriverCommon
         Vulkan::Vulkan
-        #Vulkan::glslc
+        shaderc
 )
 
 epi_module_register(EpiGraphicsDriverVK

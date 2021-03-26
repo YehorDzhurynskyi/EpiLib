@@ -22,7 +22,7 @@ public:
     gfxPipelineImplVK& operator=(gfxPipelineImplVK&& rhs) = default;
     ~gfxPipelineImplVK() override;
 
-    epiBool Init(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl);
+    epiBool Init(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl);
 
 protected:
     const gfxDeviceImplVK& m_Device;

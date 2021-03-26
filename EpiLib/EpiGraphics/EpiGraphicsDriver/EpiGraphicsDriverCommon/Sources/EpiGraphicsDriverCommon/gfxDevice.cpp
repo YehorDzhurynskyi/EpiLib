@@ -62,7 +62,20 @@ std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateI
         return swapChain;
     }
 
-    if (std::unique_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(info, *surfaceImpl, *renderPassImpl))
+    const gfxQueueFamily* queueFamily = info.GetQueueFamily();
+    if (queueFamily == nullptr)
+    {
+        epiLogError("Failed to create SwapChain! QueueFamily isn't provided!");
+        return swapChain;
+    }
+    const internalgfx::gfxQueueFamilyImpl* queueFamilyImpl = queueFamily->m_Impl;
+    if (queueFamilyImpl == nullptr)
+    {
+        epiLogError("Failed to create SwapChain! QueueFamily has no implementation!");
+        return swapChain;
+    }
+
+    if (std::unique_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(info, *surfaceImpl, *renderPassImpl, *queueFamilyImpl))
     {
         swapChain = gfxSwapChain(impl.release());
     }
@@ -138,7 +151,32 @@ std::optional<gfxShaderProgram> gfxDevice::CreateShaderProgram(const gfxShaderPr
 {
     std::optional<gfxShaderProgram> shaderProgram;
 
-    if (std::unique_ptr<internalgfx::gfxShaderProgramImpl> impl = m_Impl->CreateShaderProgram(info))
+    internalgfx::gfxShaderProgramCreateInfoImpl infoImpl;
+    if (const gfxShader* vertex = info.GetVertex(); vertex != nullptr)
+    {
+        if (infoImpl.Vertex = vertex->m_Impl; infoImpl.Vertex == nullptr)
+        {
+            return shaderProgram;
+        }
+    }
+
+    if (const gfxShader* geometry = info.GetGeometry(); geometry != nullptr)
+    {
+        if (infoImpl.Geometry = geometry->m_Impl; infoImpl.Geometry == nullptr)
+        {
+            return shaderProgram;
+        }
+    }
+
+    if (const gfxShader* fragment = info.GetFragment(); fragment != nullptr)
+    {
+        if (infoImpl.Fragment = fragment->m_Impl; infoImpl.Fragment == nullptr)
+        {
+            return shaderProgram;
+        }
+    }
+
+    if (std::unique_ptr<internalgfx::gfxShaderProgramImpl> impl = m_Impl->CreateShaderProgram(infoImpl))
     {
         shaderProgram = gfxShaderProgram(impl.release());
     }

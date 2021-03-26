@@ -89,6 +89,9 @@ public:
 EPI_GENREGION_END(gfxFrameBuffer)
 
 public:
+    friend class gfxCommandBuffer;
+
+public:
     gfxFrameBuffer() = default;
     explicit gfxFrameBuffer(internalgfx::gfxFrameBufferImpl* impl);
     gfxFrameBuffer(const gfxFrameBuffer& rhs) = delete;

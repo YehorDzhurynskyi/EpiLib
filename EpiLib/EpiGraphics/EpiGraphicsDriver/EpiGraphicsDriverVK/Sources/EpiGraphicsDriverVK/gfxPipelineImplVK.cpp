@@ -22,20 +22,8 @@ gfxPipelineImplVK::~gfxPipelineImplVK()
     vkDestroyPipelineLayout(m_Device.GetVkDevice(), m_VkPipelineLayout, nullptr);
 }
 
-epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl* shaderProgramImpl, const gfxRenderPassImpl* renderPassImpl)
+epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl)
 {
-    if (shaderProgramImpl == nullptr)
-    {
-        epiLogError("ShaderProgram has no implementation!");
-        return false;
-    }
-
-    if (renderPassImpl == nullptr)
-    {
-        epiLogError("RenderPass has no implementation!");
-        return false;
-    }
-
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = gfxPipelineInputAssemblyTypeTo(info.GetInputAssemblyType());
@@ -148,15 +136,15 @@ epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShad
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 
     std::vector<VkPipelineShaderStageCreateInfo> stages;
-    const gfxShaderProgram& shaderProgram = info.GetShaderProgram();
-    if (!shaderProgram.GetIsCreated())
+
+    const gfxShaderProgramImplVK& shaderProgramImplVk = static_cast<const gfxShaderProgramImplVK&>(shaderProgramImpl);
+    if (!shaderProgramImplVk.GetIsCreated())
     {
         epiLogError("Failed to initialize Pipeline! ShaderProgram isn't created!");
         return false;
     }
 
-    const gfxShaderProgramImplVK* shaderProgramImplVk = static_cast<const gfxShaderProgramImplVK*>(shaderProgramImpl);
-    const epiArray<gfxShaderImplVK*> modules = shaderProgramImplVk->GetCompiledModules();
+    const epiArray<gfxShaderImplVK*> modules = shaderProgramImplVk.GetCompiledModules();
     stages.reserve(modules.Size());
 
     for (const gfxShaderImplVK* module : modules)
@@ -187,7 +175,7 @@ epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShad
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = nullptr;
     pipelineInfo.layout = m_VkPipelineLayout;
-    pipelineInfo.renderPass = static_cast<const gfxRenderPassImplVK*>(renderPassImpl)->GetVkRenderPass();
+    pipelineInfo.renderPass = static_cast<const gfxRenderPassImplVK&>(renderPassImpl).GetVkRenderPass();
     pipelineInfo.subpass = info.GetRenderSubPassIndex();
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex = -1;

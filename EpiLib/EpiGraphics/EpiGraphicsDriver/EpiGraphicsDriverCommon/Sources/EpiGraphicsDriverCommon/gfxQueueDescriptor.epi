@@ -1,9 +1,7 @@
 class gfxQueueDescriptor
 {
     gfxQueueType Type;
-
-    [WriteCallback(RValueRef=true)]
-    gfxQueueFamily QueueFamily;
+    gfxQueueFamily* QueueFamily;
 
     [ReadOnly]
     {

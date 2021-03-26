@@ -48,12 +48,12 @@ public:
 
     epiBool GetIsCreated() const override;
 
-    epiBool Init(const gfxShaderProgramCreateInfo& info);
+    epiBool Init(const gfxShaderProgramCreateInfoImpl& info);
 
     epiArray<gfxShaderImplVK*> GetCompiledModules() const;
 
 protected:
-    gfxShaderProgramCreateInfo m_ShaderProgramCreateInfo;
+    gfxShaderProgramCreateInfoImpl m_ShaderProgramCreateInfo;
 };
 
 } // namespace internalgfx

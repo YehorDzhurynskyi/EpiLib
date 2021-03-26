@@ -22,9 +22,22 @@
   set solution=%solution%
   set solution=!solution: =_!
 
-  set cmake_extra_params=%2
+  set workdir=%workdir%
+  set workdir=!workdir:\=/!
 
-  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_DIR="%epidir%" -C "%initial_cache%" %cmake_extra_params%
+  set epidir=%epidir%
+  set epidir=!epidir:\=/!
+
+  set initial_cache=%initial_cache%
+  set initial_cache=!initial_cache:\=/!
+
+  set module_path=%epidir%\Build\CMake\Modules
+  set module_path=%module_path%
+  set module_path=!module_path:\=/!
+
+  set extra_params=%2
+
+  cmake -G "%generator%" -A "%arch%" -T "%toolchain%" -S "%workdir%" -B "%workdir%\_projects\%solution%" -DEPI_DIR="%epidir%" -DCMAKE_MODULE_PATH="%module_path%" -C "%initial_cache%" %extra_params%
 
   goto :eof
 

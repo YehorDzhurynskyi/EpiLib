@@ -1,4 +1,4 @@
-class gfxTextRendered : gfxBindable
+class gfxTextRendered
 {
     [ReadOnly]
     gfxTexture Texture;

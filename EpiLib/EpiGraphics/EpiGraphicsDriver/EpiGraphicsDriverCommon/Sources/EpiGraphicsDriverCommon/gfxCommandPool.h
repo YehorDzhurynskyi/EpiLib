@@ -6,8 +6,6 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
-
 EPI_NAMESPACE_BEGIN()
 
 namespace internalgfx
@@ -43,6 +41,8 @@ protected:
 EPI_GENREGION_END(gfxRenderPassClearValue)
 };
 
+class gfxFrameBuffer;
+class gfxRenderPass;
 class gfxRenderPassBeginInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxRenderPassBeginInfo)
@@ -106,6 +106,7 @@ protected:
     internalgfx::gfxCommandBufferImpl* m_Impl{nullptr};
 };
 
+class gfxQueueFamily;
 class gfxCommandPoolCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxCommandPoolCreateInfo)

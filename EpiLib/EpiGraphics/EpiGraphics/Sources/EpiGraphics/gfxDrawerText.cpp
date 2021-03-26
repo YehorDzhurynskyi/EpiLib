@@ -90,15 +90,16 @@ gfxShaderProgram CreateProgramText()
     gfxShader vertex;
     gfxShader pixel;
 
-    vertex.CreateFromSource(kShaderSourceVertexText, gfxShaderType::Vertex);
-    pixel.CreateFromSource(kShaderSourceTextPixel, gfxShaderType::Pixel);
+    // TODO: restore
+    // vertex.CreateFromSource(kShaderSourceVertexText, gfxShaderType::Vertex);
+    // pixel.CreateFromSource(kShaderSourceTextPixel, gfxShaderType::Pixel);
 
     gfxShaderProgram program;
 
-    program.ShaderAttach(vertex);
-    program.ShaderAttach(pixel);
+    // program.ShaderAttach(vertex);
+    // program.ShaderAttach(pixel);
 
-    program.Build();
+    // program.Build();
 
     return program;
 }
@@ -119,14 +120,15 @@ gfxDrawerText::gfxDrawerText()
     : m_VertexBufferMappingText(m_VertexBufferText)
 {
     {
-        gfxBindableScoped scope(m_VertexArrayText);
+        // TODO: restore
+        // gfxBindableScoped scope(m_VertexArrayText);
 
         gfxVertexBufferLayout layout;
-        layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, Position));
-        layout.Add(2, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, UV));
-        layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, ColorTint));
+        // layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, Position));
+        // layout.Add(2, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, UV));
+        // layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, ColorTint));
 
-        m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw, layout);
+        // m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
     m_ShaderProgramText = CreateProgramText();
@@ -237,20 +239,21 @@ void gfxDrawerText::SceneEnd(const gfxCamera& camera)
     const epiSize_t textVerticesCount = m_VertexBufferMappingText.UnMap() / sizeof(VertexText);
 
     {
-        gfxBindableScoped scope(m_ShaderProgramText, m_VertexArrayText, m_TextAtlas);
+        // TODO: restore
+        // gfxBindableScoped scope(m_ShaderProgramText, m_VertexArrayText, m_TextAtlas);
 
-        m_ShaderProgramText.Texture("u_texture", 0);
+        // m_ShaderProgramText.Texture("u_texture", 0);
 
-        m_ShaderProgramText.Uniform("u_shift", 0.0f);
-        m_ShaderProgramText.Uniform("u_gamma", 1.43f);
+        // m_ShaderProgramText.Uniform("u_shift", 0.0f);
+        // m_ShaderProgramText.Uniform("u_gamma", 1.43f);
 
-        const epiSize_t atlasW = m_TextAtlas.GetTexture().GetWidth();
-        const epiSize_t atlasH = m_TextAtlas.GetTexture().GetHeight();
-        const epiVec2f pixelSize(1.0f / atlasW, 1.0f / atlasH);
-        m_ShaderProgramText.Uniform("u_pixel_size", pixelSize);
+        // const epiSize_t atlasW = m_TextAtlas.GetTexture().GetWidth();
+        // const epiSize_t atlasH = m_TextAtlas.GetTexture().GetHeight();
+        // const epiVec2f pixelSize(1.0f / atlasW, 1.0f / atlasH);
+        // m_ShaderProgramText.Uniform("u_pixel_size", pixelSize);
 
-        const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
-        m_ShaderProgramText.Uniform("u_view_projection", VP);
+        // const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
+        // m_ShaderProgramText.Uniform("u_view_projection", VP);
 
         // TODO: restore
         // glDrawArrays(GL_TRIANGLES, 0, textVerticesCount);

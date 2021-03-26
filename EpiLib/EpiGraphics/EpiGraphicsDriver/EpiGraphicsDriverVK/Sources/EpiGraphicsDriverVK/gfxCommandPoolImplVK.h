@@ -21,6 +21,8 @@ public:
     gfxCommandBufferImplVK& operator=(gfxCommandBufferImplVK&& rhs) = default;
     ~gfxCommandBufferImplVK() override = default;
 
+    epiBool GetIsPrimary() const override;
+
     epiBool RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) const override;
     epiBool RenderPassEnd() const override;
 

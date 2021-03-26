@@ -43,15 +43,16 @@ gfxShaderProgram CreateProgramLines()
     gfxShader vertex;
     gfxShader pixel;
 
-    vertex.CreateFromSource(kShaderSourceLinesVertex, gfxShaderType::Vertex);
-    pixel.CreateFromSource(kShaderSourceLinesPixel, gfxShaderType::Pixel);
+    // TODO: restore
+    // vertex.CreateFromSource(kShaderSourceLinesVertex, gfxShaderType::Vertex);
+    // pixel.CreateFromSource(kShaderSourceLinesPixel, gfxShaderType::Pixel);
 
     gfxShaderProgram program;
 
-    program.ShaderAttach(vertex);
-    program.ShaderAttach(pixel);
+    // program.ShaderAttach(vertex);
+    // program.ShaderAttach(pixel);
 
-    program.Build();
+    // program.Build();
 
     return program;
 }
@@ -98,15 +99,16 @@ gfxShaderProgram CreateProgramQuad()
     gfxShader vertex;
     gfxShader pixel;
 
-    vertex.CreateFromSource(kShaderSourceQuadVertex, gfxShaderType::Vertex);
-    pixel.CreateFromSource(kShaderSourceQuadPixel, gfxShaderType::Pixel);
+    // TODO: restore
+    // vertex.CreateFromSource(kShaderSourceQuadVertex, gfxShaderType::Vertex);
+    // pixel.CreateFromSource(kShaderSourceQuadPixel, gfxShaderType::Pixel);
 
     gfxShaderProgram program;
 
-    program.ShaderAttach(vertex);
-    program.ShaderAttach(pixel);
+    // program.ShaderAttach(vertex);
+    // program.ShaderAttach(pixel);
 
-    program.Build();
+    // program.Build();
 
     return program;
 }
@@ -127,25 +129,27 @@ gfxDrawerPrimitive::gfxDrawerPrimitive()
     , m_VertexBufferMappingQuads(m_VertexBufferQuads)
 {
     {
-        gfxBindableScoped scope(m_VertexArrayLines);
+        // TODO: restore
+        // gfxBindableScoped scope(m_VertexArrayLines);
 
         gfxVertexBufferLayout layout;
-        layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLine), offsetof(VertexLine, Position));
-        layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLine), offsetof(VertexLine, ColorTint));
+        // layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLine), offsetof(VertexLine, Position));
+        // layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLine), offsetof(VertexLine, ColorTint));
 
-        m_VertexBufferLines.Create(nullptr, sizeof(VertexLine) * 2 * kMaxLineCount, gfxVertexBufferUsage::DynamicDraw, layout);
+        // m_VertexBufferLines.Create(nullptr, sizeof(VertexLine) * 2 * kMaxLineCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
     m_ShaderProgramLines = CreateProgramLines();
 
     {
-        gfxBindableScoped scope(m_VertexArrayQuads);
+        // TODO: restore
+        // gfxBindableScoped scope(m_VertexArrayQuads);
 
         gfxVertexBufferLayout layout;
-        layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexQuad), offsetof(VertexQuad, Position));
-        layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexQuad), offsetof(VertexQuad, ColorTint));
+        // layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexQuad), offsetof(VertexQuad, Position));
+        // layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexQuad), offsetof(VertexQuad, ColorTint));
 
-        m_VertexBufferQuads.Create(nullptr, sizeof(VertexQuad) * 6 * kMaxQuadCount, gfxVertexBufferUsage::DynamicDraw, layout);
+        // m_VertexBufferQuads.Create(nullptr, sizeof(VertexQuad) * 6 * kMaxQuadCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
     m_ShaderProgramQuads = CreateProgramQuad();
@@ -227,22 +231,25 @@ void gfxDrawerPrimitive::SceneBegin()
 void gfxDrawerPrimitive::SceneEnd(const gfxCamera& camera)
 {
     {
-        const epiSize_t lineVerticesCount = m_VertexBufferMappingLines.UnMap() / sizeof(VertexLine);
-        gfxBindableScoped scope(m_ShaderProgramLines, m_VertexArrayLines);
+        // TODO: restore
+        // const epiSize_t lineVerticesCount = m_VertexBufferMappingLines.UnMap() / sizeof(VertexLine);
+        // gfxBindableScoped scope(m_ShaderProgramLines, m_VertexArrayLines);
 
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
-        m_ShaderProgramLines.Uniform("u_view_projection", VP);
+        // TODO: restore
+        // m_ShaderProgramLines.Uniform("u_view_projection", VP);
 
         // TODO: restore
         // glDrawArrays(GL_LINES, 0, lineVerticesCount);
     }
 
     {
-        const epiSize_t quadVerticesCount = m_VertexBufferMappingQuads.UnMap() / sizeof(VertexQuad);
-        gfxBindableScoped scope(m_ShaderProgramQuads, m_VertexArrayQuads);
+        // TODO: restore
+        // const epiSize_t quadVerticesCount = m_VertexBufferMappingQuads.UnMap() / sizeof(VertexQuad);
+        // gfxBindableScoped scope(m_ShaderProgramQuads, m_VertexArrayQuads);
 
         const epiMat4x4f& VP = camera.GetProjectionMatrix() * camera.GetViewMatrix();
-        m_ShaderProgramQuads.Uniform("u_view_projection", VP);
+        // m_ShaderProgramQuads.Uniform("u_view_projection", VP);
 
         // TODO: restore
         // glDrawArrays(GL_TRIANGLES, 0, quadVerticesCount);
