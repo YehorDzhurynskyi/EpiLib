@@ -89,4 +89,26 @@ epiSize_t gfxQueueDescriptorList::GetSize_Callback() const
     return m_QueueDescriptors.size();
 }
 
+gfxQueueDescriptor& gfxQueueDescriptorList::At(epiU32 index)
+{
+    epiAssert(index < m_QueueDescriptors.size());
+    return m_QueueDescriptors[index];
+}
+
+const gfxQueueDescriptor& gfxQueueDescriptorList::At(epiU32 index) const
+{
+    epiAssert(index < m_QueueDescriptors.size());
+    return m_QueueDescriptors[index];
+}
+
+gfxQueueDescriptor& gfxQueueDescriptorList::operator[](epiU32 index)
+{
+    return At(index);
+}
+
+const gfxQueueDescriptor& gfxQueueDescriptorList::operator[](epiU32 index) const
+{
+    return At(index);
+}
+
 EPI_NAMESPACE_END()

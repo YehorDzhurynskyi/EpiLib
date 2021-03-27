@@ -25,24 +25,26 @@ void gfxDriver::SetBackend_Callback(gfxDriverBackend backend)
     switch (backend)
     {
     case gfxDriverBackend::None: epiLogFatal("Can't use `gfxDriverBackend::None` as a gfx driver backend!"); break;
-    case gfxDriverBackend::OpenGL:
-    {
-
-    } break;
     case gfxDriverBackend::Vulkan:
     {
-        const epiS32 extensionMaskRequired = gfxDriverExtension_Surface | gfxDriverExtension_SurfaceWin32;
+        // TODO: move required extensions as a parameter
+        epiArray<gfxDriverExtension> extensionsRequired;
+        extensionsRequired.push_back(gfxDriverExtension::Surface);
+
+#ifdef EPI_PLATFORM_WINDOWS
+        extensionsRequired.push_back(gfxDriverExtension::SurfaceWin32);
+#endif // EPI_PLATFORM_WINDOWS
+
         // TODO: configure api version / app name properly
         internalgfx::gfxDriverImplVK* impl = new internalgfx::gfxDriverImplVK();
-        impl->Init(1u, 0u, 0u, "EpiLab", static_cast<gfxDriverExtension>(extensionMaskRequired));
-
-        m_Impl = impl;
+        if (impl->Init(1u, 2u, 162u, "EpiLab", extensionsRequired))
+        {
+            m_Impl = impl;
+            m_Backend = backend;
+        }
     } break;
-    case gfxDriverBackend::Software: epiLogFatal("Not implemeted!"); break;
-    default: epiAssert(!"Unhandled case!");
+    default: epiLogFatal("Graphics Backend=`{}` isn't implemeted!", backend); break; // TODO: str repr
     }
-
-    m_Backend = backend;
 }
 
 gfxDriver::~gfxDriver()

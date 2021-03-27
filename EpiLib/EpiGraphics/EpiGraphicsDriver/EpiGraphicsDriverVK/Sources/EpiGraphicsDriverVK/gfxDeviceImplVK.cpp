@@ -21,20 +21,20 @@ namespace
 
 EPI_NAMESPACE_USING()
 
+static constexpr const epiChar* kDeviceExtensionNames[]
+{
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_KHR_IMAGELESS_FRAMEBUFFER_EXTENSION_NAME,
+    VK_KHR_IMAGE_FORMAT_LIST_EXTENSION_NAME
+};
+static_assert(epiArrLen(kDeviceExtensionNames) == static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT));
+
 const epiChar* ExtensionNameOf(gfxPhysicalDeviceExtension extension)
 {
-    // TODO: check whether single bit provided
-    static constexpr const epiChar* kNames[]
-    {
-        "VK_KHR_swapchain"
-    };
+    const epiU32 at = static_cast<epiU32>(extension);
+    epiAssert(at < epiArrLen(kDeviceExtensionNames));
 
-    static_assert(epiArrLen(kNames) == epiBitCount(gfxPhysicalDeviceExtension_ALL));
-
-    const epiU32 at = epiBitPositionOf(extension);
-    epiAssert(at < epiArrLen(kNames));
-
-    return kNames[at];
+    return kDeviceExtensionNames[at];
 }
 
 }
@@ -46,16 +46,22 @@ namespace internalgfx
 
 epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
                               gfxQueueDescriptorList& queueDescriptorList,
-                              gfxPhysicalDeviceExtension extensionMask)
+                              const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
+                              const epiArray<gfxPhysicalDeviceFeature>& featuresRequired)
 {
-
     epiBool isSuitable = std::all_of(queueDescriptorList.begin(),
                                      queueDescriptorList.end(),
                                      [&physicalDevice](const gfxQueueDescriptor& queueDescriptor)
     {
         return physicalDevice.IsQueueTypeSupported(queueDescriptor.GetType());
     });
-    isSuitable = isSuitable && physicalDevice.IsExtensionsSupported(extensionMask);
+    isSuitable = isSuitable && std::all_of(extensionsRequired.begin(), extensionsRequired.end(), [&physicalDevice](gfxPhysicalDeviceExtension extension) {
+        return physicalDevice.IsExtensionSupported(extension);
+    });
+    isSuitable = isSuitable && std::all_of(featuresRequired.begin(), featuresRequired.end(), [&physicalDevice](gfxPhysicalDeviceFeature feature)
+    {
+        return physicalDevice.IsFeatureSupported(feature);
+    });
 
     if (!isSuitable)
     {
@@ -125,22 +131,173 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     createInfo.queueCreateInfoCount = queueCreateInfos.size();
 
     std::vector<const epiChar*> extensions;
-    for (epiU32 bit = 1; bit < gfxPhysicalDeviceExtension_MAX; bit = bit << 1)
+    for (gfxPhysicalDeviceExtension extension : extensionsRequired)
     {
-        const gfxPhysicalDeviceExtension extension = static_cast<gfxPhysicalDeviceExtension>(bit);
-        if ((extension & extensionMask) == 0)
+        if (!physicalDevice.IsExtensionSupported(extension))
         {
-            continue;
+            // TODO: get string representation
+            epiLogError("Required Vulkan device extension=`{}` is not supported!", extension);
+            return false;
         }
 
+        m_ExtensionEnabled[static_cast<epiU32>(extension)] = true;
         extensions.push_back(ExtensionNameOf(extension));
     }
-    createInfo.ppEnabledExtensionNames = extensions.data();
-    createInfo.enabledExtensionCount = extensions.size();
 
-    // TODO: set required features
-    VkPhysicalDeviceFeatures deviceFeatures{};
-    createInfo.pEnabledFeatures = &deviceFeatures;
+    // NOTE: enable advanced vk api (like VkPhysicalDeviceFeatures2 etc)
+    extensions.push_back(VK_KHR_MAINTENANCE2_EXTENSION_NAME);
+
+    createInfo.enabledExtensionCount = extensions.size();
+    createInfo.ppEnabledExtensionNames = extensions.data();
+
+    createInfo.pEnabledFeatures = nullptr;
+
+    VkPhysicalDeviceVulkan12Features features12{};
+    features12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+
+    VkPhysicalDeviceVulkan11Features features11{};
+    features11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+    features11.pNext = &features12;
+
+    VkPhysicalDeviceFeatures2 features{};
+    features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    features.pNext = &features11;
+
+    createInfo.pNext = &features;
+
+    VkBool32* const kFeatures[]
+    {
+        &features.features.robustBufferAccess,
+        &features.features.fullDrawIndexUint32,
+        &features.features.imageCubeArray,
+        &features.features.independentBlend,
+        &features.features.geometryShader,
+        &features.features.tessellationShader,
+        &features.features.sampleRateShading,
+        &features.features.dualSrcBlend,
+        &features.features.logicOp,
+        &features.features.multiDrawIndirect,
+        &features.features.drawIndirectFirstInstance,
+        &features.features.depthClamp,
+        &features.features.depthBiasClamp,
+        &features.features.fillModeNonSolid,
+        &features.features.depthBounds,
+        &features.features.wideLines,
+        &features.features.largePoints,
+        &features.features.alphaToOne,
+        &features.features.multiViewport,
+        &features.features.samplerAnisotropy,
+        &features.features.textureCompressionETC2,
+        &features.features.textureCompressionASTC_LDR,
+        &features.features.textureCompressionBC,
+        &features.features.occlusionQueryPrecise,
+        &features.features.pipelineStatisticsQuery,
+        &features.features.vertexPipelineStoresAndAtomics,
+        &features.features.fragmentStoresAndAtomics,
+        &features.features.shaderTessellationAndGeometryPointSize,
+        &features.features.shaderImageGatherExtended,
+        &features.features.shaderStorageImageExtendedFormats,
+        &features.features.shaderStorageImageMultisample,
+        &features.features.shaderStorageImageReadWithoutFormat,
+        &features.features.shaderStorageImageWriteWithoutFormat,
+        &features.features.shaderUniformBufferArrayDynamicIndexing,
+        &features.features.shaderSampledImageArrayDynamicIndexing,
+        &features.features.shaderStorageBufferArrayDynamicIndexing,
+        &features.features.shaderStorageImageArrayDynamicIndexing,
+        &features.features.shaderClipDistance,
+        &features.features.shaderCullDistance,
+        &features.features.shaderFloat64,
+        &features.features.shaderInt64,
+        &features.features.shaderInt16,
+        &features.features.shaderResourceResidency,
+        &features.features.shaderResourceMinLod,
+        &features.features.sparseBinding,
+        &features.features.sparseResidencyBuffer,
+        &features.features.sparseResidencyImage2D,
+        &features.features.sparseResidencyImage3D,
+        &features.features.sparseResidency2Samples,
+        &features.features.sparseResidency4Samples,
+        &features.features.sparseResidency8Samples,
+        &features.features.sparseResidency16Samples,
+        &features.features.sparseResidencyAliased,
+        &features.features.variableMultisampleRate,
+        &features.features.inheritedQueries,
+
+        &features11.storageBuffer16BitAccess,
+        &features11.uniformAndStorageBuffer16BitAccess,
+        &features11.storagePushConstant16,
+        &features11.storageInputOutput16,
+        &features11.multiview,
+        &features11.multiviewGeometryShader,
+        &features11.multiviewTessellationShader,
+        &features11.variablePointersStorageBuffer,
+        &features11.variablePointers,
+        &features11.protectedMemory,
+        &features11.samplerYcbcrConversion,
+        &features11.shaderDrawParameters,
+
+        &features12.samplerMirrorClampToEdge,
+        &features12.drawIndirectCount,
+        &features12.storageBuffer8BitAccess,
+        &features12.uniformAndStorageBuffer8BitAccess,
+        &features12.storagePushConstant8,
+        &features12.shaderBufferInt64Atomics,
+        &features12.shaderSharedInt64Atomics,
+        &features12.shaderFloat16,
+        &features12.shaderInt8,
+        &features12.descriptorIndexing,
+        &features12.shaderInputAttachmentArrayDynamicIndexing,
+        &features12.shaderUniformTexelBufferArrayDynamicIndexing,
+        &features12.shaderStorageTexelBufferArrayDynamicIndexing,
+        &features12.shaderUniformBufferArrayNonUniformIndexing,
+        &features12.shaderSampledImageArrayNonUniformIndexing,
+        &features12.shaderStorageBufferArrayNonUniformIndexing,
+        &features12.shaderStorageImageArrayNonUniformIndexing,
+        &features12.shaderInputAttachmentArrayNonUniformIndexing,
+        &features12.shaderUniformTexelBufferArrayNonUniformIndexing,
+        &features12.shaderStorageTexelBufferArrayNonUniformIndexing,
+        &features12.descriptorBindingUniformBufferUpdateAfterBind,
+        &features12.descriptorBindingSampledImageUpdateAfterBind,
+        &features12.descriptorBindingStorageImageUpdateAfterBind,
+        &features12.descriptorBindingStorageBufferUpdateAfterBind,
+        &features12.descriptorBindingUniformTexelBufferUpdateAfterBind,
+        &features12.descriptorBindingStorageTexelBufferUpdateAfterBind,
+        &features12.descriptorBindingUpdateUnusedWhilePending,
+        &features12.descriptorBindingPartiallyBound,
+        &features12.descriptorBindingVariableDescriptorCount,
+        &features12.runtimeDescriptorArray,
+        &features12.samplerFilterMinmax,
+        &features12.scalarBlockLayout,
+        &features12.imagelessFramebuffer,
+        &features12.uniformBufferStandardLayout,
+        &features12.shaderSubgroupExtendedTypes,
+        &features12.separateDepthStencilLayouts,
+        &features12.hostQueryReset,
+        &features12.timelineSemaphore,
+        &features12.bufferDeviceAddress,
+        &features12.bufferDeviceAddressCaptureReplay,
+        &features12.bufferDeviceAddressMultiDevice,
+        &features12.vulkanMemoryModel,
+        &features12.vulkanMemoryModelDeviceScope,
+        &features12.vulkanMemoryModelAvailabilityVisibilityChains,
+        &features12.shaderOutputViewportIndex,
+        &features12.shaderOutputLayer,
+        &features12.subgroupBroadcastDynamicId
+    };
+    static_assert(epiArrLen(kFeatures) == static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT));
+
+    for (gfxPhysicalDeviceFeature feature : featuresRequired)
+    {
+        if (!physicalDevice.IsFeatureSupported(feature))
+        {
+            // TODO: get string representation
+            epiLogError("Required Vulkan device feature=`{}` is not supported!", feature);
+            return false;
+        }
+
+        *kFeatures[static_cast<epiU32>(feature)] = true;
+        m_FeatureEnabled[static_cast<epiU32>(feature)] = true;
+    }
 
     const VkResult resultCreateDevice = vkCreateDevice(physicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice);
     if (resultCreateDevice != VK_SUCCESS)
@@ -180,6 +337,16 @@ gfxDeviceImplVK::~gfxDeviceImplVK()
     {
         vkDestroyDevice(m_VkDevice, nullptr);
     }
+}
+
+epiBool gfxDeviceImplVK::IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const
+{
+    return m_ExtensionEnabled[static_cast<epiU32>(extension)];
+}
+
+epiBool gfxDeviceImplVK::IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const
+{
+    return m_FeatureEnabled[static_cast<epiU32>(feature)];
 }
 
 std::unique_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info,

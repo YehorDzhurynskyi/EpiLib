@@ -70,10 +70,24 @@ bool EpiwxVulkanDemo::OnInit()
     std::optional<epi::gfxSurface> surface = epi::gfxDriver::GetInstance().CreateSurface(epi::gfxWindow());
     epiAssert(surface.has_value());
 
-    std::optional<epi::gfxPhysicalDevice> physicalDevice = epi::gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface](const epi::gfxPhysicalDevice& device)
+    epi::epiArray<epi::gfxPhysicalDeviceExtension> deviceExtensionsRequired;
+    deviceExtensionsRequired.push_back(epi::gfxPhysicalDeviceExtension::SwapChain);
+    deviceExtensionsRequired.push_back(epi::gfxPhysicalDeviceExtension::ImageLessFrameBuffer);
+    deviceExtensionsRequired.push_back(epi::gfxPhysicalDeviceExtension::ImageFormatList);
+
+    epi::epiArray<epi::gfxPhysicalDeviceFeature> deviceFeaturesRequired;
+    deviceFeaturesRequired.push_back(epi::gfxPhysicalDeviceFeature::ImagelessFramebuffer);
+
+    std::optional<epi::gfxPhysicalDevice> physicalDevice = epi::gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface, &deviceExtensionsRequired, &deviceFeaturesRequired](const epi::gfxPhysicalDevice& device)
     {
         if (device.GetType() != epi::gfxPhysicalDeviceType::DiscreteGPU ||
-            !device.IsExtensionsSupported(epi::gfxPhysicalDeviceExtension_SwapChain) ||
+            !std::all_of(deviceExtensionsRequired.begin(), deviceExtensionsRequired.end(), [&device](epi::gfxPhysicalDeviceExtension extension) {
+                return device.IsExtensionSupported(extension);
+            }) ||
+            !std::all_of(deviceFeaturesRequired.begin(), deviceFeaturesRequired.end(), [&device](epi::gfxPhysicalDeviceFeature feature)
+            {
+                return device.IsFeatureSupported(feature);
+            }) ||
             !device.IsQueueTypeSupported(epi::gfxQueueType_Graphics))
         {
             return false;
@@ -109,7 +123,7 @@ bool EpiwxVulkanDemo::OnInit()
     epi::gfxQueueDescriptorList queueDescriptorList;
     queueDescriptorList.Add(surface->CreateQueueDescriptor({1.0f}));
 
-    std::optional<epi::gfxDevice> device = physicalDevice->CreateDevice(queueDescriptorList, epi::gfxPhysicalDeviceExtension_SwapChain);
+    std::optional<epi::gfxDevice> device = physicalDevice->CreateDevice(queueDescriptorList, deviceExtensionsRequired, deviceFeaturesRequired);
     epiAssert(device.has_value());
 
     epi::gfxSurfaceFormat surfaceFormat;
@@ -129,6 +143,62 @@ bool EpiwxVulkanDemo::OnInit()
         extent.x = std::clamp(static_cast<epiU32>(frameSize.x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
         extent.y = std::clamp(static_cast<epiU32>(frameSize.y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
     }
+
+    epi::gfxAttachment attachment;
+    attachment.SetFormat(surfaceFormat.GetFormat());
+    attachment.SetSampleCount(epi::gfxSampleCount::Sample1);
+    attachment.SetLoadOp(epi::gfxAttachmentLoadOp::Clear);
+    attachment.SetStoreOp(epi::gfxAttachmentStoreOp::Store);
+    attachment.SetStencilLoadOp(epi::gfxAttachmentLoadOp::DontCare);
+    attachment.SetStencilStoreOp(epi::gfxAttachmentStoreOp::DontCare);
+    attachment.SetInitialLayout(epi::gfxImageLayout::Undefined);
+    attachment.SetFinalLayout(epi::gfxImageLayout::PresentSrc);
+
+    epi::gfxRenderSubPass renderSubPass;
+    renderSubPass.SetBindPoint(epi::gfxPipelineBindPoint::Graphics);
+    renderSubPass.AddAttachment(attachment, 0, epi::gfxImageLayout::ColorAttachmentOptimal);
+
+    epi::gfxRenderSubPassDependency renderSubPassDependency;
+    renderSubPassDependency.SetIsSrcSubPassExternal(true);
+    renderSubPassDependency.SetDstSubPass(0);
+    renderSubPassDependency.SetSrcStageMask(epi::gfxPipelineStage_ColorAttachmentOutput);
+    renderSubPassDependency.SetSrcAccessMask(epi::gfxAccess{0});
+    renderSubPassDependency.SetDstStageMask(epi::gfxPipelineStage_ColorAttachmentOutput);
+    renderSubPassDependency.SetDstAccessMask(epi::gfxAccess_ColorAttachmentWrite);
+
+    epi::gfxRenderPassCreateInfo renderPassCreateInfo;
+    renderPassCreateInfo.AddSubPass(std::move(renderSubPass));
+    renderPassCreateInfo.AddSubPassDependency(std::move(renderSubPassDependency));
+
+    std::optional<epi::gfxRenderPass> renderPass = device->CreateRenderPass(renderPassCreateInfo);
+    epiAssert(renderPass.has_value());
+
+    epi::gfxSwapChainCreateInfo swapChainCreateInfo;
+    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
+    swapChainCreateInfo.SetFormat(surfaceFormat);
+    swapChainCreateInfo.SetPresentMode(epi::gfxSurfacePresentMode::MAILBOX);
+    swapChainCreateInfo.SetExtent(extent);
+    swapChainCreateInfo.SetSurface(&*surface);
+    swapChainCreateInfo.SetRenderPass(&*renderPass);
+    swapChainCreateInfo.SetQueueFamily(queueDescriptorList[0].GetQueueFamily());
+
+    std::optional<epi::gfxSwapChain> swapChain = device->CreateSwapChain(swapChainCreateInfo);
+    epiAssert(swapChain.has_value());
+
+    epi::gfxPipelineViewport viewport;
+    viewport.SetViewportRect(epiRect2f(0.0f, 0.0f, extent.x, extent.y));
+    viewport.SetViewportMinDepth(0.0f);
+    viewport.SetViewportMaxDepth(1.0f);
+
+    epi::gfxPipelineColorBlendAttachment colorBlendAttachment;
+    colorBlendAttachment.SetColorWriteMask(epi::gfxColorComponent_RGBA);
+    colorBlendAttachment.SetBlendEnable(false);
+    colorBlendAttachment.SetSrcColorBlendFactor(epi::gfxBlendFactor::One);
+    colorBlendAttachment.SetDstColorBlendFactor(epi::gfxBlendFactor::Zero);
+    colorBlendAttachment.SetColorBlendOp(epi::gfxBlendOp::Add);
+    colorBlendAttachment.SetSrcAlphaBlendFactor(epi::gfxBlendFactor::One);
+    colorBlendAttachment.SetDstAlphaBlendFactor(epi::gfxBlendFactor::Zero);
+    colorBlendAttachment.SetAlphaBlendOp(epi::gfxBlendOp::Add);
 
     const std::string kVertexShaderModule = R"(
         #version 450
@@ -178,61 +248,7 @@ bool EpiwxVulkanDemo::OnInit()
     shaderProgramCreateInfo.SetFragment(&*fragmentShader);
 
     std::optional<epi::gfxShaderProgram> shaderProgram = device->CreateShaderProgram(shaderProgramCreateInfo);
-
-    epi::gfxAttachment attachment;
-    attachment.SetFormat(surfaceFormat.GetFormat());
-    attachment.SetSampleCount(epi::gfxSampleCount::Sample1);
-    attachment.SetLoadOp(epi::gfxAttachmentLoadOp::Clear);
-    attachment.SetStoreOp(epi::gfxAttachmentStoreOp::Store);
-    attachment.SetStencilLoadOp(epi::gfxAttachmentLoadOp::DontCare);
-    attachment.SetStencilStoreOp(epi::gfxAttachmentStoreOp::DontCare);
-    attachment.SetInitialLayout(epi::gfxImageLayout::Undefined);
-    attachment.SetFinalLayout(epi::gfxImageLayout::PresentSrc);
-
-    epi::gfxRenderSubPass renderSubPass;
-    renderSubPass.SetBindPoint(epi::gfxPipelineBindPoint::Graphics);
-    renderSubPass.AddAttachment(attachment, 0, epi::gfxImageLayout::ColorAttachmentOptimal);
-
-    epi::gfxRenderSubPassDependency renderSubPassDependency;
-    renderSubPassDependency.SetIsSrcSubPassExternal(true);
-    renderSubPassDependency.SetDstSubPass(0);
-    renderSubPassDependency.SetSrcStageMask(epi::gfxPipelineStage_ColorAttachmentOutput);
-    renderSubPassDependency.SetSrcAccessMask(epi::gfxAccess{0});
-    renderSubPassDependency.SetDstStageMask(epi::gfxPipelineStage_ColorAttachmentOutput);
-    renderSubPassDependency.SetDstAccessMask(epi::gfxAccess_ColorAttachmentWrite);
-
-    epi::gfxRenderPassCreateInfo renderPassCreateInfo;
-    renderPassCreateInfo.AddSubPass(std::move(renderSubPass));
-    renderPassCreateInfo.AddSubPassDependency(std::move(renderSubPassDependency));
-
-    std::optional<epi::gfxRenderPass> renderPass = device->CreateRenderPass(renderPassCreateInfo);
-    epiAssert(renderPass.has_value());
-
-    epi::gfxSwapChainCreateInfo swapChainCreateInfo;
-    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
-    swapChainCreateInfo.SetFormat(surfaceFormat);
-    swapChainCreateInfo.SetPresentMode(epi::gfxSurfacePresentMode::MAILBOX);
-    swapChainCreateInfo.SetExtent(extent);
-    swapChainCreateInfo.SetSurface(&*surface);
-    swapChainCreateInfo.SetRenderPass(&*renderPass);
-
-    std::optional<epi::gfxSwapChain> swapChain = device->CreateSwapChain(swapChainCreateInfo);
-    epiAssert(swapChain.has_value());
-
-    epi::gfxPipelineViewport viewport;
-    viewport.SetViewportRect(epiRect2f(0.0f, 0.0f, extent.x, extent.y));
-    viewport.SetViewportMinDepth(0.0f);
-    viewport.SetViewportMaxDepth(1.0f);
-
-    epi::gfxPipelineColorBlendAttachment colorBlendAttachment;
-    colorBlendAttachment.SetColorWriteMask(epi::gfxColorComponent_RGBA);
-    colorBlendAttachment.SetBlendEnable(false);
-    colorBlendAttachment.SetSrcColorBlendFactor(epi::gfxBlendFactor::One);
-    colorBlendAttachment.SetDstColorBlendFactor(epi::gfxBlendFactor::Zero);
-    colorBlendAttachment.SetColorBlendOp(epi::gfxBlendOp::Add);
-    colorBlendAttachment.SetSrcAlphaBlendFactor(epi::gfxBlendFactor::One);
-    colorBlendAttachment.SetDstAlphaBlendFactor(epi::gfxBlendFactor::Zero);
-    colorBlendAttachment.SetAlphaBlendOp(epi::gfxBlendOp::Add);
+    epiAssert(shaderProgram.has_value());
 
     epi::gfxPipelineCreateInfo pipelineCreateInfo;
     pipelineCreateInfo.SetInputAssemblyType(epi::gfxPipelineInputAssemblyType::TriangleList);

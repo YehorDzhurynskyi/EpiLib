@@ -24,7 +24,11 @@ public:
 
     epiBool Init(const gfxPhysicalDeviceImplVK& physicalDevice,
                  gfxQueueDescriptorList& queueDescriptorList,
-                 gfxPhysicalDeviceExtension extensionMask);
+                 const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
+                 const epiArray<gfxPhysicalDeviceFeature>& featuresRequired);
+
+    epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const override;
+    epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const override;
 
     std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl, const gfxQueueFamilyImpl& queueFamilyImpl) const override;
     std::unique_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const override;
@@ -41,7 +45,8 @@ public:
 protected:
     VkDevice_T* m_VkDevice{nullptr};
 
-    gfxPhysicalDeviceExtension m_ExtensionMaskEnabled{0};
+    epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};
+    epiBool m_FeatureEnabled[static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT)]{};
 };
 
 } // namespace internalgfx

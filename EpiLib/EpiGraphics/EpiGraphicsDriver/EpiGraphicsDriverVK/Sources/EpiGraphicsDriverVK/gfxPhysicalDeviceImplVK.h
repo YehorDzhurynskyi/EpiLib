@@ -21,9 +21,10 @@ public:
     gfxPhysicalDeviceType GetType() const override;
 
     std::unique_ptr<gfxDeviceImpl> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
-                                                gfxPhysicalDeviceExtension extensionMask) const override;
+                                                const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
+                                                const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const override;
 
-    epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const override;
+    epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const override;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
 
@@ -32,8 +33,14 @@ public:
     VkPhysicalDevice_T* GetVkPhysicalDevice() const;
 
 protected:
+    void FillExtensionsSupported();
+    void FillFeaturesSupported();
+
+protected:
     VkPhysicalDevice_T* m_VkDevice{nullptr};
     epiArray<gfxQueueFamilyImplVK> m_QueueFamilies;
+    epiBool m_ExtensionSupported[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};
+    epiBool m_FeatureSupported[static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT)]{};
 };
 
 } // namespace internalgfx

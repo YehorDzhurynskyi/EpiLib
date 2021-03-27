@@ -94,6 +94,12 @@ public:
     void Add(gfxQueueType type, const epiArray<epiFloat>& priorities);
     void Add(gfxQueueDescriptor&& desc);
 
+    gfxQueueDescriptor& At(epiU32 index);
+    const gfxQueueDescriptor& At(epiU32 index) const;
+
+    gfxQueueDescriptor& operator[](epiU32 index);
+    const gfxQueueDescriptor& operator[](epiU32 index) const;
+
     iterator begin() { return m_QueueDescriptors.begin(); }
     iterator end() { return m_QueueDescriptors.end(); }
     const_iterator begin() const { return m_QueueDescriptors.begin(); }

@@ -33,11 +33,12 @@ gfxPhysicalDevice::~gfxPhysicalDevice()
 }
 
 std::optional<gfxDevice> gfxPhysicalDevice::CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
-                                                         gfxPhysicalDeviceExtension extensionMask)
+                                                         const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
+                                                         const epiArray<gfxPhysicalDeviceFeature>& featuresRequired)
 {
     std::optional<gfxDevice> device;
 
-    if (std::unique_ptr<internalgfx::gfxDeviceImpl> impl = m_Impl->CreateDevice(queueDescriptorList, extensionMask))
+    if (std::unique_ptr<internalgfx::gfxDeviceImpl> impl = m_Impl->CreateDevice(queueDescriptorList, extensionsRequired, featuresRequired))
     {
         device = gfxDevice(impl.release());
     }
@@ -55,9 +56,9 @@ gfxPhysicalDeviceType gfxPhysicalDevice::GetType_Callback() const
     return m_Impl->GetType();
 }
 
-epiBool gfxPhysicalDevice::IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const
+epiBool gfxPhysicalDevice::IsExtensionSupported(gfxPhysicalDeviceExtension extension) const
 {
-    return m_Impl->IsExtensionsSupported(mask);
+    return m_Impl->IsExtensionSupported(extension);
 }
 
 epiBool gfxPhysicalDevice::IsFeatureSupported(gfxPhysicalDeviceFeature feature) const

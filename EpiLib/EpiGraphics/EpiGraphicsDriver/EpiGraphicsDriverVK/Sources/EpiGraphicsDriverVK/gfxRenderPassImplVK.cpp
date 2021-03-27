@@ -16,7 +16,13 @@ gfxRenderPassImplVK::gfxRenderPassImplVK(VkDevice_T* device)
 
 epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
 {
-    std::vector<VkSubpassDescription> subpasses;
+    struct RenderSubpassInfo
+    {
+        VkSubpassDescription Subpass;
+        std::vector<VkAttachmentReference> ColorAttachmentRefs;
+    };
+
+    std::vector<RenderSubpassInfo> subpasses;
     subpasses.reserve(info.GetSubPasses().Size());
 
     std::vector<VkAttachmentDescription> attachments;
@@ -24,8 +30,9 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
     {
         attachments.reserve(subpass.GetColorAttachments().Size());
 
-        std::vector<VkAttachmentReference> colorAttachmentRefs;
-        colorAttachmentRefs.reserve(subpass.GetColorAttachments().Size());
+        RenderSubpassInfo& subpassInfo = subpasses.emplace_back();
+        subpassInfo = {};
+        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetColorAttachments().Size());
 
         for (const gfxAttachmentRef& ref : subpass.GetColorAttachments())
         {
@@ -42,17 +49,15 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
             colorAttachment.initialLayout = gfxImageLayoutTo(attachment.GetInitialLayout());
             colorAttachment.finalLayout = gfxImageLayoutTo(attachment.GetFinalLayout());
 
-            VkAttachmentReference& colorAttachmentRef = colorAttachmentRefs.emplace_back();
+            VkAttachmentReference& colorAttachmentRef = subpassInfo.ColorAttachmentRefs.emplace_back();
             colorAttachmentRef = {};
             colorAttachmentRef.attachment = ref.GetAttachmentIndex();
             colorAttachmentRef.layout = gfxImageLayoutTo(ref.GetLayuot());
         }
 
-        VkSubpassDescription& subpassDesc = subpasses.emplace_back();
-        subpassDesc = {};
-        subpassDesc.pipelineBindPoint = gfxPipelineBindPointTo(subpass.GetBindPoint());
-        subpassDesc.colorAttachmentCount = colorAttachmentRefs.size();
-        subpassDesc.pColorAttachments = colorAttachmentRefs.data();
+        subpassInfo.Subpass.pipelineBindPoint = gfxPipelineBindPointTo(subpass.GetBindPoint());
+        subpassInfo.Subpass.colorAttachmentCount = subpassInfo.ColorAttachmentRefs.size();
+        subpassInfo.Subpass.pColorAttachments = subpassInfo.ColorAttachmentRefs.data();
 
         // TODO: handle other attachment types
     }
@@ -74,12 +79,20 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
         dep.dependencyFlags = gfxDependencyTo(dependency.GetDependencyFlags());
     }
 
+    std::vector<VkSubpassDescription> vkSubpasses;
+    vkSubpasses.reserve(subpasses.size());
+
+    std::transform(subpasses.begin(), subpasses.end(), std::back_inserter(vkSubpasses), [](const RenderSubpassInfo& subpassInfo)
+    {
+        return subpassInfo.Subpass;
+    });
+
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = attachments.size();
     renderPassInfo.pAttachments = attachments.data();
-    renderPassInfo.subpassCount = subpasses.size();
-    renderPassInfo.pSubpasses = subpasses.data();
+    renderPassInfo.subpassCount = vkSubpasses.size();
+    renderPassInfo.pSubpasses = vkSubpasses.data();
     renderPassInfo.dependencyCount = dependencies.size();
     renderPassInfo.pDependencies = dependencies.data();
 

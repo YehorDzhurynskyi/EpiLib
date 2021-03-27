@@ -57,7 +57,7 @@ epiBool gfxShaderImplVK::InitFromSource(const epiChar* source, gfxShaderType typ
 
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = byteCode.size();
+    createInfo.codeSize = byteCode.size() * sizeof(epiU32);
     createInfo.pCode = byteCode.data();
 
     if (vkCreateShaderModule(m_VkDevice, &createInfo, nullptr, &m_VkShaderModule) != VK_SUCCESS)

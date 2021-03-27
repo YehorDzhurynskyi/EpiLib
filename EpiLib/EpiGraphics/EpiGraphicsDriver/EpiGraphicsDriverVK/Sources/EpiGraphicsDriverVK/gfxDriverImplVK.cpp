@@ -14,6 +14,13 @@ namespace
 
 EPI_NAMESPACE_USING()
 
+static constexpr const epiChar* kDriverExtensionNames[]
+{
+    VK_KHR_SURFACE_EXTENSION_NAME,
+    VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+};
+static_assert(epiArrLen(kDriverExtensionNames) == static_cast<epiU32>(gfxDriverExtension::COUNT));
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL epiVKDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                                          VkDebugUtilsMessageTypeFlagsEXT messageType,
                                                          const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
@@ -43,47 +50,10 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL epiVKDebugCallback(VkDebugUtilsMessageSeve
 
 const epiChar* ExtensionNameOf(gfxDriverExtension extension)
 {
-    // TODO: check whether single bit provided
-    static constexpr const epiChar* kNames[]
-    {
-        VK_KHR_SURFACE_EXTENSION_NAME,
-        VK_KHR_WIN32_SURFACE_EXTENSION_NAME
-    };
+    const epiU32 at = static_cast<epiU32>(extension);
+    epiAssert(at < epiArrLen(kDriverExtensionNames));
 
-    static_assert(epiArrLen(kNames) == epiBitCount(gfxDriverExtension_ALL));
-
-    const epiU32 at = epiBitPositionOf(extension);
-    epiAssert(at < epiArrLen(kNames));
-
-    return kNames[at];
-}
-
-gfxDriverExtension SupportedInstanceExtensionMask()
-{
-    epiU32 supportedExtensionsCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionsCount, nullptr);
-
-    std::vector<VkExtensionProperties> supportedExtensions(supportedExtensionsCount);
-    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionsCount, supportedExtensions.data());
-
-    epiU64 mask = 0;
-    for (const auto& extension : supportedExtensions)
-    {
-        if (strcmp(extension.extensionName, VK_KHR_SURFACE_EXTENSION_NAME) == 0)
-        {
-            mask |= gfxDriverExtension_Surface;
-        }
-        else if (strcmp(extension.extensionName, VK_KHR_WIN32_SURFACE_EXTENSION_NAME) == 0)
-        {
-            mask |= gfxDriverExtension_SurfaceWin32;
-        }
-        else
-        {
-            epiLogWarn("Unrecognized Vulkan instance extension=`{}`!", extension.extensionName);
-        }
-    }
-
-    return static_cast<gfxDriverExtension>(mask);
+    return kDriverExtensionNames[at];
 }
 
 }
@@ -93,19 +63,21 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-void gfxDriverImplVK::Init(epiU32 apiVersionMajor,
-                           epiU32 apiVersionMinor,
-                           epiU32 apiVersionPatch,
-                           const epiChar* appName,
-                           gfxDriverExtension extensionMaskRequired,
-                           epiU32 appVersionMajor,
-                           epiU32 appVersionMinor,
-                           epiU32 appVersionPatch,
-                           const epiChar* engineName,
-                           epiU32 engineVersionMajor,
-                           epiU32 engineVersionMinor,
-                           epiU32 engineVersionPatch)
+epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
+                              epiU32 apiVersionMinor,
+                              epiU32 apiVersionPatch,
+                              const epiChar* appName,
+                              const epiArray<gfxDriverExtension>& extensionRequired,
+                              epiU32 appVersionMajor,
+                              epiU32 appVersionMinor,
+                              epiU32 appVersionPatch,
+                              const epiChar* engineName,
+                              epiU32 engineVersionMajor,
+                              epiU32 engineVersionMinor,
+                              epiU32 engineVersionPatch)
 {
+    FillExtensionsSupported();
+
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = appName;
@@ -162,24 +134,17 @@ void gfxDriverImplVK::Init(epiU32 apiVersionMajor,
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&createInfoDebugMessenger;
 #endif // EPI_BUILD_DEBUG
 
-    epiS32 extensionMaskEnabled = 0;
     std::vector<const epiChar*> extensions;
-    for (epiU32 bit = 1; bit < gfxDriverExtension_MAX; bit = bit << 1)
+    for (gfxDriverExtension extension : extensionRequired)
     {
-        const gfxDriverExtension extension = static_cast<gfxDriverExtension>(bit);
-        if ((extension & extensionMaskRequired) == 0)
-        {
-            continue;
-        }
-
-        if (!IsExtensionsSupported(extension))
+        if (!IsExtensionSupported(extension))
         {
             // TODO: get string representation
-            epiLogFatal("Required Vulkan intance extension=`{}` is not supported!", extension);
-            continue;
+            epiLogError("Required Vulkan intance extension=`{}` is not supported!", extension);
+            return false;
         }
 
-        extensionMaskEnabled |= extension;
+        m_ExtensionEnabled[static_cast<epiU32>(extension)] = true;
 
         extensions.push_back(ExtensionNameOf(extension));
     }
@@ -190,17 +155,28 @@ void gfxDriverImplVK::Init(epiU32 apiVersionMajor,
 
     createInfo.ppEnabledExtensionNames = extensions.data();
     createInfo.enabledExtensionCount = extensions.size();
-    m_ExtensionMaskEnabled = static_cast<gfxDriverExtension>(extensionMaskEnabled);
 
     VkResult resultCreateInstance = vkCreateInstance(&createInfo, nullptr, &m_VkInstance);
-    epiAssert(resultCreateInstance == VK_SUCCESS);
+    if (resultCreateInstance != VK_SUCCESS)
+    {
+        epiLogError("Failed to create 'VkInstance'!");
+        return false;
+    }
 
 #ifdef EPI_BUILD_DEBUG
     PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXTFunc = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_VkInstance, "vkCreateDebugUtilsMessengerEXT");
-    epiAssert(vkCreateDebugUtilsMessengerEXTFunc != nullptr);
+    if (vkCreateDebugUtilsMessengerEXTFunc == nullptr)
+    {
+        epiLogError("Failed to get 'PFN_vkCreateDebugUtilsMessengerEXT' func address via 'vkGetInstanceProcAddr'!");
+        return false;
+    }
 
     VkResult resultCreateDebugMessenger = vkCreateDebugUtilsMessengerEXTFunc(m_VkInstance, &createInfoDebugMessenger, nullptr, &m_VKDebugMessenger);
-    epiAssert(resultCreateDebugMessenger == VK_SUCCESS);
+    if (resultCreateDebugMessenger != VK_SUCCESS)
+    {
+        epiLogError("Failed to create 'VkDebugUtilsMessengerEXT'!");
+        return false;
+    }
 #endif // EPI_BUILD_DEBUG
 }
 
@@ -258,19 +234,46 @@ std::unique_ptr<gfxPhysicalDeviceImpl> gfxDriverImplVK::FindAppropriatePhysicalD
     return device;
 }
 
-epiBool gfxDriverImplVK::IsExtensionsSupported(gfxDriverExtension mask) const
+epiBool gfxDriverImplVK::IsExtensionSupported(gfxDriverExtension extension) const
 {
-    return (SupportedInstanceExtensionMask() & mask) == mask;
+    return m_ExtensionSupported[static_cast<epiU32>(extension)];
 }
 
-epiBool gfxDriverImplVK::IsExtensionsEnabled(gfxDriverExtension mask) const
+epiBool gfxDriverImplVK::IsExtensionEnabled(gfxDriverExtension extension) const
 {
-    return (m_ExtensionMaskEnabled & mask) == mask;
+    return m_ExtensionEnabled[static_cast<epiU32>(extension)];
 }
 
 VkInstance gfxDriverImplVK::GetVkInstance() const
 {
     return m_VkInstance;
+}
+
+void gfxDriverImplVK::FillExtensionsSupported()
+{
+    epiU32 supportedExtensionsCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionsCount, nullptr);
+
+    std::vector<VkExtensionProperties> supportedExtensions(supportedExtensionsCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionsCount, supportedExtensions.data());
+
+    for (const auto& extension : supportedExtensions)
+    {
+        const auto it = std::find_if(kDriverExtensionNames,
+                                     kDriverExtensionNames + epiArrLen(kDriverExtensionNames),
+                                     [needle = extension.extensionName](const epiChar* name) {
+            return strncmp(needle, name, strlen(name)) == 0;
+        });
+
+        if (it != kDriverExtensionNames + epiArrLen(kDriverExtensionNames))
+        {
+            m_ExtensionSupported[std::distance(kDriverExtensionNames, it)] = true;
+        }
+        else
+        {
+            epiLogWarn("Unrecognized Vulkan instance extension=`{}`!", extension.extensionName);
+        }
+    }
 }
 
 } // namespace internalgfx

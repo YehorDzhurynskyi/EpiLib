@@ -102,6 +102,9 @@ public:
     gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
     virtual ~gfxDeviceImpl() = default;
 
+    virtual epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const = 0;
+    virtual epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const = 0;
+
     virtual std::unique_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxRenderPassImpl& renderPassImpl, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
     virtual std::unique_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
     virtual std::unique_ptr<gfxPipelineImpl> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
@@ -127,9 +130,10 @@ public:
     virtual gfxPhysicalDeviceType GetType() const = 0;
 
     virtual std::unique_ptr<gfxDeviceImpl> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
-                                                        gfxPhysicalDeviceExtension extensionMask) const = 0;
+                                                        const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
+                                                        const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const = 0;
 
-    virtual epiBool IsExtensionsSupported(gfxPhysicalDeviceExtension mask) const = 0;
+    virtual epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const = 0;
     virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
 };
@@ -172,8 +176,8 @@ public:
     virtual std::unique_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) = 0;
     virtual std::unique_ptr<gfxPhysicalDeviceImpl> FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const = 0;
 
-    virtual epiBool IsExtensionsSupported(gfxDriverExtension mask) const = 0;
-    virtual epiBool IsExtensionsEnabled(gfxDriverExtension mask) const = 0;
+    virtual epiBool IsExtensionSupported(gfxDriverExtension extension) const = 0;
+    virtual epiBool IsExtensionEnabled(gfxDriverExtension extension) const = 0;
 };
 
 class gfxVertexArrayImpl
