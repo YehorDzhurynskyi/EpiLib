@@ -38,6 +38,9 @@ protected:
 EPI_GENREGION_END(gfxQueue)
 
 public:
+    friend class gfxSwapChain;
+
+public:
     gfxQueue() = default;
     gfxQueue(internalgfx::gfxQueueImpl* impl);
     gfxQueue(const gfxQueue& rhs) = delete;

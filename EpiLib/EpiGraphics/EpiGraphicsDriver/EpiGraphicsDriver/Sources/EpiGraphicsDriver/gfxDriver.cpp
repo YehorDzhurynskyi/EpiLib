@@ -56,6 +56,12 @@ std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
 {
     std::optional<gfxSurface> surface;
 
+    if (m_Impl == nullptr)
+    {
+        epiLogError("Failed to create Surface! Driver has no assigned backend!");
+        return surface;
+    }
+
     if (std::unique_ptr<internalgfx::gfxSurfaceImpl> surfaceImpl = m_Impl->CreateSurface(window))
     {
         surface = gfxSurface(surfaceImpl.release());
@@ -67,6 +73,12 @@ std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
 std::optional<gfxPhysicalDevice> gfxDriver::FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const
 {
     std::optional<gfxPhysicalDevice> device;
+
+    if (m_Impl == nullptr)
+    {
+        epiLogError("Failed to create Surface! Driver has no assigned backend!");
+        return device;
+    }
 
     if (std::unique_ptr<internalgfx::gfxPhysicalDeviceImpl> impl = m_Impl->FindAppropriatePhysicalDevice(isAppropiateCallback))
     {

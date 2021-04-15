@@ -77,6 +77,8 @@ public:
     gfxSwapChain& operator=(gfxSwapChain&& rhs);
     ~gfxSwapChain();
 
+    epiBool Present(const gfxQueue& queue);
+
 protected:
     internalgfx::gfxSwapChainImpl* m_Impl{nullptr};
 };

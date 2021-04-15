@@ -49,6 +49,7 @@ epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info, const g
     frameBufferAttachmentsCreateInfo.attachmentImageInfoCount = frameBufferAttachmentImageInfos.size();
     frameBufferAttachmentsCreateInfo.pAttachmentImageInfos = frameBufferAttachmentImageInfos.data();
 
+    // TODO: add renderpass compatibility check
     VkFramebufferCreateInfo framebufferInfo{};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     framebufferInfo.pNext = &frameBufferAttachmentsCreateInfo;
