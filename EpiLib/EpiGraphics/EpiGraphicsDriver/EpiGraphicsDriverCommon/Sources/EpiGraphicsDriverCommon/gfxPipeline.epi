@@ -20,7 +20,6 @@ class gfxPipelineColorBlendAttachment
 class gfxPipelineCreateInfo
 {
     gfxShaderProgram* ShaderProgram;
-    gfxRenderPass* RenderPass;
 
     epiU32 RenderSubPassIndex;
 

@@ -7,6 +7,51 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+gfxQueueFamilyDescriptor::gfxQueueFamilyDescriptor(internalgfx::gfxQueueFamilyDescriptorImpl* impl)
+    : m_Impl{impl}
+{
+}
+
+gfxQueueFamilyDescriptor::gfxQueueFamilyDescriptor(gfxQueueFamilyDescriptor&& rhs)
+{
+    if (this != &rhs)
+    {
+        m_Impl = rhs.m_Impl;
+        rhs.m_Impl = nullptr;
+    }
+}
+
+gfxQueueFamilyDescriptor& gfxQueueFamilyDescriptor::operator=(gfxQueueFamilyDescriptor&& rhs)
+{
+    if (this != &rhs)
+    {
+        m_Impl = rhs.m_Impl;
+        rhs.m_Impl = nullptr;
+    }
+
+    return *this;
+}
+
+gfxQueueFamilyDescriptor::~gfxQueueFamilyDescriptor()
+{
+    delete m_Impl;
+}
+
+epiBool gfxQueueFamilyDescriptor::IsQueueTypeSupported(gfxQueueType mask) const
+{
+    return m_Impl->IsQueueTypeSupported(mask);
+}
+
+gfxQueueType gfxQueueFamilyDescriptor::GetQueueTypeSupportedMask_Callback() const
+{
+    return m_Impl->GetQueueTypeSupportedMask();
+}
+
+epiSize_t gfxQueueFamilyDescriptor::GetQueueCount_Callback() const
+{
+    return m_Impl->GetQueueCount();
+}
+
 gfxQueueFamily::gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl)
     : m_Impl{impl}
 {
@@ -14,16 +59,20 @@ gfxQueueFamily::gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl)
 
 gfxQueueFamily::gfxQueueFamily(gfxQueueFamily&& rhs)
 {
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
+    if (this != &rhs)
+    {
+        m_Impl = rhs.m_Impl;
+        rhs.m_Impl = nullptr;
+    }
 }
 
 gfxQueueFamily& gfxQueueFamily::operator=(gfxQueueFamily&& rhs)
 {
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
+    if (this != &rhs)
+    {
+        m_Impl = rhs.m_Impl;
+        rhs.m_Impl = nullptr;
+    }
 
     return *this;
 }
@@ -31,21 +80,6 @@ gfxQueueFamily& gfxQueueFamily::operator=(gfxQueueFamily&& rhs)
 gfxQueueFamily::~gfxQueueFamily()
 {
     delete m_Impl;
-}
-
-epiBool gfxQueueFamily::HasImpl() const
-{
-    return m_Impl != nullptr;
-}
-
-gfxQueueType gfxQueueFamily::GetQueueTypeSupported_Callback() const
-{
-    return m_Impl->GetQueueTypeSupported();
-}
-
-epiSize_t gfxQueueFamily::GetQueueCount_Callback() const
-{
-    return m_Impl->GetQueueCount();
 }
 
 EPI_NAMESPACE_END()

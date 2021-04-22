@@ -8,76 +8,40 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-epiBool gfxQueueDescriptor::IsResolved() const
+gfxQueueDescriptor::gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiPtrArray<gfxSurface>& surfaceTargets)
+    : m_TypeMask{typeMask}
+    , m_Priorities{priorities.begin(), priorities.end()}
 {
-    return m_Queues.size() == GetDesiredQueueCount() && m_QueueFamily != nullptr && m_QueueFamily->HasImpl();
-}
-
-epiBool gfxQueueDescriptor::TryResolveQueue(gfxQueue&& queue)
-{
-    if (IsResolved())
+    m_SurfaceTargets.Reserve(surfaceTargets.Size());
+    std::transform(surfaceTargets.begin(),
+                   surfaceTargets.end(),
+                   std::back_inserter(m_SurfaceTargets),
+                   [](const gfxSurface* surfaceTarget) -> internalgfx::gfxSurfaceImpl*
     {
-        return false;
-    }
+        if (surfaceTarget == nullptr)
+        {
+            return nullptr;
+        }
 
-    if (const gfxQueueType desirableType = GetType(); (queue.GetType() & desirableType) != desirableType)
-    {
-        return false;
-    }
-
-    m_Queues.push_back(std::move(queue));
-
-    return true;
+        return surfaceTarget->m_Impl;
+    });
 }
 
-epiBool gfxQueueDescriptor::IsPresentRequired() const
+const epiPtrArray<internalgfx::gfxSurfaceImpl>& gfxQueueDescriptor::GetSurfaceTargets() const
 {
-    return m_PresentSurface != nullptr;
+    return m_SurfaceTargets;
 }
 
-void gfxQueueDescriptor::AddDesiredQueue(epiFloat priority)
-{
-    GetPriorities().push_back(priority);
-}
-
-epiU32 gfxQueueDescriptor::GetDesiredQueueCount_Callback() const
+epiU32 gfxQueueDescriptor::GetQueueCount_Callback() const
 {
     return GetPriorities().Size();
 }
 
-void gfxQueueDescriptor::AcquireQueues(std::vector<gfxQueue>& queues)
-{
-    queues = std::move(m_Queues);
-}
-
-const internalgfx::gfxSurfaceImpl* gfxQueueDescriptor::GetPresentSurface() const
-{
-    return m_PresentSurface;
-}
-
-void gfxQueueDescriptor::SetPresentSurface(const internalgfx::gfxSurfaceImpl* surfaceImpl)
-{
-    m_PresentSurface = surfaceImpl;
-}
-
-void gfxQueueDescriptorList::Add(gfxQueueType type, const epiArray<epiFloat>& priorities)
-{
-    gfxQueueDescriptor desc;
-    desc.SetType(type);
-
-    for (const epiFloat priority : priorities)
-    {
-        desc.AddDesiredQueue(priority);
-    }
-
-    Add(std::move(desc));
-}
-
 void gfxQueueDescriptorList::Add(gfxQueueDescriptor&& desc)
 {
-    if (desc.GetPriorities().IsEmpty())
+    if (desc.GetQueueCount() == 0)
     {
-        epiLogError("Number of priorties should be >= 1!");
+        epiLogError("Number of requested queue should be >= 1!");
         return;
     }
 

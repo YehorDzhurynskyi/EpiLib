@@ -6,11 +6,19 @@
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxWindow;
+class gfxPhysicalDevice;
 class gfxDevice;
-class gfxSwapChainCreateInfo;
+class gfxQueueFamily;
+class gfxRenderPassCreateInfo;
 
 EPI_NAMESPACE_END()
+
+struct epiWXVulkanCanvasCreateInfo
+{
+    const epi::gfxPhysicalDevice& PhysicalDevice;
+    epi::gfxSurfaceFormat Format{};
+    epi::gfxSurfacePresentMode PresentMode{};
+};
 
 class epiWXVulkanCanvas : public wxWindow
 {
@@ -19,27 +27,20 @@ private:
     wxDECLARE_CLASS(epiWXVulkanCanvas);
 
 public:
-    epiWXVulkanCanvas() = default;
+    epiBool Create(const epiWXVulkanCanvasCreateInfo& info,
+                   wxWindow* parent,
+                   wxWindowID id = wxID_ANY,
+                   const wxPoint& pos = wxDefaultPosition,
+                   const wxSize& size = wxDefaultSize,
+                   long style = 0,
+                   const wxString& name = wxASCII_STR("epiWXVulkanCanvas"));
 
-    epiWXVulkanCanvas(gfxSurface&& surface,
-                      gfxSwapChain&& swapChain,
-                      wxWindow* parent,
-                      wxWindowID id = wxID_ANY,
-                      const wxPoint& pos = wxDefaultPosition,
-                      const wxSize& size = wxDefaultSize,
-                      long style = 0,
-                      const wxString& name = wxASCII_STR("epiWXVulkanCanvas"));
+    epiBool CreateSwapChain(const epi::gfxPhysicalDevice& physicalDevice,
+                            const epi::gfxDevice& device,
+                            epi::gfxQueueFamily& queueFamily,
+                            const epi::gfxRenderPassCreateInfo& renderPassContract);
 
-public:
-    bool Create(const epiWXVulkanCanvasCreateInfo& info,
-                wxWindow* parent,
-                wxWindowID id = wxID_ANY,
-                const wxPoint& pos = wxDefaultPosition,
-                const wxSize& size = wxDefaultSize,
-                long style = 0,
-                const wxString& name = wxASCII_STR("epiWXVulkanCanvas"));
-
-    bool Present(const epi::gfxQueue& queue);
+    epiBool Present(const epi::gfxQueue& queue);
 
 protected:
     epi::gfxSurface m_Surface;

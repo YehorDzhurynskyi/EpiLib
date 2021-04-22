@@ -125,7 +125,7 @@ public:
     };
 
 protected:
-    gfxQueueFamily* m_QueueFamily{nullptr};
+    gfxQueueFamilyDescriptor* m_QueueFamily{nullptr};
     epiU32 m_PrimaryCommandBufferCount{0};
     epiU32 m_SecondaryCommandBufferCount{0};
 

@@ -31,39 +31,28 @@ public:
 
     enum gfxQueueDescriptor_PIDs
     {
-        PID_Type = 0x2cecf817,
-        PID_QueueFamily = 0xfa954047,
+        PID_TypeMask = 0x6957f143,
         PID_Priorities = 0x96844307,
-        PID_DesiredQueueCount = 0xbfd2ceb,
-        PID_COUNT = 4
+        PID_QueueCount = 0xf330505b,
+        PID_COUNT = 3
     };
 
 protected:
-    epiU32 GetDesiredQueueCount_Callback() const;
+    epiU32 GetQueueCount_Callback() const;
 
 protected:
-    gfxQueueType m_Type{};
-    gfxQueueFamily* m_QueueFamily{nullptr};
+    gfxQueueType m_TypeMask{};
     epiArray<epiFloat> m_Priorities{};
 
 EPI_GENREGION_END(gfxQueueDescriptor)
 
 public:
-    epiBool IsResolved() const;
-    epiBool TryResolveQueue(gfxQueue&& queue);
+    gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiPtrArray<gfxSurface>& surfaceTargets = {});
 
-    epiBool IsPresentRequired() const;
-
-    void AddDesiredQueue(epiFloat priority);
-
-    void AcquireQueues(std::vector<gfxQueue>& queues);
-
-    const internalgfx::gfxSurfaceImpl* GetPresentSurface() const;
-    void SetPresentSurface(const internalgfx::gfxSurfaceImpl* surfaceImpl);
+    const epiPtrArray<internalgfx::gfxSurfaceImpl>& GetSurfaceTargets() const;
 
 protected:
-    std::vector<gfxQueue> m_Queues; // TODO: epiArray can't be used with move only types. should be fixed
-    const internalgfx::gfxSurfaceImpl* m_PresentSurface{nullptr};
+    epiPtrArray<internalgfx::gfxSurfaceImpl> m_SurfaceTargets{};
 };
 
 class gfxQueueDescriptorList : public Object
@@ -91,7 +80,6 @@ public:
     using const_iterator = std::vector<gfxQueueDescriptor>::const_iterator;
 
 public:
-    void Add(gfxQueueType type, const epiArray<epiFloat>& priorities);
     void Add(gfxQueueDescriptor&& desc);
 
     gfxQueueDescriptor& At(epiU32 index);

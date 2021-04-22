@@ -32,6 +32,16 @@ gfxDevice::~gfxDevice()
     delete m_Impl;
 }
 
+epiBool gfxDevice::IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const
+{
+    return m_Impl->IsExtensionEnabled(extension);
+}
+
+epiBool gfxDevice::IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const
+{
+    return m_Impl->IsFeatureEnabled(feature);
+}
+
 std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateInfo& info) const
 {
     std::optional<gfxSwapChain> swapChain;
@@ -95,7 +105,7 @@ std::optional<gfxRenderPass> gfxDevice::CreateRenderPass(const gfxRenderPassCrea
     return renderPass;
 }
 
-std::optional<gfxPipeline> gfxDevice::CreatePipeline(const gfxPipelineCreateInfo& info) const
+std::optional<gfxPipeline> gfxDevice::CreatePipeline(const gfxPipelineCreateInfo& info, const gfxRenderPass& renderPass) const
 {
     std::optional<gfxPipeline> pipeline;
 
@@ -113,14 +123,7 @@ std::optional<gfxPipeline> gfxDevice::CreatePipeline(const gfxPipelineCreateInfo
         return pipeline;
     }
 
-    const gfxRenderPass* renderPass = info.GetRenderPass();
-    if (renderPass == nullptr)
-    {
-        epiLogError("Failed to create Pipeline! RenderPass hasn't provided!");
-        return pipeline;
-    }
-
-    const internalgfx::gfxRenderPassImpl* renderPassImpl = renderPass->m_Impl;
+    const internalgfx::gfxRenderPassImpl* renderPassImpl = renderPass.m_Impl;
     if (renderPassImpl == nullptr)
     {
         epiLogError("Failed to create Pipeline! RenderPass has no implemetation!");

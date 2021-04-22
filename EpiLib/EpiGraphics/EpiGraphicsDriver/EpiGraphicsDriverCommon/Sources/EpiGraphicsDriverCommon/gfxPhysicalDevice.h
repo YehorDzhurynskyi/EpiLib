@@ -58,7 +58,7 @@ public:
 public:
     std::optional<gfxDevice> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
                                           const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
-                                          const epiArray<gfxPhysicalDeviceFeature>& featuresRequired);
+                                          const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const;
 
     epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;

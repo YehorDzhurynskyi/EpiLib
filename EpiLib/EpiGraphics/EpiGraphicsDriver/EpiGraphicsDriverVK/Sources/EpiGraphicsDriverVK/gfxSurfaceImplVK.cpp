@@ -41,19 +41,21 @@ epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDeviceImpl& dev
 {
     const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
 
-    return std::any_of(deviceVk.GetQueueFamilies().begin(), deviceVk.GetQueueFamilies().end(), [this, &deviceVk](const gfxQueueFamilyImpl& queueFamily)
+    return std::any_of(deviceVk.GetQueueFamilyDescriptors().begin(),
+                       deviceVk.GetQueueFamilyDescriptors().end(),
+                       [this, &deviceVk](const gfxQueueFamilyDescriptorImpl& queueFamilyDesc)
     {
-        return IsPresentSupportedFor(deviceVk, queueFamily);
+        return IsPresentSupportedFor(deviceVk, queueFamilyDesc);
     });
 }
 
-epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const
+epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyDescriptorImpl& queueFamilyDesc) const
 {
     const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
-    const gfxQueueFamilyImplVK& queueFamilyVk = static_cast<const gfxQueueFamilyImplVK&>(queueFamily);
+    const gfxQueueFamilyDescriptorImplVK& queueFamilyDescVk = static_cast<const gfxQueueFamilyDescriptorImplVK&>(queueFamilyDesc);
 
     VkBool32 presentSupported = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(deviceVk.GetVkPhysicalDevice(), queueFamilyVk.GetIndex(), GetVkSurface(), &presentSupported);
+    vkGetPhysicalDeviceSurfaceSupportKHR(deviceVk.GetVkPhysicalDevice(), queueFamilyDescVk.GetIndex(), GetVkSurface(), &presentSupported);
 
     return presentSupported;
 }

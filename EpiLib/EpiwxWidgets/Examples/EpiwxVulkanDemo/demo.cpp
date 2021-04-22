@@ -137,35 +137,18 @@ EpiwxVulkanDemoFrame::EpiwxVulkanDemoFrame(wxWindow* parent, wxWindowID id, cons
 
     epiAssert(physicalDevice.has_value());
 
-    gfxQueueDescriptorList queueDescriptorList;
-    queueDescriptorList.Add(surface->CreateQueueDescriptor({1.0f}));
-
-    std::optional<gfxDevice> device = physicalDevice->CreateDevice(queueDescriptorList, deviceExtensionsRequired, deviceFeaturesRequired);
-    epiAssert(device.has_value());
-
-    epiWXVulkanCanvasCreateInfo canvasCreateInfo{};
-    canvasCreateInfo.Device = &*device;
-
-    AddChild(new epiWXVulkanCanvas(canvasCreateInfo, this));
-
-    gfxSurfaceFormat surfaceFormat;
-    surfaceFormat.SetFormat(gfxFormat::B8G8R8A8_SRGB);
-    surfaceFormat.SetColorSpace(gfxSurfaceColorSpace::SRGB_NONLINEAR);
-
-    const gfxSurfaceCapabilities surfaceCapabilities = surface->GetCapabilitiesFor(*physicalDevice);
-    epiSize2u extent{};
-    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
+    std::optional<gfxDevice> device = info.PhysicalDevice.CreateDevice(queueDescriptorList,
+                                                                       info.DeviceExtensionsRequired,
+                                                                       info.DeviceFeaturesRequired);
+    if (!device.has_value())
     {
-        extent = surfaceCapabilities.GetCurrentExtent();
+        epiLogError("Falied to create Device!");
+        return false;
     }
-    else
-    {
-        extent.x = std::clamp(static_cast<epiU32>(size.x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
-        extent.y = std::clamp(static_cast<epiU32>(size.y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
-    }
+
 
     gfxAttachment attachment;
-    attachment.SetFormat(surfaceFormat.GetFormat());
+    attachment.SetFormat(gfxFormat::B8G8R8A8_SRGB);
     attachment.SetSampleCount(gfxSampleCount::Sample1);
     attachment.SetLoadOp(gfxAttachmentLoadOp::Clear);
     attachment.SetStoreOp(gfxAttachmentStoreOp::Store);
@@ -193,14 +176,9 @@ EpiwxVulkanDemoFrame::EpiwxVulkanDemoFrame(wxWindow* parent, wxWindowID id, cons
     std::optional<gfxRenderPass> renderPass = device->CreateRenderPass(renderPassCreateInfo);
     epiAssert(renderPass.has_value());
 
-    gfxSwapChainCreateInfo swapChainCreateInfo;
-    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
-    swapChainCreateInfo.SetFormat(surfaceFormat);
-    swapChainCreateInfo.SetPresentMode(gfxSurfacePresentMode::MAILBOX);
-    swapChainCreateInfo.SetExtent(extent);
-    swapChainCreateInfo.SetSurface(&*surface);
-    swapChainCreateInfo.SetRenderPass(&*renderPass);
-    swapChainCreateInfo.SetQueueFamily(queueDescriptorList[0].GetQueueFamily());
+    epiWXVulkanCanvasCreateInfo canvasCreateInfo{.PhysicalDevice = *physicalDevice};
+
+    AddChild(new epiWXVulkanCanvas(canvasCreateInfo, this));
 
     gfxPipelineViewport viewport;
     viewport.SetViewportRect(epiRect2f(0.0f, 0.0f, extent.x, extent.y));
@@ -285,7 +263,6 @@ EpiwxVulkanDemoFrame::EpiwxVulkanDemoFrame(wxWindow* parent, wxWindowID id, cons
     pipelineCreateInfo.SetColorBlendLogicOpEnable(false);
     pipelineCreateInfo.SetColorBlendLogicOp(gfxLogicOp::Copy);
     pipelineCreateInfo.SetColorBlendConstants(epiVec4f{0.0f, 0.0f, 0.0f, 0.0f});
-    pipelineCreateInfo.SetRenderPass(&*renderPass);
     pipelineCreateInfo.SetRenderSubPassIndex(0);
     pipelineCreateInfo.SetShaderProgram(&*shaderProgram);
 

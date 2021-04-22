@@ -34,7 +34,7 @@ gfxPhysicalDevice::~gfxPhysicalDevice()
 
 std::optional<gfxDevice> gfxPhysicalDevice::CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
                                                          const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
-                                                         const epiArray<gfxPhysicalDeviceFeature>& featuresRequired)
+                                                         const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const
 {
     std::optional<gfxDevice> device;
 

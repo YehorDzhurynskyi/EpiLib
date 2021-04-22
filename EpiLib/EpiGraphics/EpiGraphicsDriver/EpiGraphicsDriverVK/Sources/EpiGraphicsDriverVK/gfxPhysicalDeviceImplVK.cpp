@@ -46,7 +46,7 @@ void gfxPhysicalDeviceImplVK::Init(VkPhysicalDevice device)
                                                          queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT ? gfxQueueType_Transfer : gfxQueueType{0},
                                                          queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT ? gfxQueueType_SparseBinding : gfxQueueType{0},
                                                          queueFamily.queueFlags & VK_QUEUE_PROTECTED_BIT ? gfxQueueType_Protected : gfxQueueType{0});
-        m_QueueFamilies.push_back(gfxQueueFamilyImplVK(queueFamilyIndex, queueFamily.queueCount, supportedQueueTypes));
+        m_QueueFamilyDescriptors.push_back(gfxQueueFamilyDescriptorImplVK(queueFamilyIndex, queueFamily.queueCount, supportedQueueTypes));
 
         ++queueFamilyIndex;
     }
@@ -103,7 +103,7 @@ epiBool gfxPhysicalDeviceImplVK::IsFeatureSupported(gfxPhysicalDeviceFeature fea
 
 epiBool gfxPhysicalDeviceImplVK::IsQueueTypeSupported(gfxQueueType mask) const
 {
-    return std::any_of(m_QueueFamilies.begin(), m_QueueFamilies.end(), [mask](const gfxQueueFamilyImplVK& family)
+    return std::any_of(m_QueueFamilyDescriptors.begin(), m_QueueFamilyDescriptors.end(), [mask](const gfxQueueFamilyDescriptorImplVK& family)
     {
         return family.IsQueueTypeSupported(mask);
     });
@@ -114,9 +114,9 @@ VkPhysicalDevice gfxPhysicalDeviceImplVK::GetVkPhysicalDevice() const
     return m_VkDevice;
 }
 
-const epiArray<gfxQueueFamilyImplVK>& gfxPhysicalDeviceImplVK::GetQueueFamilies() const
+const epiArray<gfxQueueFamilyDescriptorImplVK>& gfxPhysicalDeviceImplVK::GetQueueFamilyDescriptors() const
 {
-    return m_QueueFamilies;
+    return m_QueueFamilyDescriptors;
 }
 
 void gfxPhysicalDeviceImplVK::FillExtensionsSupported()

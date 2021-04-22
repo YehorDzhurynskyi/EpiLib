@@ -91,7 +91,6 @@ public:
     enum gfxPipelineCreateInfo_PIDs
     {
         PID_ShaderProgram = 0xe4812959,
-        PID_RenderPass = 0x662aa9d7,
         PID_RenderSubPassIndex = 0xdaca0981,
         PID_InputAssemblyType = 0xe816cd01,
         PID_Viewports = 0xa8f1ee29,
@@ -110,12 +109,11 @@ public:
         PID_ColorBlendLogicOpEnable = 0xa19e601f,
         PID_ColorBlendLogicOp = 0x7caacb6d,
         PID_ColorBlendConstants = 0x739a4ae9,
-        PID_COUNT = 20
+        PID_COUNT = 19
     };
 
 protected:
     gfxShaderProgram* m_ShaderProgram{nullptr};
-    gfxRenderPass* m_RenderPass{nullptr};
     epiU32 m_RenderSubPassIndex{0};
     gfxPipelineInputAssemblyType m_InputAssemblyType{gfxPipelineInputAssemblyType::None};
     epiArray<gfxPipelineViewport> m_Viewports{};

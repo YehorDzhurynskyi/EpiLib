@@ -50,9 +50,12 @@ public:
     gfxDevice& operator=(gfxDevice&& rhs);
     ~gfxDevice();
 
+    epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const;
+    epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const;
+
     std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
-    std::optional<gfxPipeline> CreatePipeline(const gfxPipelineCreateInfo& info) const;
+    std::optional<gfxPipeline> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxRenderPass& renderPass) const;
     std::optional<gfxShader> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const;
     std::optional<gfxShaderProgram> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const;
     std::optional<gfxFrameBuffer> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const;

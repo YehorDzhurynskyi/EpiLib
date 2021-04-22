@@ -43,7 +43,7 @@ public:
 protected:
     gfxSurface* m_Surface{nullptr};
     gfxRenderPass* m_RenderPass{nullptr};
-    gfxQueueFamily* m_QueueFamily{nullptr};
+    gfxQueueFamilyDescriptor* m_QueueFamily{nullptr};
     gfxSurfaceCapabilities m_Capabilities{};
     gfxSurfaceFormat m_Format{};
     gfxSurfacePresentMode m_PresentMode{};

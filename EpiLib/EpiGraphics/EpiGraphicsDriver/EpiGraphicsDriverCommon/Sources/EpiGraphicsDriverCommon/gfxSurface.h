@@ -79,6 +79,10 @@ protected:
     gfxSurfaceColorSpace m_ColorSpace{};
 
 EPI_GENREGION_END(gfxSurfaceFormat)
+
+public:
+    friend epiBool operator==(const gfxSurfaceFormat& lhs, const gfxSurfaceFormat& rhs);
+    friend epiBool operator!=(const gfxSurfaceFormat& lhs, const gfxSurfaceFormat& rhs);
 };
 
 class gfxPhysicalDevice;
@@ -100,6 +104,7 @@ EPI_GENREGION_END(gfxSurface)
 
 public:
     friend class gfxDevice;
+    friend class gfxQueueDescriptor;
 
 public:
     gfxSurface() = default;
@@ -112,6 +117,8 @@ public:
 
 public:
     gfxQueueDescriptor CreateQueueDescriptor(const epiArray<epiFloat>& priorities, gfxQueueType type = gfxQueueType{0}) const;
+
+    epiBool IsCompatibleWith(const gfxPhysicalDevice& device, const gfxSurfaceFormat& format, gfxSurfacePresentMode presentMode) const;
 
     epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device) const;
     gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDevice& device) const;

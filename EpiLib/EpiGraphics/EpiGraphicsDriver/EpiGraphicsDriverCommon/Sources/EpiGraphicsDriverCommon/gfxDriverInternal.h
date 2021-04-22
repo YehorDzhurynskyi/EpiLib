@@ -29,19 +29,51 @@ public:
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
 };
 
+class gfxQueueFamilyDescriptorImpl
+{
+public:
+    gfxQueueFamilyDescriptorImpl() = default;
+    gfxQueueFamilyDescriptorImpl(const gfxQueueFamilyDescriptorImpl& rhs) = delete;
+    gfxQueueFamilyDescriptorImpl& operator=(const gfxQueueFamilyDescriptorImpl& rhs) = delete;
+    gfxQueueFamilyDescriptorImpl(gfxQueueFamilyDescriptorImpl&& rhs) = default;
+    gfxQueueFamilyDescriptorImpl& operator=(gfxQueueFamilyDescriptorImpl&& rhs) = default;
+    virtual ~gfxQueueFamilyDescriptorImpl() = default;
+
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+    virtual gfxQueueType GetQueueTypeSupportedMask() const = 0;
+    virtual epiU32 GetQueueCount() const = 0;
+};
+
 class gfxQueueFamilyImpl
 {
 public:
-    gfxQueueFamilyImpl() = default;
+    gfxQueueFamilyImpl(const gfxQueueFamilyDescriptorImpl& queueFamilyDesc, const gfxQueueDescriptor& queueDesc)
+        : m_QueueTypeSupportedMask{queueFamilyDesc.GetQueueTypeSupportedMask()}
+        , m_QueueCountSupported{queueFamilyDesc.GetQueueCount()}
+        , m_QueueCountEnabled{queueDesc.GetQueueCount()}
+    {
+        epiAssert((queueFamilyDesc.GetQueueTypeSupportedMask() & queueDesc.GetTypeMask()) == queueDesc.GetTypeMask());
+    }
+
     gfxQueueFamilyImpl(const gfxQueueFamilyImpl& rhs) = delete;
     gfxQueueFamilyImpl& operator=(const gfxQueueFamilyImpl& rhs) = delete;
     gfxQueueFamilyImpl(gfxQueueFamilyImpl&& rhs) = default;
     gfxQueueFamilyImpl& operator=(gfxQueueFamilyImpl&& rhs) = default;
     virtual ~gfxQueueFamilyImpl() = default;
 
-    virtual gfxQueueType GetQueueTypeSupported() const = 0;
-    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
-    virtual epiU32 GetQueueCount() const = 0;
+    gfxQueueType GetQueueTypeSupportedMask() const { return m_QueueTypeSupportedMask; }
+    epiU32 GetQueueCountSupported() const { return m_QueueCountSupported; }
+    epiU32 GetQueueCountEnabled() const { return m_QueueCountEnabled; }
+
+    virtual void Init(const gfxDeviceImpl& device) = 0;
+
+protected:
+    gfxQueueType m_QueueTypeSupportedMask{0};
+
+    epiU32 m_QueueCountSupported{0};
+    epiU32 m_QueueCountEnabled{0};
+
+    epiArray<std::unique_ptr<gfxQueueImpl>> m_Queues;
 };
 
 class gfxFrameBufferImpl
@@ -149,7 +181,7 @@ public:
     virtual ~gfxSurfaceImpl() = default;
 
     virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const = 0;
-    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const = 0;
+    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyDescriptorImpl& queueFamilyDesc) const = 0;
     virtual gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const = 0;
     virtual epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDeviceImpl& device) const = 0;
     virtual epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDeviceImpl& device) const = 0;

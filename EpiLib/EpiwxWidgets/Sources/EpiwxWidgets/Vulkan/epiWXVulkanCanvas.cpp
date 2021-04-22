@@ -13,24 +13,13 @@
 
 EPI_NAMESPACE_USING()
 
-epiWXVulkanCanvas::epiWXVulkanCanvas(const epiWXVulkanCanvasCreateInfo& info,
-                                     wxWindow* parent,
-                                     wxWindowID id,
-                                     const wxPoint& pos,
-                                     const wxSize& size,
-                                     long style,
-                                     const wxString& name)
-{
-    Create(info, parent, id, pos, size, style, name);
-}
-
-bool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
-                               wxWindow* parent,
-                               wxWindowID id,
-                               const wxPoint& pos,
-                               const wxSize& size,
-                               long style,
-                               const wxString& name)
+epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
+                                  wxWindow* parent,
+                                  wxWindowID id,
+                                  const wxPoint& pos,
+                                  const wxSize& size,
+                                  long style,
+                                  const wxString& name)
 {
     wxCHECK_MSG(parent, false, wxT("can't create wxWindow without parent"));
 
@@ -66,12 +55,59 @@ bool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
         return false;
     }
 
+    // TODO: check whether device supports graphics queues
+    if (!surface->IsCompatibleWith(info.PhysicalDevice, info.Format, info.PresentMode))
+    {
+        epiLogError("Surface isn't compatible with a provided PhysicalDevice={}!", info.PhysicalDevice.ToString());
+        return false;
+    }
+
     m_Surface = std::move(*surface);
 
-    gfxSwapChainCreateInfo swapChainCreateInfo = info.SwapChainCreateInfo;
-    swapChainCreateInfo.SetSurface(&m_Surface);
+    return true;
+}
 
-    std::optional<gfxSwapChain> swapChain = info.Device->CreateSwapChain(swapChainCreateInfo);
+epiBool epiWXVulkanCanvas::CreateSwapChain(const epi::gfxDevice& device,
+                                           epi::gfxQueueFamily& queueFamily,
+                                           const epi::gfxRenderPassCreateInfo& renderPassContract)
+{
+    if (!device.IsExtensionEnabled(gfxPhysicalDeviceExtension::SwapChain))
+    {
+        epiLogError("Provided Device doesn't has SwapChain extension disabled!");
+        return false;
+    }
+
+    const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(info.PhysicalDevice);
+
+    epiSize2u extent{};
+    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
+    {
+        extent = surfaceCapabilities.GetCurrentExtent();
+    }
+    else
+    {
+        extent.x = std::clamp(static_cast<epiU32>(GetSize().x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
+        extent.y = std::clamp(static_cast<epiU32>(GetSize().y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
+    }
+
+    std::optional<gfxRenderPass> renderPass = info.Device.CreateRenderPass(info.RenderPassCreateInfo);
+    if (!renderPass.has_value())
+    {
+        epiLogError("Falied to create RenderPass!");
+        return false;
+    }
+
+    // TODO: submit renderpass info to ensure compatibility only
+    gfxSwapChainCreateInfo swapChainCreateInfo{};
+    swapChainCreateInfo.SetSurface(&m_Surface);
+    swapChainCreateInfo.SetRenderPass(&*renderPass);
+    swapChainCreateInfo.SetQueueFamily(&info.QueueFamily);
+    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
+    swapChainCreateInfo.SetFormat(info.Format);
+    swapChainCreateInfo.SetPresentMode(info.PresentMode);
+    swapChainCreateInfo.SetExtent(extent);
+
+    std::optional<gfxSwapChain> swapChain = info.Device.CreateSwapChain(swapChainCreateInfo);
     if (!swapChain.has_value())
     {
         epiLogError("Falied to create SwapChain!");
@@ -83,7 +119,7 @@ bool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
     return true;
 }
 
-bool epiWXVulkanCanvas::Present(const epi::gfxQueue& queue)
+epiBool epiWXVulkanCanvas::Present(const epi::gfxQueue& queue)
 {
     return m_SwapChain.Present(queue);
 }

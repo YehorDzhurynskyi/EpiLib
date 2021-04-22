@@ -7,6 +7,16 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+epiBool operator==(const gfxSurfaceFormat& lhs, const gfxSurfaceFormat& rhs)
+{
+    return lhs.GetFormat() == rhs.GetFormat() && lhs.GetColorSpace() == rhs.GetColorSpace();
+}
+
+epiBool operator!=(const gfxSurfaceFormat& lhs, const gfxSurfaceFormat& rhs)
+{
+    return !(operator==(lhs, rhs));
+}
+
 gfxSurface::gfxSurface(internalgfx::gfxSurfaceImpl* impl)
     : m_Impl{impl}
 {
@@ -45,6 +55,31 @@ gfxQueueDescriptor gfxSurface::CreateQueueDescriptor(const epiArray<epiFloat>& p
     }
 
     return desc;
+}
+
+epiBool gfxSurface::IsCompatibleWith(const gfxPhysicalDevice& device, const gfxSurfaceFormat& format, gfxSurfacePresentMode presentMode) const
+{
+    if (!IsPresentSupportedFor(device))
+    {
+        epiLogWarn("PhysicalDevice=`{}` doesn't support desired surface!", device.ToString());
+        return false;
+    }
+
+    const epiArray<gfxSurfaceFormat> supportedFormats = GetSupportedFormatsFor(device);
+    if (supportedFormats.end() == std::find(supportedFormats.begin(), supportedFormats.end(), format))
+    {
+        epiLogWarn("PhysicalDevice=`{}` doesn't support desired SurfaceFormat=`{}`!", device.ToString(), format.ToString());
+        return false;
+    }
+
+    const epiArray<gfxSurfacePresentMode> supportedPresentModes = GetSupportedPresentModesFor(device);
+    if (supportedPresentModes.end() == std::find(supportedPresentModes.begin(), supportedPresentModes.end(), presentMode))
+    {
+        epiLogWarn("PhysicalDevice=`{}` doesn't support desired PresentMode=`{}`!", device.ToString(), presentMode); // TODO: str repr
+        return false;
+    }
+
+    return true;
 }
 
 epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device) const

@@ -47,6 +47,8 @@ protected:
 
     epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};
     epiBool m_FeatureEnabled[static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT)]{};
+
+    epiArray<gfxQueueFamilyImplVK> m_QueueFamilies;
 };
 
 } // namespace internalgfx

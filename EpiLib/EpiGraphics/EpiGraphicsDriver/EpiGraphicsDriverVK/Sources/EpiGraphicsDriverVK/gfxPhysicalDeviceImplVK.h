@@ -28,7 +28,7 @@ public:
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
 
-    const epiArray<gfxQueueFamilyImplVK>& GetQueueFamilies() const;
+    const epiArray<gfxQueueFamilyDescriptorImplVK>& GetQueueFamilyDescriptors() const;
 
     VkPhysicalDevice_T* GetVkPhysicalDevice() const;
 
@@ -38,7 +38,7 @@ protected:
 
 protected:
     VkPhysicalDevice_T* m_VkDevice{nullptr};
-    epiArray<gfxQueueFamilyImplVK> m_QueueFamilies;
+    epiArray<gfxQueueFamilyDescriptorImplVK> m_QueueFamilyDescriptors;
     epiBool m_ExtensionSupported[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};
     epiBool m_FeatureSupported[static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT)]{};
 };
