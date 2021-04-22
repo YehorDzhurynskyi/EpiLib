@@ -75,7 +75,7 @@ public:
     };
 
 protected:
-    const epiArray<gfxQueue>& GetQueues_Callback() const;
+    epiArray<gfxQueue> m_Queues{};
 
 EPI_GENREGION_END(gfxQueueFamily)
 

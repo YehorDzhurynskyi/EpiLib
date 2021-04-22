@@ -117,6 +117,41 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.queueCreateInfoCount = queueCreateInfos.size();
 
+    const epiBool allQueueDescriptorsResolved = std::all_of(queueDescriptorList.begin(),
+                                                            queueDescriptorList.end(),
+                                                            [&queueMappings](const gfxQueueDescriptor& desc)
+    {
+        return queueMappings.find(&desc) != queueMappings.end();
+    });
+
+    if (!allQueueDescriptorsResolved)
+    {
+        epiLogError("Couldn't resolve some of submitted queue descriptors!");
+        return false;
+    }
+
+    const epiBool hasNoQueueFamilyDuplicates = std::all_of(queueMappings.begin(),
+                                                           queueMappings.end(),
+                                                           [&queueMappings](const std::pair<const gfxQueueDescriptor*, const gfxQueueFamilyDescriptorImplVK*>& lhs)
+    {
+        const gfxQueueFamilyDescriptorImplVK* needle = lhs.second;
+        const epiU32 count = std::count_if(queueMappings.begin(),
+                                           queueMappings.end(),
+                                           [&needle](const std::pair<const gfxQueueDescriptor*, const gfxQueueFamilyDescriptorImplVK*>& rhs)
+        {
+            return rhs.second == needle;
+        });
+
+        return count == 1;
+    });
+
+    if (!hasNoQueueFamilyDuplicates)
+    {
+        // TODO: implement QueueDescriptor -> QueueFamily (many - one) relationship
+        epiLogError("There is queue descriptors that map a single queue family! This feature isn't supported yet!");
+        return false;
+    }
+
     std::vector<const epiChar*> extensions;
     for (gfxPhysicalDeviceExtension extension : extensionsRequired)
     {
@@ -292,44 +327,11 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
         return false;
     }
 
-    const epiBool allQueueDescriptorsResolved = std::all_of(queueDescriptorList.begin(),
-                                                            queueDescriptorList.end(),
-                                                            [&queueMappings](const gfxQueueDescriptor& desc)
-    {
-        return queueMappings.find(&desc) != queueMappings.end();
-    });
-
-    if (!allQueueDescriptorsResolved)
-    {
-        epiLogError("Couldn't resolve some of submitted queue descriptors!");
-        return false;
-    }
-
-    const epiBool noQueueFamilyDuplicates = std::all_of(queueMappings.begin(),
-                                                        queueMappings.end(),
-                                                        [&queueMappings](const std::pair<const gfxQueueDescriptor*, const gfxQueueFamilyDescriptorImplVK*>& lhs)
-    {
-        const gfxQueueFamilyDescriptorImplVK* needle = lhs.second;
-        const epiU32 count = std::count_if(queueMappings.begin(),
-                                           queueMappings.end(),
-                                           [&needle](const std::pair<const gfxQueueDescriptor*, const gfxQueueFamilyDescriptorImplVK*>& rhs)
-        {
-            return rhs.second == needle;
-        });
-
-        return count == 1;
-    });
-
-    if (!noQueueFamilyDuplicates)
-    {
-        // TODO: implement QueueDescriptor -> QueueFamily (many - one) relationship
-        epiLogError("There is queue descriptors that map a single queue family! This feature isn't supported yet!");
-        return false;
-    }
-
     for (const auto& [queueDesc, queueFamilyDesc] : queueMappings)
     {
         gfxQueueFamilyImplVK queueFamily(*queueFamilyDesc, *queueDesc);
+        queueFamily.Init(*this);
+
         m_QueueFamilies.push_back(std::move(queueFamily));
     }
 

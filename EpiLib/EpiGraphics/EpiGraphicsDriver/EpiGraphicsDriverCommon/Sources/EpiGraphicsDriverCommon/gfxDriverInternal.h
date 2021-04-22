@@ -67,6 +67,8 @@ public:
 
     virtual void Init(const gfxDeviceImpl& device) = 0;
 
+    const epiArray<std::unique_ptr<gfxQueueImpl>>& GetQueues() const { return m_Queues; }
+
 protected:
     gfxQueueType m_QueueTypeSupportedMask{0};
 
