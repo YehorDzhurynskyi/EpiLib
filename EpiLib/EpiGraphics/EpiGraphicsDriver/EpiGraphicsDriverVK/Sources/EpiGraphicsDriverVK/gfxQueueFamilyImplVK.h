@@ -32,14 +32,14 @@ protected:
 class gfxQueueFamilyImplVK : public gfxQueueFamilyImpl
 {
 public:
-    gfxQueueFamilyImplVK(const gfxQueueFamilyDescriptorImplVK& queueFamilyDesc, const gfxQueueDescriptor& queueDesc);
+    explicit gfxQueueFamilyImplVK(const gfxQueueFamilyDescriptorImplVK& queueFamilyDesc);
     gfxQueueFamilyImplVK(const gfxQueueFamilyImplVK& rhs) = default;
     gfxQueueFamilyImplVK& operator=(const gfxQueueFamilyImplVK& rhs) = default;
     gfxQueueFamilyImplVK(gfxQueueFamilyImplVK&& rhs) = default;
     gfxQueueFamilyImplVK& operator=(gfxQueueFamilyImplVK&& rhs) = default;
     ~gfxQueueFamilyImplVK() override = default;
 
-    void Init(const gfxDeviceImpl& device) override;
+    void Init(const gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc) override;
 
     epiU32 GetIndex() const;
 

@@ -14,7 +14,7 @@ class gfxQueueFamilyImplVK;
 class gfxQueueImplVK : public gfxQueueImpl
 {
 public:
-    gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex);
+    gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority);
     gfxQueueImplVK(const gfxQueueImplVK& rhs) = delete;
     gfxQueueImplVK& operator=(const gfxQueueImplVK& rhs) = delete;
     gfxQueueImplVK(gfxQueueImplVK&& rhs);
@@ -22,6 +22,7 @@ public:
     ~gfxQueueImplVK() override = default;
 
     gfxQueueType GetType() const override;
+    epiFloat GetPriority() const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
 
     VkQueue_T* GetVkQueue() const;
@@ -29,6 +30,7 @@ public:
 protected:
     VkQueue_T* m_VkQueue{nullptr};
     gfxQueueType m_Type{0};
+    epiFloat m_Priority{0.0f};
 };
 
 } // namespace internalgfx

@@ -10,8 +10,9 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-gfxQueueImplVK::gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex)
+gfxQueueImplVK::gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority)
     : m_Type{queueFamily.GetQueueTypeSupportedMask()}
+    , m_Priority{priority}
 {
     vkGetDeviceQueue(device.GetVkDevice(), queueFamily.GetIndex(), queueIndex, &m_VkQueue);
 }
@@ -39,6 +40,11 @@ gfxQueueImplVK& gfxQueueImplVK::operator=(gfxQueueImplVK&& rhs)
 gfxQueueType gfxQueueImplVK::GetType() const
 {
     return m_Type;
+}
+
+epiFloat gfxQueueImplVK::GetPriority() const
+{
+    return m_Priority;
 }
 
 epiBool gfxQueueImplVK::IsQueueTypeSupported(gfxQueueType mask) const

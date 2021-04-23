@@ -329,13 +329,13 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
 
     for (const auto& [queueDesc, queueFamilyDesc] : queueMappings)
     {
-        std::unique_ptr<gfxQueueFamilyImplVK> queueFamily = std::make_unique<gfxQueueFamilyImplVK>(*queueFamilyDesc, *queueDesc);
-        queueFamily->Init(*this);
+        std::unique_ptr<gfxQueueFamilyImplVK> queueFamily = std::make_unique<gfxQueueFamilyImplVK>(*queueFamilyDesc);
+        queueFamily->Init(*this, *queueDesc);
 
         m_QueueFamilies.push_back(std::move(queueFamily));
     }
 
-    // TODO: assign QueueFamilies to QueueDescriptors (make pimpl copyable if isOwner == false)
+    // TODO: maybe assign QueueFamilies to QueueDescriptors
 
     return true;
 }

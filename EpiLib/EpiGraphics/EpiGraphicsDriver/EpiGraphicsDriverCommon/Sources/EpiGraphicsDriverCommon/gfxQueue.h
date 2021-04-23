@@ -29,11 +29,13 @@ public:
     enum gfxQueue_PIDs
     {
         PID_Type = 0x2cecf817,
-        PID_COUNT = 1
+        PID_Priority = 0x9bd0be71,
+        PID_COUNT = 2
     };
 
 protected:
     gfxQueueType GetType_Callback() const;
+    epiFloat GetPriority_Callback() const;
 
 EPI_GENREGION_END(gfxQueue)
 
@@ -43,6 +45,8 @@ public:
 public:
     gfxQueue() = default;
     gfxQueue(internalgfx::gfxQueueImpl* impl, epiBool isOwner);
+
+    epiBool IsQueueTypeSupported(gfxQueueType mask) const;
 };
 
 EPI_NAMESPACE_END()

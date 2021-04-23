@@ -34,17 +34,18 @@ epiU32 gfxQueueFamilyDescriptorImplVK::GetIndex() const
     return m_Index;
 }
 
-gfxQueueFamilyImplVK::gfxQueueFamilyImplVK(const gfxQueueFamilyDescriptorImplVK& queueFamilyDesc, const gfxQueueDescriptor& queueDesc)
-    : gfxQueueFamilyImpl{queueFamilyDesc, queueDesc}
+gfxQueueFamilyImplVK::gfxQueueFamilyImplVK(const gfxQueueFamilyDescriptorImplVK& queueFamilyDesc)
+    : gfxQueueFamilyImpl{queueFamilyDesc}
     , m_Index{queueFamilyDesc.GetIndex()}
 {
 }
 
-void gfxQueueFamilyImplVK::Init(const gfxDeviceImpl& device)
+void gfxQueueFamilyImplVK::Init(const gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc)
 {
-    for (epiU32 i = 0; i < GetQueueCountEnabled(); ++i)
+    for (epiU32 i = 0; i < queueDesc.GetQueueCount(); ++i)
     {
-        std::unique_ptr<gfxQueueImpl> queue = std::make_unique<gfxQueueImplVK>(device, *this, i);
+        const epiFloat priority = queueDesc.GetPriorities()[i];
+        std::unique_ptr<gfxQueueImpl> queue = std::make_unique<gfxQueueImplVK>(device, *this, i, priority);
 
         m_Queues.push_back(std::move(queue));
     }

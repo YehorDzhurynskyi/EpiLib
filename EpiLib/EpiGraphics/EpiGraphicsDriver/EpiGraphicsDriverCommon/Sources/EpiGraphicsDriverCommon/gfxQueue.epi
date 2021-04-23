@@ -1,5 +1,8 @@
 class gfxQueue
 {
     [Virtual, ReadOnly]
-    gfxQueueType Type;
+    {
+        gfxQueueType Type;
+        epiFloat Priority;
+    }
 };

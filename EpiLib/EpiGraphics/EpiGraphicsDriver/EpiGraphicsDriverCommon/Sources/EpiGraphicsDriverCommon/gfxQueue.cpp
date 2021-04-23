@@ -17,4 +17,14 @@ gfxQueueType gfxQueue::GetType_Callback() const
     return m_Impl->GetType();
 }
 
+epiFloat gfxQueue::GetPriority_Callback() const
+{
+    return m_Impl->GetPriority();
+}
+
+epiBool gfxQueue::IsQueueTypeSupported(gfxQueueType mask) const
+{
+    return m_Impl->IsQueueTypeSupported(mask);
+}
+
 EPI_NAMESPACE_END()

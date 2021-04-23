@@ -388,6 +388,7 @@ using epiRect2d = epiRect2<epiDouble>;
 using epiRect2s = epiRect2<epiS32>;
 using epiRect2u = epiRect2<epiU32>;
 
+// TOOD: make pimpl copyable if isOwner == false
 template<typename TImpl>
 class epiPimpl
 {
