@@ -25,7 +25,7 @@ class gfxDeviceImpl;
 
 } // namespace internalgfx
 
-class gfxDevice : public Object
+class gfxDevice : public Object, public epiPimpl<internalgfx::gfxDeviceImpl>
 {
 EPI_GENREGION_BEGIN(gfxDevice)
 
@@ -36,19 +36,18 @@ public:
 
     enum gfxDevice_PIDs
     {
-        PID_COUNT = 0
+        PID_QueueFamilies = 0x459d6c2c,
+        PID_COUNT = 1
     };
+
+protected:
+    epiArray<gfxQueueFamily> m_QueueFamilies{};
 
 EPI_GENREGION_END(gfxDevice)
 
 public:
     gfxDevice() = default;
     explicit gfxDevice(internalgfx::gfxDeviceImpl* impl);
-    gfxDevice(const gfxDevice& rhs) = delete;
-    gfxDevice& operator=(const gfxDevice& rhs) = delete;
-    gfxDevice(gfxDevice&& rhs);
-    gfxDevice& operator=(gfxDevice&& rhs);
-    ~gfxDevice();
 
     epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const;
@@ -62,9 +61,6 @@ public:
     std::optional<gfxTexture> CreateTexture(const gfxTextureCreateInfo& info) const;
     std::optional<gfxTextureView> CreateTextureView(const gfxTextureViewCreateInfo& info) const;
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
-
-protected:
-    internalgfx::gfxDeviceImpl* m_Impl{nullptr};
 };
 
 EPI_NAMESPACE_END()

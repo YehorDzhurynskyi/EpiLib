@@ -18,7 +18,7 @@ class gfxQueueFamilyImpl;
 
 } // internalgfx
 
-class gfxQueueFamilyDescriptor : public Object
+class gfxQueueFamilyDescriptor : public Object, epiPimpl<internalgfx::gfxQueueFamilyDescriptorImpl>
 {
 EPI_GENREGION_BEGIN(gfxQueueFamilyDescriptor)
 
@@ -46,20 +46,12 @@ public:
 public:
     gfxQueueFamilyDescriptor() = default;
     gfxQueueFamilyDescriptor(internalgfx::gfxQueueFamilyDescriptorImpl* impl);
-    gfxQueueFamilyDescriptor(const gfxQueueFamilyDescriptor& rhs) = delete;
-    gfxQueueFamilyDescriptor& operator=(const gfxQueueFamilyDescriptor& rhs) = delete;
-    gfxQueueFamilyDescriptor(gfxQueueFamilyDescriptor&& rhs);
-    gfxQueueFamilyDescriptor& operator=(gfxQueueFamilyDescriptor&& rhs);
-    ~gfxQueueFamilyDescriptor();
 
 public:
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
-
-protected:
-    internalgfx::gfxQueueFamilyDescriptorImpl* m_Impl{nullptr};
 };
 
-class gfxQueueFamily : public Object
+class gfxQueueFamily : public Object, public epiPimpl<internalgfx::gfxQueueFamilyImpl>
 {
 EPI_GENREGION_BEGIN(gfxQueueFamily)
 
@@ -81,15 +73,7 @@ EPI_GENREGION_END(gfxQueueFamily)
 
 public:
     gfxQueueFamily() = default;
-    gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl);
-    gfxQueueFamily(const gfxQueueFamily& rhs) = delete;
-    gfxQueueFamily& operator=(const gfxQueueFamily& rhs) = delete;
-    gfxQueueFamily(gfxQueueFamily&& rhs);
-    gfxQueueFamily& operator=(gfxQueueFamily&& rhs);
-    ~gfxQueueFamily();
-
-protected:
-    internalgfx::gfxQueueFamilyImpl* m_Impl{nullptr};
+    gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl, epiBool isOwner);
 };
 
 EPI_NAMESPACE_END()

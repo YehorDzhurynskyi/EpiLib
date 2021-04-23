@@ -8,33 +8,8 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 gfxQueueFamilyDescriptor::gfxQueueFamilyDescriptor(internalgfx::gfxQueueFamilyDescriptorImpl* impl)
-    : m_Impl{impl}
+    : epiPimpl<internalgfx::gfxQueueFamilyDescriptorImpl>{impl}
 {
-}
-
-gfxQueueFamilyDescriptor::gfxQueueFamilyDescriptor(gfxQueueFamilyDescriptor&& rhs)
-{
-    if (this != &rhs)
-    {
-        m_Impl = rhs.m_Impl;
-        rhs.m_Impl = nullptr;
-    }
-}
-
-gfxQueueFamilyDescriptor& gfxQueueFamilyDescriptor::operator=(gfxQueueFamilyDescriptor&& rhs)
-{
-    if (this != &rhs)
-    {
-        m_Impl = rhs.m_Impl;
-        rhs.m_Impl = nullptr;
-    }
-
-    return *this;
-}
-
-gfxQueueFamilyDescriptor::~gfxQueueFamilyDescriptor()
-{
-    delete m_Impl;
 }
 
 epiBool gfxQueueFamilyDescriptor::IsQueueTypeSupported(gfxQueueType mask) const
@@ -52,34 +27,21 @@ epiSize_t gfxQueueFamilyDescriptor::GetQueueCount_Callback() const
     return m_Impl->GetQueueCount();
 }
 
-gfxQueueFamily::gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl)
-    : m_Impl{impl}
+gfxQueueFamily::gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl, epiBool isOwner)
+    : epiPimpl<internalgfx::gfxQueueFamilyImpl>{impl, isOwner}
 {
-}
+    epiArray<gfxQueue>& queues = GetQueues();
+    queues.Reserve(impl->GetQueues().Size());
 
-gfxQueueFamily::gfxQueueFamily(gfxQueueFamily&& rhs)
-{
-    if (this != &rhs)
+    // NOTE: filling gfxQueue with their implementations (gfxQueueFamilyImpl still owns these implementations)
+    std::transform(impl->GetQueues().begin(),
+                   impl->GetQueues().end(),
+                   std::back_inserter(queues),
+                   [](std::unique_ptr<internalgfx::gfxQueueImpl>& queueImpl)
     {
-        m_Impl = rhs.m_Impl;
-        rhs.m_Impl = nullptr;
-    }
-}
-
-gfxQueueFamily& gfxQueueFamily::operator=(gfxQueueFamily&& rhs)
-{
-    if (this != &rhs)
-    {
-        m_Impl = rhs.m_Impl;
-        rhs.m_Impl = nullptr;
-    }
-
-    return *this;
-}
-
-gfxQueueFamily::~gfxQueueFamily()
-{
-    delete m_Impl;
+        constexpr epiBool kIsOwner = false;
+        return gfxQueue(queueImpl.get(), kIsOwner);
+    });
 }
 
 EPI_NAMESPACE_END()

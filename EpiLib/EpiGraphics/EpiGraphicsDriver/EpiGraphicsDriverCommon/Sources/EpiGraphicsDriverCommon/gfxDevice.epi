@@ -1,3 +1,7 @@
 class gfxDevice
 {
+    [ReadOnly]
+    {
+        epiArray<gfxQueueFamily> QueueFamilies;
+    }
 };

@@ -7,30 +7,9 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxQueue::gfxQueue(internalgfx::gfxQueueImpl* impl)
-    : m_Impl{impl}
+gfxQueue::gfxQueue(internalgfx::gfxQueueImpl* impl, epiBool isOwner)
+    : epiPimpl<internalgfx::gfxQueueImpl>{impl, isOwner}
 {
-}
-
-gfxQueue::gfxQueue(gfxQueue&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-}
-
-gfxQueue& gfxQueue::operator=(gfxQueue&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxQueue::~gfxQueue()
-{
-    delete m_Impl;
 }
 
 gfxQueueType gfxQueue::GetType_Callback() const

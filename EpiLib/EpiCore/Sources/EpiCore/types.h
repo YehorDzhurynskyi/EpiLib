@@ -396,7 +396,7 @@ public:
     epiPimpl(const epiPimpl& rhs) = delete;
     epiPimpl& operator=(const epiPimpl& rhs) = delete;
 
-    epiPimpl(TImpl* impl, epiBool isOwner)
+    explicit epiPimpl(TImpl* impl, epiBool isOwner = true)
         : m_Impl{impl}
         , m_IsOwner{isOwner}
     {

@@ -9,27 +9,20 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 gfxDevice::gfxDevice(internalgfx::gfxDeviceImpl* impl)
-    : m_Impl{impl}
+    : epiPimpl<internalgfx::gfxDeviceImpl>{impl}
 {
-}
+    epiArray<gfxQueueFamily>& queueFamilies = GetQueueFamilies();
+    queueFamilies.Reserve(impl->GetQueueFamilies().Size());
 
-gfxDevice::gfxDevice(gfxDevice&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-    rhs.m_Impl = nullptr;
-}
-
-gfxDevice& gfxDevice::operator=(gfxDevice&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxDevice::~gfxDevice()
-{
-    delete m_Impl;
+    // NOTE: filling gfxQueueFamily with their implementations (gfxDeviceImpl still owns these implementations)
+    std::transform(impl->GetQueueFamilies().begin(),
+                   impl->GetQueueFamilies().end(),
+                   std::back_inserter(queueFamilies),
+                   [](std::unique_ptr<internalgfx::gfxQueueFamilyImpl>& queueFamilyImpl)
+    {
+        constexpr epiBool kIsOwner = false;
+        return gfxQueueFamily(queueFamilyImpl.get(), kIsOwner);
+    });
 }
 
 epiBool gfxDevice::IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const

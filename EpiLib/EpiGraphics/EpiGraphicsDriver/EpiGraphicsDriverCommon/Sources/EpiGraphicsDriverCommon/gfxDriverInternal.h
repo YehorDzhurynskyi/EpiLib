@@ -148,6 +148,11 @@ public:
     virtual std::unique_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::unique_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const = 0;
     virtual std::unique_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
+
+    const epiArray<std::unique_ptr<gfxQueueFamilyImpl>>& GetQueueFamilies() const { return m_QueueFamilies; }
+
+protected:
+    epiArray<std::unique_ptr<gfxQueueFamilyImpl>> m_QueueFamilies;
 };
 
 class gfxPhysicalDeviceImpl
