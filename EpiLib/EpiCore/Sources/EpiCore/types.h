@@ -387,3 +387,58 @@ using epiRect2f = epiRect2<epiFloat>;
 using epiRect2d = epiRect2<epiDouble>;
 using epiRect2s = epiRect2<epiS32>;
 using epiRect2u = epiRect2<epiU32>;
+
+template<typename TImpl>
+class epiPimpl
+{
+public:
+    epiPimpl() = default;
+    epiPimpl(const epiPimpl& rhs) = delete;
+    epiPimpl& operator=(const epiPimpl& rhs) = delete;
+
+    epiPimpl(TImpl* impl, epiBool isOwner)
+        : m_Impl{impl}
+        , m_IsOwner{isOwner}
+    {
+    }
+
+    epiPimpl(epiPimpl&& rhs)
+    {
+        if (this != &rhs)
+        {
+            m_Impl = rhs.m_Impl;
+            m_IsOwner = rhs.m_IsOwner;
+
+            rhs.m_Impl = nullptr;
+            rhs.m_IsOwner = false;
+        }
+    }
+
+    epiPimpl& operator=(epiPimpl&& rhs)
+    {
+        if (this != &rhs)
+        {
+            m_Impl = rhs.m_Impl;
+            m_IsOwner = rhs.m_IsOwner;
+
+            rhs.m_Impl = nullptr;
+            rhs.m_IsOwner = false;
+        }
+
+        return *this;
+    }
+
+    virtual ~epiPimpl()
+    {
+        if (m_IsOwner)
+        {
+            delete m_Impl;
+        }
+    }
+
+protected:
+    TImpl* m_Impl{nullptr};
+
+private:
+    epiBool m_IsOwner{false};
+};

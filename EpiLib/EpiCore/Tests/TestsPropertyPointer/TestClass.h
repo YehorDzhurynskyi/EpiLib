@@ -2109,7 +2109,15 @@ public:
     virtual void Foo() = 0;
 };
 
-class TestClassCC : public TestClassC, IBuzz
+class TestClassCCImpl
+{
+public:
+    epiS32 A;
+    epiString B;
+    epiArray<epiFloat> C;
+};
+
+class TestClassCC : public TestClassC, public IBuzz, public epiPimpl<TestClassCCImpl>
 {
 EPI_GENREGION_BEGIN(TestClassCC)
 
