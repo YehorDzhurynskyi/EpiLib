@@ -80,7 +80,8 @@ public:
     using const_iterator = std::vector<gfxQueueDescriptor>::const_iterator;
 
 public:
-    void Add(gfxQueueDescriptor&& desc);
+    void Push(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiPtrArray<gfxSurface>& surfaceTargets = {});
+    void Push(gfxQueueDescriptor&& desc);
 
     gfxQueueDescriptor& At(epiU32 index);
     const gfxQueueDescriptor& At(epiU32 index) const;

@@ -21,7 +21,7 @@ class gfxDriverImpl;
 
 } // namespace internalgfx
 
-class gfxDriver : public Object
+class gfxDriver : public Object, public epiPimpl<internalgfx::gfxDriverImpl>
 {
 EPI_GENREGION_BEGIN(gfxDriver)
 
@@ -33,36 +33,29 @@ public:
     enum gfxDriver_PIDs
     {
         PID_Backend = 0x4058f0ed,
-        PID_COUNT = 1
+        PID_PhysicalDevices = 0x16b8cc07,
+        PID_COUNT = 2
     };
 
 protected:
-    void SetBackend_Callback(gfxDriverBackend value);
-
-protected:
-    gfxDriverBackend m_Backend{};
+    gfxDriverBackend m_Backend{gfxDriverBackend::None};
+    epiArray<gfxPhysicalDevice> m_PhysicalDevices{};
 
 EPI_GENREGION_END(gfxDriver)
 
 public:
     static gfxDriver& GetInstance();
 
+    static void SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriverExtension>& extensionsRequired);
+
 public:
-    gfxDriver(const gfxDriver& rhs) = delete;
-    gfxDriver& operator=(const gfxDriver& rhs) = delete;
-    gfxDriver(gfxDriver&& rhs) = delete;
-    gfxDriver& operator=(gfxDriver&& rhs) = delete;
-    ~gfxDriver();
-
     std::optional<gfxSurface> CreateSurface(const gfxWindow& window);
-
-    std::optional<gfxPhysicalDevice> FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const;
 
 protected:
     gfxDriver() = default;
+    gfxDriver(internalgfx::gfxDriverImpl* impl, gfxDriverBackend backend);
 
-protected:
-    internalgfx::gfxDriverImpl* m_Impl{nullptr};
+    void Reset();
 };
 
 EPI_NAMESPACE_END()

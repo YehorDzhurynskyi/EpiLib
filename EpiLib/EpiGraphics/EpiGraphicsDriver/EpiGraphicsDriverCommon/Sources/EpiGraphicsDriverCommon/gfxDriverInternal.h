@@ -203,13 +203,22 @@ public:
 class gfxDriverImpl
 {
 public:
+    gfxDriverImpl() = default;
+    gfxDriverImpl(const gfxDriverImpl& rhs) = delete;
+    gfxDriverImpl& operator=(const gfxDriverImpl& rhs) = delete;
+    gfxDriverImpl(gfxDriverImpl&& rhs) = default;
+    gfxDriverImpl& operator=(gfxDriverImpl&& rhs) = default;
     virtual ~gfxDriverImpl() = default;
 
     virtual std::unique_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) = 0;
-    virtual std::unique_ptr<gfxPhysicalDeviceImpl> FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const = 0;
 
     virtual epiBool IsExtensionSupported(gfxDriverExtension extension) const = 0;
     virtual epiBool IsExtensionEnabled(gfxDriverExtension extension) const = 0;
+
+    const epiArray<std::unique_ptr<gfxPhysicalDeviceImpl>>& GetPhysicalDevices() const { return m_PhysicalDevices; }
+
+protected:
+    epiArray<std::unique_ptr<gfxPhysicalDeviceImpl>> m_PhysicalDevices;
 };
 
 class gfxVertexArrayImpl

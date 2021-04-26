@@ -37,20 +37,33 @@ epiU32 gfxQueueDescriptor::GetQueueCount_Callback() const
     return GetPriorities().Size();
 }
 
-void gfxQueueDescriptorList::Add(gfxQueueDescriptor&& desc)
+epiSize_t gfxQueueDescriptorList::GetSize_Callback() const
 {
+    return m_QueueDescriptors.size();
+}
+
+void gfxQueueDescriptorList::Push(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiPtrArray<gfxSurface>& surfaceTargets)
+{
+    gfxQueueDescriptor desc(typeMask, priorities, surfaceTargets);
+
+    Push(std::move(desc));
+}
+
+void gfxQueueDescriptorList::Push(gfxQueueDescriptor&& desc)
+{
+    if (desc.GetTypeMask() == gfxQueueType{0})
+    {
+        epiLogError("Type mask shouldn't be equal to gfxQueueType{0}!");
+        return;
+    }
+
     if (desc.GetQueueCount() == 0)
     {
-        epiLogError("Number of requested queue should be >= 1!");
+        epiLogError("Number of requested queue should be at least 1!");
         return;
     }
 
     m_QueueDescriptors.push_back(std::move(desc));
-}
-
-epiSize_t gfxQueueDescriptorList::GetSize_Callback() const
-{
-    return m_QueueDescriptors.size();
 }
 
 gfxQueueDescriptor& gfxQueueDescriptorList::At(epiU32 index)

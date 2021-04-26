@@ -388,58 +388,28 @@ using epiRect2d = epiRect2<epiDouble>;
 using epiRect2s = epiRect2<epiS32>;
 using epiRect2u = epiRect2<epiU32>;
 
-// TOOD: make pimpl copyable if isOwner == false
 template<typename TImpl>
-class epiPimpl
+class epiPimpl final
 {
 public:
-    epiPimpl() = default;
-    epiPimpl(const epiPimpl& rhs) = delete;
-    epiPimpl& operator=(const epiPimpl& rhs) = delete;
-
-    explicit epiPimpl(TImpl* impl, epiBool isOwner = true)
+    explicit epiPimpl(const std::shared_ptr<TImpl>& impl)
         : m_Impl{impl}
-        , m_IsOwner{isOwner}
     {
     }
 
-    epiPimpl(epiPimpl&& rhs)
+    explicit epiPimpl(std::shared_ptr<TImpl>&& impl)
+        : m_Impl{std::move(impl)}
     {
-        if (this != &rhs)
-        {
-            m_Impl = rhs.m_Impl;
-            m_IsOwner = rhs.m_IsOwner;
-
-            rhs.m_Impl = nullptr;
-            rhs.m_IsOwner = false;
-        }
     }
 
-    epiPimpl& operator=(epiPimpl&& rhs)
-    {
-        if (this != &rhs)
-        {
-            m_Impl = rhs.m_Impl;
-            m_IsOwner = rhs.m_IsOwner;
+    epiBool operator epiBool() { return static_cast<epiBool>(m_Impl); }
 
-            rhs.m_Impl = nullptr;
-            rhs.m_IsOwner = false;
-        }
+    TImpl* operator->() { return Impl(); }
+    const TImpl* operator->() const { return Impl(); }
 
-        return *this;
-    }
-
-    virtual ~epiPimpl()
-    {
-        if (m_IsOwner)
-        {
-            delete m_Impl;
-        }
-    }
-
-protected:
-    TImpl* m_Impl{nullptr};
+    const TImpl* Impl() const { return m_Impl.get(); }
+    TImpl* Impl() { return m_Impl.get(); }
 
 private:
-    epiBool m_IsOwner{false};
+    std::shared_ptr<TImpl> m_Impl{nullptr};
 };

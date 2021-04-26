@@ -9,27 +9,8 @@ EPI_GENREGION_END(include)
 EPI_NAMESPACE_BEGIN()
 
 gfxPhysicalDevice::gfxPhysicalDevice(internalgfx::gfxPhysicalDeviceImpl* impl)
-    : m_Impl{impl}
+    : epiPimplView<internalgfx::gfxPhysicalDeviceImpl>{impl}
 {
-}
-
-gfxPhysicalDevice::gfxPhysicalDevice(gfxPhysicalDevice&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-    rhs.m_Impl = nullptr;
-}
-
-gfxPhysicalDevice& gfxPhysicalDevice::operator=(gfxPhysicalDevice&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxPhysicalDevice::~gfxPhysicalDevice()
-{
-    delete m_Impl;
 }
 
 std::optional<gfxDevice> gfxPhysicalDevice::CreateDevice(gfxQueueDescriptorList& queueDescriptorList,

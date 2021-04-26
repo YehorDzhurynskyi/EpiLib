@@ -10,6 +10,9 @@
 
 EPI_NAMESPACE_USING()
 
+gfxPhysicalDevice g_PhysicalDevice;
+gfxDevice g_Device;
+
 class EpiwxVulkanDemoFrame : public wxFrame
 {
 public:
@@ -40,6 +43,93 @@ int main(int argc, char* argv[])
 {
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
+
+    epiArray<gfxDriverExtension> driverExtensionsRequired;
+    driverExtensionsRequired.push_back(gfxDriverExtension::Surface);
+
+#ifdef EPI_PLATFORM_WINDOWS
+    driverExtensionsRequired.push_back(gfxDriverExtension::SurfaceWin32);
+#endif // EPI_PLATFORM_WINDOWS
+
+    gfxDriver::SwitchBackend(gfxDriverBackend::Vulkan, driverExtensionsRequired);
+
+    epiArray<gfxPhysicalDeviceExtension> deviceExtensionsRequired;
+    deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::SwapChain);
+    deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageLessFrameBuffer);
+    deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageFormatList);
+
+    epiArray<gfxPhysicalDeviceFeature> deviceFeaturesRequired;
+    deviceFeaturesRequired.push_back(gfxPhysicalDeviceFeature::ImagelessFramebuffer);
+
+    const gfxWindow window(GetActiveWindow());
+    std::optional<gfxSurface> surface = gfxDriver::GetInstance().CreateSurface(window);
+
+    const epiArray<gfxPhysicalDevice>& physicalDevices = gfxDriver::GetInstance().GetPhysicalDevices();
+    auto physicalDevice = std::find_if(physicalDevices.begin(),
+                                       physicalDevices.end(),
+                                       [&surface,
+                                        &deviceExtensionsRequired,
+                                        &deviceFeaturesRequired](const gfxPhysicalDevice& physicalDevice)
+    {
+        if (physicalDevice.GetType() != gfxPhysicalDeviceType::DiscreteGPU ||
+            !std::all_of(deviceExtensionsRequired.begin(), deviceExtensionsRequired.end(), [&physicalDevice](gfxPhysicalDeviceExtension extension)
+        {
+            return physicalDevice.IsExtensionSupported(extension);
+        }) ||
+            !std::all_of(deviceFeaturesRequired.begin(), deviceFeaturesRequired.end(), [&physicalDevice](gfxPhysicalDeviceFeature feature)
+        {
+            return physicalDevice.IsFeatureSupported(feature);
+        }) ||
+            !physicalDevice.IsQueueTypeSupported(gfxQueueType_Graphics))
+        {
+            return false;
+        }
+
+        const epiArray<gfxSurfaceFormat> supportedFormats = surface->GetSupportedFormatsFor(physicalDevice);
+        const epiBool formatIsAppropriate = std::any_of(supportedFormats.begin(), supportedFormats.end(), [](const gfxSurfaceFormat& format)
+        {
+            return format.GetFormat() == gfxFormat::B8G8R8A8_SRGB && format.GetColorSpace() == gfxSurfaceColorSpace::SRGB_NONLINEAR;
+        });
+
+        if (!formatIsAppropriate)
+        {
+            return false;
+        }
+
+        const epiArray<gfxSurfacePresentMode> supportedPresentModes = surface->GetSupportedPresentModesFor(physicalDevice);
+        const epiBool presentModeIsAppropriate = std::any_of(supportedPresentModes.begin(), supportedPresentModes.end(), [](const gfxSurfacePresentMode& presentMode)
+        {
+            return presentMode == gfxSurfacePresentMode::MAILBOX;
+        });
+
+        if (!presentModeIsAppropriate)
+        {
+            return false;
+        }
+
+        return surface->IsPresentSupportedFor(physicalDevice);
+    });
+
+    if (physicalDevice == physicalDevices.end())
+    {
+        epiLogError("Falied to select a proper PhysicalDevice!");
+        return -1;
+    }
+
+    gfxQueueDescriptorList queueDescriptorList;
+    queueDescriptorList.Push(gfxQueueType_Graphics, {1.0f}, {&*surface});
+
+    std::optional<gfxDevice> device = physicalDevice->CreateDevice(queueDescriptorList,
+                                                                   deviceExtensionsRequired,
+                                                                   deviceFeaturesRequired);
+    if (!device.has_value())
+    {
+        epiLogError("Falied to create Device!");
+        return -1;
+    }
+
+    g_PhysicalDevice = *physicalDevice;
+    g_Device = std::move(*device);
 
     wxEntryStart(argc, argv);
     wxTheApp->CallOnInit();
@@ -79,74 +169,6 @@ int EpiwxVulkanDemo::OnExit()
 EpiwxVulkanDemoFrame::EpiwxVulkanDemoFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : wxFrame(parent, id, title, pos, size, style)
 {
-    gfxDriver::GetInstance().SetBackend(gfxDriverBackend::Vulkan);
-
-    epiArray<gfxPhysicalDeviceExtension> deviceExtensionsRequired;
-    deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::SwapChain);
-    deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageLessFrameBuffer);
-    deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageFormatList);
-
-    epiArray<gfxPhysicalDeviceFeature> deviceFeaturesRequired;
-    deviceFeaturesRequired.push_back(gfxPhysicalDeviceFeature::ImagelessFramebuffer);
-
-    const gfxWindow window(GetHandle());
-    std::optional<gfxSurface> surface = gfxDriver::GetInstance().CreateSurface(window);
-
-    std::optional<gfxPhysicalDevice> physicalDevice = gfxDriver::GetInstance().FindAppropriatePhysicalDevice([&surface,
-                                                                                                              &deviceExtensionsRequired,
-                                                                                                              &deviceFeaturesRequired](const gfxPhysicalDevice& device)
-    {
-        if (device.GetType() != gfxPhysicalDeviceType::DiscreteGPU ||
-            !std::all_of(deviceExtensionsRequired.begin(), deviceExtensionsRequired.end(), [&device](gfxPhysicalDeviceExtension extension)
-        {
-            return device.IsExtensionSupported(extension);
-        }) ||
-            !std::all_of(deviceFeaturesRequired.begin(), deviceFeaturesRequired.end(), [&device](gfxPhysicalDeviceFeature feature)
-        {
-            return device.IsFeatureSupported(feature);
-        }) ||
-            !device.IsQueueTypeSupported(gfxQueueType_Graphics))
-        {
-            return false;
-        }
-
-        const epiArray<gfxSurfaceFormat> supportedFormats = surface->GetSupportedFormatsFor(device);
-        const epiBool formatIsAppropriate = std::any_of(supportedFormats.begin(), supportedFormats.end(), [](const gfxSurfaceFormat& format)
-        {
-            return format.GetFormat() == gfxFormat::B8G8R8A8_SRGB && format.GetColorSpace() == gfxSurfaceColorSpace::SRGB_NONLINEAR;
-        });
-
-        if (!formatIsAppropriate)
-        {
-            return false;
-        }
-
-        const epiArray<gfxSurfacePresentMode> supportedPresentModes = surface->GetSupportedPresentModesFor(device);
-        const epiBool presentModeIsAppropriate = std::any_of(supportedPresentModes.begin(), supportedPresentModes.end(), [](const gfxSurfacePresentMode& presentMode)
-        {
-            return presentMode == gfxSurfacePresentMode::MAILBOX;
-        });
-
-        if (!presentModeIsAppropriate)
-        {
-            return false;
-        }
-
-        return surface->IsPresentSupportedFor(device);
-    });
-
-    epiAssert(physicalDevice.has_value());
-
-    std::optional<gfxDevice> device = info.PhysicalDevice.CreateDevice(queueDescriptorList,
-                                                                       info.DeviceExtensionsRequired,
-                                                                       info.DeviceFeaturesRequired);
-    if (!device.has_value())
-    {
-        epiLogError("Falied to create Device!");
-        return false;
-    }
-
-
     gfxAttachment attachment;
     attachment.SetFormat(gfxFormat::B8G8R8A8_SRGB);
     attachment.SetSampleCount(gfxSampleCount::Sample1);

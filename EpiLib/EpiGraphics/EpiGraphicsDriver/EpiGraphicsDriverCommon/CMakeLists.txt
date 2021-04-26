@@ -29,15 +29,9 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxSwapChain.epi
     Sources/EpiGraphicsDriverCommon/gfxSwapChain.h
     Sources/EpiGraphicsDriverCommon/gfxSwapChain.cpp
-    Sources/EpiGraphicsDriverCommon/gfxAttachment.epi
-    Sources/EpiGraphicsDriverCommon/gfxAttachment.h
-    Sources/EpiGraphicsDriverCommon/gfxAttachment.cpp
     Sources/EpiGraphicsDriverCommon/gfxRenderPass.epi
     Sources/EpiGraphicsDriverCommon/gfxRenderPass.h
     Sources/EpiGraphicsDriverCommon/gfxRenderPass.cpp
-    Sources/EpiGraphicsDriverCommon/gfxRenderSubPass.epi
-    Sources/EpiGraphicsDriverCommon/gfxRenderSubPass.h
-    Sources/EpiGraphicsDriverCommon/gfxRenderSubPass.cpp
     Sources/EpiGraphicsDriverCommon/gfxPipeline.epi
     Sources/EpiGraphicsDriverCommon/gfxPipeline.h
     Sources/EpiGraphicsDriverCommon/gfxPipeline.cpp

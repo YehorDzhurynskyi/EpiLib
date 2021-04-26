@@ -16,40 +16,53 @@ gfxDriver& gfxDriver::GetInstance()
     return instance;
 }
 
-void gfxDriver::SetBackend_Callback(gfxDriverBackend backend)
+gfxDriver::gfxDriver(internalgfx::gfxDriverImpl* impl, gfxDriverBackend backend)
+    : epiPimpl<internalgfx::gfxDriverImpl>{impl}
+    , m_Backend{backend}
+{
+    epiArray<gfxPhysicalDevice>& physicalDevices = GetPhysicalDevices();
+    physicalDevices.Reserve(impl->GetPhysicalDevices().Size());
+
+    // NOTE: filling gfxQueueFamily with their implementations (gfxDeviceImpl still owns these implementations)
+    std::transform(impl->GetPhysicalDevices().begin(),
+                   impl->GetPhysicalDevices().end(),
+                   std::back_inserter(physicalDevices),
+                   [](std::unique_ptr<internalgfx::gfxPhysicalDeviceImpl>& physicalDeviceImpl)
+    {
+        return gfxPhysicalDevice(physicalDeviceImpl.get());
+    });
+
+}
+
+void gfxDriver::Reset()
+{
+    m_PhysicalDevices.Clear();
+    m_Backend = gfxDriverBackend::None;
+    delete m_Impl;
+}
+
+void gfxDriver::SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriverExtension>& extensionsRequired)
 {
     // TODO: should be called only from the main thread, add check
 
-    delete m_Impl;
+    gfxDriver& driver = gfxDriver::GetInstance();
 
     switch (backend)
     {
     case gfxDriverBackend::None: epiLogFatal("Can't use `gfxDriverBackend::None` as a gfx driver backend!"); break;
     case gfxDriverBackend::Vulkan:
     {
-        // TODO: move required extensions as a parameter
-        epiArray<gfxDriverExtension> extensionsRequired;
-        extensionsRequired.push_back(gfxDriverExtension::Surface);
-
-#ifdef EPI_PLATFORM_WINDOWS
-        extensionsRequired.push_back(gfxDriverExtension::SurfaceWin32);
-#endif // EPI_PLATFORM_WINDOWS
+        driver.Reset();
 
         // TODO: configure api version / app name properly
-        internalgfx::gfxDriverImplVK* impl = new internalgfx::gfxDriverImplVK();
+        std::unique_ptr<internalgfx::gfxDriverImplVK> impl = std::make_unique<internalgfx::gfxDriverImplVK>();
         if (impl->Init(1u, 2u, 162u, "EpiLab", extensionsRequired))
         {
-            m_Impl = impl;
-            m_Backend = backend;
+            driver = gfxDriver(impl.release(), backend);
         }
     } break;
     default: epiLogFatal("Graphics Backend=`{}` isn't implemeted!", backend); break; // TODO: str repr
     }
-}
-
-gfxDriver::~gfxDriver()
-{
-    delete m_Impl;
 }
 
 std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
@@ -68,24 +81,6 @@ std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
     }
 
     return surface;
-}
-
-std::optional<gfxPhysicalDevice> gfxDriver::FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const
-{
-    std::optional<gfxPhysicalDevice> device;
-
-    if (m_Impl == nullptr)
-    {
-        epiLogError("Failed to create Surface! Driver has no assigned backend!");
-        return device;
-    }
-
-    if (std::unique_ptr<internalgfx::gfxPhysicalDeviceImpl> impl = m_Impl->FindAppropriatePhysicalDevice(isAppropiateCallback))
-    {
-        device = gfxPhysicalDevice(impl.release());
-    }
-
-    return device;
 }
 
 EPI_NAMESPACE_END()

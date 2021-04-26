@@ -178,6 +178,21 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
         return false;
     }
 #endif // EPI_BUILD_DEBUG
+
+    epiU32 deviceCount = 0;
+    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
+    epiAssert(deviceCount != 0);
+
+    std::vector<VkPhysicalDevice> vkDevices(deviceCount);
+    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, vkDevices.data());
+
+    for (const VkPhysicalDevice& vkDevice : vkDevices)
+    {
+        std::unique_ptr<gfxPhysicalDeviceImplVK> physicalDevice = std::make_unique<gfxPhysicalDeviceImplVK>();
+        physicalDevice->Init(vkDevice);
+
+        m_PhysicalDevices.push_back(std::move(physicalDevice));
+    }
 }
 
 gfxDriverImplVK::~gfxDriverImplVK()
@@ -201,37 +216,6 @@ gfxDriverImplVK::~gfxDriverImplVK()
 std::unique_ptr<gfxSurfaceImpl> gfxDriverImplVK::CreateSurface(const gfxWindow& window)
 {
     return std::make_unique<gfxSurfaceImplVK>(m_VkInstance, window);
-}
-
-std::unique_ptr<gfxPhysicalDeviceImpl> gfxDriverImplVK::FindAppropriatePhysicalDevice(std::function<epiBool(const gfxPhysicalDevice&)> isAppropiateCallback) const
-{
-    epiU32 deviceCount = 0;
-    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
-    epiAssert(deviceCount != 0);
-
-    std::vector<VkPhysicalDevice> vkDevices(deviceCount);
-    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, vkDevices.data());
-
-    auto it = std::find_if(vkDevices.begin(),
-                           vkDevices.end(),
-                           [&isAppropiateCallback](const VkPhysicalDevice& vkDevice) {
-        gfxPhysicalDeviceImplVK* deviceImpl = new gfxPhysicalDeviceImplVK();
-        deviceImpl->Init(vkDevice);
-
-        gfxPhysicalDevice device(deviceImpl);
-
-        return isAppropiateCallback(device);
-    });
-
-    if (it == vkDevices.end())
-    {
-        return nullptr;
-    }
-
-    std::unique_ptr<gfxPhysicalDeviceImplVK> device = std::make_unique<gfxPhysicalDeviceImplVK>();
-    device->Init(*it);
-
-    return device;
 }
 
 epiBool gfxDriverImplVK::IsExtensionSupported(gfxDriverExtension extension) const

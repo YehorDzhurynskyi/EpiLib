@@ -1,3 +1,88 @@
+class gfxAttachmentSchema
+{
+    gfxFormat Format = gfxFormat::UNDEFINED;
+    gfxSampleCount SampleCount = gfxSampleCount::Sample1;
+};
+
+class gfxAttachmentRefSchema
+{
+    gfxAttachmentSchema Attachment;
+    epiU32 AttachmentIndex;
+};
+
+class gfxRenderSubPassSchema
+{
+    [ReadOnly]
+    {
+        epiArray<gfxAttachmentRefSchema> Attachments;
+    }
+
+    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
+    {
+        epiArray<gfxAttachmentRefSchema> InputAttachments;
+        epiArray<gfxAttachmentRefSchema> ColorAttachments;
+        epiArray<gfxAttachmentRefSchema> DepthStencilAttachments;
+        epiArray<gfxAttachmentRefSchema> ResolveAttachments;
+    }
+};
+
+class gfxRenderPassSchema
+{
+    epiArray<gfxRenderSubPassSchema> SubPasses;
+    epiArray<gfxAttachmentSchema> Attachments;
+};
+
+class gfxAttachment
+{
+    gfxFormat Format = gfxFormat::UNDEFINED;
+    gfxSampleCount SampleCount = gfxSampleCount::Sample1;
+    gfxAttachmentLoadOp LoadOp = gfxAttachmentLoadOp::DontCare;
+    gfxAttachmentStoreOp StoreOp = gfxAttachmentStoreOp::DontCare;
+    gfxAttachmentLoadOp StencilLoadOp = gfxAttachmentLoadOp::DontCare;
+    gfxAttachmentStoreOp StencilStoreOp = gfxAttachmentStoreOp::DontCare;
+    gfxImageLayout InitialLayout = gfxImageLayout::Undefined;
+    gfxImageLayout FinalLayout = gfxImageLayout::Undefined;
+};
+
+class gfxAttachmentRef
+{
+    gfxAttachment Attachment;
+    epiU32 AttachmentIndex;
+    gfxImageLayout Layuot;
+};
+
+class gfxRenderSubPassDependency
+{
+    epiU32 SrcSubPass;
+    epiU32 DstSubPass;
+    epiBool IsSrcSubPassExternal;
+    epiBool IsDstSubPassExternal;
+
+    gfxPipelineStage SrcStageMask;
+    gfxPipelineStage DstStageMask;
+    gfxAccess SrcAccessMask;
+    gfxAccess DstAccessMask;
+    gfxDependency DependencyFlags;
+};
+
+class gfxRenderSubPass
+{
+    gfxPipelineBindPoint BindPoint;
+
+    [ReadOnly]
+    {
+        epiArray<gfxAttachmentRef> Attachments;
+    }
+
+    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
+    {
+        epiArray<gfxAttachmentRef> InputAttachments;
+        epiArray<gfxAttachmentRef> ColorAttachments;
+        epiArray<gfxAttachmentRef> DepthStencilAttachments;
+        epiArray<gfxAttachmentRef> ResolveAttachments;
+    }
+};
+
 class gfxRenderPassCreateInfo
 {
     [ReadOnly]
@@ -14,4 +99,10 @@ class gfxRenderPassCreateInfo
 
 class gfxRenderPass
 {
+    [ReadOnly]
+    {
+        epiArray<gfxRenderSubPass> SubPasses;
+        epiArray<gfxRenderSubPassDependency> SubPassDependencies;
+        epiArray<gfxAttachment> Attachments;
+    }
 };

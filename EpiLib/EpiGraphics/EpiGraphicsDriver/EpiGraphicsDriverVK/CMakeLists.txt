@@ -29,12 +29,8 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxSwapChainImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxPipelineImplVK.h
     Sources/EpiGraphicsDriverVK/gfxPipelineImplVK.cpp
-    Sources/EpiGraphicsDriverVK/gfxAttachmentImplVK.h
-    Sources/EpiGraphicsDriverVK/gfxAttachmentImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxRenderPassImplVK.h
     Sources/EpiGraphicsDriverVK/gfxRenderPassImplVK.cpp
-    Sources/EpiGraphicsDriverVK/gfxRenderSubPassVK.h
-    Sources/EpiGraphicsDriverVK/gfxRenderSubPassVK.cpp
     Sources/EpiGraphicsDriverVK/gfxFrameBufferImplVK.h
     Sources/EpiGraphicsDriverVK/gfxFrameBufferImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxCommandPoolImplVK.h
