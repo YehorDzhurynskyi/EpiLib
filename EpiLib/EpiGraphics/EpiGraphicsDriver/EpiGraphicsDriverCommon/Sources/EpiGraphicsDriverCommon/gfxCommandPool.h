@@ -62,8 +62,8 @@ public:
     };
 
 protected:
-    gfxFrameBuffer* m_FrameBuffer{nullptr};
-    gfxRenderPass* m_RenderPass{nullptr};
+    gfxFrameBuffer m_FrameBuffer{};
+    gfxRenderPass m_RenderPass{};
     epiRect2s m_RenderArea{};
     epiArray<gfxRenderPassClearValue> m_ClearValues{};
 
@@ -92,18 +92,13 @@ EPI_GENREGION_END(gfxCommandBuffer)
 
 public:
     gfxCommandBuffer() = default;
-    gfxCommandBuffer(internalgfx::gfxCommandBufferImpl* impl);
-    gfxCommandBuffer(const gfxCommandBuffer& rhs) = default;
-    gfxCommandBuffer& operator=(const gfxCommandBuffer& rhs) = default;
-    gfxCommandBuffer(gfxCommandBuffer&& rhs) = default;
-    gfxCommandBuffer& operator=(gfxCommandBuffer&& rhs) = default;
-    ~gfxCommandBuffer() = default;
+    explicit gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& impl);
 
     epiBool RenderPassBegin(const gfxRenderPassBeginInfo& info);
     epiBool RenderPassEnd();
 
 protected:
-    internalgfx::gfxCommandBufferImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxCommandBufferImpl> m_Impl;
 };
 
 class gfxQueueFamily;
@@ -125,7 +120,7 @@ public:
     };
 
 protected:
-    gfxQueueFamilyDescriptor* m_QueueFamily{nullptr};
+    gfxQueueFamily m_QueueFamily{};
     epiU32 m_PrimaryCommandBufferCount{0};
     epiU32 m_SecondaryCommandBufferCount{0};
 
@@ -150,18 +145,13 @@ EPI_GENREGION_END(gfxCommandPool)
 
 public:
     gfxCommandPool() = default;
-    gfxCommandPool(internalgfx::gfxCommandPoolImpl* impl);
-    gfxCommandPool(const gfxCommandPool& rhs) = delete;
-    gfxCommandPool& operator=(const gfxCommandPool& rhs) = delete;
-    gfxCommandPool(gfxCommandPool&& rhs);
-    gfxCommandPool& operator=(gfxCommandPool&& rhs);
-    ~gfxCommandPool();
+    explicit gfxCommandPool(const std::shared_ptr<internalgfx::gfxCommandPoolImpl>& impl);
 
     std::optional<gfxCommandBuffer> BufferAtPrimary(epiU32 index);
     std::optional<gfxCommandBuffer> BufferAtSecondary(epiU32 index);
 
 protected:
-    internalgfx::gfxCommandPoolImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxCommandPoolImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

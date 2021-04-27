@@ -188,7 +188,7 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
 
     for (const VkPhysicalDevice& vkDevice : vkDevices)
     {
-        std::unique_ptr<gfxPhysicalDeviceImplVK> physicalDevice = std::make_unique<gfxPhysicalDeviceImplVK>();
+        std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = std::make_shared<gfxPhysicalDeviceImplVK>();
         physicalDevice->Init(vkDevice);
 
         m_PhysicalDevices.push_back(std::move(physicalDevice));
@@ -213,9 +213,9 @@ gfxDriverImplVK::~gfxDriverImplVK()
     }
 }
 
-std::unique_ptr<gfxSurfaceImpl> gfxDriverImplVK::CreateSurface(const gfxWindow& window)
+std::shared_ptr<gfxSurfaceImpl> gfxDriverImplVK::CreateSurface(const gfxWindow& window)
 {
-    return std::make_unique<gfxSurfaceImplVK>(m_VkInstance, window);
+    return std::make_shared<gfxSurfaceImplVK>(m_VkInstance, window);
 }
 
 epiBool gfxDriverImplVK::IsExtensionSupported(gfxDriverExtension extension) const

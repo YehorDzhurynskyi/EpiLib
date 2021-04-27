@@ -21,6 +21,7 @@ public:
     ~gfxRenderPassImplVK() override;
 
     epiBool Init(const gfxRenderPassCreateInfo& info);
+    epiBool Init(const gfxRenderPassSchema& schema);
 
     VkRenderPass_T* GetVkRenderPass() const;
 

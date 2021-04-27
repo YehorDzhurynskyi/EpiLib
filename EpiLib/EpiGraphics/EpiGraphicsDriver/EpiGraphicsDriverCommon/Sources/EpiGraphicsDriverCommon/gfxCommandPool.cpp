@@ -9,7 +9,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxCommandBuffer::gfxCommandBuffer(internalgfx::gfxCommandBufferImpl* impl)
+gfxCommandBuffer::gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& impl)
     : m_Impl{impl}
 {
 }
@@ -21,27 +21,15 @@ epiBool gfxCommandBuffer::GetIsPrimary_Callback() const
 
 epiBool gfxCommandBuffer::RenderPassBegin(const gfxRenderPassBeginInfo & info)
 {
-    if (info.GetFrameBuffer() == nullptr)
-    {
-        epiLogError("Failed to begin RenderPass on CommandBuffer! FrameBuffer is not provided!");
-        return false;
-    }
-
-    if (info.GetRenderPass() == nullptr)
-    {
-        epiLogError("Failed to begin RenderPass on CommandBuffer! RenderPass is not provided!");
-        return false;
-    }
-
-    const internalgfx::gfxFrameBufferImpl* frameBufferImpl = info.GetFrameBuffer()->m_Impl;
-    if (frameBufferImpl == nullptr)
+    const auto frameBufferImpl = info.GetFrameBuffer().m_Impl;
+    if (!frameBufferImpl)
     {
         epiLogError("Failed to begin RenderPass on CommandBuffer! FrameBuffer has no implementation!");
         return false;
     }
 
-    const internalgfx::gfxRenderPassImpl* renderPassImpl = info.GetRenderPass()->m_Impl;
-    if (renderPassImpl == nullptr)
+    const auto renderPassImpl = info.GetRenderPass().m_Impl;
+    if (!renderPassImpl)
     {
         epiLogError("Failed to begin RenderPass on CommandBuffer! RenderPass has no implementation!");
         return false;
@@ -55,30 +43,9 @@ epiBool gfxCommandBuffer::RenderPassEnd()
     return m_Impl->RenderPassEnd();
 }
 
-gfxCommandPool::gfxCommandPool(internalgfx::gfxCommandPoolImpl* impl)
+gfxCommandPool::gfxCommandPool(const std::shared_ptr<internalgfx::gfxCommandPoolImpl>& impl)
     : m_Impl{impl}
 {
-}
-
-gfxCommandPool::gfxCommandPool(gfxCommandPool&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-}
-
-gfxCommandPool& gfxCommandPool::operator=(gfxCommandPool&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxCommandPool::~gfxCommandPool()
-{
-    delete m_Impl;
 }
 
 std::optional<gfxCommandBuffer> gfxCommandPool::BufferAtPrimary(epiU32 index)

@@ -8,7 +8,8 @@ class gfxFramebufferAttachmentImageInfo
 
 class gfxFrameBufferCreateInfo
 {
-    gfxRenderPass* RenderPass;
+    gfxRenderPass RenderPass;
+
     epiSize2u Size;
 
     [ReadOnly]

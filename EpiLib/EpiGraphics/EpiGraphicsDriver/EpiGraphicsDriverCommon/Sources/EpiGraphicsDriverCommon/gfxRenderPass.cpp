@@ -7,6 +7,25 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+void gfxRenderSubPassSchema::AddAttachment(const gfxAttachmentSchema& attachment, epiU32 attachmentIndex)
+{
+    gfxAttachmentRefSchema ref;
+    ref.SetAttachment(attachment);
+    ref.SetAttachmentIndex(attachmentIndex);
+
+    m_Attachments.push_back(ref);
+}
+
+void gfxRenderPassSchema::AddSubPass(gfxRenderSubPassSchema&& subpass)
+{
+    GetSubPasses().push_back(std::move(subpass));
+}
+
+void gfxRenderPassSchema::AddAttachment(gfxAttachmentSchema&& attachment)
+{
+    GetAttachments().push_back(std::move(attachment));
+}
+
 epiBool gfxAttachment::IsCompatibleWith(const gfxAttachment& rhs) const
 {
     return GetFormat() == rhs.GetFormat() && GetSampleCount() == rhs.GetSampleCount();

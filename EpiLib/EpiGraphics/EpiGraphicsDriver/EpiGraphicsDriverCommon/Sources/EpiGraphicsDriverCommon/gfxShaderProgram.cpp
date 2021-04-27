@@ -7,28 +7,9 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxShader::gfxShader(internalgfx::gfxShaderImpl* impl)
+gfxShader::gfxShader(const std::shared_ptr<internalgfx::gfxShaderImpl>& impl)
     : m_Impl{impl}
 {
-}
-
-gfxShader::gfxShader(gfxShader&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-    rhs.m_Impl = nullptr;
-}
-
-gfxShader& gfxShader::operator=(gfxShader&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxShader::~gfxShader()
-{
-    delete m_Impl;
 }
 
 epiBool gfxShader::InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint)
@@ -54,28 +35,9 @@ epiBool gfxShaderProgramCreateInfo::GetIsEmpty_Callback() const
     return m_Vertex != nullptr || m_Geometry != nullptr || m_Fragment != nullptr;
 }
 
-gfxShaderProgram::gfxShaderProgram(internalgfx::gfxShaderProgramImpl* impl)
+gfxShaderProgram::gfxShaderProgram(const std::shared_ptr<internalgfx::gfxShaderProgramImpl>& impl)
     : m_Impl{impl}
 {
-}
-
-gfxShaderProgram::gfxShaderProgram(gfxShaderProgram&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-    rhs.m_Impl = nullptr;
-}
-
-gfxShaderProgram& gfxShaderProgram::operator=(gfxShaderProgram&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxShaderProgram::~gfxShaderProgram()
-{
-    delete m_Impl;
 }
 
 epiBool gfxShaderProgram::GetIsCreated_Callback() const

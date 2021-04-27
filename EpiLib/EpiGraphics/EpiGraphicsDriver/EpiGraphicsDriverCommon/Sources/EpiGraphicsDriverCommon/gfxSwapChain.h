@@ -7,6 +7,8 @@ EPI_GENREGION_END(include)
 #include "EpiCore/ObjectModel/Object.h"
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
+#include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
+#include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -17,8 +19,6 @@ class gfxSwapChainImpl;
 
 } // internalgfx
 
-class gfxRenderPass;
-class gfxQueueFamily;
 class gfxSwapChainCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxSwapChainCreateInfo)
@@ -31,7 +31,7 @@ public:
     enum gfxSwapChainCreateInfo_PIDs
     {
         PID_Surface = 0x73fca7f2,
-        PID_RenderPass = 0x662aa9d7,
+        PID_RenderPassSchema = 0x4efb6ddc,
         PID_QueueFamily = 0xfa954047,
         PID_Capabilities = 0x50af605,
         PID_Format = 0xd91677e9,
@@ -41,9 +41,9 @@ public:
     };
 
 protected:
-    gfxSurface* m_Surface{nullptr};
-    gfxRenderPass* m_RenderPass{nullptr};
-    gfxQueueFamilyDescriptor* m_QueueFamily{nullptr};
+    gfxSurface m_Surface{};
+    gfxRenderPassSchema m_RenderPassSchema{};
+    gfxQueueFamily m_QueueFamily{};
     gfxSurfaceCapabilities m_Capabilities{};
     gfxSurfaceFormat m_Format{};
     gfxSurfacePresentMode m_PresentMode{};
@@ -70,17 +70,12 @@ EPI_GENREGION_END(gfxSwapChain)
 
 public:
     gfxSwapChain() = default;
-    gfxSwapChain(internalgfx::gfxSwapChainImpl* impl);
-    gfxSwapChain(const gfxSwapChain& rhs) = delete;
-    gfxSwapChain& operator=(const gfxSwapChain& rhs) = delete;
-    gfxSwapChain(gfxSwapChain&& rhs);
-    gfxSwapChain& operator=(gfxSwapChain&& rhs);
-    ~gfxSwapChain();
+    explicit gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl);
 
     epiBool Present(const gfxQueue& queue);
 
 protected:
-    internalgfx::gfxSwapChainImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxSwapChainImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

@@ -21,7 +21,7 @@ class gfxDriverImpl;
 
 } // namespace internalgfx
 
-class gfxDriver : public Object, public epiPimpl<internalgfx::gfxDriverImpl>
+class gfxDriver : public Object
 {
 EPI_GENREGION_BEGIN(gfxDriver)
 
@@ -51,11 +51,17 @@ public:
 public:
     std::optional<gfxSurface> CreateSurface(const gfxWindow& window);
 
+    epiBool IsExtensionSupported(gfxDriverExtension extension) const;
+    epiBool IsExtensionEnabled(gfxDriverExtension extension) const;
+
 protected:
     gfxDriver() = default;
-    gfxDriver(internalgfx::gfxDriverImpl* impl, gfxDriverBackend backend);
+    gfxDriver(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend);
 
     void Reset();
+
+protected:
+    epiPimpl<internalgfx::gfxDriverImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

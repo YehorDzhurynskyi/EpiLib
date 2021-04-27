@@ -7,8 +7,8 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxQueueFamilyDescriptor::gfxQueueFamilyDescriptor(internalgfx::gfxQueueFamilyDescriptorImpl* impl)
-    : epiPimpl<internalgfx::gfxQueueFamilyDescriptorImpl>{impl}
+gfxQueueFamilyDescriptor::gfxQueueFamilyDescriptor(const std::shared_ptr<internalgfx::gfxQueueFamilyDescriptorImpl>& impl)
+    : m_Impl{impl}
 {
 }
 
@@ -22,13 +22,13 @@ gfxQueueType gfxQueueFamilyDescriptor::GetQueueTypeSupportedMask_Callback() cons
     return m_Impl->GetQueueTypeSupportedMask();
 }
 
-epiSize_t gfxQueueFamilyDescriptor::GetQueueCount_Callback() const
+epiU32 gfxQueueFamilyDescriptor::GetQueueCount_Callback() const
 {
     return m_Impl->GetQueueCount();
 }
 
-gfxQueueFamily::gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl, epiBool isOwner)
-    : epiPimpl<internalgfx::gfxQueueFamilyImpl>{impl, isOwner}
+gfxQueueFamily::gfxQueueFamily(const std::shared_ptr<internalgfx::gfxQueueFamilyImpl>& impl)
+    : m_Impl{impl}
 {
     epiArray<gfxQueue>& queues = GetQueues();
     queues.Reserve(impl->GetQueues().Size());
@@ -37,11 +37,20 @@ gfxQueueFamily::gfxQueueFamily(internalgfx::gfxQueueFamilyImpl* impl, epiBool is
     std::transform(impl->GetQueues().begin(),
                    impl->GetQueues().end(),
                    std::back_inserter(queues),
-                   [](std::unique_ptr<internalgfx::gfxQueueImpl>& queueImpl)
+                   [](const std::shared_ptr<internalgfx::gfxQueueImpl>& queueImpl)
     {
-        constexpr epiBool kIsOwner = false;
-        return gfxQueue(queueImpl.get(), kIsOwner);
+        return gfxQueue(queueImpl);
     });
+}
+
+gfxQueueType gfxQueueFamily::GetQueueTypeSupportedMask_Callback() const
+{
+    return m_Impl->GetQueueTypeMask();
+}
+
+epiU32 gfxQueueFamily::GetQueueCount_Callback() const
+{
+    return m_Impl->GetQueueCount();
 }
 
 EPI_NAMESPACE_END()

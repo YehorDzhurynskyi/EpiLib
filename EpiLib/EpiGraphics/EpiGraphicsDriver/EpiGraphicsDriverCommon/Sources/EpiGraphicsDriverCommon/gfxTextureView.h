@@ -60,15 +60,10 @@ EPI_GENREGION_END(gfxTextureView)
 
 public:
     gfxTextureView() = default;
-    explicit gfxTextureView(internalgfx::gfxTextureViewImpl* impl);
-    gfxTextureView(const gfxTextureView& rhs) = delete;
-    gfxTextureView& operator=(const gfxTextureView& rhs) = delete;
-    gfxTextureView(gfxTextureView&& rhs);
-    gfxTextureView& operator=(gfxTextureView&& rhs);
-    ~gfxTextureView();
+    explicit gfxTextureView(const std::shared_ptr<internalgfx::gfxTextureViewImpl>& impl);
 
 protected:
-    internalgfx::gfxTextureViewImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxTextureViewImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

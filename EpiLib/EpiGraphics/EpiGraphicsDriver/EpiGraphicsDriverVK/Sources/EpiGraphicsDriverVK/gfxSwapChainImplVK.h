@@ -28,7 +28,6 @@ public:
 
     epiBool Init(const gfxSwapChainCreateInfo& info,
                  const gfxSurfaceImpl& surfaceImpl,
-                 const gfxRenderPassImpl& renderPassImpl,
                  const gfxQueueFamilyImpl& queueFamilyImpl);
 
     epiBool Present(const gfxQueueImpl& queueImpl) override;
@@ -36,9 +35,9 @@ public:
 protected:
     const gfxDeviceImplVK& m_Device;
     VkSwapchainKHR_T* m_VkSwapChain{nullptr};
-    std::vector<std::unique_ptr<gfxTextureViewImpl>> m_SwapChainImageViews;
-    std::vector<std::unique_ptr<gfxFrameBufferImpl>> m_SwapChainFrameBuffers;
-    std::unique_ptr<gfxCommandPoolImpl> m_CommandPool;
+    epiArray<std::shared_ptr<gfxTextureViewImpl>> m_SwapChainImageViews;
+    epiArray<std::shared_ptr<gfxFrameBufferImpl>> m_SwapChainFrameBuffers;
+    std::shared_ptr<gfxCommandPoolImpl> m_CommandPool;
 
     epiU32 m_CurrentFrame{0};
     std::vector<VkSemaphore_T*> m_VkSemaphoreImageAvailable;

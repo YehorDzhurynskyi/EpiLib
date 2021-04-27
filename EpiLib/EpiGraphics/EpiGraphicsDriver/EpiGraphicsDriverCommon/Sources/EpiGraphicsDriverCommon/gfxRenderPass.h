@@ -92,6 +92,9 @@ protected:
     epiArray<gfxAttachmentRefSchema> m_Attachments{};
 
 EPI_GENREGION_END(gfxRenderSubPassSchema)
+
+public:
+    void AddAttachment(const gfxAttachmentSchema& attachment, epiU32 attachmentIndex);
 };
 
 class gfxRenderPassSchema : public Object
@@ -115,6 +118,10 @@ protected:
     epiArray<gfxAttachmentSchema> m_Attachments{};
 
 EPI_GENREGION_END(gfxRenderPassSchema)
+
+public:
+    void AddSubPass(gfxRenderSubPassSchema&& subpass);
+    void AddAttachment(gfxAttachmentSchema&& attachment);
 };
 
 class gfxAttachment : public Object

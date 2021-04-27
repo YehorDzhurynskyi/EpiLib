@@ -8,8 +8,8 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxPhysicalDevice::gfxPhysicalDevice(internalgfx::gfxPhysicalDeviceImpl* impl)
-    : epiPimplView<internalgfx::gfxPhysicalDeviceImpl>{impl}
+gfxPhysicalDevice::gfxPhysicalDevice(const std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl>& impl)
+    : m_Impl{impl}
 {
 }
 
@@ -19,9 +19,9 @@ std::optional<gfxDevice> gfxPhysicalDevice::CreateDevice(gfxQueueDescriptorList&
 {
     std::optional<gfxDevice> device;
 
-    if (std::unique_ptr<internalgfx::gfxDeviceImpl> impl = m_Impl->CreateDevice(queueDescriptorList, extensionsRequired, featuresRequired))
+    if (std::shared_ptr<internalgfx::gfxDeviceImpl> impl = m_Impl->CreateDevice(queueDescriptorList, extensionsRequired, featuresRequired))
     {
-        device = gfxDevice(impl.release());
+        device = gfxDevice(std::move(impl));
     }
 
     return device;

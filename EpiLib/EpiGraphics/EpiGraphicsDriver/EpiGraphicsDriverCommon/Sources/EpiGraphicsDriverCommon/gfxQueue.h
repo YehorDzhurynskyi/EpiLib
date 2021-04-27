@@ -17,7 +17,7 @@ class gfxQueueImpl;
 
 } // internalgfx
 
-class gfxQueue : public Object, public epiPimpl<internalgfx::gfxQueueImpl>
+class gfxQueue : public Object
 {
 EPI_GENREGION_BEGIN(gfxQueue)
 
@@ -44,9 +44,13 @@ public:
 
 public:
     gfxQueue() = default;
-    gfxQueue(internalgfx::gfxQueueImpl* impl, epiBool isOwner);
+    explicit gfxQueue(const std::shared_ptr<internalgfx::gfxQueueImpl>& impl);
+    explicit gfxQueue(std::shared_ptr<internalgfx::gfxQueueImpl>&& impl);
 
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
+
+protected:
+    epiPimpl<internalgfx::gfxQueueImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

@@ -17,44 +17,9 @@ epiBool operator!=(const gfxSurfaceFormat& lhs, const gfxSurfaceFormat& rhs)
     return !(operator==(lhs, rhs));
 }
 
-gfxSurface::gfxSurface(internalgfx::gfxSurfaceImpl* impl)
+gfxSurface::gfxSurface(const std::shared_ptr<internalgfx::gfxSurfaceImpl>& impl)
     : m_Impl{impl}
 {
-}
-
-gfxSurface::gfxSurface(gfxSurface&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-}
-
-gfxSurface& gfxSurface::operator=(gfxSurface&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxSurface::~gfxSurface()
-{
-    delete m_Impl;
-}
-
-gfxQueueDescriptor gfxSurface::CreateQueueDescriptor(const epiArray<epiFloat>& priorities, gfxQueueType type) const
-{
-    gfxQueueDescriptor desc;
-    desc.SetType(epiMask(gfxQueueType_Graphics, type));
-    desc.SetPresentSurface(m_Impl);
-
-    for (const epiFloat priority : priorities)
-    {
-        desc.AddDesiredQueue(priority);
-    }
-
-    return desc;
 }
 
 epiBool gfxSurface::IsCompatibleWith(const gfxPhysicalDevice& device, const gfxSurfaceFormat& format, gfxSurfacePresentMode presentMode) const
@@ -84,29 +49,31 @@ epiBool gfxSurface::IsCompatibleWith(const gfxPhysicalDevice& device, const gfxS
 
 epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device) const
 {
-    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
-
     return m_Impl->IsPresentSupportedFor(*device.m_Impl);
+}
+
+epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const
+{
+    return m_Impl->IsPresentSupportedFor(*device.m_Impl, *queueFamily.m_Impl);
+}
+
+epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const
+{
+    return m_Impl->IsPresentSupportedFor(*device.m_Impl, *queueFamilyDesc.m_Impl);
 }
 
 gfxSurfaceCapabilities gfxSurface::GetCapabilitiesFor(const gfxPhysicalDevice& device) const
 {
-    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
-
     return m_Impl->GetCapabilitiesFor(*device.m_Impl);
 }
 
 epiArray<gfxSurfaceFormat> gfxSurface::GetSupportedFormatsFor(const gfxPhysicalDevice& device) const
 {
-    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
-
     return m_Impl->GetSupportedFormatsFor(*device.m_Impl);
 }
 
 epiArray<gfxSurfacePresentMode> gfxSurface::GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const
 {
-    epiAssert(m_Impl != nullptr && device.m_Impl != nullptr);
-
     return m_Impl->GetSupportedPresentModesFor(*device.m_Impl);
 }
 

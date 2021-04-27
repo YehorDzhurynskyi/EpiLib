@@ -25,7 +25,7 @@ class gfxDeviceImpl;
 
 } // namespace internalgfx
 
-class gfxDevice : public Object, public epiPimpl<internalgfx::gfxDeviceImpl>
+class gfxDevice : public Object
 {
 EPI_GENREGION_BEGIN(gfxDevice)
 
@@ -47,13 +47,14 @@ EPI_GENREGION_END(gfxDevice)
 
 public:
     gfxDevice() = default;
-    explicit gfxDevice(internalgfx::gfxDeviceImpl* impl);
+    explicit gfxDevice(const std::shared_ptr<internalgfx::gfxDeviceImpl>& impl);
 
     epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const;
 
     std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
+    std::optional<gfxRenderPass> CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const;
     std::optional<gfxPipeline> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxRenderPass& renderPass) const;
     std::optional<gfxShader> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const;
     std::optional<gfxShaderProgram> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const;
@@ -61,6 +62,9 @@ public:
     std::optional<gfxTexture> CreateTexture(const gfxTextureCreateInfo& info) const;
     std::optional<gfxTextureView> CreateTextureView(const gfxTextureViewCreateInfo& info) const;
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
+
+protected:
+    epiPimpl<internalgfx::gfxDeviceImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

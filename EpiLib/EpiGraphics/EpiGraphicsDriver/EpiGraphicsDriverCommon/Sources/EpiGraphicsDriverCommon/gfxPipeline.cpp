@@ -28,30 +28,9 @@ gfxPipelineCreateInfo& gfxPipelineCreateInfo::AddColorBlendAttachment(const gfxP
     return *this;
 }
 
-gfxPipeline::gfxPipeline(internalgfx::gfxPipelineImpl* impl)
+gfxPipeline::gfxPipeline(const std::shared_ptr<internalgfx::gfxPipelineImpl>& impl)
     : m_Impl{impl}
 {
-}
-
-gfxPipeline::gfxPipeline(gfxPipeline&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-}
-
-gfxPipeline& gfxPipeline::operator=(gfxPipeline&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxPipeline::~gfxPipeline()
-{
-    delete m_Impl;
 }
 
 EPI_NAMESPACE_END()

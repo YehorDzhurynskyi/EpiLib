@@ -73,15 +73,10 @@ public:
 
 public:
     gfxTexture() = default;
-    explicit gfxTexture(internalgfx::gfxTextureImpl* impl);
-    gfxTexture(const gfxTexture& rhs) = delete;
-    gfxTexture& operator=(const gfxTexture& rhs) = delete;
-    gfxTexture(gfxTexture&& rhs);
-    gfxTexture& operator=(gfxTexture&& rhs);
-    ~gfxTexture();
+    explicit gfxTexture(const std::shared_ptr<internalgfx::gfxTextureImpl>& impl);
 
 protected:
-    internalgfx::gfxTextureImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxTextureImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

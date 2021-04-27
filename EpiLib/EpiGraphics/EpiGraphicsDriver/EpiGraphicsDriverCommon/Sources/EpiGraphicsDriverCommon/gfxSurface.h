@@ -108,25 +108,22 @@ public:
 
 public:
     gfxSurface() = default;
-    gfxSurface(internalgfx::gfxSurfaceImpl* impl);
-    gfxSurface(const gfxSurface& rhs) = delete;
-    gfxSurface& operator=(const gfxSurface& rhs) = delete;
-    gfxSurface(gfxSurface&& rhs);
-    gfxSurface& operator=(gfxSurface&& rhs);
-    ~gfxSurface();
+    explicit gfxSurface(const std::shared_ptr<internalgfx::gfxSurfaceImpl>& impl);
 
 public:
-    gfxQueueDescriptor CreateQueueDescriptor(const epiArray<epiFloat>& priorities, gfxQueueType type = gfxQueueType{0}) const;
-
-    epiBool IsCompatibleWith(const gfxPhysicalDevice& device, const gfxSurfaceFormat& format, gfxSurfacePresentMode presentMode) const;
+    epiBool IsCompatibleWith(const gfxPhysicalDevice& device,
+                             const gfxSurfaceFormat& format,
+                             gfxSurfacePresentMode presentMode) const;
 
     epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device) const;
+    epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const;
+    epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const;
     gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDevice& device) const;
     epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDevice& device) const;
     epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const;
 
 protected:
-    internalgfx::gfxSurfaceImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxSurfaceImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

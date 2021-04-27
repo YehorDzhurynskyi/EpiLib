@@ -62,7 +62,7 @@ public:
     };
 
 protected:
-    gfxRenderPass* m_RenderPass{nullptr};
+    gfxRenderPass m_RenderPass{};
     epiSize2u m_Size{};
     epiArray<gfxFramebufferAttachmentImageInfo> m_AttachmentImageInfos{};
 
@@ -93,15 +93,10 @@ public:
 
 public:
     gfxFrameBuffer() = default;
-    explicit gfxFrameBuffer(internalgfx::gfxFrameBufferImpl* impl);
-    gfxFrameBuffer(const gfxFrameBuffer& rhs) = delete;
-    gfxFrameBuffer& operator=(const gfxFrameBuffer& rhs) = delete;
-    gfxFrameBuffer(gfxFrameBuffer&& rhs);
-    gfxFrameBuffer& operator=(gfxFrameBuffer&& rhs);
-    ~gfxFrameBuffer();
+    explicit gfxFrameBuffer(const std::shared_ptr<internalgfx::gfxFrameBufferImpl>& impl);
 
 protected:
-    internalgfx::gfxFrameBufferImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxFrameBufferImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

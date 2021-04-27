@@ -7,40 +7,15 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxSwapChain::gfxSwapChain(internalgfx::gfxSwapChainImpl* impl)
+gfxSwapChain::gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl)
     : m_Impl{impl}
 {
 }
 
-gfxSwapChain::gfxSwapChain(gfxSwapChain&& rhs)
-{
-    if (this != &rhs) // TODO: add this check to every move ctor/operator
-    {
-        m_Impl = rhs.m_Impl;
-        rhs.m_Impl = nullptr;
-    }
-}
-
-gfxSwapChain& gfxSwapChain::operator=(gfxSwapChain&& rhs)
-{
-    if (this != &rhs)
-    {
-        m_Impl = rhs.m_Impl;
-        rhs.m_Impl = nullptr;
-    }
-
-    return *this;
-}
-
-gfxSwapChain::~gfxSwapChain()
-{
-    delete m_Impl;
-}
-
 epiBool gfxSwapChain::Present(const gfxQueue& queue)
 {
-    const internalgfx::gfxQueueImpl* queueImpl = queue.m_Impl;
-    if (queueImpl == nullptr)
+    const auto queueImpl = queue.m_Impl;
+    if (!queueImpl)
     {
         epiLogError("Failed to present SwapChain! Queue has no implementation!");
         return false;

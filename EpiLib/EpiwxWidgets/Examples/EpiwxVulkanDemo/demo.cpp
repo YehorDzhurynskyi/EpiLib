@@ -13,6 +13,10 @@ EPI_NAMESPACE_USING()
 gfxPhysicalDevice g_PhysicalDevice;
 gfxDevice g_Device;
 
+constexpr gfxFormat kFormatRequired = gfxFormat::B8G8R8A8_SRGB;
+constexpr gfxSurfaceColorSpace kColorSpaceRequired = gfxSurfaceColorSpace::SRGB_NONLINEAR;
+constexpr gfxSurfacePresentMode kPresentModeRequired = gfxSurfacePresentMode::MAILBOX;
+
 class EpiwxVulkanDemoFrame : public wxFrame
 {
 public:
@@ -88,7 +92,7 @@ int main(int argc, char* argv[])
         const epiArray<gfxSurfaceFormat> supportedFormats = surface->GetSupportedFormatsFor(physicalDevice);
         const epiBool formatIsAppropriate = std::any_of(supportedFormats.begin(), supportedFormats.end(), [](const gfxSurfaceFormat& format)
         {
-            return format.GetFormat() == gfxFormat::B8G8R8A8_SRGB && format.GetColorSpace() == gfxSurfaceColorSpace::SRGB_NONLINEAR;
+            return format.GetFormat() == kFormatRequired && format.GetColorSpace() == kColorSpaceRequired;
         });
 
         if (!formatIsAppropriate)
@@ -99,7 +103,7 @@ int main(int argc, char* argv[])
         const epiArray<gfxSurfacePresentMode> supportedPresentModes = surface->GetSupportedPresentModesFor(physicalDevice);
         const epiBool presentModeIsAppropriate = std::any_of(supportedPresentModes.begin(), supportedPresentModes.end(), [](const gfxSurfacePresentMode& presentMode)
         {
-            return presentMode == gfxSurfacePresentMode::MAILBOX;
+            return presentMode == kPresentModeRequired;
         });
 
         if (!presentModeIsAppropriate)
@@ -169,36 +173,37 @@ int EpiwxVulkanDemo::OnExit()
 EpiwxVulkanDemoFrame::EpiwxVulkanDemoFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : wxFrame(parent, id, title, pos, size, style)
 {
-    gfxAttachment attachment;
-    attachment.SetFormat(gfxFormat::B8G8R8A8_SRGB);
-    attachment.SetSampleCount(gfxSampleCount::Sample1);
-    attachment.SetLoadOp(gfxAttachmentLoadOp::Clear);
-    attachment.SetStoreOp(gfxAttachmentStoreOp::Store);
-    attachment.SetStencilLoadOp(gfxAttachmentLoadOp::DontCare);
-    attachment.SetStencilStoreOp(gfxAttachmentStoreOp::DontCare);
-    attachment.SetInitialLayout(gfxImageLayout::Undefined);
-    attachment.SetFinalLayout(gfxImageLayout::PresentSrc);
+    gfxAttachmentSchema attachmentSchema;
+    attachmentSchema.SetFormat(kFormatRequired);
+    attachmentSchema.SetSampleCount(gfxSampleCount::Sample1);
 
-    gfxRenderSubPass renderSubPass;
-    renderSubPass.SetBindPoint(gfxPipelineBindPoint::Graphics);
-    renderSubPass.AddAttachment(attachment, 0, gfxImageLayout::ColorAttachmentOptimal);
+    gfxRenderSubPassSchema renderSubPassSchema;
+    renderSubPassSchema.AddAttachment(attachmentSchema, 0);
 
-    gfxRenderSubPassDependency renderSubPassDependency;
-    renderSubPassDependency.SetIsSrcSubPassExternal(true);
-    renderSubPassDependency.SetDstSubPass(0);
-    renderSubPassDependency.SetSrcStageMask(gfxPipelineStage_ColorAttachmentOutput);
-    renderSubPassDependency.SetSrcAccessMask(gfxAccess{0});
-    renderSubPassDependency.SetDstStageMask(gfxPipelineStage_ColorAttachmentOutput);
-    renderSubPassDependency.SetDstAccessMask(gfxAccess_ColorAttachmentWrite);
+    gfxRenderPassSchema renderPassSchema;
+    renderPassSchema.AddAttachment(std::move(attachmentSchema));
+    renderPassSchema.AddSubPass(std::move(renderSubPassSchema));
 
-    gfxRenderPassCreateInfo renderPassCreateInfo;
-    renderPassCreateInfo.AddSubPass(std::move(renderSubPass));
-    renderPassCreateInfo.AddSubPassDependency(std::move(renderSubPassDependency));
+    gfxSurfaceFormat surfaceFormat;
+    surfaceFormat.SetFormat(kFormatRequired);
+    surfaceFormat.SetColorSpace(kColorSpaceRequired);
 
-    std::optional<gfxRenderPass> renderPass = device->CreateRenderPass(renderPassCreateInfo);
-    epiAssert(renderPass.has_value());
+    auto queueFamilyIt = std::find_if(g_Device.GetQueueFamilies().begin(),
+                                      g_Device.GetQueueFamilies().end(),
+                                      [](const gfxQueueFamily& queueFamily)
+    {
+        return queueFamily.GetQueueTypeMask() & gfxQueueType_Graphics;
+    });
 
-    epiWXVulkanCanvasCreateInfo canvasCreateInfo{.PhysicalDevice = *physicalDevice};
+    epiAssert(queueFamilyIt != g_Device.GetQueueFamilies().end());
+
+    epiWXVulkanCanvasCreateInfo canvasCreateInfo;
+    canvasCreateInfo.PhysicalDevice = g_PhysicalDevice;
+    canvasCreateInfo.Device = g_Device;
+    canvasCreateInfo.RenderPassSchema = renderPassSchema;
+    canvasCreateInfo.QueueFamily = *queueFamilyIt;
+    canvasCreateInfo.Format = surfaceFormat;
+    canvasCreateInfo.PresentMode = kPresentModeRequired;
 
     AddChild(new epiWXVulkanCanvas(canvasCreateInfo, this));
 

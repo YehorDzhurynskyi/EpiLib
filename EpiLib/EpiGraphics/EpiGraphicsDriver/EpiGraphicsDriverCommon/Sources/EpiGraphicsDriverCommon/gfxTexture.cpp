@@ -7,30 +7,9 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxTexture::gfxTexture(internalgfx::gfxTextureImpl* impl)
+gfxTexture::gfxTexture(const std::shared_ptr<internalgfx::gfxTextureImpl>& impl)
     : m_Impl{impl}
 {
-}
-
-gfxTexture::gfxTexture(gfxTexture&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-}
-
-gfxTexture& gfxTexture::operator=(gfxTexture&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxTexture::~gfxTexture()
-{
-    delete m_Impl;
 }
 
 EPI_NAMESPACE_END()

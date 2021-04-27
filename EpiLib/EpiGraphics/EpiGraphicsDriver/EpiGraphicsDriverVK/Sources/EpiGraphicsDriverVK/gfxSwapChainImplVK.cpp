@@ -29,7 +29,6 @@ gfxSwapChainImplVK::gfxSwapChainImplVK(const gfxDeviceImplVK& device)
 
 epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
                                  const gfxSurfaceImpl& surfaceImpl,
-                                 const gfxRenderPassImpl& renderPassImpl,
                                  const gfxQueueFamilyImpl& queueFamilyImpl)
 {
     const gfxSurfaceCapabilities& capabilities = info.GetCapabilities();
@@ -85,25 +84,26 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        std::unique_ptr<gfxTextureImplVK> textureImpl = std::make_unique<gfxTextureImplVK>(image);
-        gfxTextureImplVK* textureImplPtr = textureImpl.get();
-
-        gfxTexture texture(textureImpl.release());
+        std::shared_ptr<gfxTextureImplVK> textureImpl = std::make_shared<gfxTextureImplVK>(image);
+        gfxTexture texture(textureImpl);
 
         gfxTextureViewCreateInfo textureViewCreateInfo;
         textureViewCreateInfo.SetFormat(info.GetFormat().GetFormat());
         textureViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
         textureViewCreateInfo.SetTexture(&texture);
 
-        std::unique_ptr<gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImplPtr);
+        std::shared_ptr<gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImpl);
         m_SwapChainImageViews.push_back(std::move(textureViewImpl));
     }
+
+    std::shared_ptr<gfxRenderPassImpl> renderPassImpl = m_Device.CreateRenderPassFromSchema(info.GetRenderPassSchema());
+    gfxRenderPass renderPass(renderPassImpl);
 
     for (const auto& textureViewImpl : m_SwapChainImageViews)
     {
         gfxFrameBufferCreateInfo frameBufferCreateInfo;
         frameBufferCreateInfo.SetSize(info.GetExtent());
-        frameBufferCreateInfo.SetRenderPass(const_cast<gfxRenderPass*>(info.GetRenderPass())); // TODO: add const setters to pointer (epigen)
+        frameBufferCreateInfo.SetRenderPass(renderPass);
 
         gfxFramebufferAttachmentImageInfo imageInfo;
         imageInfo.SetUsage(gfxImageUsage_COLOR_ATTACHMENT);
@@ -113,12 +113,12 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
 
         frameBufferCreateInfo.AddAttachment(std::move(imageInfo));
 
-        std::unique_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, renderPassImpl);
+        std::shared_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, *renderPassImpl);
         m_SwapChainFrameBuffers.push_back(std::move(frameBufferImpl));
     }
 
     gfxCommandPoolCreateInfo commandPoolCreateInfo;
-    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChainFrameBuffers.size());
+    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChainFrameBuffers.Size());
 
     m_CommandPool = m_Device.CreateCommandPool(commandPoolCreateInfo, queueFamilyImpl);
 
@@ -132,7 +132,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
     m_VkSemaphoreImageAvailable.resize(kMaxFramesInFlight);
     m_VkSemaphoreRenderFinished.resize(kMaxFramesInFlight);
     m_VkFencesInFlight.resize(kMaxFramesInFlight);
-    m_VkFencesImagesInFlight.resize(m_SwapChainFrameBuffers.size(), VK_NULL_HANDLE);
+    m_VkFencesImagesInFlight.resize(m_SwapChainFrameBuffers.Size(), VK_NULL_HANDLE);
 
     for (epiU32 i = 0; i < kMaxFramesInFlight; ++i)
     {

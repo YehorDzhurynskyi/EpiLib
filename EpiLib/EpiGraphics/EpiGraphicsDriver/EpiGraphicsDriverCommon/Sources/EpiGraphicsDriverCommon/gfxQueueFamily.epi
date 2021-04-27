@@ -3,7 +3,7 @@ class gfxQueueFamilyDescriptor
     [Virtual, ReadOnly]
     {
         gfxQueueType QueueTypeSupportedMask;
-        epiSize_t QueueCount;
+        epiU32 QueueCount;
     }
 };
 
@@ -12,5 +12,11 @@ class gfxQueueFamily
     [ReadOnly]
     {
         epiArray<gfxQueue> Queues;
+
+        [Virtual]
+        {
+            gfxQueueType QueueTypeSupportedMask;
+            epiU32 QueueCount;
+        }
     }
 };

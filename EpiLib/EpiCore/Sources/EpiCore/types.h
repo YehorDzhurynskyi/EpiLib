@@ -392,6 +392,8 @@ template<typename TImpl>
 class epiPimpl final
 {
 public:
+    epiPimpl() = default;
+
     explicit epiPimpl(const std::shared_ptr<TImpl>& impl)
         : m_Impl{impl}
     {
@@ -402,10 +404,13 @@ public:
     {
     }
 
-    epiBool operator epiBool() { return static_cast<epiBool>(m_Impl); }
+    epiBool operator epiBool() const { return static_cast<epiBool>(m_Impl); }
 
     TImpl* operator->() { return Impl(); }
     const TImpl* operator->() const { return Impl(); }
+
+    TImpl& operator*() { return *Impl(); }
+    const TImpl& operator*() const { return *Impl(); }
 
     const TImpl* Impl() const { return m_Impl.get(); }
     TImpl* Impl() { return m_Impl.get(); }

@@ -329,7 +329,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
 
     for (const auto& [queueDesc, queueFamilyDesc] : queueMappings)
     {
-        std::unique_ptr<gfxQueueFamilyImplVK> queueFamily = std::make_unique<gfxQueueFamilyImplVK>(*queueFamilyDesc);
+        std::shared_ptr<gfxQueueFamilyImplVK> queueFamily = std::make_shared<gfxQueueFamilyImplVK>(*queueFamilyDesc);
         queueFamily->Init(*this, *queueDesc);
 
         m_QueueFamilies.push_back(std::move(queueFamily));
@@ -358,13 +358,12 @@ epiBool gfxDeviceImplVK::IsFeatureEnabled(gfxPhysicalDeviceFeature feature) cons
     return m_FeatureEnabled[static_cast<epiU32>(feature)];
 }
 
-std::unique_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info,
+std::shared_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info,
                                                                    const gfxSurfaceImpl& surfaceImpl,
-                                                                   const gfxRenderPassImpl& renderPassImpl,
                                                                    const gfxQueueFamilyImpl& queueFamilyImpl) const
 {
-    std::unique_ptr<gfxSwapChainImplVK> impl = std::make_unique<gfxSwapChainImplVK>(*this);
-    if (!impl->Init(info, surfaceImpl, renderPassImpl, queueFamilyImpl))
+    std::shared_ptr<gfxSwapChainImplVK> impl = std::make_shared<gfxSwapChainImplVK>(*this);
+    if (!impl->Init(info, surfaceImpl, queueFamilyImpl))
     {
         impl.reset();
     }
@@ -372,9 +371,9 @@ std::unique_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwap
     return impl;
 }
 
-std::unique_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
+std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
 {
-    std::unique_ptr<gfxRenderPassImplVK> impl = std::make_unique<gfxRenderPassImplVK>(m_VkDevice);
+    std::shared_ptr<gfxRenderPassImplVK> impl = std::make_shared<gfxRenderPassImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -383,11 +382,22 @@ std::unique_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRe
     return impl;
 }
 
-std::unique_ptr<gfxPipelineImpl> gfxDeviceImplVK::CreatePipeline(const gfxPipelineCreateInfo& info,
+std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const
+{
+    std::shared_ptr<gfxRenderPassImplVK> impl = std::make_shared<gfxRenderPassImplVK>(m_VkDevice);
+    if (!impl->Init(schema))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxPipelineImpl> gfxDeviceImplVK::CreatePipeline(const gfxPipelineCreateInfo& info,
                                                                  const gfxShaderProgramImpl& shaderProgramImpl,
                                                                  const gfxRenderPassImpl& renderPassImpl) const
 {
-    std::unique_ptr<gfxPipelineImplVK> impl = std::make_unique<gfxPipelineImplVK>(*this);
+    std::shared_ptr<gfxPipelineImplVK> impl = std::make_shared<gfxPipelineImplVK>(*this);
     if (!impl->Init(info, shaderProgramImpl, renderPassImpl))
     {
         impl.reset();
@@ -396,9 +406,9 @@ std::unique_ptr<gfxPipelineImpl> gfxDeviceImplVK::CreatePipeline(const gfxPipeli
     return impl;
 }
 
-std::unique_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint) const
+std::shared_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint) const
 {
-    std::unique_ptr<gfxShaderImplVK> impl = std::make_unique<gfxShaderImplVK>(m_VkDevice);
+    std::shared_ptr<gfxShaderImplVK> impl = std::make_shared<gfxShaderImplVK>(m_VkDevice);
     if (!impl->InitFromSource(source, type, entryPoint))
     {
         impl.reset();
@@ -407,9 +417,9 @@ std::unique_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epi
     return impl;
 }
 
-std::unique_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const gfxShaderProgramCreateInfoImpl& info) const
+std::shared_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const gfxShaderProgramCreateInfoImpl& info) const
 {
-    std::unique_ptr<gfxShaderProgramImplVK> impl = std::make_unique<gfxShaderProgramImplVK>();
+    std::shared_ptr<gfxShaderProgramImplVK> impl = std::make_shared<gfxShaderProgramImplVK>();
     if (!impl->Init(info))
     {
         impl.reset();
@@ -418,9 +428,9 @@ std::unique_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const
     return impl;
 }
 
-std::unique_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl) const
+std::shared_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl) const
 {
-    std::unique_ptr<gfxFrameBufferImplVK> impl = std::make_unique<gfxFrameBufferImplVK>(m_VkDevice);
+    std::shared_ptr<gfxFrameBufferImplVK> impl = std::make_shared<gfxFrameBufferImplVK>(m_VkDevice);
     if (!impl->Init(info, renderPassImpl))
     {
         impl.reset();
@@ -429,9 +439,9 @@ std::unique_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfx
     return impl;
 }
 
-std::unique_ptr<gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
+std::shared_ptr<gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
 {
-    std::unique_ptr<gfxTextureImplVKOwner> impl = std::make_unique<gfxTextureImplVKOwner>(m_VkDevice);
+    std::shared_ptr<gfxTextureImplVKOwner> impl = std::make_shared<gfxTextureImplVKOwner>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -440,9 +450,9 @@ std::unique_ptr<gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureC
     return impl;
 }
 
-std::unique_ptr<gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const
+std::shared_ptr<gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const
 {
-    std::unique_ptr<gfxTextureViewImplVK> impl = std::make_unique<gfxTextureViewImplVK>(m_VkDevice);
+    std::shared_ptr<gfxTextureViewImplVK> impl = std::make_shared<gfxTextureViewImplVK>(m_VkDevice);
     if (!impl->Init(info, textureImpl))
     {
         impl.reset();
@@ -451,9 +461,9 @@ std::unique_ptr<gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfx
     return impl;
 }
 
-std::unique_ptr<gfxCommandPoolImpl> gfxDeviceImplVK::CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const
+std::shared_ptr<gfxCommandPoolImpl> gfxDeviceImplVK::CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const
 {
-    std::unique_ptr<gfxCommandPoolImplVK> impl = std::make_unique<gfxCommandPoolImplVK>(m_VkDevice);
+    std::shared_ptr<gfxCommandPoolImplVK> impl = std::make_shared<gfxCommandPoolImplVK>(m_VkDevice);
     if (!impl->Init(info, queueFamilyImpl))
     {
         impl.reset();

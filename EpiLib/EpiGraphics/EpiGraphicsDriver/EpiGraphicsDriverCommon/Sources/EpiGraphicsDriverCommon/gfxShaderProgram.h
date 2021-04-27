@@ -45,18 +45,13 @@ public:
 
 public:
     gfxShader() = default;
-    explicit gfxShader(internalgfx::gfxShaderImpl* impl);
-    gfxShader(const gfxShader& rhs) = delete;
-    gfxShader& operator=(const gfxShader& rhs) = delete;
-    gfxShader(gfxShader&& rhs);
-    gfxShader& operator=(gfxShader&& rhs);
-    ~gfxShader();
+    explicit gfxShader(const std::shared_ptr<internalgfx::gfxShaderImpl>& impl);
 
 public:
     epiBool InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main");
 
 protected:
-    internalgfx::gfxShaderImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxShaderImpl> m_Impl;
 };
 
 class gfxShaderProgramCreateInfo : public Object
@@ -113,15 +108,10 @@ public:
 
 public:
     gfxShaderProgram() = default;
-    explicit gfxShaderProgram(internalgfx::gfxShaderProgramImpl* impl);
-    gfxShaderProgram(const gfxShaderProgram& rhs) = delete;
-    gfxShaderProgram& operator=(const gfxShaderProgram& rhs) = delete;
-    gfxShaderProgram(gfxShaderProgram&& rhs);
-    gfxShaderProgram& operator=(gfxShaderProgram&& rhs);
-    ~gfxShaderProgram();
+    explicit gfxShaderProgram(const std::shared_ptr<internalgfx::gfxShaderProgramImpl>& impl);
 
 protected:
-    internalgfx::gfxShaderProgramImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxShaderProgramImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

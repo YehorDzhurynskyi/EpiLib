@@ -16,8 +16,8 @@ gfxDriver& gfxDriver::GetInstance()
     return instance;
 }
 
-gfxDriver::gfxDriver(internalgfx::gfxDriverImpl* impl, gfxDriverBackend backend)
-    : epiPimpl<internalgfx::gfxDriverImpl>{impl}
+gfxDriver::gfxDriver(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend)
+    : m_Impl{impl}
     , m_Backend{backend}
 {
     epiArray<gfxPhysicalDevice>& physicalDevices = GetPhysicalDevices();
@@ -81,6 +81,16 @@ std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
     }
 
     return surface;
+}
+
+epiBool gfxDriver::IsExtensionSupported(gfxDriverExtension extension) const
+{
+    return m_Impl->IsExtensionSupported(extension);
+}
+
+epiBool gfxDriver::IsExtensionEnabled(gfxDriverExtension extension) const
+{
+    return m_Impl->IsExtensionEnabled(extension);
 }
 
 EPI_NAMESPACE_END()

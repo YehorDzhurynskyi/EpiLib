@@ -167,15 +167,10 @@ EPI_GENREGION_END(gfxPipeline)
 
 public:
     gfxPipeline() = default;
-    gfxPipeline(internalgfx::gfxPipelineImpl* impl);
-    gfxPipeline(const gfxPipeline& rhs) = delete;
-    gfxPipeline& operator=(const gfxPipeline& rhs) = delete;
-    gfxPipeline(gfxPipeline&& rhs);
-    gfxPipeline& operator=(gfxPipeline&& rhs);
-    ~gfxPipeline();
+    explicit gfxPipeline(const std::shared_ptr<internalgfx::gfxPipelineImpl>& impl);
 
 protected:
-    internalgfx::gfxPipelineImpl* m_Impl{nullptr};
+    epiPimpl<internalgfx::gfxPipelineImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

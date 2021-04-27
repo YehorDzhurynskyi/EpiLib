@@ -7,8 +7,13 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxQueue::gfxQueue(internalgfx::gfxQueueImpl* impl, epiBool isOwner)
-    : epiPimpl<internalgfx::gfxQueueImpl>{impl, isOwner}
+gfxQueue::gfxQueue(const std::shared_ptr<internalgfx::gfxQueueImpl>& impl)
+    : m_Impl{impl}
+{
+}
+
+gfxQueue::gfxQueue(std::shared_ptr<internalgfx::gfxQueueImpl>&& impl)
+    : m_Impl{std::move(impl)}
 {
 }
 

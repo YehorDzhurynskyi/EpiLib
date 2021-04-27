@@ -28,8 +28,11 @@ class gfxRenderSubPassSchema
 
 class gfxRenderPassSchema
 {
-    epiArray<gfxRenderSubPassSchema> SubPasses;
-    epiArray<gfxAttachmentSchema> Attachments;
+    [ReadOnly]
+    {
+        epiArray<gfxRenderSubPassSchema> SubPasses;
+        epiArray<gfxAttachmentSchema> Attachments;
+    }
 };
 
 class gfxAttachment

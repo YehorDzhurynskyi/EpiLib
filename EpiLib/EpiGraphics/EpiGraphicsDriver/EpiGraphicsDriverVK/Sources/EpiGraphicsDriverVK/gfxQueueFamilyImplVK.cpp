@@ -45,7 +45,7 @@ void gfxQueueFamilyImplVK::Init(const gfxDeviceImpl& device, const gfxQueueDescr
     for (epiU32 i = 0; i < queueDesc.GetQueueCount(); ++i)
     {
         const epiFloat priority = queueDesc.GetPriorities()[i];
-        std::unique_ptr<gfxQueueImpl> queue = std::make_unique<gfxQueueImplVK>(device, *this, i, priority);
+        std::shared_ptr<gfxQueueImpl> queue = std::make_shared<gfxQueueImplVK>(device, *this, i, priority);
 
         m_Queues.push_back(std::move(queue));
     }

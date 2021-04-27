@@ -10,30 +10,9 @@ void gfxFrameBufferCreateInfo::AddAttachment(gfxFramebufferAttachmentImageInfo&&
     m_AttachmentImageInfos.push_back(std::move(info));
 }
 
-gfxFrameBuffer::gfxFrameBuffer(internalgfx::gfxFrameBufferImpl* impl)
+gfxFrameBuffer::gfxFrameBuffer(const std::shared_ptr<internalgfx::gfxFrameBufferImpl>& impl)
     : m_Impl{impl}
 {
-}
-
-gfxFrameBuffer::gfxFrameBuffer(gfxFrameBuffer&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-}
-
-gfxFrameBuffer& gfxFrameBuffer::operator=(gfxFrameBuffer&& rhs)
-{
-    m_Impl = rhs.m_Impl;
-
-    rhs.m_Impl = nullptr;
-
-    return *this;
-}
-
-gfxFrameBuffer::~gfxFrameBuffer()
-{
-    delete m_Impl;
 }
 
 EPI_NAMESPACE_END()

@@ -20,11 +20,12 @@ public:
     gfxSurfaceImplVK& operator=(gfxSurfaceImplVK&& rhs) = default;
     ~gfxSurfaceImplVK() override;
 
-    epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const;
-    epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyDescriptorImpl& queueFamilyDesc) const;
-    gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const;
-    epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDeviceImpl& device) const;
-    epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDeviceImpl& device) const;
+    epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const override;
+    epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const override;
+    epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyDescriptorImpl& queueFamilyDesc) const override;
+    gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const override;
+    epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDeviceImpl& device) const override;
+    epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDeviceImpl& device) const override;
 
     VkSurfaceKHR_T* GetVkSurface() const;
 

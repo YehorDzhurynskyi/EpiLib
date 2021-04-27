@@ -36,7 +36,7 @@ public:
                  epiU32 engineVersionMinor = 0u,
                  epiU32 engineVersionPatch = 0u);
 
-    std::unique_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) override;
+    std::shared_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) override;
 
     epiBool IsExtensionSupported(gfxDriverExtension extension) const override;
     epiBool IsExtensionEnabled(gfxDriverExtension extension) const override;

@@ -132,9 +132,6 @@ epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShad
     vertexInputInfo.vertexAttributeDescriptionCount = 0;
     vertexInputInfo.pVertexAttributeDescriptions = nullptr;
 
-    VkGraphicsPipelineCreateInfo pipelineInfo{};
-    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-
     std::vector<VkPipelineShaderStageCreateInfo> stages;
 
     const gfxShaderProgramImplVK& shaderProgramImplVk = static_cast<const gfxShaderProgramImplVK&>(shaderProgramImpl);
@@ -164,6 +161,8 @@ epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShad
         }
     }
 
+    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineInfo.stageCount = stages.size();
     pipelineInfo.pStages = stages.data();
     pipelineInfo.pVertexInputState = &vertexInputInfo;

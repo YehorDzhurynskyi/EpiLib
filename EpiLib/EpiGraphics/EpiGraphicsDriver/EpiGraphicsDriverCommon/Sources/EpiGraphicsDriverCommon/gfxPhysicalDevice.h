@@ -20,8 +20,7 @@ class gfxPhysicalDeviceImpl;
 
 } // namespace internalgfx
 
-class gfxSurface;
-class gfxPhysicalDevice : public Object, public epiPimplView<internalgfx::gfxPhysicalDeviceImpl>
+class gfxPhysicalDevice : public Object
 {
 EPI_GENREGION_BEGIN(gfxPhysicalDevice)
 
@@ -48,7 +47,7 @@ public:
 
 public:
     gfxPhysicalDevice() = default;
-    gfxPhysicalDevice(internalgfx::gfxPhysicalDeviceImpl* impl);
+    explicit gfxPhysicalDevice(const std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl>& impl);
 
 public:
     std::optional<gfxDevice> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
@@ -58,6 +57,9 @@ public:
     epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
+
+protected:
+    epiPimpl<internalgfx::gfxPhysicalDeviceImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

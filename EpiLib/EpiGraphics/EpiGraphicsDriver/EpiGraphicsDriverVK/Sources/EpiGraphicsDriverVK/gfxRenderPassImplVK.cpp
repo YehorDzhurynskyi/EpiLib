@@ -104,6 +104,69 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
     return true;
 }
 
+epiBool gfxRenderPassImplVK::Init(const gfxRenderPassSchema& schema)
+{
+    struct RenderSubpassInfo
+    {
+        VkSubpassDescription Subpass;
+        std::vector<VkAttachmentReference> ColorAttachmentRefs;
+    };
+
+    std::vector<RenderSubpassInfo> subpasses;
+    subpasses.reserve(schema.GetSubPasses().Size());
+
+    std::vector<VkAttachmentDescription> attachments;
+    for (const gfxRenderSubPassSchema& subpass : schema.GetSubPasses())
+    {
+        attachments.reserve(subpass.GetColorAttachments().Size());
+
+        RenderSubpassInfo& subpassInfo = subpasses.emplace_back();
+        subpassInfo = {};
+        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetColorAttachments().Size());
+
+        for (const gfxAttachmentRefSchema& ref : subpass.GetColorAttachments())
+        {
+            const gfxAttachmentSchema& attachment = ref.GetAttachment();
+
+            VkAttachmentDescription& colorAttachment = attachments.emplace_back();
+            colorAttachment = {};
+            colorAttachment.format = gfxFormatTo(attachment.GetFormat());
+            colorAttachment.samples = gfxSampleCountTo(attachment.GetSampleCount());
+
+            VkAttachmentReference& colorAttachmentRef = subpassInfo.ColorAttachmentRefs.emplace_back();
+            colorAttachmentRef = {};
+            colorAttachmentRef.attachment = ref.GetAttachmentIndex();
+        }
+
+        subpassInfo.Subpass.colorAttachmentCount = subpassInfo.ColorAttachmentRefs.size();
+        subpassInfo.Subpass.pColorAttachments = subpassInfo.ColorAttachmentRefs.data();
+
+        // TODO: handle other attachment types
+    }
+
+    std::vector<VkSubpassDescription> vkSubpasses;
+    vkSubpasses.reserve(subpasses.size());
+
+    std::transform(subpasses.begin(), subpasses.end(), std::back_inserter(vkSubpasses), [](const RenderSubpassInfo& subpassInfo)
+    {
+        return subpassInfo.Subpass;
+    });
+
+    VkRenderPassCreateInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassInfo.attachmentCount = attachments.size();
+    renderPassInfo.pAttachments = attachments.data();
+    renderPassInfo.subpassCount = vkSubpasses.size();
+    renderPassInfo.pSubpasses = vkSubpasses.data();
+
+    if (vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass) != VK_SUCCESS)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 gfxRenderPassImplVK::~gfxRenderPassImplVK()
 {
     vkDestroyRenderPass(m_VkDevice, m_VkRenderPass, nullptr);
