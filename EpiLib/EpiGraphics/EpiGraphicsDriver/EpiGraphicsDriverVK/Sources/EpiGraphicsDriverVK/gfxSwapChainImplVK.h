@@ -30,7 +30,11 @@ public:
                  const gfxSurfaceImpl& surfaceImpl,
                  const gfxQueueFamilyImpl& queueFamilyImpl);
 
-    epiBool Present(const gfxQueueImpl& queueImpl) override;
+    epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline) override;
+
+    epiBool Present(const gfxQueueImpl& queue) override;
+
+    epiSize2u GetExtent() const override;
 
 protected:
     const gfxDeviceImplVK& m_Device;
@@ -44,6 +48,8 @@ protected:
     std::vector<VkSemaphore_T*> m_VkSemaphoreRenderFinished;
     std::vector<VkFence_T*> m_VkFencesInFlight;
     std::vector<VkFence_T*> m_VkFencesImagesInFlight;
+
+    epiSize2u m_Extent{};
 };
 
 } // namespace internalgfx

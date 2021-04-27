@@ -4,6 +4,9 @@
 #include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
+#include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
+#include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
+#include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxTextureView.h"
@@ -27,10 +30,32 @@ gfxSwapChainImplVK::gfxSwapChainImplVK(const gfxDeviceImplVK& device)
 {
 }
 
+gfxSwapChainImplVK::~gfxSwapChainImplVK()
+{
+    for (VkSemaphore semaphore : m_VkSemaphoreRenderFinished)
+    {
+        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
+    }
+
+    for (VkSemaphore semaphore : m_VkSemaphoreImageAvailable)
+    {
+        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
+    }
+
+    for (VkFence fence : m_VkFencesInFlight)
+    {
+        vkDestroyFence(m_Device.GetVkDevice(), fence, nullptr);
+    }
+
+    vkDestroySwapchainKHR(m_Device.GetVkDevice(), m_VkSwapChain, nullptr);
+}
+
 epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
                                  const gfxSurfaceImpl& surfaceImpl,
                                  const gfxQueueFamilyImpl& queueFamilyImpl)
 {
+    m_Extent = info.GetExtent();
+
     const gfxSurfaceCapabilities& capabilities = info.GetCapabilities();
 
     epiU32 imageCount = capabilities.GetMinImageCount() + 1;
@@ -147,27 +172,58 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
     return true;
 }
 
-gfxSwapChainImplVK::~gfxSwapChainImplVK()
+epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline)
 {
-    for (VkSemaphore semaphore : m_VkSemaphoreRenderFinished)
+    const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& commandBuffers = m_CommandPool->GetPrimaryCommandBuffers();
+    const gfxRenderPassImplVK& renderPassVk = static_cast<const gfxRenderPassImplVK&>(renderPass);
+    const gfxPipelineGraphicsImplVK& pipelineVk = static_cast<const gfxPipelineGraphicsImplVK&>(pipeline);
+
+    const VkExtent2D extent{GetExtent().x, GetExtent().y};
+
+    for (epiU32 i = 0; i < commandBuffers.Size(); ++i)
     {
-        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
+        const std::shared_ptr<gfxCommandBufferImpl>& commandBuffer = commandBuffers[i];
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+        VkCommandBuffer commandBufferVk = static_cast<const gfxCommandBufferImplVK*>(commandBuffer.get())->GetVkCommandBuffer();
+        if (vkBeginCommandBuffer(commandBufferVk, &beginInfo) != VK_SUCCESS)
+        {
+            epiLogError("Failed to begin command buffer!");
+            return false;
+        }
+
+        VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = renderPassVk.GetVkRenderPass();
+        renderPassInfo.framebuffer = static_cast<const gfxFrameBufferImplVK*>(m_SwapChainFrameBuffers[i].get())->GetVkFrameBuffer();
+        renderPassInfo.renderArea.offset = {0, 0};
+        renderPassInfo.renderArea.extent = extent;
+        renderPassInfo.clearValueCount = 1;
+        renderPassInfo.pClearValues = &clearColor;
+
+        vkCmdBeginRenderPass(commandBufferVk, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        vkCmdBindPipeline(commandBufferVk, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineVk.GetVkPipeline());
+
+        vkCmdDraw(commandBufferVk, 3, 1, 0, 0);
+
+        vkCmdEndRenderPass(commandBufferVk);
+
+        if (vkEndCommandBuffer(commandBufferVk) != VK_SUCCESS)
+        {
+            epiLogError("Failed to end command buffer!");
+            return false;
+        }
     }
 
-    for (VkSemaphore semaphore : m_VkSemaphoreImageAvailable)
-    {
-        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
-    }
-
-    for (VkFence fence : m_VkFencesInFlight)
-    {
-        vkDestroyFence(m_Device.GetVkDevice(), fence, nullptr);
-    }
-
-    vkDestroySwapchainKHR(m_Device.GetVkDevice(), m_VkSwapChain, nullptr);
+    return true;
 }
 
-epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queueImpl)
+epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
 {
     const epiU32 frameIndex = m_CurrentFrame % kMaxFramesInFlight;
 
@@ -194,7 +250,7 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queueImpl)
 
     VkSemaphore waitSemaphores[] = {m_VkSemaphoreImageAvailable[frameIndex]};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-    VkCommandBuffer commandBuffers[] = {static_cast<gfxCommandBufferImplVK*>(m_CommandPool->BufferAtPrimary(imageIndex))->GetVkCommandBuffer()};
+    VkCommandBuffer commandBuffers[] = {static_cast<gfxCommandBufferImplVK*>(m_CommandPool->GetPrimaryCommandBuffers()[imageIndex].get())->GetVkCommandBuffer()};
     VkSemaphore signalSemaphores[] = {m_VkSemaphoreRenderFinished[frameIndex]};
 
     static_assert(epiArrLen(waitSemaphores) == epiArrLen(waitStages));
@@ -211,7 +267,7 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queueImpl)
 
     vkResetFences(m_Device.GetVkDevice(), 1, &m_VkFencesInFlight[frameIndex]);
 
-    if (vkQueueSubmit(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue(), 1, &submitInfo, m_VkFencesInFlight[frameIndex]) != VK_SUCCESS)
+    if (vkQueueSubmit(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), 1, &submitInfo, m_VkFencesInFlight[frameIndex]) != VK_SUCCESS)
     {
         return false;
     }
@@ -227,7 +283,7 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queueImpl)
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr;
 
-    if (vkQueuePresentKHR(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue(), &presentInfo) != VK_SUCCESS)
+    if (vkQueuePresentKHR(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), &presentInfo) != VK_SUCCESS)
     {
         return false;
     }
@@ -242,6 +298,11 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queueImpl)
     ++m_CurrentFrame;
 
     return true;
+}
+
+epiSize2u gfxSwapChainImplVK::GetExtent() const
+{
+    return m_Extent;
 }
 
 } // namespace internalgfx

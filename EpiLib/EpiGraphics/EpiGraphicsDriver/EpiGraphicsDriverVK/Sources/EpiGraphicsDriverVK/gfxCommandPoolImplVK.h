@@ -45,14 +45,9 @@ public:
 
     epiBool Init(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl);
 
-    gfxCommandBufferImpl* BufferAtPrimary(epiU32 index) override;
-    gfxCommandBufferImpl* BufferAtSecondary(epiU32 index) override;
-
 protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkCommandPool_T* m_VkCommandPool{nullptr};
-    std::vector<std::unique_ptr<gfxCommandBufferImplVK>> m_PrimaryCommandBuffers;
-    std::vector<std::unique_ptr<gfxCommandBufferImplVK>> m_SecondaryCommandBuffers;
 };
 
 } // namespace internalgfx

@@ -84,18 +84,11 @@ std::optional<gfxRenderPass> gfxDevice::CreateRenderPassFromSchema(const gfxRend
     return renderPass;
 }
 
-std::optional<gfxPipeline> gfxDevice::CreatePipeline(const gfxPipelineCreateInfo& info, const gfxRenderPass& renderPass) const
+std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxRenderPass& renderPass) const
 {
-    std::optional<gfxPipeline> pipeline;
+    std::optional<gfxPipelineGraphics> pipeline;
 
-    const gfxShaderProgram* shaderProgram = info.GetShaderProgram();
-    if (shaderProgram == nullptr)
-    {
-        epiLogError("Failed to create Pipeline! ShaderProgram hasn't provided!");
-        return pipeline;
-    }
-
-    const auto shaderProgramImpl = shaderProgram->m_Impl;
+    const auto shaderProgramImpl = info.GetShaderProgram().m_Impl;
     if (!shaderProgramImpl)
     {
         epiLogError("Failed to create Pipeline! ShaderProgram has no implementation!");
@@ -109,9 +102,9 @@ std::optional<gfxPipeline> gfxDevice::CreatePipeline(const gfxPipelineCreateInfo
         return pipeline;
     }
 
-    if (std::shared_ptr<internalgfx::gfxPipelineImpl> impl = m_Impl->CreatePipeline(info, *shaderProgramImpl, *renderPassImpl))
+    if (std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> impl = m_Impl->CreatePipelineGraphics(info, *shaderProgramImpl, *renderPassImpl))
     {
-        pipeline = gfxPipeline(std::move(impl));
+        pipeline = gfxPipelineGraphics(std::move(impl));
     }
 
     return pipeline;

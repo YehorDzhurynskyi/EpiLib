@@ -17,9 +17,9 @@ class gfxPipelineColorBlendAttachment
     gfxColorComponent ColorWriteMask = gfxColorComponent::RGBA;
 };
 
-class gfxPipelineCreateInfo
+class gfxPipelineGraphicsCreateInfo
 {
-    gfxShaderProgram* ShaderProgram;
+    gfxShaderProgram ShaderProgram;
 
     epiU32 RenderSubPassIndex;
 
@@ -53,6 +53,6 @@ class gfxPipelineCreateInfo
     epiVec4f ColorBlendConstants;
 };
 
-class gfxPipeline
+class gfxPipelineGraphics
 {
 };

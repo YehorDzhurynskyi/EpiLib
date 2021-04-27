@@ -12,6 +12,25 @@ gfxSwapChain::gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>&
 {
 }
 
+epiBool gfxSwapChain::AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline)
+{
+    const auto renderPassImpl = renderPass.m_Impl;
+    if (!renderPassImpl)
+    {
+        epiLogError("Failed to assign RenderPass to the SwapChain! RenderPass has no implementation!");
+        return false;
+    }
+
+    const auto pipelineImpl = pipeline.m_Impl;
+    if (!pipelineImpl)
+    {
+        epiLogError("Failed to assign Pipeline to the SwapChain! Pipeline has no implementation!");
+        return false;
+    }
+
+    return m_Impl->AssignRenderPass(*renderPassImpl, *pipelineImpl);
+}
+
 epiBool gfxSwapChain::Present(const gfxQueue& queue)
 {
     const auto queueImpl = queue.m_Impl;
@@ -22,6 +41,11 @@ epiBool gfxSwapChain::Present(const gfxQueue& queue)
     }
 
     return m_Impl->Present(*queueImpl);
+}
+
+epiSize2u gfxSwapChain::GetExtent_Callback() const
+{
+    return m_Impl->GetExtent();
 }
 
 EPI_NAMESPACE_END()

@@ -6,6 +6,10 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
+#include "EpiGraphicsDriverCommon/gfxRenderPass.h"
+#include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
+#include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
+
 EPI_NAMESPACE_BEGIN()
 
 namespace internalgfx

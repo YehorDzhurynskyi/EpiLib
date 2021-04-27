@@ -7,28 +7,28 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxPipelineCreateInfo& gfxPipelineCreateInfo::AddScissor(const epiRect2s& scissor)
+gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddScissor(const epiRect2s& scissor)
 {
     GetScissors().push_back(scissor);
 
     return *this;
 }
 
-gfxPipelineCreateInfo& gfxPipelineCreateInfo::AddViewport(const gfxPipelineViewport& viewport)
+gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddViewport(const gfxPipelineViewport& viewport)
 {
     GetViewports().push_back(viewport);
 
     return *this;
 }
 
-gfxPipelineCreateInfo& gfxPipelineCreateInfo::AddColorBlendAttachment(const gfxPipelineColorBlendAttachment& attachment)
+gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddColorBlendAttachment(const gfxPipelineColorBlendAttachment& attachment)
 {
     GetColorBlendAttachments().push_back(attachment);
 
     return *this;
 }
 
-gfxPipeline::gfxPipeline(const std::shared_ptr<internalgfx::gfxPipelineImpl>& impl)
+gfxPipelineGraphics::gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl>& impl)
     : m_Impl{impl}
 {
 }

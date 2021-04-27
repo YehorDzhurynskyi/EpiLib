@@ -326,6 +326,7 @@ EPI_GENREGION_END(gfxRenderPass)
 public:
     friend class gfxDevice;
     friend class gfxCommandBuffer;
+    friend class gfxSwapChain;
 
 public:
     gfxRenderPass() = default;

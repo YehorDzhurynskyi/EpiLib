@@ -11,18 +11,18 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-gfxPipelineImplVK::gfxPipelineImplVK(const gfxDeviceImplVK& device)
+gfxPipelineGraphicsImplVK::gfxPipelineGraphicsImplVK(const gfxDeviceImplVK& device)
     : m_Device{device}
 {
 }
 
-gfxPipelineImplVK::~gfxPipelineImplVK()
+gfxPipelineGraphicsImplVK::~gfxPipelineGraphicsImplVK()
 {
     vkDestroyPipeline(m_Device.GetVkDevice(), m_VkPipeline, nullptr);
     vkDestroyPipelineLayout(m_Device.GetVkDevice(), m_VkPipelineLayout, nullptr);
 }
 
-epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl)
+epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl)
 {
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -185,6 +185,11 @@ epiBool gfxPipelineImplVK::Init(const gfxPipelineCreateInfo& info, const gfxShad
     }
 
     return true;
+}
+
+VkPipeline gfxPipelineGraphicsImplVK::GetVkPipeline() const
+{
+    return m_VkPipeline;
 }
 
 } // namespace internalgfx

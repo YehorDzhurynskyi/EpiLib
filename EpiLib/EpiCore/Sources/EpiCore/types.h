@@ -404,7 +404,12 @@ public:
     {
     }
 
-    epiBool operator epiBool() const { return static_cast<epiBool>(m_Impl); }
+    void Reset()
+    {
+        m_Impl.reset();
+    }
+
+    operator epiBool() const { return static_cast<epiBool>(m_Impl); }
 
     TImpl* operator->() { return Impl(); }
     const TImpl* operator->() const { return Impl(); }

@@ -12,17 +12,19 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-class gfxPipelineImplVK : public gfxPipelineImpl
+class gfxPipelineGraphicsImplVK : public gfxPipelineGraphicsImpl
 {
 public:
-    explicit gfxPipelineImplVK(const gfxDeviceImplVK& device);
-    gfxPipelineImplVK(const gfxPipelineImplVK& rhs) = delete;
-    gfxPipelineImplVK& operator=(const gfxPipelineImplVK& rhs) = delete;
-    gfxPipelineImplVK(gfxPipelineImplVK&& rhs) = default;
-    gfxPipelineImplVK& operator=(gfxPipelineImplVK&& rhs) = default;
-    ~gfxPipelineImplVK() override;
+    explicit gfxPipelineGraphicsImplVK(const gfxDeviceImplVK& device);
+    gfxPipelineGraphicsImplVK(const gfxPipelineGraphicsImplVK& rhs) = delete;
+    gfxPipelineGraphicsImplVK& operator=(const gfxPipelineGraphicsImplVK& rhs) = delete;
+    gfxPipelineGraphicsImplVK(gfxPipelineGraphicsImplVK&& rhs) = default;
+    gfxPipelineGraphicsImplVK& operator=(gfxPipelineGraphicsImplVK&& rhs) = default;
+    ~gfxPipelineGraphicsImplVK() override;
 
-    epiBool Init(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl);
+    epiBool Init(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl);
+
+    VkPipeline_T* GetVkPipeline() const;
 
 protected:
     const gfxDeviceImplVK& m_Device;

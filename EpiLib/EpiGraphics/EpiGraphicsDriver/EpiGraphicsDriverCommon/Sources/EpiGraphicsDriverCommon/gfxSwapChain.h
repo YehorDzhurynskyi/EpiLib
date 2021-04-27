@@ -63,14 +63,20 @@ public:
 
     enum gfxSwapChain_PIDs
     {
-        PID_COUNT = 0
+        PID_Extent = 0x21a25c7e,
+        PID_COUNT = 1
     };
+
+protected:
+    epiSize2u GetExtent_Callback() const;
 
 EPI_GENREGION_END(gfxSwapChain)
 
 public:
     gfxSwapChain() = default;
     explicit gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl);
+
+    epiBool AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline);
 
     epiBool Present(const gfxQueue& queue);
 

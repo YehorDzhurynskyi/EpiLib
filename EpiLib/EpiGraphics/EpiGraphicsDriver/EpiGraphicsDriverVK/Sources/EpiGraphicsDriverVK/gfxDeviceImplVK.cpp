@@ -393,11 +393,11 @@ std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPassFromSchema(c
     return impl;
 }
 
-std::shared_ptr<gfxPipelineImpl> gfxDeviceImplVK::CreatePipeline(const gfxPipelineCreateInfo& info,
-                                                                 const gfxShaderProgramImpl& shaderProgramImpl,
-                                                                 const gfxRenderPassImpl& renderPassImpl) const
+std::shared_ptr<gfxPipelineGraphicsImpl> gfxDeviceImplVK::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info,
+                                                                                 const gfxShaderProgramImpl& shaderProgramImpl,
+                                                                                 const gfxRenderPassImpl& renderPassImpl) const
 {
-    std::shared_ptr<gfxPipelineImplVK> impl = std::make_shared<gfxPipelineImplVK>(*this);
+    std::shared_ptr<gfxPipelineGraphicsImplVK> impl = std::make_shared<gfxPipelineGraphicsImplVK>(*this);
     if (!impl->Init(info, shaderProgramImpl, renderPassImpl))
     {
         impl.reset();

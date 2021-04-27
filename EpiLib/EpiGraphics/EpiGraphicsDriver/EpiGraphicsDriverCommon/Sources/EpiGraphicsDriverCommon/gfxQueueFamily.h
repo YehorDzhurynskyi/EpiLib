@@ -7,6 +7,7 @@ EPI_GENREGION_END(include)
 #include "EpiCore/ObjectModel/Object.h"
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxQueue.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -88,6 +89,12 @@ public:
 public:
     gfxQueueFamily() = default;
     explicit gfxQueueFamily(const std::shared_ptr<internalgfx::gfxQueueFamilyImpl>& impl);
+
+    const gfxQueue& At(epiU32 index) const;
+    gfxQueue& At(epiU32 index);
+
+    const gfxQueue& operator[](epiU32 index) const;
+    gfxQueue& operator[](epiU32 index);
 
 protected:
     epiPimpl<internalgfx::gfxQueueFamilyImpl> m_Impl;

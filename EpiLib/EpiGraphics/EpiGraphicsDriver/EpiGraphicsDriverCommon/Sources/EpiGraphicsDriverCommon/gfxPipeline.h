@@ -15,7 +15,7 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-class gfxPipelineImpl;
+class gfxPipelineGraphicsImpl;
 
 } // internalgfx
 
@@ -79,16 +79,16 @@ protected:
 EPI_GENREGION_END(gfxPipelineColorBlendAttachment)
 };
 
-class gfxPipelineCreateInfo : public Object
+class gfxPipelineGraphicsCreateInfo : public Object
 {
-EPI_GENREGION_BEGIN(gfxPipelineCreateInfo)
+EPI_GENREGION_BEGIN(gfxPipelineGraphicsCreateInfo)
 
-EPI_GENHIDDEN_gfxPipelineCreateInfo()
+EPI_GENHIDDEN_gfxPipelineGraphicsCreateInfo()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xe3024e64};
+    constexpr static epiMetaTypeID TypeID{0xae3d6062};
 
-    enum gfxPipelineCreateInfo_PIDs
+    enum gfxPipelineGraphicsCreateInfo_PIDs
     {
         PID_ShaderProgram = 0xe4812959,
         PID_RenderSubPassIndex = 0xdaca0981,
@@ -113,7 +113,7 @@ public:
     };
 
 protected:
-    gfxShaderProgram* m_ShaderProgram{nullptr};
+    gfxShaderProgram m_ShaderProgram{};
     epiU32 m_RenderSubPassIndex{0};
     gfxPipelineInputAssemblyType m_InputAssemblyType{gfxPipelineInputAssemblyType::None};
     epiArray<gfxPipelineViewport> m_Viewports{};
@@ -133,44 +133,39 @@ protected:
     gfxLogicOp m_ColorBlendLogicOp{};
     epiVec4f m_ColorBlendConstants{};
 
-EPI_GENREGION_END(gfxPipelineCreateInfo)
+EPI_GENREGION_END(gfxPipelineGraphicsCreateInfo)
 
 public:
-    gfxPipelineCreateInfo() = default;
-    gfxPipelineCreateInfo(const gfxPipelineCreateInfo& rhs) = delete;
-    gfxPipelineCreateInfo& operator=(const gfxPipelineCreateInfo& rhs) = delete;
-    gfxPipelineCreateInfo(gfxPipelineCreateInfo&& rhs) = default;
-    gfxPipelineCreateInfo& operator=(gfxPipelineCreateInfo&& rhs) = default;
-    ~gfxPipelineCreateInfo() = default;
-
-public:
-    gfxPipelineCreateInfo& AddScissor(const epiRect2s& scissor);
-    gfxPipelineCreateInfo& AddViewport(const gfxPipelineViewport& viewport);
-    gfxPipelineCreateInfo& AddColorBlendAttachment(const gfxPipelineColorBlendAttachment& attachment);
+    gfxPipelineGraphicsCreateInfo& AddScissor(const epiRect2s& scissor);
+    gfxPipelineGraphicsCreateInfo& AddViewport(const gfxPipelineViewport& viewport);
+    gfxPipelineGraphicsCreateInfo& AddColorBlendAttachment(const gfxPipelineColorBlendAttachment& attachment);
 };
 
-class gfxPipeline : public Object
+class gfxPipelineGraphics : public Object
 {
-EPI_GENREGION_BEGIN(gfxPipeline)
+EPI_GENREGION_BEGIN(gfxPipelineGraphics)
 
-EPI_GENHIDDEN_gfxPipeline()
+EPI_GENHIDDEN_gfxPipelineGraphics()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x6442434b};
+    constexpr static epiMetaTypeID TypeID{0x168915bb};
 
-    enum gfxPipeline_PIDs
+    enum gfxPipelineGraphics_PIDs
     {
         PID_COUNT = 0
     };
 
-EPI_GENREGION_END(gfxPipeline)
+EPI_GENREGION_END(gfxPipelineGraphics)
 
 public:
-    gfxPipeline() = default;
-    explicit gfxPipeline(const std::shared_ptr<internalgfx::gfxPipelineImpl>& impl);
+    friend class gfxSwapChain;
+
+public:
+    gfxPipelineGraphics() = default;
+    explicit gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> & impl);
 
 protected:
-    epiPimpl<internalgfx::gfxPipelineImpl> m_Impl;
+    epiPimpl<internalgfx::gfxPipelineGraphicsImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

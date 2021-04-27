@@ -92,8 +92,12 @@ public:
     gfxCommandPoolImpl& operator=(gfxCommandPoolImpl&& rhs) = default;
     virtual ~gfxCommandPoolImpl() = default;
 
-    virtual gfxCommandBufferImpl* BufferAtPrimary(epiU32 index) = 0;
-    virtual gfxCommandBufferImpl* BufferAtSecondary(epiU32 index) = 0;
+    const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetPrimaryCommandBuffers() { return m_PrimaryCommandBuffers; }
+    const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetSecondaryCommandBuffers() { return m_SecondaryCommandBuffers; }
+
+protected:
+    epiArray<std::shared_ptr<gfxCommandBufferImpl>> m_PrimaryCommandBuffers;
+    epiArray<std::shared_ptr<gfxCommandBufferImpl>> m_SecondaryCommandBuffers;
 };
 
 class gfxCommandBufferImpl
@@ -135,7 +139,7 @@ public:
     virtual std::shared_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
     virtual std::shared_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxRenderPassImpl> CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const = 0;
-    virtual std::shared_ptr<gfxPipelineImpl> CreatePipeline(const gfxPipelineCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
+    virtual std::shared_ptr<gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
     virtual std::shared_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
     virtual std::shared_ptr<gfxShaderProgramImpl> CreateShaderProgram(const gfxShaderProgramCreateInfoImpl& info) const = 0;
     virtual std::shared_ptr<gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl) const = 0;
@@ -199,7 +203,11 @@ public:
     gfxSwapChainImpl& operator=(gfxSwapChainImpl&& rhs) = default;
     virtual ~gfxSwapChainImpl() = default;
 
-    virtual epiBool Present(const gfxQueueImpl& queueImpl) = 0;
+    virtual epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline) = 0;
+
+    virtual epiBool Present(const gfxQueueImpl& queue) = 0;
+
+    virtual epiSize2u GetExtent() const = 0;
 };
 
 class gfxDriverImpl
@@ -363,26 +371,15 @@ public:
 #endif
 };
 
-class gfxPipelineImpl
+class gfxPipelineGraphicsImpl
 {
 public:
-    gfxPipelineImpl() = default;
-    gfxPipelineImpl(const gfxPipelineImpl& rhs) = delete;
-    gfxPipelineImpl& operator=(const gfxPipelineImpl& rhs) = delete;
-    gfxPipelineImpl(gfxPipelineImpl&& rhs) = default;
-    gfxPipelineImpl& operator=(gfxPipelineImpl&& rhs) = default;
-    virtual ~gfxPipelineImpl() = default;
-};
-
-class gfxGraphicsPipelineImpl
-{
-public:
-    gfxGraphicsPipelineImpl() = default;
-    gfxGraphicsPipelineImpl(const gfxGraphicsPipelineImpl& rhs) = delete;
-    gfxGraphicsPipelineImpl& operator=(const gfxGraphicsPipelineImpl& rhs) = delete;
-    gfxGraphicsPipelineImpl(gfxGraphicsPipelineImpl&& rhs) = default;
-    gfxGraphicsPipelineImpl& operator=(gfxGraphicsPipelineImpl&& rhs) = default;
-    virtual ~gfxGraphicsPipelineImpl() = default;
+    gfxPipelineGraphicsImpl() = default;
+    gfxPipelineGraphicsImpl(const gfxPipelineGraphicsImpl& rhs) = delete;
+    gfxPipelineGraphicsImpl& operator=(const gfxPipelineGraphicsImpl& rhs) = delete;
+    gfxPipelineGraphicsImpl(gfxPipelineGraphicsImpl&& rhs) = default;
+    gfxPipelineGraphicsImpl& operator=(gfxPipelineGraphicsImpl&& rhs) = default;
+    virtual ~gfxPipelineGraphicsImpl() = default;
 };
 
 class gfxRenderPassImpl

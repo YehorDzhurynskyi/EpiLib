@@ -3,15 +3,11 @@
 #include <wx/window.h>
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
-
-EPI_NAMESPACE_BEGIN()
-
-class gfxPhysicalDevice;
-class gfxDevice;
-class gfxQueueFamily;
-class gfxRenderPassCreateInfo;
-
-EPI_NAMESPACE_END()
+#include "EpiGraphicsDriverCommon/gfxSwapChain.h"
+#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxDevice.h"
+#include "EpiGraphicsDriverCommon/gfxRenderPass.h"
+#include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 
 struct epiWXVulkanCanvasCreateInfo
 {
@@ -46,8 +42,6 @@ public:
                    const wxSize& size = wxDefaultSize,
                    long style = 0,
                    const wxString& name = wxASCII_STR("epiWXVulkanCanvas"));
-
-    epiBool Present(const epi::gfxQueue& queue);
 
 protected:
     epi::gfxSurface m_Surface;

@@ -27,18 +27,17 @@ gfxDriver::gfxDriver(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gf
     std::transform(impl->GetPhysicalDevices().begin(),
                    impl->GetPhysicalDevices().end(),
                    std::back_inserter(physicalDevices),
-                   [](std::unique_ptr<internalgfx::gfxPhysicalDeviceImpl>& physicalDeviceImpl)
+                   [](const std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl>& physicalDeviceImpl)
     {
-        return gfxPhysicalDevice(physicalDeviceImpl.get());
+        return gfxPhysicalDevice(physicalDeviceImpl);
     });
-
 }
 
 void gfxDriver::Reset()
 {
     m_PhysicalDevices.Clear();
     m_Backend = gfxDriverBackend::None;
-    delete m_Impl;
+    m_Impl.Reset();
 }
 
 void gfxDriver::SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriverExtension>& extensionsRequired)
@@ -55,10 +54,10 @@ void gfxDriver::SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriver
         driver.Reset();
 
         // TODO: configure api version / app name properly
-        std::unique_ptr<internalgfx::gfxDriverImplVK> impl = std::make_unique<internalgfx::gfxDriverImplVK>();
+        std::shared_ptr<internalgfx::gfxDriverImplVK> impl = std::make_shared<internalgfx::gfxDriverImplVK>();
         if (impl->Init(1u, 2u, 162u, "EpiLab", extensionsRequired))
         {
-            driver = gfxDriver(impl.release(), backend);
+            driver = gfxDriver(std::move(impl), backend);
         }
     } break;
     default: epiLogFatal("Graphics Backend=`{}` isn't implemeted!", backend); break; // TODO: str repr
@@ -69,15 +68,9 @@ std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
 {
     std::optional<gfxSurface> surface;
 
-    if (m_Impl == nullptr)
+    if (std::shared_ptr<internalgfx::gfxSurfaceImpl> surfaceImpl = m_Impl->CreateSurface(window))
     {
-        epiLogError("Failed to create Surface! Driver has no assigned backend!");
-        return surface;
-    }
-
-    if (std::unique_ptr<internalgfx::gfxSurfaceImpl> surfaceImpl = m_Impl->CreateSurface(window))
-    {
-        surface = gfxSurface(surfaceImpl.release());
+        surface = gfxSurface(std::move(surfaceImpl));
     }
 
     return surface;

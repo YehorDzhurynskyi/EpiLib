@@ -94,10 +94,10 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
 {
     vkDestroyCommandPool(m_VkDevice, m_VkCommandPool, nullptr);
 
-    if (!m_PrimaryCommandBuffers.empty())
+    if (!m_PrimaryCommandBuffers.IsEmpty())
     {
         std::vector<VkCommandBuffer> primaryCommandBuffers;
-        primaryCommandBuffers.reserve(m_PrimaryCommandBuffers.size());
+        primaryCommandBuffers.reserve(m_PrimaryCommandBuffers.Size());
 
         std::transform(m_PrimaryCommandBuffers.begin(),
                        m_PrimaryCommandBuffers.end(),
@@ -110,10 +110,10 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
         vkFreeCommandBuffers(m_VkDevice, m_VkCommandPool, primaryCommandBuffers.size(), primaryCommandBuffers.data());
     }
 
-    if (!m_SecondaryCommandBuffers.empty())
+    if (!m_SecondaryCommandBuffers.IsEmpty())
     {
         std::vector<VkCommandBuffer> secondaryCommandBuffers;
-        secondaryCommandBuffers.reserve(m_SecondaryCommandBuffers.size());
+        secondaryCommandBuffers.reserve(m_SecondaryCommandBuffers.Size());
 
         std::transform(m_SecondaryCommandBuffers.begin(),
                        m_SecondaryCommandBuffers.end(),
@@ -185,34 +185,6 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const g
     }
 
     return true;
-}
-
-gfxCommandBufferImpl* gfxCommandPoolImplVK::BufferAtPrimary(epiU32 index)
-{
-    if (index >= m_PrimaryCommandBuffers.size())
-    {
-        epiLogError("Failed to get primary command buffer by index=`{}` (Primary command buffer count = `{}`)",
-                    index,
-                    m_PrimaryCommandBuffers.size());
-
-        return nullptr;
-    }
-
-    return m_PrimaryCommandBuffers[index].get();
-}
-
-gfxCommandBufferImpl* gfxCommandPoolImplVK::BufferAtSecondary(epiU32 index)
-{
-    if (index >= m_SecondaryCommandBuffers.size())
-    {
-        epiLogError("Failed to get secondary command buffer by index=`{}` (Secondary command buffer count = `{}`)",
-                    index,
-                    m_SecondaryCommandBuffers.size());
-
-        return nullptr;
-    }
-
-    return m_SecondaryCommandBuffers[index].get();
 }
 
 } // namespace internalgfx

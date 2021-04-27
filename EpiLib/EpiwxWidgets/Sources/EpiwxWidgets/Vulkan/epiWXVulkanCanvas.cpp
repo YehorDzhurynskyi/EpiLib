@@ -6,9 +6,6 @@
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
 
-#include <Windows.h>
-#include <WinUser.h>
-
 #include <wx/app.h>
 
 EPI_NAMESPACE_USING()
@@ -132,9 +129,4 @@ epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
     m_SwapChain = std::move(*swapChain);
 
     return true;
-}
-
-epiBool epiWXVulkanCanvas::Present(const epi::gfxQueue& queue)
-{
-    return m_SwapChain.Present(queue);
 }

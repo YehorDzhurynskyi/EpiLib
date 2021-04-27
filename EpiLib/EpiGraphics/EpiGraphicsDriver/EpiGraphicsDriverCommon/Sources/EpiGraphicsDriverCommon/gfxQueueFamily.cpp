@@ -53,4 +53,24 @@ epiU32 gfxQueueFamily::GetQueueCount_Callback() const
     return m_Impl->GetQueueCount();
 }
 
+const gfxQueue& gfxQueueFamily::At(epiU32 index) const
+{
+    return GetQueues()[index];
+}
+
+gfxQueue& gfxQueueFamily::At(epiU32 index)
+{
+    return GetQueues()[index];
+}
+
+const gfxQueue& gfxQueueFamily::operator[](epiU32 index) const
+{
+    return At(index);
+}
+
+gfxQueue& gfxQueueFamily::operator[](epiU32 index)
+{
+    return At(index);
+}
+
 EPI_NAMESPACE_END()
