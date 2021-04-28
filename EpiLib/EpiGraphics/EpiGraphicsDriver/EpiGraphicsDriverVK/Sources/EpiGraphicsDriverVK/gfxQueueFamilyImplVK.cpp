@@ -1,5 +1,6 @@
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -42,10 +43,12 @@ gfxQueueFamilyImplVK::gfxQueueFamilyImplVK(const gfxQueueFamilyDescriptorImplVK&
 
 void gfxQueueFamilyImplVK::Init(const gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc)
 {
+    const gfxDeviceImplVK& deviceVk = static_cast<const gfxDeviceImplVK&>(device);
+
     for (epiU32 i = 0; i < queueDesc.GetQueueCount(); ++i)
     {
         const epiFloat priority = queueDesc.GetPriorities()[i];
-        std::shared_ptr<gfxQueueImpl> queue = std::make_shared<gfxQueueImplVK>(device, *this, i, priority);
+        std::shared_ptr<gfxQueueImpl> queue = std::make_shared<gfxQueueImplVK>(deviceVk, *this, i, priority);
 
         m_Queues.push_back(std::move(queue));
     }

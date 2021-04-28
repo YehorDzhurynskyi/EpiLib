@@ -11,7 +11,7 @@ namespace internalgfx
 {
 
 gfxQueueImplVK::gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority)
-    : m_Type{queueFamily.GetQueueTypeSupportedMask()}
+    : m_Type{queueFamily.GetQueueTypeMask()}
     , m_Priority{priority}
 {
     vkGetDeviceQueue(device.GetVkDevice(), queueFamily.GetIndex(), queueIndex, &m_VkQueue);

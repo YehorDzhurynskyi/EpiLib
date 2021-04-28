@@ -56,10 +56,9 @@ public:
         attachmentSchema.SetSampleCount(gfxSampleCount::Sample1);
 
         gfxRenderSubPassSchema renderSubPassSchema;
-        renderSubPassSchema.AddAttachment(attachmentSchema, 0);
+        renderSubPassSchema.AddAttachment(attachmentSchema, 0, gfxAttachmentBindPoint::Color);
 
         gfxRenderPassSchema renderPassSchema;
-        renderPassSchema.AddAttachment(std::move(attachmentSchema));
         renderPassSchema.AddSubPass(std::move(renderSubPassSchema));
 
         gfxSurfaceFormat surfaceFormat;
@@ -102,7 +101,7 @@ public:
 
         gfxRenderSubPass subpass;
         subpass.SetBindPoint(gfxPipelineBindPoint::Graphics);
-        subpass.AddAttachment(attachment, 0, gfxImageLayout::ColorAttachmentOptimal);
+        subpass.AddAttachment(attachment, 0, gfxImageLayout::ColorAttachmentOptimal, gfxAttachmentBindPoint::Color);
 
         gfxRenderSubPassDependency subpassDependency;
         subpassDependency.SetSrcSubPass(~0U); // replace with VK_SUBPASS_EXTERNAL

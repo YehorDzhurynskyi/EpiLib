@@ -16,14 +16,14 @@ gfxQueueDescriptor::gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epi
     std::transform(surfaceTargets.begin(),
                    surfaceTargets.end(),
                    std::back_inserter(m_SurfaceTargets),
-                   [](const gfxSurface* surfaceTarget) -> internalgfx::gfxSurfaceImpl*
+                   [](gfxSurface* surfaceTarget) -> internalgfx::gfxSurfaceImpl*
     {
         if (surfaceTarget == nullptr)
         {
             return nullptr;
         }
 
-        return surfaceTarget->m_Impl;
+        return surfaceTarget->m_Impl.Impl();
     });
 }
 

@@ -102,9 +102,10 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
         std::transform(m_PrimaryCommandBuffers.begin(),
                        m_PrimaryCommandBuffers.end(),
                        std::back_inserter(primaryCommandBuffers),
-                       [](const std::unique_ptr<gfxCommandBufferImplVK>& commandBuffer)
+                       [](const std::shared_ptr<gfxCommandBufferImpl>& commandBuffer)
         {
-            return commandBuffer->GetVkCommandBuffer();
+            const gfxCommandBufferImplVK* commandBufferVk = static_cast<const gfxCommandBufferImplVK*>(commandBuffer.get());
+            return commandBufferVk->GetVkCommandBuffer();
         });
 
         vkFreeCommandBuffers(m_VkDevice, m_VkCommandPool, primaryCommandBuffers.size(), primaryCommandBuffers.data());
@@ -118,9 +119,10 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
         std::transform(m_SecondaryCommandBuffers.begin(),
                        m_SecondaryCommandBuffers.end(),
                        std::back_inserter(secondaryCommandBuffers),
-                       [](const std::unique_ptr<gfxCommandBufferImplVK>& commandBuffer)
+                       [](const std::shared_ptr<gfxCommandBufferImpl>& commandBuffer)
         {
-            return commandBuffer->GetVkCommandBuffer();
+            const gfxCommandBufferImplVK* commandBufferVk = static_cast<const gfxCommandBufferImplVK*>(commandBuffer.get());
+            return commandBufferVk->GetVkCommandBuffer();
         });
 
         vkFreeCommandBuffers(m_VkDevice, m_VkCommandPool, secondaryCommandBuffers.size(), secondaryCommandBuffers.data());

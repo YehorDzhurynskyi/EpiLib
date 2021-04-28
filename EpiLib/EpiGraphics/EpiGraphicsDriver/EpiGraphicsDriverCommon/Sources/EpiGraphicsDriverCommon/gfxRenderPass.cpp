@@ -7,13 +7,26 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void gfxRenderSubPassSchema::AddAttachment(const gfxAttachmentSchema& attachment, epiU32 attachmentIndex)
+void gfxRenderSubPassSchema::AddAttachment(const gfxAttachmentSchema& attachment, epiU32 attachmentIndex, gfxAttachmentBindPoint bindPoint)
 {
     gfxAttachmentRefSchema ref;
     ref.SetAttachment(attachment);
     ref.SetAttachmentIndex(attachmentIndex);
 
-    m_Attachments.push_back(ref);
+    epiArray<gfxAttachmentRefSchema>* attachments = nullptr;
+    switch (bindPoint)
+    {
+    case gfxAttachmentBindPoint::Input: attachments = &GetAttachmentsInput(); break;
+    case gfxAttachmentBindPoint::Color: attachments = &GetAttachmentsColor(); break;
+    case gfxAttachmentBindPoint::DepthStencil: attachments = &GetAttachmentsDepthStencil(); break;
+    case gfxAttachmentBindPoint::Resolve: attachments = &GetAttachmentsResolve(); break;
+    default: epiLogError("Unrecognized AttachmentBindPoint=`{}`", bindPoint); // TODO: str repr
+    }
+
+    if (attachments != nullptr)
+    {
+        attachments->push_back(ref);
+    }
 }
 
 void gfxRenderPassSchema::AddSubPass(gfxRenderSubPassSchema&& subpass)
@@ -21,9 +34,27 @@ void gfxRenderPassSchema::AddSubPass(gfxRenderSubPassSchema&& subpass)
     GetSubPasses().push_back(std::move(subpass));
 }
 
-void gfxRenderPassSchema::AddAttachment(gfxAttachmentSchema&& attachment)
+epiArray<gfxAttachmentSchema> gfxRenderPassSchema::GetAttachments_Callback() const
 {
-    GetAttachments().push_back(std::move(attachment));
+    epiArray<gfxAttachmentSchema> attachments;
+
+    auto pushBackAttachments = [&attachments](const epiArray<gfxAttachmentRefSchema>& refs)
+    {
+        for (const gfxAttachmentRefSchema& ref : refs)
+        {
+            attachments.push_back(ref.GetAttachment());
+        }
+    };
+
+    for (const gfxRenderSubPassSchema& subpass : GetSubPasses())
+    {
+        pushBackAttachments(subpass.GetAttachmentsInput());
+        pushBackAttachments(subpass.GetAttachmentsColor());
+        pushBackAttachments(subpass.GetAttachmentsDepthStencil());
+        pushBackAttachments(subpass.GetAttachmentsResolve());
+    }
+
+    return attachments;
 }
 
 epiBool gfxAttachment::IsCompatibleWith(const gfxAttachment& rhs) const
@@ -46,80 +77,27 @@ epiBool gfxAttachmentRef::IsCompatibleWith(const gfxAttachmentRefSchema& rhs) co
     return GetAttachmentIndex() == rhs.GetAttachmentIndex() && GetAttachment().IsCompatibleWith(rhs.GetAttachment());
 }
 
-void gfxRenderSubPass::AddAttachment(const gfxAttachment& attachment, epiU32 attachmentIndex, gfxImageLayout layout)
+void gfxRenderSubPass::AddAttachment(const gfxAttachment& attachment, epiU32 attachmentIndex, gfxImageLayout layout, gfxAttachmentBindPoint bindPoint)
 {
     gfxAttachmentRef ref;
     ref.SetAttachment(attachment);
     ref.SetAttachmentIndex(attachmentIndex);
     ref.SetLayuot(layout);
 
-    m_Attachments.push_back(ref);
-}
-
-epiArray<gfxAttachmentRef> gfxRenderSubPass::GetInputAttachments_Callback() const
-{
-    epiArray<gfxAttachmentRef> result;
-    result.Reserve(GetAttachments().Size());
-
-    std::copy_if(GetAttachments().begin(), GetAttachments().end(), std::back_inserter(result), [](const gfxAttachmentRef& ref)
+    epiArray<gfxAttachmentRef>* attachments = nullptr;
+    switch (bindPoint)
     {
-        switch (ref.GetLayuot())
-        {
-        // TODO: implement
-        default: return false;
-        }
-    });
+    case gfxAttachmentBindPoint::Input: attachments = &GetAttachmentsInput(); break;
+    case gfxAttachmentBindPoint::Color: attachments = &GetAttachmentsColor(); break;
+    case gfxAttachmentBindPoint::DepthStencil: attachments = &GetAttachmentsDepthStencil(); break;
+    case gfxAttachmentBindPoint::Resolve: attachments = &GetAttachmentsResolve(); break;
+    default: epiLogError("Unrecognized AttachmentBindPoint=`{}`", bindPoint); // TODO: str repr
+    }
 
-    return result;
-}
-
-epiArray<gfxAttachmentRef> gfxRenderSubPass::GetColorAttachments_Callback() const
-{
-    epiArray<gfxAttachmentRef> result;
-    result.Reserve(GetAttachments().Size());
-
-    std::copy_if(GetAttachments().begin(), GetAttachments().end(), std::back_inserter(result), [](const gfxAttachmentRef& ref)
+    if (attachments != nullptr)
     {
-        switch (ref.GetLayuot())
-        {
-        case gfxImageLayout::ColorAttachmentOptimal:
-            return true;
-        default: return false;
-        }
-    });
-
-    return result;
-}
-
-epiArray<gfxAttachmentRef> gfxRenderSubPass::GetDepthStencilAttachments_Callback() const
-{
-    epiArray<gfxAttachmentRef> result;
-    result.Reserve(GetAttachments().Size());
-
-    std::copy_if(GetAttachments().begin(), GetAttachments().end(), std::back_inserter(result), [](const gfxAttachmentRef& ref)
-    {
-        switch (ref.GetLayuot())
-        {
-        case gfxImageLayout::DepthStencilAttachmentOptimal:
-        case gfxImageLayout::DepthStencilReadOnlyOptimal:
-        case gfxImageLayout::DepthReadOnlyStencilAttachmentOptimal:
-        case gfxImageLayout::DepthAttachmentStencilReadOnlyOptimal:
-        case gfxImageLayout::DepthAttachmentOptimal:
-        case gfxImageLayout::DepthReadOnlyOptimal:
-        case gfxImageLayout::StencilAttachmentOptimal:
-        case gfxImageLayout::StencilReadOnlyOptimal:
-            return true;
-        default: return false;
-        }
-    });
-
-    return result;
-}
-
-epiArray<gfxAttachmentRef> gfxRenderSubPass::GetResolveAttachments_Callback() const
-{
-    // TODO: implement
-    return {};
+        attachments->push_back(ref);
+    }
 }
 
 epiBool gfxRenderSubPass::IsCompatibleWith(const gfxRenderSubPass& rhs) const
@@ -143,10 +121,10 @@ epiBool gfxRenderSubPass::IsCompatibleWith(const gfxRenderSubPass& rhs) const
         return true;
     };
 
-    return compatible(GetColorAttachments(), rhs.GetColorAttachments()) &&
-           compatible(GetInputAttachments(), rhs.GetInputAttachments()) &&
-           compatible(GetDepthStencilAttachments(), rhs.GetDepthStencilAttachments()) &&
-           compatible(GetResolveAttachments(), rhs.GetResolveAttachments());
+    return compatible(GetAttachmentsColor(), rhs.GetAttachmentsColor()) &&
+           compatible(GetAttachmentsInput(), rhs.GetAttachmentsInput()) &&
+           compatible(GetAttachmentsDepthStencil(), rhs.GetAttachmentsDepthStencil()) &&
+           compatible(GetAttachmentsResolve(), rhs.GetAttachmentsResolve());
 }
 
 epiBool gfxRenderSubPass::IsCompatibleWith(const gfxRenderSubPassSchema& rhs) const
@@ -170,10 +148,10 @@ epiBool gfxRenderSubPass::IsCompatibleWith(const gfxRenderSubPassSchema& rhs) co
         return true;
     };
 
-    return compatible(GetColorAttachments(), rhs.GetColorAttachments()) &&
-           compatible(GetInputAttachments(), rhs.GetInputAttachments()) &&
-           compatible(GetDepthStencilAttachments(), rhs.GetDepthStencilAttachments()) &&
-           compatible(GetResolveAttachments(), rhs.GetResolveAttachments());
+    return compatible(GetAttachmentsColor(), rhs.GetAttachmentsColor()) &&
+           compatible(GetAttachmentsInput(), rhs.GetAttachmentsInput()) &&
+           compatible(GetAttachmentsDepthStencil(), rhs.GetAttachmentsDepthStencil()) &&
+           compatible(GetAttachmentsResolve(), rhs.GetAttachmentsResolve());
 }
 
 void gfxRenderPassCreateInfo::AddSubPass(gfxRenderSubPass&& subpass)
@@ -190,12 +168,20 @@ epiArray<gfxAttachment> gfxRenderPassCreateInfo::GetAttachments_Callback() const
 {
     epiArray<gfxAttachment> attachments;
 
-    for (const gfxRenderSubPass& subpass : GetSubPasses())
+    auto pushBackAttachments = [&attachments](const epiArray<gfxAttachmentRef>& refs)
     {
-        for (const gfxAttachmentRef& ref : subpass.GetAttachments())
+        for (const gfxAttachmentRef& ref : refs)
         {
             attachments.push_back(ref.GetAttachment());
         }
+    };
+
+    for (const gfxRenderSubPass& subpass : GetSubPasses())
+    {
+        pushBackAttachments(subpass.GetAttachmentsInput());
+        pushBackAttachments(subpass.GetAttachmentsColor());
+        pushBackAttachments(subpass.GetAttachmentsDepthStencil());
+        pushBackAttachments(subpass.GetAttachmentsResolve());
     }
 
     return attachments;

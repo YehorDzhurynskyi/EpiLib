@@ -1,3 +1,11 @@
+enum gfxAttachmentBindPoint
+{
+    Input,
+    Color,
+    DepthStencil,
+    Resolve
+};
+
 class gfxAttachmentSchema
 {
     gfxFormat Format = gfxFormat::UNDEFINED;
@@ -14,15 +22,10 @@ class gfxRenderSubPassSchema
 {
     [ReadOnly]
     {
-        epiArray<gfxAttachmentRefSchema> Attachments;
-    }
-
-    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
-    {
-        epiArray<gfxAttachmentRefSchema> InputAttachments;
-        epiArray<gfxAttachmentRefSchema> ColorAttachments;
-        epiArray<gfxAttachmentRefSchema> DepthStencilAttachments;
-        epiArray<gfxAttachmentRefSchema> ResolveAttachments;
+        epiArray<gfxAttachmentRefSchema> AttachmentsInput;
+        epiArray<gfxAttachmentRefSchema> AttachmentsColor;
+        epiArray<gfxAttachmentRefSchema> AttachmentsDepthStencil;
+        epiArray<gfxAttachmentRefSchema> AttachmentsResolve;
     }
 };
 
@@ -31,6 +34,10 @@ class gfxRenderPassSchema
     [ReadOnly]
     {
         epiArray<gfxRenderSubPassSchema> SubPasses;
+    }
+
+    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
+    {
         epiArray<gfxAttachmentSchema> Attachments;
     }
 };
@@ -74,15 +81,10 @@ class gfxRenderSubPass
 
     [ReadOnly]
     {
-        epiArray<gfxAttachmentRef> Attachments;
-    }
-
-    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
-    {
-        epiArray<gfxAttachmentRef> InputAttachments;
-        epiArray<gfxAttachmentRef> ColorAttachments;
-        epiArray<gfxAttachmentRef> DepthStencilAttachments;
-        epiArray<gfxAttachmentRef> ResolveAttachments;
+        epiArray<gfxAttachmentRef> AttachmentsInput;
+        epiArray<gfxAttachmentRef> AttachmentsColor;
+        epiArray<gfxAttachmentRef> AttachmentsDepthStencil;
+        epiArray<gfxAttachmentRef> AttachmentsResolve;
     }
 };
 

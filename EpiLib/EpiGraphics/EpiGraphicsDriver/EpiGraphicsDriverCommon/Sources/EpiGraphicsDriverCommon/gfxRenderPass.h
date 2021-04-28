@@ -17,6 +17,16 @@ class gfxRenderPassImpl;
 
 } // internalgfx
 
+enum class gfxAttachmentBindPoint : epiS32
+{
+EPI_GENREGION_BEGIN(gfxAttachmentBindPoint)
+    Input = 0,
+    Color = 1,
+    DepthStencil = 2,
+    Resolve = 3
+EPI_GENREGION_END(gfxAttachmentBindPoint)
+};
+
 class gfxAttachmentSchema : public Object
 {
 EPI_GENREGION_BEGIN(gfxAttachmentSchema)
@@ -74,27 +84,23 @@ public:
 
     enum gfxRenderSubPassSchema_PIDs
     {
-        PID_Attachments = 0xc1587501,
-        PID_InputAttachments = 0x70d4ec53,
-        PID_ColorAttachments = 0x10be45ca,
-        PID_DepthStencilAttachments = 0xcebd1dbf,
-        PID_ResolveAttachments = 0x37a5d009,
-        PID_COUNT = 5
+        PID_AttachmentsInput = 0xc826fdca,
+        PID_AttachmentsColor = 0x765887f4,
+        PID_AttachmentsDepthStencil = 0x929bf3a8,
+        PID_AttachmentsResolve = 0x9252270f,
+        PID_COUNT = 4
     };
 
 protected:
-    epiArray<gfxAttachmentRefSchema> GetInputAttachments_Callback() const;
-    epiArray<gfxAttachmentRefSchema> GetColorAttachments_Callback() const;
-    epiArray<gfxAttachmentRefSchema> GetDepthStencilAttachments_Callback() const;
-    epiArray<gfxAttachmentRefSchema> GetResolveAttachments_Callback() const;
-
-protected:
-    epiArray<gfxAttachmentRefSchema> m_Attachments{};
+    epiArray<gfxAttachmentRefSchema> m_AttachmentsInput{};
+    epiArray<gfxAttachmentRefSchema> m_AttachmentsColor{};
+    epiArray<gfxAttachmentRefSchema> m_AttachmentsDepthStencil{};
+    epiArray<gfxAttachmentRefSchema> m_AttachmentsResolve{};
 
 EPI_GENREGION_END(gfxRenderSubPassSchema)
 
 public:
-    void AddAttachment(const gfxAttachmentSchema& attachment, epiU32 attachmentIndex);
+    void AddAttachment(const gfxAttachmentSchema& attachment, epiU32 attachmentIndex, gfxAttachmentBindPoint bindPoint);
 };
 
 class gfxRenderPassSchema : public Object
@@ -114,8 +120,10 @@ public:
     };
 
 protected:
+    epiArray<gfxAttachmentSchema> GetAttachments_Callback() const;
+
+protected:
     epiArray<gfxRenderSubPassSchema> m_SubPasses{};
-    epiArray<gfxAttachmentSchema> m_Attachments{};
 
 EPI_GENREGION_END(gfxRenderPassSchema)
 
@@ -204,23 +212,19 @@ public:
     enum gfxRenderSubPass_PIDs
     {
         PID_BindPoint = 0x2163d576,
-        PID_Attachments = 0xc1587501,
-        PID_InputAttachments = 0x70d4ec53,
-        PID_ColorAttachments = 0x10be45ca,
-        PID_DepthStencilAttachments = 0xcebd1dbf,
-        PID_ResolveAttachments = 0x37a5d009,
-        PID_COUNT = 6
+        PID_AttachmentsInput = 0xc826fdca,
+        PID_AttachmentsColor = 0x765887f4,
+        PID_AttachmentsDepthStencil = 0x929bf3a8,
+        PID_AttachmentsResolve = 0x9252270f,
+        PID_COUNT = 5
     };
 
 protected:
-    epiArray<gfxAttachmentRef> GetInputAttachments_Callback() const;
-    epiArray<gfxAttachmentRef> GetColorAttachments_Callback() const;
-    epiArray<gfxAttachmentRef> GetDepthStencilAttachments_Callback() const;
-    epiArray<gfxAttachmentRef> GetResolveAttachments_Callback() const;
-
-protected:
     gfxPipelineBindPoint m_BindPoint{};
-    epiArray<gfxAttachmentRef> m_Attachments{};
+    epiArray<gfxAttachmentRef> m_AttachmentsInput{};
+    epiArray<gfxAttachmentRef> m_AttachmentsColor{};
+    epiArray<gfxAttachmentRef> m_AttachmentsDepthStencil{};
+    epiArray<gfxAttachmentRef> m_AttachmentsResolve{};
 
 EPI_GENREGION_END(gfxRenderSubPass)
 
@@ -228,7 +232,7 @@ public:
     epiBool IsCompatibleWith(const gfxRenderSubPass& rhs) const;
     epiBool IsCompatibleWith(const gfxRenderSubPassSchema& rhs) const;
 
-    void AddAttachment(const gfxAttachment& attachment, epiU32 attachmentIndex, gfxImageLayout layout);
+    void AddAttachment(const gfxAttachment& attachment, epiU32 attachmentIndex, gfxImageLayout layout, gfxAttachmentBindPoint bindPoint);
 };
 
 class gfxRenderSubPassDependency : public Object

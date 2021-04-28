@@ -28,13 +28,13 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
     std::vector<VkAttachmentDescription> attachments;
     for (const gfxRenderSubPass& subpass : info.GetSubPasses())
     {
-        attachments.reserve(subpass.GetColorAttachments().Size());
+        attachments.reserve(subpass.GetAttachmentsColor().Size());
 
         RenderSubpassInfo& subpassInfo = subpasses.emplace_back();
         subpassInfo = {};
-        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetColorAttachments().Size());
+        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetAttachmentsColor().Size());
 
-        for (const gfxAttachmentRef& ref : subpass.GetColorAttachments())
+        for (const gfxAttachmentRef& ref : subpass.GetAttachmentsColor())
         {
             const gfxAttachment& attachment = ref.GetAttachment();
 
@@ -118,13 +118,13 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassSchema& schema)
     std::vector<VkAttachmentDescription> attachments;
     for (const gfxRenderSubPassSchema& subpass : schema.GetSubPasses())
     {
-        attachments.reserve(subpass.GetColorAttachments().Size());
+        attachments.reserve(subpass.GetAttachmentsColor().Size());
 
         RenderSubpassInfo& subpassInfo = subpasses.emplace_back();
         subpassInfo = {};
-        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetColorAttachments().Size());
+        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetAttachmentsColor().Size());
 
-        for (const gfxAttachmentRefSchema& ref : subpass.GetColorAttachments())
+        for (const gfxAttachmentRefSchema& ref : subpass.GetAttachmentsColor())
         {
             const gfxAttachmentSchema& attachment = ref.GetAttachment();
 

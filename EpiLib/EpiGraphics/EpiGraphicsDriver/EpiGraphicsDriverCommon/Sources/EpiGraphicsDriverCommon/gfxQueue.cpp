@@ -12,11 +12,6 @@ gfxQueue::gfxQueue(const std::shared_ptr<internalgfx::gfxQueueImpl>& impl)
 {
 }
 
-gfxQueue::gfxQueue(std::shared_ptr<internalgfx::gfxQueueImpl>&& impl)
-    : m_Impl{std::move(impl)}
-{
-}
-
 gfxQueueType gfxQueue::GetType_Callback() const
 {
     return m_Impl->GetType();

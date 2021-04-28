@@ -21,10 +21,6 @@ struct epiWXVulkanCanvasCreateInfo
 
 class epiWXVulkanCanvas : public wxWindow
 {
-private:
-    wxDECLARE_EVENT_TABLE();
-    wxDECLARE_CLASS(epiWXVulkanCanvas);
-
 public:
     epiWXVulkanCanvas() = default;
     epiWXVulkanCanvas(const epiWXVulkanCanvasCreateInfo& info,

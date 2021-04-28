@@ -48,28 +48,4 @@ gfxCommandPool::gfxCommandPool(const std::shared_ptr<internalgfx::gfxCommandPool
 {
 }
 
-std::optional<gfxCommandBuffer> gfxCommandPool::BufferAtPrimary(epiU32 index)
-{
-    std::optional<gfxCommandBuffer> commandBuffer;
-
-    if (internalgfx::gfxCommandBufferImpl* commandBufferImpl = m_Impl->BufferAtPrimary(index))
-    {
-        commandBuffer = gfxCommandBuffer(commandBufferImpl);
-    }
-
-    return commandBuffer;
-}
-
-std::optional<gfxCommandBuffer> gfxCommandPool::BufferAtSecondary(epiU32 index)
-{
-    std::optional<gfxCommandBuffer> commandBuffer;
-
-    if (internalgfx::gfxCommandBufferImpl* commandBufferImpl = m_Impl->BufferAtSecondary(index))
-    {
-        commandBuffer = gfxCommandBuffer(commandBufferImpl);
-    }
-
-    return commandBuffer;
-}
-
 EPI_NAMESPACE_END()

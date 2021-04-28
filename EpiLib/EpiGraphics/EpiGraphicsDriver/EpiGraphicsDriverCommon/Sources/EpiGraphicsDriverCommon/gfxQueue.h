@@ -45,7 +45,6 @@ public:
 public:
     gfxQueue() = default;
     explicit gfxQueue(const std::shared_ptr<internalgfx::gfxQueueImpl>& impl);
-    explicit gfxQueue(std::shared_ptr<internalgfx::gfxQueueImpl>&& impl);
 
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
 
