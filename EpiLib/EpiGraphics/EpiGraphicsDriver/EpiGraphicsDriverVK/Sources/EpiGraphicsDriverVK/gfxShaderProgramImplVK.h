@@ -23,8 +23,11 @@ public:
 
     epiBool GetIsCreated() const override;
     gfxShaderType GetType() const override;
+    gfxShaderBackend GetBackend() const override;
+    epiArray<epiU8> GetCode() const override;
 
     epiBool InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") override;
+    epiBool InitFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") override;
 
     const epiString& GetEntryPoint() const;
     VkShaderModule_T* GetVkShaderModule() const;
@@ -34,6 +37,8 @@ protected:
     VkShaderModule_T* m_VkShaderModule{nullptr};
     gfxShaderType m_Type{gfxShaderType::None};
     epiString m_EntryPoint;
+    gfxShaderBackend m_Backend{gfxShaderBackend::None};
+    epiArray<epiU8> m_Code;
 };
 
 class gfxShaderProgramImplVK : public gfxShaderProgramImpl

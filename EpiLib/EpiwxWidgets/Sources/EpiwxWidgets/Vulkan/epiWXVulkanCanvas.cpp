@@ -35,7 +35,7 @@ epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
         return false;
     }
 
-    if (gfxDriver::GetInstance().IsExtensionEnabled(gfxDriverExtension::Surface))
+    if (!gfxDriver::GetInstance().IsExtensionEnabled(gfxDriverExtension::Surface))
     {
         epiLogError("Graphics driver doesn't has Surface extension enabled!");
         return false;
@@ -47,7 +47,11 @@ epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
         return false;
     }
 
-    wxCHECK_MSG(parent, false, wxT("can't create wxWindow without parent"));
+    if (parent == nullptr)
+    {
+        epiLogError("Can't create wxWindow without parent!");
+        return false;
+    }
 
     if (!CreateBase(parent, id, pos, size, style, wxDefaultValidator, name))
     {

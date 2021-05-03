@@ -14,9 +14,16 @@ gfxShader::gfxShader(const std::shared_ptr<internalgfx::gfxShaderImpl>& impl)
 
 epiBool gfxShader::InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint)
 {
-    epiExpect(!GetIsCreated(), "Create method should be called on destroyed shader");
+    epiExpect(!GetIsCreated());
 
     return m_Impl->InitFromSource(source, type, entryPoint);
+}
+
+epiBool gfxShader::InitFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint)
+{
+    epiExpect(!GetIsCreated());
+
+    return m_Impl->InitFromBinary(binary, size, type, entryPoint);
 }
 
 epiBool gfxShader::GetIsCreated_Callback() const
@@ -27,6 +34,16 @@ epiBool gfxShader::GetIsCreated_Callback() const
 gfxShaderType gfxShader::GetType_Callback() const
 {
     return m_Impl->GetType();
+}
+
+gfxShaderBackend gfxShader::GetBackend_Callback() const
+{
+    return m_Impl->GetBackend();
+}
+
+epiArray<epiU8> gfxShader::GetCode_Callback() const
+{
+    return m_Impl->GetCode();
 }
 
 epiBool gfxShaderProgramCreateInfo::GetIsEmpty_Callback() const

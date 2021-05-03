@@ -18,6 +18,14 @@ class gfxShaderProgramImpl;
 
 } // namespace internalgfx
 
+enum class gfxShaderBackend : epiS32
+{
+EPI_GENREGION_BEGIN(gfxShaderBackend)
+    None = 0,
+    SPIRV = 1
+EPI_GENREGION_END(gfxShaderBackend)
+};
+
 class gfxShader final : public Object
 {
 EPI_GENREGION_BEGIN(gfxShader)
@@ -31,12 +39,16 @@ public:
     {
         PID_IsCreated = 0x560b66db,
         PID_Type = 0x2cecf817,
-        PID_COUNT = 2
+        PID_Backend = 0x4058f0ed,
+        PID_Code = 0xd7279fa6,
+        PID_COUNT = 4
     };
 
 protected:
     epiBool GetIsCreated_Callback() const;
     gfxShaderType GetType_Callback() const;
+    gfxShaderBackend GetBackend_Callback() const;
+    epiArray<epiU8> GetCode_Callback() const;
 
 EPI_GENREGION_END(gfxShader)
 
@@ -49,6 +61,7 @@ public:
 
 public:
     epiBool InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main");
+    epiBool InitFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main");
 
 protected:
     epiPimpl<internalgfx::gfxShaderImpl> m_Impl;

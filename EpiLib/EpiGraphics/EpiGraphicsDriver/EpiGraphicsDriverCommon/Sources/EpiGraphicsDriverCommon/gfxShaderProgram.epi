@@ -1,9 +1,19 @@
+enum gfxShaderBackend
+{
+    None,
+    SPIRV
+};
+
 class gfxShader
 {
     [Virtual, ReadOnly]
     {
         epiBool IsCreated;
         gfxShaderType Type;
+        gfxShaderBackend Backend;
+
+        [ReadCallback(SuppressRef=true)]
+        epiArray<epiU8> Code;
     }
 };
 

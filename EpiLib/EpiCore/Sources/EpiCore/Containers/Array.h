@@ -156,6 +156,11 @@ public:
         return m_Vector.crend();
     }
 
+    void swap(epiArray<T>& rhs)
+    {
+        m_Vector.swap(rhs.m_Vector);
+    }
+
     T& operator[](const epiS32 index)
     {
         return m_Vector[index];

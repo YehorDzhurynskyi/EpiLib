@@ -169,6 +169,22 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     // NOTE: enable advanced vk api (like VkPhysicalDeviceFeatures2 etc)
     extensions.push_back(VK_KHR_MAINTENANCE2_EXTENSION_NAME);
 
+    void* deviceCreateInfoNext = nullptr;
+
+    // TODO: introduce RETAIL build config
+#if EPI_NSIGHT_AFTERMATH
+    extensions.push_back(VK_NV_DEVICE_DIAGNOSTICS_CONFIG_EXTENSION_NAME);
+    extensions.push_back(VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME);
+
+    VkDeviceDiagnosticsConfigCreateInfoNV diagnosticsConfigCreateInfoNV{};
+    diagnosticsConfigCreateInfoNV.sType = VK_STRUCTURE_TYPE_DEVICE_DIAGNOSTICS_CONFIG_CREATE_INFO_NV;
+    diagnosticsConfigCreateInfoNV.pNext = deviceCreateInfoNext;
+    deviceCreateInfoNext = &diagnosticsConfigCreateInfoNV;
+    diagnosticsConfigCreateInfoNV.flags = VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV |
+                                          VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_RESOURCE_TRACKING_BIT_NV |
+                                          VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_AUTOMATIC_CHECKPOINTS_BIT_NV;
+#endif // EPI_NSIGHT_AFTERMATH
+
     createInfo.enabledExtensionCount = extensions.size();
     createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -176,16 +192,18 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
 
     VkPhysicalDeviceVulkan12Features features12{};
     features12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+    features12.pNext = deviceCreateInfoNext;
+    deviceCreateInfoNext = &features12;
 
     VkPhysicalDeviceVulkan11Features features11{};
     features11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
-    features11.pNext = &features12;
+    features11.pNext = deviceCreateInfoNext;
+    deviceCreateInfoNext = &features11;
 
     VkPhysicalDeviceFeatures2 features{};
     features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-    features.pNext = &features11;
-
-    createInfo.pNext = &features;
+    features.pNext = deviceCreateInfoNext;
+    deviceCreateInfoNext = &features;
 
     VkBool32* const kFeatures[]
     {
@@ -321,6 +339,8 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
         m_FeatureEnabled[static_cast<epiU32>(feature)] = true;
     }
 
+    createInfo.pNext = deviceCreateInfoNext;
+
     const VkResult resultCreateDevice = vkCreateDevice(physicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice);
     if (resultCreateDevice != VK_SUCCESS)
     {
@@ -410,6 +430,17 @@ std::shared_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epi
 {
     std::shared_ptr<gfxShaderImplVK> impl = std::make_shared<gfxShaderImplVK>(m_VkDevice);
     if (!impl->InitFromSource(source, type, entryPoint))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint) const
+{
+    std::shared_ptr<gfxShaderImplVK> impl = std::make_shared<gfxShaderImplVK>(m_VkDevice);
+    if (!impl->InitFromBinary(binary, size, type, entryPoint))
     {
         impl.reset();
     }

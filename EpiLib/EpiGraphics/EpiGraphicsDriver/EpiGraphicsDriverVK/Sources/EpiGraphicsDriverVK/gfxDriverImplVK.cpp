@@ -91,34 +91,6 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
     createInfo.pApplicationInfo = &appInfo;
 
 #ifdef EPI_BUILD_DEBUG
-    std::vector<const epiChar*> validationLayers {
-        "VK_LAYER_KHRONOS_validation"
-    };
-
-    epiU32 availableLayersCount;
-    vkEnumerateInstanceLayerProperties(&availableLayersCount, nullptr);
-
-    std::vector<VkLayerProperties> availableLayers(availableLayersCount);
-    vkEnumerateInstanceLayerProperties(&availableLayersCount, availableLayers.data());
-
-    const epiBool validationLayersSupported = std::all_of(validationLayers.begin(),
-                                                          validationLayers.end(),
-                                                          [availableLayers](const epiChar* validationLayer) {
-        const epiBool validationLayerSupported = availableLayers.end() != std::find_if(availableLayers.begin(),
-                                                                                       availableLayers.end(),
-                                                                                       [validationLayer](const VkLayerProperties& layerProperties)
-        {
-            return strcmp(layerProperties.layerName, validationLayer) == 0;
-        });
-
-        return validationLayerSupported;
-    });
-
-    epiAssert(validationLayersSupported);
-
-    createInfo.enabledLayerCount = static_cast<epiU32>(validationLayers.size());
-    createInfo.ppEnabledLayerNames = validationLayers.data();
-
     VkDebugUtilsMessengerCreateInfoEXT createInfoDebugMessenger{};
     createInfoDebugMessenger.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     createInfoDebugMessenger.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
@@ -133,6 +105,41 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
 
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&createInfoDebugMessenger;
 #endif // EPI_BUILD_DEBUG
+
+    std::vector<const epiChar*> validationLayers;
+#ifdef EPI_BUILD_DEBUG
+    validationLayers.push_back("VK_LAYER_KHRONOS_validation");
+    // validationLayers.push_back("VK_LAYER_LUNARG_api_dump");
+#endif // EPI_BUILD_DEBUG
+
+    epiU32 availableLayersCount;
+    vkEnumerateInstanceLayerProperties(&availableLayersCount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(availableLayersCount);
+    vkEnumerateInstanceLayerProperties(&availableLayersCount, availableLayers.data());
+
+    const epiBool validationLayersSupported = std::all_of(validationLayers.begin(),
+                                                          validationLayers.end(),
+                                                          [availableLayers](const epiChar* validationLayer)
+    {
+        const epiBool validationLayerSupported = availableLayers.end() != std::find_if(availableLayers.begin(),
+                                                                                       availableLayers.end(),
+                                                                                       [validationLayer](const VkLayerProperties& layerProperties)
+        {
+            return strcmp(layerProperties.layerName, validationLayer) == 0;
+        });
+
+        return validationLayerSupported;
+    });
+
+    if (!validationLayersSupported)
+    {
+        epiLogError("Some validation layer isn't supported!");
+        return false;
+    }
+
+    createInfo.enabledLayerCount = static_cast<epiU32>(validationLayers.size());
+    createInfo.ppEnabledLayerNames = validationLayers.data();
 
     std::vector<const epiChar*> extensions;
     for (gfxDriverExtension extension : extensionRequired)
@@ -151,6 +158,7 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
 
 #ifdef EPI_BUILD_DEBUG
     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 #endif
 
     createInfo.ppEnabledExtensionNames = extensions.data();
@@ -193,6 +201,8 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
 
         m_PhysicalDevices.push_back(std::move(physicalDevice));
     }
+
+    return true;
 }
 
 gfxDriverImplVK::~gfxDriverImplVK()

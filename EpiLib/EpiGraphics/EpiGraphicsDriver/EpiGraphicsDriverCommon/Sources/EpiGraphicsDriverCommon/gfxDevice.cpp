@@ -122,6 +122,18 @@ std::optional<gfxShader> gfxDevice::CreateShaderFromSource(const epiChar* source
     return shader;
 }
 
+std::optional<gfxShader> gfxDevice::CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint) const
+{
+    std::optional<gfxShader> shader;
+
+    if (std::shared_ptr<internalgfx::gfxShaderImpl> impl = m_Impl->CreateShaderFromBinary(binary, size, type, entryPoint))
+    {
+        shader = gfxShader(std::move(impl));
+    }
+
+    return shader;
+}
+
 std::optional<gfxShaderProgram> gfxDevice::CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const
 {
     // TODO: handle const_cast via epigen

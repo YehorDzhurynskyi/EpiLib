@@ -16,10 +16,13 @@ gfxDriver& gfxDriver::GetInstance()
     return instance;
 }
 
-gfxDriver::gfxDriver(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend)
-    : m_Impl{impl}
-    , m_Backend{backend}
+void gfxDriver::Reset(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend)
 {
+    m_Backend = backend;
+    m_PhysicalDevices.Clear();
+    m_GPUCrashTracker.Reset();
+    m_Impl = impl;
+
     epiArray<gfxPhysicalDevice>& physicalDevices = GetPhysicalDevices();
     physicalDevices.Reserve(impl->GetPhysicalDevices().Size());
 
@@ -33,13 +36,6 @@ gfxDriver::gfxDriver(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gf
     });
 }
 
-void gfxDriver::Reset()
-{
-    m_PhysicalDevices.Clear();
-    m_Backend = gfxDriverBackend::None;
-    m_Impl.Reset();
-}
-
 void gfxDriver::SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriverExtension>& extensionsRequired)
 {
     // TODO: should be called only from the main thread, add check
@@ -51,13 +47,11 @@ void gfxDriver::SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriver
     case gfxDriverBackend::None: epiLogFatal("Can't use `gfxDriverBackend::None` as a gfx driver backend!"); break;
     case gfxDriverBackend::Vulkan:
     {
-        driver.Reset();
-
         // TODO: configure api version / app name properly
         std::shared_ptr<internalgfx::gfxDriverImplVK> impl = std::make_shared<internalgfx::gfxDriverImplVK>();
         if (impl->Init(1u, 2u, 162u, "EpiLab", extensionsRequired))
         {
-            driver = gfxDriver(std::move(impl), backend);
+            driver.Reset(std::move(impl), backend);
         }
     } break;
     default: epiLogFatal("Graphics Backend=`{}` isn't implemeted!", backend); break; // TODO: str repr

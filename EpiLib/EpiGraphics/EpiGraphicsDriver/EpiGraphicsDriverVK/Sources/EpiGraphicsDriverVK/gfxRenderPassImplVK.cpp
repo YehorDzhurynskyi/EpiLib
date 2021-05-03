@@ -132,10 +132,14 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassSchema& schema)
             colorAttachment = {};
             colorAttachment.format = gfxFormatTo(attachment.GetFormat());
             colorAttachment.samples = gfxSampleCountTo(attachment.GetSampleCount());
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 
             VkAttachmentReference& colorAttachmentRef = subpassInfo.ColorAttachmentRefs.emplace_back();
             colorAttachmentRef = {};
             colorAttachmentRef.attachment = ref.GetAttachmentIndex();
+            colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         }
 
         subpassInfo.Subpass.colorAttachmentCount = subpassInfo.ColorAttachmentRefs.size();

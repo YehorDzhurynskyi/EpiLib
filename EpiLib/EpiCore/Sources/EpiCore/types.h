@@ -404,6 +404,18 @@ public:
     {
     }
 
+    epiPimpl& operator=(const std::shared_ptr<TImpl>& impl)
+    {
+        m_Impl = impl;
+        return *this;
+    }
+
+    epiPimpl& operator=(std::shared_ptr<TImpl>&& impl)
+    {
+        m_Impl = std::move(impl);
+        return *this;
+    }
+
     void Reset()
     {
         m_Impl.reset();

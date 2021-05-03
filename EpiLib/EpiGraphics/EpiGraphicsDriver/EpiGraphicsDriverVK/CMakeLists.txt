@@ -39,14 +39,13 @@ add_library(EpiGraphicsDriverVK
 get_target_property(EpiGraphicsDriverVK_SOURCES EpiGraphicsDriverVK SOURCES)
 epi_pack_sources(${EpiGraphicsDriverVK_SOURCES})
 
-find_package(shaderc REQUIRED)
-
 target_include_directories(EpiGraphicsDriverVK
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
 )
 
+find_package(shaderc REQUIRED FATAL_ERROR)
 find_package(Vulkan REQUIRED FATAL_ERROR)
 
 target_link_libraries(EpiGraphicsDriverVK

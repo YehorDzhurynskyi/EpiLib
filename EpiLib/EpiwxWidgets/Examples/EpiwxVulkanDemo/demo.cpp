@@ -76,7 +76,6 @@ public:
             epiAssert(queueFamilyIt != g_Device.GetQueueFamilies().end());
 
             m_QueueFamily = *queueFamilyIt;
-
         }
 
         epiWXVulkanCanvasCreateInfo canvasCreateInfo;
@@ -87,7 +86,10 @@ public:
         canvasCreateInfo.Format = surfaceFormat;
         canvasCreateInfo.PresentMode = kPresentModeRequired;
 
-        Create(canvasCreateInfo, parent, id, pos, size, style, name);
+        if (!Create(canvasCreateInfo, parent, id, pos, size, style, name))
+        {
+            return;
+        }
 
         gfxAttachment attachment;
         attachment.SetFormat(kFormatRequired);
@@ -372,7 +374,6 @@ epiWXVulkanDemoFrame::epiWXVulkanDemoFrame(wxWindow* parent, wxWindowID id, cons
 {
     epiWXVulkanDemoTriangleCanvas* canvas = new epiWXVulkanDemoTriangleCanvas(this);
     AddChild(canvas);
-
 
     SetSizeHints(wxDefaultSize, wxDefaultSize);
     Centre(wxBOTH);

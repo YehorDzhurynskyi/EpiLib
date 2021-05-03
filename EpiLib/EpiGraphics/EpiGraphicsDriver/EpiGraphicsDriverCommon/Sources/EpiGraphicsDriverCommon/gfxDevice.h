@@ -57,6 +57,7 @@ public:
     std::optional<gfxRenderPass> CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const;
     std::optional<gfxPipelineGraphics> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxRenderPass& renderPass) const;
     std::optional<gfxShader> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const;
+    std::optional<gfxShader> CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") const;
     std::optional<gfxShaderProgram> CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const;
     std::optional<gfxFrameBuffer> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const;
     std::optional<gfxTexture> CreateTexture(const gfxTextureCreateInfo& info) const;

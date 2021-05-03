@@ -4,5 +4,6 @@ class gfxDriver
     {
         gfxDriverBackend Backend = gfxDriverBackend::None;
         epiArray<gfxPhysicalDevice> PhysicalDevices;
+        gfxGPUCrashTracker GPUCrashTracker;
     }
 };

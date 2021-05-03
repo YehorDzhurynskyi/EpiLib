@@ -141,7 +141,7 @@ void gfxPhysicalDeviceImplVK::FillExtensionsSupported()
         }
         else
         {
-            epiLogWarn("Unrecognized Vulkan instance extension=`{}`!", extension.extensionName);
+            epiLogWarn("Unrecognized Vulkan physical device extension=`{}`!", extension.extensionName);
         }
     }
 }

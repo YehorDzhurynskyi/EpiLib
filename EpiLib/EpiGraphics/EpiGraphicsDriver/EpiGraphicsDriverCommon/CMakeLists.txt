@@ -56,6 +56,10 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxCommandPool.epi
     Sources/EpiGraphicsDriverCommon/gfxCommandPool.h
     Sources/EpiGraphicsDriverCommon/gfxCommandPool.cpp
+
+    Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.epi
+    Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.h
+    Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.cpp
 )
 get_target_property(EpiGraphicsDriverCommon_SOURCES EpiGraphicsDriverCommon SOURCES)
 epi_pack_sources(${EpiGraphicsDriverCommon_SOURCES})
@@ -70,6 +74,27 @@ target_link_libraries(EpiGraphicsDriverCommon
     PUBLIC
         EpiCore
 )
+
+find_package(NsightAftermath)
+
+if (NsightAftermath_FOUND)
+    target_link_libraries(EpiGraphicsDriverCommon
+        PUBLIC
+            NsightAftermath::NsightAftermath
+    )
+
+    target_compile_definitions(EpiGraphicsDriverCommon
+        PUBLIC
+            EPI_NVIDIA_NSIGHT_AFTERMATH
+    )
+else()
+    set(NsightAftermath_NOTFOUND_MESSAGE "Couldn't find NsightAftermath package!")
+    if (NOT $ENV{SIGHT_AFTERMATH_SDK})
+        set(NsightAftermath_NOTFOUND_MESSAGE "${NsightAftermath_NOTFOUND_MESSAGE} NSIGHT_AFTERMATH_SDK environment variable isn't set!")
+    endif()
+
+    message(WARNING ${NsightAftermath_NOTFOUND_MESSAGE})
+endif()
 
 epi_module_register(EpiGraphicsDriverCommon
     FOLDER "EpiLib"

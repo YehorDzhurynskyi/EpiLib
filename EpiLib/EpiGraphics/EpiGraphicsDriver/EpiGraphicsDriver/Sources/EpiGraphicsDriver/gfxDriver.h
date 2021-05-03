@@ -10,6 +10,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 
+#include "EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.h"
+
 #include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -34,12 +36,14 @@ public:
     {
         PID_Backend = 0x4058f0ed,
         PID_PhysicalDevices = 0x16b8cc07,
-        PID_COUNT = 2
+        PID_GPUCrashTracker = 0x5e835150,
+        PID_COUNT = 3
     };
 
 protected:
     gfxDriverBackend m_Backend{gfxDriverBackend::None};
     epiArray<gfxPhysicalDevice> m_PhysicalDevices{};
+    gfxGPUCrashTracker m_GPUCrashTracker{};
 
 EPI_GENREGION_END(gfxDriver)
 
@@ -56,9 +60,12 @@ public:
 
 protected:
     gfxDriver() = default;
-    gfxDriver(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend);
+    gfxDriver(const gfxDriver& rhs) = delete;
+    gfxDriver& operator=(const gfxDriver& rhs) = delete;
+    gfxDriver(gfxDriver&& rhs) = delete;
+    gfxDriver& operator=(gfxDriver&& rhs) = delete;
 
-    void Reset();
+    void Reset(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend);
 
 protected:
     epiPimpl<internalgfx::gfxDriverImpl> m_Impl;

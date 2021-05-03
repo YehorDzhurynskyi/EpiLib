@@ -33,6 +33,41 @@ gfxShaderImplVK& gfxShaderImplVK::operator=(gfxShaderImplVK&& rhs)
     return *this;
 }
 
+gfxShaderImplVK::~gfxShaderImplVK()
+{
+    vkDestroyShaderModule(m_VkDevice, m_VkShaderModule, nullptr);
+}
+
+epiBool gfxShaderImplVK::GetIsCreated() const
+{
+    return m_Type != gfxShaderType::None && m_VkShaderModule != nullptr;
+}
+
+gfxShaderType gfxShaderImplVK::GetType() const
+{
+    return m_Type;
+}
+
+gfxShaderBackend gfxShaderImplVK::GetBackend() const
+{
+    return m_Backend;
+}
+
+epiArray<epiU8> gfxShaderImplVK::GetCode() const
+{
+    return m_Code;
+}
+
+const epiString& gfxShaderImplVK::GetEntryPoint() const
+{
+    return m_EntryPoint;
+}
+
+VkShaderModule_T* gfxShaderImplVK::GetVkShaderModule() const
+{
+    return m_VkShaderModule;
+}
+
 epiBool gfxShaderImplVK::InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint)
 {
     shaderc_shader_kind shaderKind;
@@ -54,11 +89,15 @@ epiBool gfxShaderImplVK::InitFromSource(const epiChar* source, gfxShaderType typ
     }
 
     const std::vector<epiU32> byteCode{result.cbegin(), result.cend()};
+    return InitFromBinary(reinterpret_cast<const epiU8*>(byteCode.data()), byteCode.size() * sizeof(epiU32), type, entryPoint);
+}
 
+epiBool gfxShaderImplVK::InitFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint)
+{
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = byteCode.size() * sizeof(epiU32);
-    createInfo.pCode = byteCode.data();
+    createInfo.pCode = reinterpret_cast<const epiU32*>(binary);
+    createInfo.codeSize = size;
 
     if (vkCreateShaderModule(m_VkDevice, &createInfo, nullptr, &m_VkShaderModule) != VK_SUCCESS)
     {
@@ -67,33 +106,10 @@ epiBool gfxShaderImplVK::InitFromSource(const epiChar* source, gfxShaderType typ
 
     m_Type = type;
     m_EntryPoint = entryPoint;
+    m_Backend = gfxShaderBackend::SPIRV;
+    m_Code = epiArray<epiU8>(binary, binary + size); // TODO: save path to file instead of code
 
     return true;
-}
-
-gfxShaderImplVK::~gfxShaderImplVK()
-{
-    vkDestroyShaderModule(m_VkDevice, m_VkShaderModule, nullptr);
-}
-
-epiBool gfxShaderImplVK::GetIsCreated() const
-{
-    return m_Type != gfxShaderType::None && m_VkShaderModule != nullptr;
-}
-
-gfxShaderType gfxShaderImplVK::GetType() const
-{
-    return m_Type;
-}
-
-const epiString& gfxShaderImplVK::GetEntryPoint() const
-{
-    return m_EntryPoint;
-}
-
-VkShaderModule_T* gfxShaderImplVK::GetVkShaderModule() const
-{
-    return m_VkShaderModule;
 }
 
 epiBool gfxShaderProgramImplVK::Init(const gfxShaderProgramCreateInfoImpl& info)
