@@ -52,7 +52,8 @@ gfxSwapChainImplVK::~gfxSwapChainImplVK()
 
 epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
                                  const gfxSurfaceImpl& surfaceImpl,
-                                 const gfxQueueFamilyImpl& queueFamilyImpl)
+                                 const gfxQueueFamilyImpl& queueFamilyImpl,
+                                 const gfxRenderPassImpl& renderPassImpl)
 {
     m_Extent = info.GetExtent();
 
@@ -121,14 +122,10 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
         m_SwapChainImageViews.push_back(std::move(textureViewImpl));
     }
 
-    std::shared_ptr<gfxRenderPassImpl> renderPassImpl = m_Device.CreateRenderPassFromSchema(info.GetRenderPassSchema());
-    gfxRenderPass renderPass(renderPassImpl);
-
     for (const auto& textureViewImpl : m_SwapChainImageViews)
     {
         gfxFrameBufferCreateInfo frameBufferCreateInfo;
         frameBufferCreateInfo.SetSize(info.GetExtent());
-        frameBufferCreateInfo.SetRenderPass(renderPass);
 
         gfxFramebufferAttachmentImageInfo imageInfo;
         imageInfo.SetUsage(gfxImageUsage_COLOR_ATTACHMENT);
@@ -138,7 +135,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
 
         frameBufferCreateInfo.AddAttachment(std::move(imageInfo));
 
-        std::shared_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, *renderPassImpl);
+        std::shared_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, renderPassImpl);
         m_SwapChainFrameBuffers.push_back(std::move(frameBufferImpl));
     }
 

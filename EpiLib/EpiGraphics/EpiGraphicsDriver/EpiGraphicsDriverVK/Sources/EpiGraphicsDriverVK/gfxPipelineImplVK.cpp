@@ -36,7 +36,7 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
         VkViewport& v = viewports.emplace_back();
         v = {};
         v.x = viewport.GetViewportRect().LeftTop().x;
-        v.y = viewport.GetViewportRect().LeftTop().y;
+        v.y = viewport.GetViewportRect().GetHeight() - viewport.GetViewportRect().LeftTop().y; // TODO: replace with image-space rect
         v.width = viewport.GetViewportRect().GetWidth();
         v.height = viewport.GetViewportRect().GetHeight();
         v.minDepth = viewport.GetViewportMinDepth();
@@ -50,7 +50,7 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
         VkRect2D& s = scissors.emplace_back();
         s = {};
         s.offset.x = scissor.LeftTop().x;
-        s.offset.y = scissor.LeftTop().y;
+        s.offset.y = scissor.GetHeight() - scissor.LeftTop().y; // TODO: replace with image-space rect
         s.extent.width = scissor.GetWidth();
         s.extent.height = scissor.GetHeight();
     }

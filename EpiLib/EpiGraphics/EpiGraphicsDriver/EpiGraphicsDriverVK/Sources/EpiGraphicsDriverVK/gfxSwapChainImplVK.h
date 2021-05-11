@@ -28,7 +28,8 @@ public:
 
     epiBool Init(const gfxSwapChainCreateInfo& info,
                  const gfxSurfaceImpl& surfaceImpl,
-                 const gfxQueueFamilyImpl& queueFamilyImpl);
+                 const gfxQueueFamilyImpl& queueFamilyImpl,
+                 const gfxRenderPassImpl& renderPassImpl);
 
     epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline) override;
 

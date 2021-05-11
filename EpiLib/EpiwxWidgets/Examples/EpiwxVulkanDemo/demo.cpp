@@ -51,6 +51,7 @@ public:
                                   long style = 0,
                                   const wxString& name = wxASCII_STR("epiWXVulkanDemoTriangleCanvas"))
     {
+    #if 0
         gfxAttachmentSchema attachmentSchema;
         attachmentSchema.SetFormat(kFormatRequired);
         attachmentSchema.SetSampleCount(gfxSampleCount::Sample1);
@@ -60,6 +61,36 @@ public:
 
         gfxRenderPassSchema renderPassSchema;
         renderPassSchema.AddSubPass(std::move(renderSubPassSchema));
+    #endif
+
+        gfxAttachment attachment;
+        attachment.SetFormat(kFormatRequired);
+        attachment.SetSampleCount(gfxSampleCount::Sample1);
+        attachment.SetLoadOp(gfxAttachmentLoadOp::Clear);
+        attachment.SetStoreOp(gfxAttachmentStoreOp::Store);
+        attachment.SetStencilLoadOp(gfxAttachmentLoadOp::DontCare);
+        attachment.SetStencilStoreOp(gfxAttachmentStoreOp::DontCare);
+        attachment.SetInitialLayout(gfxImageLayout::Undefined);
+        attachment.SetFinalLayout(gfxImageLayout::PresentSrc);
+
+        gfxRenderSubPass subpass;
+        subpass.SetBindPoint(gfxPipelineBindPoint::Graphics);
+        subpass.AddAttachment(attachment, 0, gfxImageLayout::ColorAttachmentOptimal, gfxAttachmentBindPoint::Color);
+
+        gfxRenderSubPassDependency subpassDependency;
+        subpassDependency.SetIsSrcSubPassExternal(true);
+        subpassDependency.SetDstSubPass(0);
+        subpassDependency.SetSrcStageMask(gfxPipelineStage_ColorAttachmentOutput);
+        subpassDependency.SetSrcAccessMask(gfxAccess{0});
+        subpassDependency.SetDstStageMask(gfxPipelineStage_ColorAttachmentOutput);
+        subpassDependency.SetDstAccessMask(gfxAccess_ColorAttachmentWrite);
+
+        gfxRenderPassCreateInfo renderPassCreateInfo{};
+        renderPassCreateInfo.AddSubPass(std::move(subpass));
+        renderPassCreateInfo.AddSubPassDependency(std::move(subpassDependency));
+
+        std::optional<gfxRenderPass> renderPass = g_Device.CreateRenderPass(renderPassCreateInfo);
+        epiAssert(renderPass.has_value());
 
         gfxSurfaceFormat surfaceFormat;
         surfaceFormat.SetFormat(kFormatRequired);
@@ -81,7 +112,7 @@ public:
         epiWXVulkanCanvasCreateInfo canvasCreateInfo;
         canvasCreateInfo.PhysicalDevice = g_PhysicalDevice;
         canvasCreateInfo.Device = g_Device;
-        canvasCreateInfo.RenderPassSchema = renderPassSchema;
+        canvasCreateInfo.RenderPass = *renderPass;
         canvasCreateInfo.QueueFamily = m_QueueFamily;
         canvasCreateInfo.Format = surfaceFormat;
         canvasCreateInfo.PresentMode = kPresentModeRequired;
@@ -90,40 +121,6 @@ public:
         {
             return;
         }
-
-        gfxAttachment attachment;
-        attachment.SetFormat(kFormatRequired);
-        attachment.SetSampleCount(gfxSampleCount::Sample1);
-        attachment.SetLoadOp(gfxAttachmentLoadOp::Clear);
-        attachment.SetStoreOp(gfxAttachmentStoreOp::Store);
-        attachment.SetStencilLoadOp(gfxAttachmentLoadOp::DontCare);
-        attachment.SetStencilStoreOp(gfxAttachmentStoreOp::DontCare);
-        attachment.SetInitialLayout(gfxImageLayout::Undefined);
-        attachment.SetFinalLayout(gfxImageLayout::PresentSrc);
-
-        gfxRenderSubPass subpass;
-        subpass.SetBindPoint(gfxPipelineBindPoint::Graphics);
-        subpass.AddAttachment(attachment, 0, gfxImageLayout::ColorAttachmentOptimal, gfxAttachmentBindPoint::Color);
-
-        gfxRenderSubPassDependency subpassDependency;
-        subpassDependency.SetSrcSubPass(~0U); // replace with VK_SUBPASS_EXTERNAL
-        subpassDependency.SetDstSubPass(0);
-        subpassDependency.SetSrcStageMask(gfxPipelineStage_ColorAttachmentOutput);
-        subpassDependency.SetSrcAccessMask(gfxAccess{0});
-        subpassDependency.SetDstStageMask(gfxPipelineStage_ColorAttachmentOutput);
-        subpassDependency.SetDstAccessMask(gfxAccess_ColorAttachmentWrite);
-
-        gfxRenderPassCreateInfo renderPassCreateInfo{};
-        renderPassCreateInfo.AddSubPass(std::move(subpass));
-        renderPassCreateInfo.AddSubPassDependency(std::move(subpassDependency));
-
-        std::optional<gfxRenderPass> renderPass = g_Device.CreateRenderPass(renderPassCreateInfo);
-        epiAssert(renderPass.has_value());
-
-        gfxPipelineViewport viewport;
-        viewport.SetViewportRect(epiRect2f(0.0f, 0.0f, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
-        viewport.SetViewportMinDepth(0.0f);
-        viewport.SetViewportMaxDepth(1.0f);
 
         gfxPipelineColorBlendAttachment colorBlendAttachment;
         colorBlendAttachment.SetColorWriteMask(gfxColorComponent_RGBA);
@@ -185,6 +182,11 @@ public:
         std::optional<gfxShaderProgram> shaderProgram = g_Device.CreateShaderProgram(shaderProgramCreateInfo);
         epiAssert(shaderProgram.has_value());
 
+        gfxPipelineViewport viewport;
+        viewport.SetViewportRect(epiRect2f(0.0f, 0.0f, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
+        viewport.SetViewportMinDepth(0.0f);
+        viewport.SetViewportMaxDepth(1.0f);
+
         gfxPipelineGraphicsCreateInfo pipelineCreateInfo;
         pipelineCreateInfo.SetInputAssemblyType(gfxPipelineInputAssemblyType::TriangleList);
         pipelineCreateInfo.AddViewport(viewport);
@@ -242,7 +244,7 @@ IMPLEMENT_WX_THEME_SUPPORT;
 
 int main(int argc, char* argv[])
 {
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
 
     epiArray<gfxDriverExtension> driverExtensionsRequired;

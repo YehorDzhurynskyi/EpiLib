@@ -1,7 +1,7 @@
 class gfxSwapChainCreateInfo
 {
     gfxSurface Surface;
-    gfxRenderPassSchema RenderPassSchema;
+    gfxRenderPass RenderPass;
     gfxQueueFamily QueueFamily;
     gfxSurfaceCapabilities Capabilities;
     gfxSurfaceFormat Format;

@@ -109,7 +109,8 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
     std::vector<const epiChar*> validationLayers;
 #ifdef EPI_BUILD_DEBUG
     validationLayers.push_back("VK_LAYER_KHRONOS_validation");
-    // validationLayers.push_back("VK_LAYER_LUNARG_api_dump");
+    validationLayers.push_back("VK_LAYER_LUNARG_api_dump");
+    //validationLayers.push_back("VK_LAYER_NV_optimus");
 #endif // EPI_BUILD_DEBUG
 
     epiU32 availableLayersCount;

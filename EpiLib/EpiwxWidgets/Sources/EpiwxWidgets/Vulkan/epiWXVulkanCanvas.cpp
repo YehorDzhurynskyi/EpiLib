@@ -116,7 +116,7 @@ epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
     // TODO: submit RenderPass info to ensure compatibility only
     gfxSwapChainCreateInfo swapChainCreateInfo{};
     swapChainCreateInfo.SetSurface(m_Surface);
-    swapChainCreateInfo.SetRenderPassSchema(info.RenderPassSchema);
+    swapChainCreateInfo.SetRenderPass(info.RenderPass);
     swapChainCreateInfo.SetQueueFamily(info.QueueFamily);
     swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
     swapChainCreateInfo.SetFormat(info.Format);

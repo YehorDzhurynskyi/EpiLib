@@ -172,7 +172,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     void* deviceCreateInfoNext = nullptr;
 
     // TODO: introduce RETAIL build config
-#if EPI_NSIGHT_AFTERMATH
+#if EPI_NVIDIA_NSIGHT_AFTERMATH
     extensions.push_back(VK_NV_DEVICE_DIAGNOSTICS_CONFIG_EXTENSION_NAME);
     extensions.push_back(VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME);
 
@@ -183,7 +183,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     diagnosticsConfigCreateInfoNV.flags = VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV |
                                           VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_RESOURCE_TRACKING_BIT_NV |
                                           VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_AUTOMATIC_CHECKPOINTS_BIT_NV;
-#endif // EPI_NSIGHT_AFTERMATH
+#endif // EPI_NVIDIA_NSIGHT_AFTERMATH
 
     createInfo.enabledExtensionCount = extensions.size();
     createInfo.ppEnabledExtensionNames = extensions.data();
@@ -380,10 +380,11 @@ epiBool gfxDeviceImplVK::IsFeatureEnabled(gfxPhysicalDeviceFeature feature) cons
 
 std::shared_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info,
                                                                    const gfxSurfaceImpl& surfaceImpl,
-                                                                   const gfxQueueFamilyImpl& queueFamilyImpl) const
+                                                                   const gfxQueueFamilyImpl& queueFamilyImpl,
+                                                                   const gfxRenderPassImpl& renderPassImpl) const
 {
     std::shared_ptr<gfxSwapChainImplVK> impl = std::make_shared<gfxSwapChainImplVK>(*this);
-    if (!impl->Init(info, surfaceImpl, queueFamilyImpl))
+    if (!impl->Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl))
     {
         impl.reset();
     }

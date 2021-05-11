@@ -52,7 +52,14 @@ std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateI
         return swapChain;
     }
 
-    if (std::shared_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(info, *surfaceImpl, *queueFamilyImpl))
+    const auto renderPassImpl = info.GetRenderPass().m_Impl;
+    if (!renderPassImpl)
+    {
+        epiLogError("Failed to create SwapChain! RenderPass has no implementation!");
+        return swapChain;
+    }
+
+    if (std::shared_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(info, *surfaceImpl, *queueFamilyImpl, *renderPassImpl))
     {
         swapChain = gfxSwapChain(std::move(impl));
     }
@@ -99,6 +106,30 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
     if (!renderPassImpl)
     {
         epiLogError("Failed to create Pipeline! RenderPass has no implemetation!");
+        return pipeline;
+    }
+
+    const epiArray<gfxPipelineViewport>& viewports = info.GetViewports();
+    const epiBool hasInvalidViewport = std::any_of(viewports.begin(), viewports.end(), [](const gfxPipelineViewport& v)
+    {
+        return v.GetViewportRect().IsEmpty() || (v.GetViewportMinDepth() > v.GetViewportMaxDepth());
+    });
+
+    if (hasInvalidViewport)
+    {
+        epiLogError("Failed to create Pipeline! RenderPass has invalid viewport!");
+        return pipeline;
+    }
+
+    const epiArray<epiRect2s>& scissors = info.GetScissors();
+    const epiBool hasInvalidScissor = std::any_of(scissors.begin(), scissors.end(), [](const epiRect2s& s)
+    {
+        return s.IsEmpty();
+    });
+
+    if (hasInvalidScissor)
+    {
+        epiLogError("Failed to create Pipeline! RenderPass has invalid scissor!");
         return pipeline;
     }
 

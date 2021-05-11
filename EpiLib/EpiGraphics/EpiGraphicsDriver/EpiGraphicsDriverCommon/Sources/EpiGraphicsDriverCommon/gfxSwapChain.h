@@ -31,7 +31,7 @@ public:
     enum gfxSwapChainCreateInfo_PIDs
     {
         PID_Surface = 0x73fca7f2,
-        PID_RenderPassSchema = 0x4efb6ddc,
+        PID_RenderPass = 0x662aa9d7,
         PID_QueueFamily = 0xfa954047,
         PID_Capabilities = 0x50af605,
         PID_Format = 0xd91677e9,
@@ -42,7 +42,7 @@ public:
 
 protected:
     gfxSurface m_Surface{};
-    gfxRenderPassSchema m_RenderPassSchema{};
+    gfxRenderPass m_RenderPass{};
     gfxQueueFamily m_QueueFamily{};
     gfxSurfaceCapabilities m_Capabilities{};
     gfxSurfaceFormat m_Format{};
