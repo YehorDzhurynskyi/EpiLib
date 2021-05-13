@@ -217,7 +217,14 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
         return frameBuffer;
     }
 
-    if (std::shared_ptr<internalgfx::gfxFrameBufferImpl> impl = m_Impl->CreateFrameBuffer(info, *renderPassImpl))
+    epiPtrArray<const internalgfx::gfxTextureViewImpl> textureViewImpls;
+    textureViewImpls.Reserve(info.GetAttachments().Size());
+    std::transform(info.GetAttachments().begin(), info.GetAttachments().end(), std::back_inserter(textureViewImpls), [](const gfxTextureView& view)
+    {
+        return &*view.m_Impl;
+    });
+
+    if (std::shared_ptr<internalgfx::gfxFrameBufferImpl> impl = m_Impl->CreateFrameBuffer(info, *renderPassImpl, textureViewImpls))
     {
         frameBuffer = gfxFrameBuffer(std::move(impl));
     }

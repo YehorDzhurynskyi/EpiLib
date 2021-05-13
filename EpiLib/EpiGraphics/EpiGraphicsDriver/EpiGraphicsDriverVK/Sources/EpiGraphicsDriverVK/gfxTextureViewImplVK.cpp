@@ -45,6 +45,11 @@ gfxTextureViewImplVK::~gfxTextureViewImplVK()
     vkDestroyImageView(m_VkDevice, m_VkImageView, nullptr);
 }
 
+VkImageView gfxTextureViewImplVK::GetVkImageView() const
+{
+    return m_VkImageView;
+}
+
 } // namespace internalgfx
 
 EPI_NAMESPACE_END()

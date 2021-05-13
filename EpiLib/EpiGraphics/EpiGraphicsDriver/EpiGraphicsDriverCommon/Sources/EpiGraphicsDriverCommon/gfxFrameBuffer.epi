@@ -1,11 +1,3 @@
-class gfxFramebufferAttachmentImageInfo
-{
-    gfxImageUsage Usage;
-    epiSize2u Size;
-    epiU32 LayerCount = 1;
-    epiArray<gfxFormat> Formats;
-};
-
 class gfxFrameBufferCreateInfo
 {
     gfxRenderPass RenderPass;
@@ -13,7 +5,7 @@ class gfxFrameBufferCreateInfo
     epiSize2u Size;
 
     [ReadOnly]
-    epiArray<gfxFramebufferAttachmentImageInfo> AttachmentImageInfos;
+    epiArray<gfxTextureView> Attachments;
 };
 
 class gfxFrameBuffer

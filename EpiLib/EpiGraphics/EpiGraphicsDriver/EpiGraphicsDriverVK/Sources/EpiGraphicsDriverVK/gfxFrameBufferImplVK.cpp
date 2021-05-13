@@ -1,6 +1,7 @@
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
+#include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 
@@ -16,47 +17,22 @@ gfxFrameBufferImplVK::gfxFrameBufferImplVK(VkDevice_T* device)
 {
 }
 
-epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl)
+epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const gfxTextureViewImpl>& textureViewImpls)
 {
-    std::vector<VkFramebufferAttachmentImageInfo> frameBufferAttachmentImageInfos;
-    frameBufferAttachmentImageInfos.reserve(info.GetAttachmentImageInfos().Size());
+    std::vector<VkImageView> attachments;
+    attachments.reserve(textureViewImpls.Size());
 
-    std::vector<std::vector<VkFormat>> frameBufferAttachmentFormats;
-    frameBufferAttachmentFormats.reserve(info.GetAttachmentImageInfos().Size());
-
-    for (const gfxFramebufferAttachmentImageInfo& attachmentInfo : info.GetAttachmentImageInfos())
+    std::transform(textureViewImpls.begin(), textureViewImpls.end(), std::back_inserter(attachments), [](const gfxTextureViewImpl* impl)
     {
-        VkFramebufferAttachmentImageInfo& attachment = frameBufferAttachmentImageInfos.emplace_back();
-        attachment = {};
-        attachment.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_ATTACHMENT_IMAGE_INFO;
-        attachment.usage = gfxImageUsageTo(attachmentInfo.GetUsage());
-        attachment.width = attachmentInfo.GetSize().x;
-        attachment.height = attachmentInfo.GetSize().y;
-        attachment.layerCount = attachmentInfo.GetLayerCount();
-
-        std::vector<VkFormat>& formats = frameBufferAttachmentFormats.emplace_back();
-        formats.reserve(attachmentInfo.GetFormats().Size());
-        std::transform(attachmentInfo.GetFormats().begin(), attachmentInfo.GetFormats().end(), std::back_inserter(formats), [](const gfxFormat f) {
-            return gfxFormatTo(f);
-        });
-
-        attachment.viewFormatCount = formats.size();
-        attachment.pViewFormats = formats.data();
-    }
-
-    VkFramebufferAttachmentsCreateInfo frameBufferAttachmentsCreateInfo{};
-    frameBufferAttachmentsCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_ATTACHMENTS_CREATE_INFO;
-    frameBufferAttachmentsCreateInfo.attachmentImageInfoCount = frameBufferAttachmentImageInfos.size();
-    frameBufferAttachmentsCreateInfo.pAttachmentImageInfos = frameBufferAttachmentImageInfos.data();
+        return static_cast<const gfxTextureViewImplVK*>(impl)->GetVkImageView();
+    });
 
     // TODO: add renderpass compatibility check
     VkFramebufferCreateInfo framebufferInfo{};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    framebufferInfo.pNext = &frameBufferAttachmentsCreateInfo;
-    framebufferInfo.flags = VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT;
     framebufferInfo.renderPass = static_cast<const gfxRenderPassImplVK&>(renderPassImpl).GetVkRenderPass();
-    framebufferInfo.attachmentCount = frameBufferAttachmentImageInfos.size();
-    framebufferInfo.pAttachments = nullptr;
+    framebufferInfo.attachmentCount = attachments.size();
+    framebufferInfo.pAttachments = attachments.data();
     framebufferInfo.width = info.GetSize().x;
     framebufferInfo.height = info.GetSize().y;
     framebufferInfo.layers = 1;

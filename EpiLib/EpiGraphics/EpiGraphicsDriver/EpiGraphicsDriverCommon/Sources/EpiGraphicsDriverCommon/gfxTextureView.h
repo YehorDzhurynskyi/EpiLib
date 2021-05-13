@@ -59,6 +59,9 @@ public:
 EPI_GENREGION_END(gfxTextureView)
 
 public:
+    friend class gfxDevice;
+
+public:
     gfxTextureView() = default;
     explicit gfxTextureView(const std::shared_ptr<internalgfx::gfxTextureViewImpl>& impl);
 

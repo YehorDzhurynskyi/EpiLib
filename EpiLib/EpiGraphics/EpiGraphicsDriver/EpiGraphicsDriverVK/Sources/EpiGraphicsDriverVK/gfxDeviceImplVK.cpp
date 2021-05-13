@@ -460,10 +460,10 @@ std::shared_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const
     return impl;
 }
 
-std::shared_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl) const
+std::shared_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const gfxTextureViewImpl>& textureViewImpls) const
 {
     std::shared_ptr<gfxFrameBufferImplVK> impl = std::make_shared<gfxFrameBufferImplVK>(m_VkDevice);
-    if (!impl->Init(info, renderPassImpl))
+    if (!impl->Init(info, renderPassImpl, textureViewImpls))
     {
         impl.reset();
     }

@@ -148,6 +148,7 @@ void gfxPhysicalDeviceImplVK::FillExtensionsSupported()
 
 void gfxPhysicalDeviceImplVK::FillFeaturesSupported()
 {
+#if 0
     VkPhysicalDeviceVulkan12Features features12{};
     features12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
 
@@ -280,6 +281,131 @@ void gfxPhysicalDeviceImplVK::FillFeaturesSupported()
         features12.subgroupBroadcastDynamicId
     };
     static_assert(epiArrLen(kFeatures) == static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT));
+#else
+    VkPhysicalDeviceFeatures features{};
+    vkGetPhysicalDeviceFeatures(m_VkDevice, &features);
+
+    const VkBool32 kFeatures[]
+    {
+        features.robustBufferAccess,
+        features.fullDrawIndexUint32,
+        features.imageCubeArray,
+        features.independentBlend,
+        features.geometryShader,
+        features.tessellationShader,
+        features.sampleRateShading,
+        features.dualSrcBlend,
+        features.logicOp,
+        features.multiDrawIndirect,
+        features.drawIndirectFirstInstance,
+        features.depthClamp,
+        features.depthBiasClamp,
+        features.fillModeNonSolid,
+        features.depthBounds,
+        features.wideLines,
+        features.largePoints,
+        features.alphaToOne,
+        features.multiViewport,
+        features.samplerAnisotropy,
+        features.textureCompressionETC2,
+        features.textureCompressionASTC_LDR,
+        features.textureCompressionBC,
+        features.occlusionQueryPrecise,
+        features.pipelineStatisticsQuery,
+        features.vertexPipelineStoresAndAtomics,
+        features.fragmentStoresAndAtomics,
+        features.shaderTessellationAndGeometryPointSize,
+        features.shaderImageGatherExtended,
+        features.shaderStorageImageExtendedFormats,
+        features.shaderStorageImageMultisample,
+        features.shaderStorageImageReadWithoutFormat,
+        features.shaderStorageImageWriteWithoutFormat,
+        features.shaderUniformBufferArrayDynamicIndexing,
+        features.shaderSampledImageArrayDynamicIndexing,
+        features.shaderStorageBufferArrayDynamicIndexing,
+        features.shaderStorageImageArrayDynamicIndexing,
+        features.shaderClipDistance,
+        features.shaderCullDistance,
+        features.shaderFloat64,
+        features.shaderInt64,
+        features.shaderInt16,
+        features.shaderResourceResidency,
+        features.shaderResourceMinLod,
+        features.sparseBinding,
+        features.sparseResidencyBuffer,
+        features.sparseResidencyImage2D,
+        features.sparseResidencyImage3D,
+        features.sparseResidency2Samples,
+        features.sparseResidency4Samples,
+        features.sparseResidency8Samples,
+        features.sparseResidency16Samples,
+        features.sparseResidencyAliased,
+        features.variableMultisampleRate,
+        features.inheritedQueries,
+
+        false, // features11.storageBuffer16BitAccess
+        false, // features11.uniformAndStorageBuffer16BitAccess
+        false, // features11.storagePushConstant16
+        false, // features11.storageInputOutput16
+        false, // features11.multiview
+        false, // features11.multiviewGeometryShader
+        false, // features11.multiviewTessellationShader
+        false, // features11.variablePointersStorageBuffer
+        false, // features11.variablePointers
+        false, // features11.protectedMemory
+        false, // features11.samplerYcbcrConversion
+        false, // features11.shaderDrawParameters
+
+        false, // features12.samplerMirrorClampToEdge
+        false, // features12.drawIndirectCount
+        false, // features12.storageBuffer8BitAccess
+        false, // features12.uniformAndStorageBuffer8BitAccess
+        false, // features12.storagePushConstant8
+        false, // features12.shaderBufferInt64Atomics
+        false, // features12.shaderSharedInt64Atomics
+        false, // features12.shaderFloat16
+        false, // features12.shaderInt8
+        false, // features12.descriptorIndexing
+        false, // features12.shaderInputAttachmentArrayDynamicIndexing
+        false, // features12.shaderUniformTexelBufferArrayDynamicIndexing
+        false, // features12.shaderStorageTexelBufferArrayDynamicIndexing
+        false, // features12.shaderUniformBufferArrayNonUniformIndexing
+        false, // features12.shaderSampledImageArrayNonUniformIndexing
+        false, // features12.shaderStorageBufferArrayNonUniformIndexing
+        false, // features12.shaderStorageImageArrayNonUniformIndexing
+        false, // features12.shaderInputAttachmentArrayNonUniformIndexing
+        false, // features12.shaderUniformTexelBufferArrayNonUniformIndexing
+        false, // features12.shaderStorageTexelBufferArrayNonUniformIndexing
+        false, // features12.descriptorBindingUniformBufferUpdateAfterBind
+        false, // features12.descriptorBindingSampledImageUpdateAfterBind
+        false, // features12.descriptorBindingStorageImageUpdateAfterBind
+        false, // features12.descriptorBindingStorageBufferUpdateAfterBind
+        false, // features12.descriptorBindingUniformTexelBufferUpdateAfterBind
+        false, // features12.descriptorBindingStorageTexelBufferUpdateAfterBind
+        false, // features12.descriptorBindingUpdateUnusedWhilePending
+        false, // features12.descriptorBindingPartiallyBound
+        false, // features12.descriptorBindingVariableDescriptorCount
+        false, // features12.runtimeDescriptorArray
+        false, // features12.samplerFilterMinmax
+        false, // features12.scalarBlockLayout
+        false, // features12.imagelessFramebuffer
+        false, // features12.uniformBufferStandardLayout
+        false, // features12.shaderSubgroupExtendedTypes
+        false, // features12.separateDepthStencilLayouts
+        false, // features12.hostQueryReset
+        false, // features12.timelineSemaphore
+        false, // features12.bufferDeviceAddress
+        false, // features12.bufferDeviceAddressCaptureReplay
+        false, // features12.bufferDeviceAddressMultiDevice
+        false, // features12.vulkanMemoryModel
+        false, // features12.vulkanMemoryModelDeviceScope
+        false, // features12.vulkanMemoryModelAvailabilityVisibilityChains
+        false, // features12.shaderOutputViewportIndex
+        false, // features12.shaderOutputLayer
+        false // features12.subgroupBroadcastDynamicId
+    };
+    static_assert(epiArrLen(kFeatures) == static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT));
+#endif
 
     for (epiU32 i = 0; i < static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT); ++i)
     {

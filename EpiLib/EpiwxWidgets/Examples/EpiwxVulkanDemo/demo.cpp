@@ -5,6 +5,7 @@
 #include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/window.h>
+#include <wx/dcclient.h>
 
 #include "EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h"
 
@@ -63,34 +64,38 @@ public:
         renderPassSchema.AddSubPass(std::move(renderSubPassSchema));
     #endif
 
-        gfxAttachment attachment;
-        attachment.SetFormat(kFormatRequired);
-        attachment.SetSampleCount(gfxSampleCount::Sample1);
-        attachment.SetLoadOp(gfxAttachmentLoadOp::Clear);
-        attachment.SetStoreOp(gfxAttachmentStoreOp::Store);
-        attachment.SetStencilLoadOp(gfxAttachmentLoadOp::DontCare);
-        attachment.SetStencilStoreOp(gfxAttachmentStoreOp::DontCare);
-        attachment.SetInitialLayout(gfxImageLayout::Undefined);
-        attachment.SetFinalLayout(gfxImageLayout::PresentSrc);
+        {
+            gfxAttachment attachment;
+            attachment.SetFormat(kFormatRequired);
+            attachment.SetSampleCount(gfxSampleCount::Sample1);
+            attachment.SetLoadOp(gfxAttachmentLoadOp::Clear);
+            attachment.SetStoreOp(gfxAttachmentStoreOp::Store);
+            attachment.SetStencilLoadOp(gfxAttachmentLoadOp::DontCare);
+            attachment.SetStencilStoreOp(gfxAttachmentStoreOp::DontCare);
+            attachment.SetInitialLayout(gfxImageLayout::Undefined);
+            attachment.SetFinalLayout(gfxImageLayout::PresentSrc);
 
-        gfxRenderSubPass subpass;
-        subpass.SetBindPoint(gfxPipelineBindPoint::Graphics);
-        subpass.AddAttachment(attachment, 0, gfxImageLayout::ColorAttachmentOptimal, gfxAttachmentBindPoint::Color);
+            gfxRenderSubPass subpass;
+            subpass.SetBindPoint(gfxPipelineBindPoint::Graphics);
+            subpass.AddAttachment(attachment, 0, gfxImageLayout::ColorAttachmentOptimal, gfxAttachmentBindPoint::Color);
 
-        gfxRenderSubPassDependency subpassDependency;
-        subpassDependency.SetIsSrcSubPassExternal(true);
-        subpassDependency.SetDstSubPass(0);
-        subpassDependency.SetSrcStageMask(gfxPipelineStage_ColorAttachmentOutput);
-        subpassDependency.SetSrcAccessMask(gfxAccess{0});
-        subpassDependency.SetDstStageMask(gfxPipelineStage_ColorAttachmentOutput);
-        subpassDependency.SetDstAccessMask(gfxAccess_ColorAttachmentWrite);
+            gfxRenderSubPassDependency subpassDependency;
+            subpassDependency.SetIsSrcSubPassExternal(true);
+            subpassDependency.SetDstSubPass(0);
+            subpassDependency.SetSrcStageMask(gfxPipelineStage_ColorAttachmentOutput);
+            subpassDependency.SetSrcAccessMask(gfxAccess{0});
+            subpassDependency.SetDstStageMask(gfxPipelineStage_ColorAttachmentOutput);
+            subpassDependency.SetDstAccessMask(gfxAccess_ColorAttachmentWrite);
 
-        gfxRenderPassCreateInfo renderPassCreateInfo{};
-        renderPassCreateInfo.AddSubPass(std::move(subpass));
-        renderPassCreateInfo.AddSubPassDependency(std::move(subpassDependency));
+            gfxRenderPassCreateInfo renderPassCreateInfo{};
+            renderPassCreateInfo.AddSubPass(std::move(subpass));
+            renderPassCreateInfo.AddSubPassDependency(std::move(subpassDependency));
 
-        std::optional<gfxRenderPass> renderPass = g_Device.CreateRenderPass(renderPassCreateInfo);
-        epiAssert(renderPass.has_value());
+            std::optional<gfxRenderPass> renderPass = g_Device.CreateRenderPass(renderPassCreateInfo);
+            epiAssert(renderPass.has_value());
+
+            m_RenderPass = *renderPass;
+        }
 
         gfxSurfaceFormat surfaceFormat;
         surfaceFormat.SetFormat(kFormatRequired);
@@ -112,7 +117,7 @@ public:
         epiWXVulkanCanvasCreateInfo canvasCreateInfo;
         canvasCreateInfo.PhysicalDevice = g_PhysicalDevice;
         canvasCreateInfo.Device = g_Device;
-        canvasCreateInfo.RenderPass = *renderPass;
+        canvasCreateInfo.RenderPass = m_RenderPass;
         canvasCreateInfo.QueueFamily = m_QueueFamily;
         canvasCreateInfo.Format = surfaceFormat;
         canvasCreateInfo.PresentMode = kPresentModeRequired;
@@ -208,10 +213,14 @@ public:
         pipelineCreateInfo.SetRenderSubPassIndex(0);
         pipelineCreateInfo.SetShaderProgram(*shaderProgram);
 
-        std::optional<gfxPipelineGraphics> pipeline = g_Device.CreatePipelineGraphics(pipelineCreateInfo, *renderPass);
-        epiAssert(pipeline.has_value());
+        {
+            std::optional<gfxPipelineGraphics> pipeline = g_Device.CreatePipelineGraphics(pipelineCreateInfo, m_RenderPass);
+            epiAssert(pipeline.has_value());
 
-        m_SwapChain.AssignRenderPass(*renderPass, *pipeline);
+            m_Pipeline = *pipeline;
+        }
+
+        m_SwapChain.AssignRenderPass(m_RenderPass, m_Pipeline);
     }
 
 protected:
@@ -220,6 +229,8 @@ protected:
 
 protected:
     gfxQueueFamily m_QueueFamily;
+    gfxRenderPass m_RenderPass;
+    gfxPipelineGraphics m_Pipeline;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
@@ -229,7 +240,11 @@ wxEND_EVENT_TABLE()
 
 void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 {
+    wxPaintDC paint(this);
+
     m_SwapChain.Present(m_QueueFamily[0]);
+
+    SwapBuffers();
 }
 
 void epiWXVulkanDemoTriangleCanvas::OnEraseBackground(wxEraseEvent&)
@@ -244,7 +259,7 @@ IMPLEMENT_WX_THEME_SUPPORT;
 
 int main(int argc, char* argv[])
 {
-    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
 
     epiArray<gfxDriverExtension> driverExtensionsRequired;
@@ -258,11 +273,11 @@ int main(int argc, char* argv[])
 
     epiArray<gfxPhysicalDeviceExtension> deviceExtensionsRequired;
     deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::SwapChain);
-    deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageLessFrameBuffer);
-    deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageFormatList);
+    //deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageLessFrameBuffer);
+    //deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageFormatList);
 
     epiArray<gfxPhysicalDeviceFeature> deviceFeaturesRequired;
-    deviceFeaturesRequired.push_back(gfxPhysicalDeviceFeature::ImagelessFramebuffer);
+    //deviceFeaturesRequired.push_back(gfxPhysicalDeviceFeature::ImagelessFramebuffer);
 
     const gfxWindow window(GetActiveWindow());
     std::optional<gfxSurface> surface = gfxDriver::GetInstance().CreateSurface(window);
@@ -315,7 +330,7 @@ int main(int argc, char* argv[])
 
     if (physicalDevice == physicalDevices.end())
     {
-        epiLogError("Falied to select a proper PhysicalDevice!");
+        epiLogError("Failed to select a proper PhysicalDevice!");
         return -1;
     }
 
@@ -375,7 +390,6 @@ epiWXVulkanDemoFrame::epiWXVulkanDemoFrame(wxWindow* parent, wxWindowID id, cons
     : wxFrame(parent, id, title, pos, size, style)
 {
     epiWXVulkanDemoTriangleCanvas* canvas = new epiWXVulkanDemoTriangleCanvas(this);
-    AddChild(canvas);
 
     SetSizeHints(wxDefaultSize, wxDefaultSize);
     Centre(wxBOTH);

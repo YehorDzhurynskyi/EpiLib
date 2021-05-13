@@ -126,16 +126,9 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
     {
         gfxFrameBufferCreateInfo frameBufferCreateInfo;
         frameBufferCreateInfo.SetSize(info.GetExtent());
+        epiPtrArray<const gfxTextureViewImpl> textureViewImpls{textureViewImpl.get()};
 
-        gfxFramebufferAttachmentImageInfo imageInfo;
-        imageInfo.SetUsage(gfxImageUsage_COLOR_ATTACHMENT);
-        imageInfo.SetSize(info.GetExtent());
-        imageInfo.SetFormats({info.GetFormat().GetFormat()});
-        imageInfo.SetLayerCount(1);
-
-        frameBufferCreateInfo.AddAttachment(std::move(imageInfo));
-
-        std::shared_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, renderPassImpl);
+        std::shared_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, renderPassImpl, textureViewImpls);
         m_SwapChainFrameBuffers.push_back(std::move(frameBufferImpl));
     }
 
