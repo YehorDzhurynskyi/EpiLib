@@ -227,6 +227,7 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
                               VK_NULL_HANDLE,
                               &imageIndex) != VK_SUCCESS)
     {
+        epiLogError("vkAcquireNextImageKHR"); // TODO: add message
         return false;
     }
 
@@ -259,6 +260,7 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
 
     if (vkQueueSubmit(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), 1, &submitInfo, m_VkFencesInFlight[frameIndex]) != VK_SUCCESS)
     {
+        epiLogError("vkQueueSubmit"); // TODO: add message
         return false;
     }
 
@@ -275,12 +277,14 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
 
     if (vkQueuePresentKHR(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), &presentInfo) != VK_SUCCESS)
     {
+        epiLogError("vkQueuePresentKHR"); // TODO: add message
         return false;
     }
 
 #if 0 // TODO: figure out whether this sync point should be used
     if (vkQueueWaitIdle(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue()) != VK_SUCCESS)
     {
+        epiLogError("vkQueueWaitIdle"); // TODO: add message
         return false;
     }
 #endif

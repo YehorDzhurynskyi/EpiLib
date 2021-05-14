@@ -5,7 +5,6 @@
 #include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/window.h>
-#include <wx/dcclient.h>
 
 #include "EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h"
 
@@ -240,11 +239,7 @@ wxEND_EVENT_TABLE()
 
 void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 {
-    wxPaintDC paint(this);
-
     m_SwapChain.Present(m_QueueFamily[0]);
-
-    SwapBuffers();
 }
 
 void epiWXVulkanDemoTriangleCanvas::OnEraseBackground(wxEraseEvent&)
@@ -389,8 +384,6 @@ int EpiwxVulkanDemo::OnExit()
 epiWXVulkanDemoFrame::epiWXVulkanDemoFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : wxFrame(parent, id, title, pos, size, style)
 {
-    epiWXVulkanDemoTriangleCanvas* canvas = new epiWXVulkanDemoTriangleCanvas(this);
-
-    SetSizeHints(wxDefaultSize, wxDefaultSize);
-    Centre(wxBOTH);
+    epiWXVulkanDemoTriangleCanvas* canvas = new epiWXVulkanDemoTriangleCanvas(this, wxID_ANY, wxDefaultPosition, {800, 600});
+    Fit();
 }
