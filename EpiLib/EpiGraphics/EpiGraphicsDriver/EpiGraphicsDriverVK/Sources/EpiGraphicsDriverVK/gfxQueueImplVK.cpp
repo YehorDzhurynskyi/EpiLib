@@ -3,7 +3,7 @@
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 

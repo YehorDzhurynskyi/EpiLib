@@ -1,11 +1,11 @@
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
+#include "EpiGraphicsDriverVK/gfxEnumVK.h"
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
 
-#include "EpiGraphicsDriverVK/gfxEnumVK.h"
-
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
@@ -37,8 +37,9 @@ epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info, const g
     framebufferInfo.height = info.GetSize().y;
     framebufferInfo.layers = 1;
 
-    if (vkCreateFramebuffer(m_VkDevice, &framebufferInfo, nullptr, &m_VkFrameBuffer) != VK_SUCCESS)
+    if (const VkResult result = vkCreateFramebuffer(m_VkDevice, &framebufferInfo, nullptr, &m_VkFrameBuffer); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateFramebuffer!");
         return false;
     }
 

@@ -1,5 +1,7 @@
 #include "EpiGraphicsDriverVK/gfxSwapChainImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
+#include "EpiGraphicsDriverVK/gfxEnumVK.h"
 #include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
@@ -7,11 +9,10 @@
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
-#include "EpiGraphicsDriverVK/gfxEnumVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxTextureView.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 namespace
 {
@@ -83,8 +84,9 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (VK_SUCCESS != vkCreateSwapchainKHR(m_Device.GetVkDevice(), &createInfo, nullptr, &m_VkSwapChain))
+    if (const VkResult result = vkCreateSwapchainKHR(m_Device.GetVkDevice(), &createInfo, nullptr, &m_VkSwapChain); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateSwapchainKHR!");
         return false;
     }
 
@@ -151,10 +153,21 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
 
     for (epiU32 i = 0; i < kMaxFramesInFlight; ++i)
     {
-        if (vkCreateSemaphore(m_Device.GetVkDevice(), &semaphoreInfo, nullptr, &m_VkSemaphoreImageAvailable[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(m_Device.GetVkDevice(), &semaphoreInfo, nullptr, &m_VkSemaphoreRenderFinished[i]) != VK_SUCCESS ||
-            vkCreateFence(m_Device.GetVkDevice(), &fenceInfo, nullptr, &m_VkFencesInFlight[i]) != VK_SUCCESS)
+        if (const VkResult result = vkCreateSemaphore(m_Device.GetVkDevice(), &semaphoreInfo, nullptr, &m_VkSemaphoreImageAvailable[i]); result != VK_SUCCESS)
         {
+            gfxLogErrorEx(result, "Failed to call vkCreateSemaphore!");
+            return false;
+        }
+
+        if (const VkResult result = vkCreateSemaphore(m_Device.GetVkDevice(), &semaphoreInfo, nullptr, &m_VkSemaphoreRenderFinished[i]); result != VK_SUCCESS)
+        {
+            gfxLogErrorEx(result, "Failed to call vkCreateSemaphore!");
+            return false;
+        }
+
+        if (const VkResult result = vkCreateFence(m_Device.GetVkDevice(), &fenceInfo, nullptr, &m_VkFencesInFlight[i]); result != VK_SUCCESS)
+        {
+            gfxLogErrorEx(result, "Failed to call vkCreateFence!");
             return false;
         }
     }
@@ -178,9 +191,9 @@ epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
         VkCommandBuffer commandBufferVk = static_cast<const gfxCommandBufferImplVK*>(commandBuffer.get())->GetVkCommandBuffer();
-        if (vkBeginCommandBuffer(commandBufferVk, &beginInfo) != VK_SUCCESS)
+        if (const VkResult result = vkBeginCommandBuffer(commandBufferVk, &beginInfo); result != VK_SUCCESS)
         {
-            epiLogError("Failed to begin command buffer!");
+            gfxLogErrorEx(result, "Failed to call vkBeginCommandBuffer!");
             return false;
         }
 
@@ -203,9 +216,9 @@ epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass
 
         vkCmdEndRenderPass(commandBufferVk);
 
-        if (vkEndCommandBuffer(commandBufferVk) != VK_SUCCESS)
+        if (const VkResult result = vkEndCommandBuffer(commandBufferVk); result != VK_SUCCESS)
         {
-            epiLogError("Failed to end command buffer!");
+            gfxLogErrorEx(result, "Failed to call vkEndCommandBuffer!");
             return false;
         }
     }
@@ -220,14 +233,14 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
     vkWaitForFences(m_Device.GetVkDevice(), 1, &m_VkFencesInFlight[frameIndex], VK_TRUE, UINT64_MAX);
 
     epiU32 imageIndex;
-    if (vkAcquireNextImageKHR(m_Device.GetVkDevice(),
-                              m_VkSwapChain,
-                              std::numeric_limits<epiU64>::max(),
-                              m_VkSemaphoreImageAvailable[frameIndex],
-                              VK_NULL_HANDLE,
-                              &imageIndex) != VK_SUCCESS)
+    if (const VkResult result = vkAcquireNextImageKHR(m_Device.GetVkDevice(),
+                                                      m_VkSwapChain,
+                                                      std::numeric_limits<epiU64>::max(),
+                                                      m_VkSemaphoreImageAvailable[frameIndex],
+                                                      VK_NULL_HANDLE,
+                                                      &imageIndex); result != VK_SUCCESS)
     {
-        epiLogError("vkAcquireNextImageKHR"); // TODO: add message
+        gfxLogErrorEx(result, "Failed to call vkAcquireNextImageKHR!");
         return false;
     }
 
@@ -258,9 +271,9 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
 
     vkResetFences(m_Device.GetVkDevice(), 1, &m_VkFencesInFlight[frameIndex]);
 
-    if (vkQueueSubmit(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), 1, &submitInfo, m_VkFencesInFlight[frameIndex]) != VK_SUCCESS)
+    if (const VkResult result = vkQueueSubmit(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), 1, &submitInfo, m_VkFencesInFlight[frameIndex]); result != VK_SUCCESS)
     {
-        epiLogError("vkQueueSubmit"); // TODO: add message
+        gfxLogErrorEx(result, "Failed to call vkQueueSubmit!");
         return false;
     }
 
@@ -275,16 +288,16 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr;
 
-    if (vkQueuePresentKHR(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), &presentInfo) != VK_SUCCESS)
+    if (const VkResult result = vkQueuePresentKHR(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), &presentInfo); result != VK_SUCCESS)
     {
-        epiLogError("vkQueuePresentKHR"); // TODO: add message
+        gfxLogErrorEx(result, "Failed to call vkQueuePresentKHR!");
         return false;
     }
 
 #if 0 // TODO: figure out whether this sync point should be used
-    if (vkQueueWaitIdle(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue()) != VK_SUCCESS)
+    if (const VkResult result = vkQueueWaitIdle(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue()); result != VK_SUCCESS)
     {
-        epiLogError("vkQueueWaitIdle"); // TODO: add message
+        gfxLogErrorEx(result, "Failed to call vkQueueWaitIdle!");
         return false;
     }
 #endif

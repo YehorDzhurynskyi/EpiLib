@@ -1,8 +1,9 @@
 #include "EpiGraphicsDriverVK/gfxVertexBufferImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
@@ -99,9 +100,9 @@ epiBool gfxVertexBufferImplVK::Create(const epiByte* initData, epiSize_t capacit
     bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateBuffer(m_VkDevice, &bufferInfo, nullptr, &m_VkBuffer) != VK_SUCCESS)
+    if (const VkResult result = vkCreateBuffer(m_VkDevice, &bufferInfo, nullptr, &m_VkBuffer); result != VK_SUCCESS)
     {
-        epiLogError("gfxVertexBufferImplVK buffer creation has failed!");
+        gfxLogErrorEx(result, "Failed to call vkCreateBuffer!");
         return false;
     }
 

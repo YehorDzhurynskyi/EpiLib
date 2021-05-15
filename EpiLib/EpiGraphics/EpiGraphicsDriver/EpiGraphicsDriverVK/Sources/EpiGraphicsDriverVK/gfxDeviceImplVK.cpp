@@ -1,5 +1,6 @@
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
@@ -15,7 +16,7 @@
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 namespace
 {
@@ -341,9 +342,9 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
 
     createInfo.pNext = deviceCreateInfoNext;
 
-    const VkResult resultCreateDevice = vkCreateDevice(physicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice);
-    if (resultCreateDevice != VK_SUCCESS)
+    if (const VkResult result = vkCreateDevice(physicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateDevice!");
         return false;
     }
 

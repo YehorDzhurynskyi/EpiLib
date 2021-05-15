@@ -1,8 +1,6 @@
 project(EpiGraphicsDriverVK)
 
 add_library(EpiGraphicsDriverVK
-    Sources/EpiGraphicsDriverVK/gfxEnumVK.h
-    Sources/EpiGraphicsDriverVK/gfxEnumVK.cpp
     Sources/EpiGraphicsDriverVK/gfxDriverImplVK.h
     Sources/EpiGraphicsDriverVK/gfxDriverImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxVertexArrayImplVK.h
@@ -36,6 +34,15 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxCommandPoolImplVK.h
     Sources/EpiGraphicsDriverVK/gfxCommandPoolImplVK.cpp
 )
+
+target_sources(EpiGraphicsDriverVK
+    PRIVATE
+        Sources/EpiGraphicsDriverVK/gfxEnumVK.h
+        Sources/EpiGraphicsDriverVK/gfxEnumVK.cpp
+        Sources/EpiGraphicsDriverVK/gfxErrorVK.h
+        Sources/EpiGraphicsDriverVK/gfxErrorVK.cpp
+)
+
 get_target_property(EpiGraphicsDriverVK_SOURCES EpiGraphicsDriverVK SOURCES)
 epi_pack_sources(${EpiGraphicsDriverVK_SOURCES})
 

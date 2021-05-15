@@ -1,10 +1,11 @@
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 #include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
@@ -120,8 +121,9 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
-    if (vkCreatePipelineLayout(m_Device.GetVkDevice(), &pipelineLayoutInfo, nullptr, &m_VkPipelineLayout) != VK_SUCCESS)
+    if (const VkResult result = vkCreatePipelineLayout(m_Device.GetVkDevice(), &pipelineLayoutInfo, nullptr, &m_VkPipelineLayout); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreatePipelineLayout!");
         return false;
     }
 
@@ -179,8 +181,9 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex = -1;
 
-    if (vkCreateGraphicsPipelines(m_Device.GetVkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_VkPipeline) != VK_SUCCESS)
+    if (const VkResult result = vkCreateGraphicsPipelines(m_Device.GetVkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_VkPipeline); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateGraphicsPipelines!");
         return false;
     }
 

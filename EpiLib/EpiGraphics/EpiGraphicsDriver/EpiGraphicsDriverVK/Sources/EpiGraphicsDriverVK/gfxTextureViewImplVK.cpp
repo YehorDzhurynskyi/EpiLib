@@ -1,9 +1,10 @@
 #include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
 
-#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
+#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
@@ -32,8 +33,9 @@ epiBool gfxTextureViewImplVK::Init(const gfxTextureViewCreateInfo& info, const g
     createInfo.subresourceRange.baseArrayLayer = 0;
     createInfo.subresourceRange.layerCount = 1;
 
-    if (vkCreateImageView(m_VkDevice, &createInfo, nullptr, &m_VkImageView) != VK_SUCCESS)
+    if (const VkResult result = vkCreateImageView(m_VkDevice, &createInfo, nullptr, &m_VkImageView); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateImageView!");
         return false;
     }
 

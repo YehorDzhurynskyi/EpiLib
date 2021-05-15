@@ -5,6 +5,7 @@
 #include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/window.h>
+#include <wx/sizer.h>
 
 #include "EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h"
 
@@ -384,6 +385,9 @@ int EpiwxVulkanDemo::OnExit()
 epiWXVulkanDemoFrame::epiWXVulkanDemoFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : wxFrame(parent, id, title, pos, size, style)
 {
-    epiWXVulkanDemoTriangleCanvas* canvas = new epiWXVulkanDemoTriangleCanvas(this, wxID_ANY, wxDefaultPosition, {800, 600});
-    Fit();
+    wxBoxSizer* vboxSizer = new wxBoxSizer(wxHORIZONTAL);
+    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
+    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
+
+    SetSizerAndFit(vboxSizer);
 }

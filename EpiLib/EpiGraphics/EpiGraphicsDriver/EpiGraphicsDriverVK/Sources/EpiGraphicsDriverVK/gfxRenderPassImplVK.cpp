@@ -1,8 +1,9 @@
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
@@ -96,8 +97,9 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
     renderPassInfo.dependencyCount = dependencies.size();
     renderPassInfo.pDependencies = dependencies.data();
 
-    if (vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass) != VK_SUCCESS)
+    if (const VkResult result = vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateRenderPass!");
         return false;
     }
 
@@ -163,8 +165,9 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassSchema& schema)
     renderPassInfo.subpassCount = vkSubpasses.size();
     renderPassInfo.pSubpasses = vkSubpasses.data();
 
-    if (vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass) != VK_SUCCESS)
+    if (const VkResult result = vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateRenderPass!");
         return false;
     }
 

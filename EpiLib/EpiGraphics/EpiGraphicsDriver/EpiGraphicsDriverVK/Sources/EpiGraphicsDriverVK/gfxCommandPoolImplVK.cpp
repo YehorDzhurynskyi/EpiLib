@@ -1,10 +1,11 @@
 #include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
@@ -29,8 +30,9 @@ epiBool gfxCommandBufferImplVK::RenderPassBegin(const gfxRenderPassBeginInfo& in
     beginInfo.flags = 0; // TODO: configure
     beginInfo.pInheritanceInfo = nullptr;
 
-    if (vkBeginCommandBuffer(m_VkCommandBuffer, &beginInfo) != VK_SUCCESS)
+    if (const VkResult result = vkBeginCommandBuffer(m_VkCommandBuffer, &beginInfo); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkBeginCommandBuffer!");
         return false;
     }
 
@@ -72,8 +74,9 @@ epiBool gfxCommandBufferImplVK::RenderPassEnd() const
 {
     vkCmdEndRenderPass(m_VkCommandBuffer);
 
-    if (vkEndCommandBuffer(m_VkCommandBuffer) != VK_SUCCESS)
+    if (const VkResult result = vkEndCommandBuffer(m_VkCommandBuffer); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkEndCommandBuffer!");
         return false;
     }
 
@@ -137,8 +140,9 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const g
     poolInfo.queueFamilyIndex = queueFamilyImplVk.GetIndex();
     poolInfo.flags = 0; // TODO: configure via gfxCommandPoolCreateInfo
 
-    if (vkCreateCommandPool(m_VkDevice, &poolInfo, nullptr, &m_VkCommandPool) != VK_SUCCESS)
+    if (const VkResult result = vkCreateCommandPool(m_VkDevice, &poolInfo, nullptr, &m_VkCommandPool); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateCommandPool!");
         return false;
     }
 
@@ -152,8 +156,9 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const g
 
         std::vector<VkCommandBuffer> commandBuffers;
         commandBuffers.resize(primaryBufferCount);
-        if (vkAllocateCommandBuffers(m_VkDevice, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
+        if (const VkResult result = vkAllocateCommandBuffers(m_VkDevice, &allocInfo, commandBuffers.data()); result != VK_SUCCESS)
         {
+            gfxLogErrorEx(result, "Failed to call vkAllocateCommandBuffers!");
             return false;
         }
 
@@ -174,8 +179,9 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const g
 
         std::vector<VkCommandBuffer> commandBuffers;
         commandBuffers.resize(secondaryBufferCount);
-        if (vkAllocateCommandBuffers(m_VkDevice, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
+        if (const VkResult result = vkAllocateCommandBuffers(m_VkDevice, &allocInfo, commandBuffers.data()); result != VK_SUCCESS)
         {
+            gfxLogErrorEx(result, "Failed to call vkAllocateCommandBuffers!");
             return false;
         }
 

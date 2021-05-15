@@ -2,7 +2,7 @@
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 

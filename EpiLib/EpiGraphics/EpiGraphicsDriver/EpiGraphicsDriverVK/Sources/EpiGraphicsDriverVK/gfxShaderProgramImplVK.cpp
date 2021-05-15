@@ -1,6 +1,8 @@
 #include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
+
+#include <vulkan/vulkan.h>
 #include <shaderc/shaderc.hpp>
 
 EPI_NAMESPACE_BEGIN()
@@ -99,8 +101,9 @@ epiBool gfxShaderImplVK::InitFromBinary(const epiU8* binary, epiSize_t size, gfx
     createInfo.pCode = reinterpret_cast<const epiU32*>(binary);
     createInfo.codeSize = size;
 
-    if (vkCreateShaderModule(m_VkDevice, &createInfo, nullptr, &m_VkShaderModule) != VK_SUCCESS)
+    if (const VkResult result = vkCreateShaderModule(m_VkDevice, &createInfo, nullptr, &m_VkShaderModule); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateShaderModule!");
         return false;
     }
 

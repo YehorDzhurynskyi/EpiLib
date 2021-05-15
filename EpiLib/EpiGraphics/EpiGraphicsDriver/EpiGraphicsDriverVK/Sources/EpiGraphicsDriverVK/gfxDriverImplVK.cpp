@@ -1,8 +1,9 @@
 #include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 #ifdef EPI_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -109,7 +110,7 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
     std::vector<const epiChar*> validationLayers;
 #ifdef EPI_BUILD_DEBUG
     validationLayers.push_back("VK_LAYER_KHRONOS_validation");
-    validationLayers.push_back("VK_LAYER_LUNARG_api_dump");
+    //validationLayers.push_back("VK_LAYER_LUNARG_api_dump");
     //validationLayers.push_back("VK_LAYER_NV_optimus");
 #endif // EPI_BUILD_DEBUG
 
@@ -165,10 +166,9 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
     createInfo.ppEnabledExtensionNames = extensions.data();
     createInfo.enabledExtensionCount = extensions.size();
 
-    VkResult resultCreateInstance = vkCreateInstance(&createInfo, nullptr, &m_VkInstance);
-    if (resultCreateInstance != VK_SUCCESS)
+    if (const VkResult result = vkCreateInstance(&createInfo, nullptr, &m_VkInstance); result != VK_SUCCESS)
     {
-        epiLogError("Failed to create 'VkInstance'!");
+        gfxLogError(result, "Failed to call vkCreateInstance!");
         return false;
     }
 
@@ -180,10 +180,9 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
         return false;
     }
 
-    VkResult resultCreateDebugMessenger = vkCreateDebugUtilsMessengerEXTFunc(m_VkInstance, &createInfoDebugMessenger, nullptr, &m_VKDebugMessenger);
-    if (resultCreateDebugMessenger != VK_SUCCESS)
+    if (const VkResult result = vkCreateDebugUtilsMessengerEXTFunc(m_VkInstance, &createInfoDebugMessenger, nullptr, &m_VKDebugMessenger); result != VK_SUCCESS)
     {
-        epiLogError("Failed to create 'VkDebugUtilsMessengerEXT'!");
+        gfxLogError(result, "Failed to call vkCreateDebugUtilsMessengerEXTFunc!");
         return false;
     }
 #endif // EPI_BUILD_DEBUG

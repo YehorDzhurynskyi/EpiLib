@@ -1,8 +1,9 @@
 #include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
@@ -44,8 +45,9 @@ epiBool gfxTextureImplVKOwner::Init(const gfxTextureCreateInfo& info)
     imageCreateInfo.pQueueFamilyIndices = nullptr; // TBD
     imageCreateInfo.initialLayout = gfxImageLayoutTo(info.GetInitialLayout());
 
-    if (vkCreateImage(m_VkDevice, &imageCreateInfo, nullptr, &m_VkImage) != VK_SUCCESS)
+    if (const VkResult result = vkCreateImage(m_VkDevice, &imageCreateInfo, nullptr, &m_VkImage); result != VK_SUCCESS)
     {
+        gfxLogErrorEx(result, "Failed to call vkCreateImage!");
         return false;
     }
 

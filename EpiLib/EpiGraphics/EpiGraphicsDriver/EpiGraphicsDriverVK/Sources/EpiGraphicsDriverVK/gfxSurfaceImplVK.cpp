@@ -4,8 +4,9 @@
 #include "EpiGraphicsDriverVK/gfxSwapChainImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 #ifdef EPI_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -25,8 +26,8 @@ gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance_T* instance, const gfxWindow& wind
     createInfo.hwnd = window.GetHWND();
     createInfo.hinstance = GetModuleHandle(nullptr);
 
-    VkResult resultCreateWin32SurfaceKHR = vkCreateWin32SurfaceKHR(m_VkInstance, &createInfo, nullptr, &m_VkSurface);
-    epiAssert(resultCreateWin32SurfaceKHR == VK_SUCCESS);
+    const VkResult result = vkCreateWin32SurfaceKHR(m_VkInstance, &createInfo, nullptr, &m_VkSurface);
+    gfxLogErrorIfNotSuccessEx(result, "Failed to call vkCreateWin32SurfaceKHR!");
 }
 
 gfxSurfaceImplVK::~gfxSurfaceImplVK()
@@ -78,8 +79,11 @@ gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDev
     const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
 
     VkSurfaceCapabilitiesKHR capabilitiesVk;
-    const VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(deviceVk.GetVkPhysicalDevice(), GetVkSurface(), &capabilitiesVk);
-    epiAssert(result == VK_SUCCESS);
+    if (const VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(deviceVk.GetVkPhysicalDevice(), GetVkSurface(), &capabilitiesVk); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkGetPhysicalDeviceSurfaceCapabilitiesKHR!");
+        return capabilities;
+    }
 
     capabilities.SetMinImageCount(capabilitiesVk.minImageCount);
     capabilities.SetMaxImageCount(capabilitiesVk.maxImageCount);
