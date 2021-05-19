@@ -789,3 +789,37 @@ enum gfxDependency
     DeviceGroup,
     ViewLocal
 };
+
+enum gfxPipelineDynamicState
+{
+    Viewport,
+    Scissor,
+    LineWidth,
+    DepthBias,
+    BlendConstants,
+    DepthBounds,
+    StencilCompareMask,
+    StencilWriteMask,
+    StencilReference,
+    ViewportWScaling,
+    DiscardRectangle,
+    SampleLocations,
+    RayTracingPipelineStackSize,
+    ViewportShadingRatePalette,
+    ViewportCoarseSampleOrder,
+    ExclusiveScissor,
+    FragmentShadingRate,
+    LineStipple,
+    CullMode,
+    FrontFace,
+    PrimitiveTopology,
+    ViewportWithCount,
+    ScissorWithCount,
+    VertexInputBindingStride,
+    DepthTestEnable,
+    DepthWriteEnable,
+    DepthCompareOp,
+    DepthBoundsTestEnable,
+    StencilTestEnable,
+    StencilOp
+};

@@ -28,6 +28,13 @@ gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddColorBlendAttac
     return *this;
 }
 
+gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddDynamicState(gfxPipelineDynamicState state)
+{
+    GetDynamicState().push_back(state);
+
+    return *this;
+}
+
 gfxPipelineGraphics::gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl>& impl)
     : m_Impl{impl}
 {

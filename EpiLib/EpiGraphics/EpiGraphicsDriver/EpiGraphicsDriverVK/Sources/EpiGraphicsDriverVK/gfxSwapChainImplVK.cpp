@@ -248,6 +248,22 @@ epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass
 
         vkCmdBindPipeline(commandBufferVk, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineVk.GetVkPipeline());
 
+        { // TODO: set dynamic state in a proper way (via gfxRenderPass interface)
+            VkViewport viewport;
+            viewport.x = 0,
+            viewport.y = 0;
+            viewport.width = extent.width;
+            viewport.height = extent.height;
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            vkCmdSetViewport(commandBufferVk, 0, 1, &viewport);
+
+            VkRect2D scissor;
+            scissor.offset = {0, 0};
+            scissor.extent = extent;
+            vkCmdSetScissor(commandBufferVk, 0, 1, &scissor);
+        }
+
         vkCmdDraw(commandBufferVk, 3, 1, 0, 0);
 
         vkCmdEndRenderPass(commandBufferVk);
@@ -277,7 +293,10 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
                                                       &imageIndex); result != VK_SUCCESS)
     {
         gfxLogErrorEx(result, "Failed to call vkAcquireNextImageKHR!");
-        return false;
+        if (result != VK_SUBOPTIMAL_KHR)
+        {
+            return false;
+        }
     }
 
     if (m_VkFencesImagesInFlight[imageIndex] != VK_NULL_HANDLE)

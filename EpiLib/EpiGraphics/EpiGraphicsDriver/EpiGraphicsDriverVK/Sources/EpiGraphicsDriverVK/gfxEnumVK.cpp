@@ -967,4 +967,42 @@ VkDependencyFlagBits gfxDependencyTo(gfxDependency dependency)
                    (dependency & gfxDependency_ViewLocal) ? VK_DEPENDENCY_VIEW_LOCAL_BIT : VkDependencyFlagBits{});
 }
 
+VkDynamicState gfxPipelineDynamicStateTo(gfxPipelineDynamicState state)
+{
+    switch (state)
+    {
+    case gfxPipelineDynamicState::Viewport: return VK_DYNAMIC_STATE_VIEWPORT;
+    case gfxPipelineDynamicState::Scissor: return VK_DYNAMIC_STATE_SCISSOR;
+    case gfxPipelineDynamicState::LineWidth: return VK_DYNAMIC_STATE_LINE_WIDTH;
+    case gfxPipelineDynamicState::DepthBias: return VK_DYNAMIC_STATE_DEPTH_BIAS;
+    case gfxPipelineDynamicState::BlendConstants: return VK_DYNAMIC_STATE_BLEND_CONSTANTS;
+    case gfxPipelineDynamicState::DepthBounds: return VK_DYNAMIC_STATE_DEPTH_BOUNDS;
+    case gfxPipelineDynamicState::StencilCompareMask: return VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK;
+    case gfxPipelineDynamicState::StencilWriteMask: return VK_DYNAMIC_STATE_STENCIL_WRITE_MASK;
+    case gfxPipelineDynamicState::StencilReference: return VK_DYNAMIC_STATE_STENCIL_REFERENCE;
+    case gfxPipelineDynamicState::ViewportWScaling: return VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV;
+    case gfxPipelineDynamicState::DiscardRectangle: return VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT;
+    case gfxPipelineDynamicState::SampleLocations: return VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT;
+    case gfxPipelineDynamicState::RayTracingPipelineStackSize: return VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR;
+    case gfxPipelineDynamicState::ViewportShadingRatePalette: return VK_DYNAMIC_STATE_VIEWPORT_SHADING_RATE_PALETTE_NV;
+    case gfxPipelineDynamicState::ViewportCoarseSampleOrder: return VK_DYNAMIC_STATE_VIEWPORT_COARSE_SAMPLE_ORDER_NV;
+    case gfxPipelineDynamicState::ExclusiveScissor: return VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV;
+    case gfxPipelineDynamicState::FragmentShadingRate: return VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR;
+    case gfxPipelineDynamicState::LineStipple: return VK_DYNAMIC_STATE_LINE_STIPPLE_EXT;
+    case gfxPipelineDynamicState::CullMode: return VK_DYNAMIC_STATE_CULL_MODE_EXT;
+    case gfxPipelineDynamicState::FrontFace: return VK_DYNAMIC_STATE_FRONT_FACE_EXT;
+    case gfxPipelineDynamicState::PrimitiveTopology: return VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY_EXT;
+    case gfxPipelineDynamicState::ViewportWithCount: return VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT_EXT;
+    case gfxPipelineDynamicState::ScissorWithCount: return VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT_EXT;
+    case gfxPipelineDynamicState::VertexInputBindingStride: return VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT;
+    case gfxPipelineDynamicState::DepthTestEnable: return VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE_EXT;
+    case gfxPipelineDynamicState::DepthWriteEnable: return VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE_EXT;
+    case gfxPipelineDynamicState::DepthCompareOp: return VK_DYNAMIC_STATE_DEPTH_COMPARE_OP_EXT;
+    case gfxPipelineDynamicState::DepthBoundsTestEnable: return VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE_EXT;
+    case gfxPipelineDynamicState::StencilTestEnable: return VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE_EXT;
+    case gfxPipelineDynamicState::StencilOp: return VK_DYNAMIC_STATE_STENCIL_OP_EXT;
+    default: epiLogError("Unhandled gfxPipelineDynamicState=`{}`", state); return VK_DYNAMIC_STATE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
 EPI_NAMESPACE_END()

@@ -212,6 +212,9 @@ public:
         pipelineCreateInfo.SetColorBlendConstants(epiVec4f{0.0f, 0.0f, 0.0f, 0.0f});
         pipelineCreateInfo.SetRenderSubPassIndex(0);
         pipelineCreateInfo.SetShaderProgram(*shaderProgram);
+        pipelineCreateInfo
+            .AddDynamicState(gfxPipelineDynamicState::Viewport)
+            .AddDynamicState(gfxPipelineDynamicState::Scissor);
 
         {
             std::optional<gfxPipelineGraphics> pipeline = g_Device.CreatePipelineGraphics(pipelineCreateInfo, m_RenderPass);

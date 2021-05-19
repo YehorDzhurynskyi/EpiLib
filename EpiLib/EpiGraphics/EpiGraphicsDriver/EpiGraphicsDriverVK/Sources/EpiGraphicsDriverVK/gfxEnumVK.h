@@ -35,5 +35,6 @@ VkImageUsageFlagBits gfxImageUsageTo(gfxImageUsage usage);
 VkPipelineStageFlagBits gfxPipelineStageTo(gfxPipelineStage stage);
 VkAccessFlagBits gfxAccessTo(gfxAccess access);
 VkDependencyFlagBits gfxDependencyTo(gfxDependency dependency);
+VkDynamicState gfxPipelineDynamicStateTo(gfxPipelineDynamicState state);
 
 EPI_NAMESPACE_END()

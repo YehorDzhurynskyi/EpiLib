@@ -51,6 +51,11 @@ class gfxPipelineGraphicsCreateInfo
     epiBool ColorBlendLogicOpEnable;
     gfxLogicOp ColorBlendLogicOp;
     epiVec4f ColorBlendConstants;
+
+    [ReadOnly]
+    {
+        epiArray<gfxPipelineDynamicState> DynamicState;
+    }
 };
 
 class gfxPipelineGraphics

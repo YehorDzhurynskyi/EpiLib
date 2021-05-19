@@ -856,4 +856,40 @@ EPI_GENREGION_BEGIN(gfxDependency)
 EPI_GENREGION_END(gfxDependency)
 };
 
+enum class gfxPipelineDynamicState : epiS32
+{
+EPI_GENREGION_BEGIN(gfxPipelineDynamicState)
+    Viewport = 0,
+    Scissor = 1,
+    LineWidth = 2,
+    DepthBias = 3,
+    BlendConstants = 4,
+    DepthBounds = 5,
+    StencilCompareMask = 6,
+    StencilWriteMask = 7,
+    StencilReference = 8,
+    ViewportWScaling = 9,
+    DiscardRectangle = 10,
+    SampleLocations = 11,
+    RayTracingPipelineStackSize = 12,
+    ViewportShadingRatePalette = 13,
+    ViewportCoarseSampleOrder = 14,
+    ExclusiveScissor = 15,
+    FragmentShadingRate = 16,
+    LineStipple = 17,
+    CullMode = 18,
+    FrontFace = 19,
+    PrimitiveTopology = 20,
+    ViewportWithCount = 21,
+    ScissorWithCount = 22,
+    VertexInputBindingStride = 23,
+    DepthTestEnable = 24,
+    DepthWriteEnable = 25,
+    DepthCompareOp = 26,
+    DepthBoundsTestEnable = 27,
+    StencilTestEnable = 28,
+    StencilOp = 29
+EPI_GENREGION_END(gfxPipelineDynamicState)
+};
+
 EPI_NAMESPACE_END()

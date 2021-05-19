@@ -109,7 +109,8 @@ public:
         PID_ColorBlendLogicOpEnable = 0xa19e601f,
         PID_ColorBlendLogicOp = 0x7caacb6d,
         PID_ColorBlendConstants = 0x739a4ae9,
-        PID_COUNT = 19
+        PID_DynamicState = 0x36394cf8,
+        PID_COUNT = 20
     };
 
 protected:
@@ -132,6 +133,7 @@ protected:
     epiBool m_ColorBlendLogicOpEnable{false};
     gfxLogicOp m_ColorBlendLogicOp{};
     epiVec4f m_ColorBlendConstants{};
+    epiArray<gfxPipelineDynamicState> m_DynamicState{};
 
 EPI_GENREGION_END(gfxPipelineGraphicsCreateInfo)
 
@@ -139,6 +141,7 @@ public:
     gfxPipelineGraphicsCreateInfo& AddScissor(const epiRect2s& scissor);
     gfxPipelineGraphicsCreateInfo& AddViewport(const gfxPipelineViewport& viewport);
     gfxPipelineGraphicsCreateInfo& AddColorBlendAttachment(const gfxPipelineColorBlendAttachment& attachment);
+    gfxPipelineGraphicsCreateInfo& AddDynamicState(gfxPipelineDynamicState state);
 };
 
 class gfxPipelineGraphics : public Object
