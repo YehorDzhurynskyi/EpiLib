@@ -76,6 +76,8 @@ public:
     gfxSwapChain() = default;
     explicit gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl);
 
+    epiBool Recreate(const gfxSwapChainCreateInfo& info);
+
     epiBool AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline);
 
     epiBool Present(const gfxQueue& queue);

@@ -95,8 +95,6 @@ gfxCommandPoolImplVK::gfxCommandPoolImplVK(VkDevice device)
 
 gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
 {
-    vkDestroyCommandPool(m_VkDevice, m_VkCommandPool, nullptr);
-
     if (!m_PrimaryCommandBuffers.IsEmpty())
     {
         std::vector<VkCommandBuffer> primaryCommandBuffers;
@@ -130,6 +128,8 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
 
         vkFreeCommandBuffers(m_VkDevice, m_VkCommandPool, secondaryCommandBuffers.size(), secondaryCommandBuffers.data());
     }
+
+    vkDestroyCommandPool(m_VkDevice, m_VkCommandPool, nullptr);
 }
 
 epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl)

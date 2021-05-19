@@ -204,6 +204,11 @@ public:
     gfxSwapChainImpl& operator=(gfxSwapChainImpl&& rhs) = default;
     virtual ~gfxSwapChainImpl() = default;
 
+    virtual epiBool Recreate(const gfxSwapChainCreateInfo& info,
+                             const gfxSurfaceImpl& surfaceImpl,
+                             const gfxQueueFamilyImpl& queueFamilyImpl,
+                             const gfxRenderPassImpl& renderPassImpl) = 0;
+
     virtual epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline) = 0;
 
     virtual epiBool Present(const gfxQueueImpl& queue) = 0;

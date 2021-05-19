@@ -31,11 +31,19 @@ public:
                  const gfxQueueFamilyImpl& queueFamilyImpl,
                  const gfxRenderPassImpl& renderPassImpl);
 
+    epiBool Recreate(const gfxSwapChainCreateInfo& info,
+                     const gfxSurfaceImpl& surfaceImpl,
+                     const gfxQueueFamilyImpl& queueFamilyImpl,
+                     const gfxRenderPassImpl& renderPassImpl) override;
+
     epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline) override;
 
     epiBool Present(const gfxQueueImpl& queue) override;
 
     epiSize2u GetExtent() const override;
+
+protected:
+    epiBool Reset();
 
 protected:
     const gfxDeviceImplVK& m_Device;

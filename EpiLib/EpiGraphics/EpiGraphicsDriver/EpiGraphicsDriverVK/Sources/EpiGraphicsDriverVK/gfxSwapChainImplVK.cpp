@@ -33,22 +33,7 @@ gfxSwapChainImplVK::gfxSwapChainImplVK(const gfxDeviceImplVK& device)
 
 gfxSwapChainImplVK::~gfxSwapChainImplVK()
 {
-    for (VkSemaphore semaphore : m_VkSemaphoreRenderFinished)
-    {
-        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
-    }
-
-    for (VkSemaphore semaphore : m_VkSemaphoreImageAvailable)
-    {
-        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
-    }
-
-    for (VkFence fence : m_VkFencesInFlight)
-    {
-        vkDestroyFence(m_Device.GetVkDevice(), fence, nullptr);
-    }
-
-    vkDestroySwapchainKHR(m_Device.GetVkDevice(), m_VkSwapChain, nullptr);
+    Reset();
 }
 
 epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
@@ -175,6 +160,57 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
     return true;
 }
 
+epiBool gfxSwapChainImplVK::Reset()
+{
+    const VkResult result = vkDeviceWaitIdle(m_Device.GetVkDevice());
+    if (result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkDeviceWaitIdle!");
+        return false;
+    }
+
+    for (VkSemaphore semaphore : m_VkSemaphoreRenderFinished)
+    {
+        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
+    }
+
+    for (VkSemaphore semaphore : m_VkSemaphoreImageAvailable)
+    {
+        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
+    }
+
+    for (VkFence fence : m_VkFencesInFlight)
+    {
+        vkDestroyFence(m_Device.GetVkDevice(), fence, nullptr);
+    }
+
+    m_VkSemaphoreImageAvailable.clear();
+    m_VkSemaphoreRenderFinished.clear();
+    m_VkFencesInFlight.clear();
+    m_VkFencesImagesInFlight.clear();
+
+    m_CommandPool.reset();
+    m_SwapChainFrameBuffers.Clear();
+    m_SwapChainImageViews.Clear();
+
+    m_CurrentFrame = 0;
+
+    vkDestroySwapchainKHR(m_Device.GetVkDevice(), m_VkSwapChain, nullptr);
+}
+
+epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
+                                     const gfxSurfaceImpl& surfaceImpl,
+                                     const gfxQueueFamilyImpl& queueFamilyImpl,
+                                     const gfxRenderPassImpl& renderPassImpl)
+{
+    if (!Reset())
+    {
+        return false;
+    }
+
+    return Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl);
+}
+
 epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline)
 {
     const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& commandBuffers = m_CommandPool->GetPrimaryCommandBuffers();
@@ -250,7 +286,6 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
     }
     // Mark the image as now being in use by this frame
     m_VkFencesImagesInFlight[imageIndex] = m_VkFencesInFlight[frameIndex];
-
 
     VkSemaphore waitSemaphores[] = {m_VkSemaphoreImageAvailable[frameIndex]};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};

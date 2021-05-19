@@ -105,12 +105,15 @@ EPI_GENREGION_END(gfxSurface)
 public:
     friend class gfxDevice;
     friend class gfxQueueDescriptor;
+    friend class gfxSwapChain;
 
 public:
     gfxSurface() = default;
     explicit gfxSurface(const std::shared_ptr<internalgfx::gfxSurfaceImpl>& impl);
 
 public:
+    operator epiBool() const;
+
     epiBool IsCompatibleWith(const gfxPhysicalDevice& device,
                              const gfxSurfaceFormat& format,
                              gfxSurfacePresentMode presentMode) const;

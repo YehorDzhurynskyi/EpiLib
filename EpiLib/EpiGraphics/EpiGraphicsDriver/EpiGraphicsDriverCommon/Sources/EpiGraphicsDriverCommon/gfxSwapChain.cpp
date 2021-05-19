@@ -12,6 +12,32 @@ gfxSwapChain::gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>&
 {
 }
 
+epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
+{
+    const auto surfaceImpl = info.GetSurface().m_Impl;
+    if (!surfaceImpl)
+    {
+        epiLogError("Failed to recreate SwapChain! Provided Surface has no implementation!");
+        return false;
+    }
+
+    const auto queueFamilyImpl = info.GetQueueFamily().m_Impl;
+    if (!queueFamilyImpl)
+    {
+        epiLogError("Failed to recreate SwapChain! Provided QueueFamily has no implementation!");
+        return false;
+    }
+
+    const auto renderPassImpl = info.GetRenderPass().m_Impl;
+    if (!renderPassImpl)
+    {
+        epiLogError("Failed to recreate SwapChain! Provided RenderPass has no implementation!");
+        return false;
+    }
+
+    return m_Impl->Recreate(info, *surfaceImpl, *queueFamilyImpl, *renderPassImpl);
+}
+
 epiBool gfxSwapChain::AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline)
 {
     const auto renderPassImpl = renderPass.m_Impl;

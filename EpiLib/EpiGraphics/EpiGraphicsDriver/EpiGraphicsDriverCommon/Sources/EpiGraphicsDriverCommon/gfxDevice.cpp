@@ -41,21 +41,21 @@ std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateI
     const auto surfaceImpl = info.GetSurface().m_Impl;
     if (!surfaceImpl)
     {
-        epiLogError("Failed to create SwapChain! Surface has no implementation!");
+        epiLogError("Failed to create SwapChain! Provided Surface has no implementation!");
         return swapChain;
     }
 
     const auto queueFamilyImpl = info.GetQueueFamily().m_Impl;
     if (!queueFamilyImpl)
     {
-        epiLogError("Failed to create SwapChain! QueueFamily has no implementation!");
+        epiLogError("Failed to create SwapChain! Provided QueueFamily has no implementation!");
         return swapChain;
     }
 
     const auto renderPassImpl = info.GetRenderPass().m_Impl;
     if (!renderPassImpl)
     {
-        epiLogError("Failed to create SwapChain! RenderPass has no implementation!");
+        epiLogError("Failed to create SwapChain! Provided RenderPass has no implementation!");
         return swapChain;
     }
 
@@ -98,14 +98,14 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
     const auto shaderProgramImpl = info.GetShaderProgram().m_Impl;
     if (!shaderProgramImpl)
     {
-        epiLogError("Failed to create Pipeline! ShaderProgram has no implementation!");
+        epiLogError("Failed to create Pipeline! Provided ShaderProgram has no implementation!");
         return pipeline;
     }
 
     const auto renderPassImpl = renderPass.m_Impl;
     if (!renderPassImpl)
     {
-        epiLogError("Failed to create Pipeline! RenderPass has no implemetation!");
+        epiLogError("Failed to create Pipeline! Provided RenderPass has no implemetation!");
         return pipeline;
     }
 
@@ -117,7 +117,7 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
 
     if (hasInvalidViewport)
     {
-        epiLogError("Failed to create Pipeline! RenderPass has invalid viewport!");
+        epiLogError("Failed to create Pipeline! Provided RenderPass has invalid viewport!");
         return pipeline;
     }
 
@@ -129,7 +129,7 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
 
     if (hasInvalidScissor)
     {
-        epiLogError("Failed to create Pipeline! RenderPass has invalid scissor!");
+        epiLogError("Failed to create Pipeline! Provided RenderPass has invalid scissor!");
         return pipeline;
     }
 
@@ -213,7 +213,7 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
     const auto renderPassImpl = renderPass.m_Impl;
     if (!renderPassImpl)
     {
-        epiLogError("Failed to create FrameBuffer! RenderPass has no implementation!");
+        epiLogError("Failed to create FrameBuffer! Provided RenderPass has no implementation!");
         return frameBuffer;
     }
 
@@ -251,14 +251,14 @@ std::optional<gfxTextureView> gfxDevice::CreateTextureView(const gfxTextureViewC
     const gfxTexture* texture = info.GetTexture();
     if (texture == nullptr)
     {
-        epiLogError("Failed to create TextureView! Texture hasn't provided!");
+        epiLogError("Failed to create TextureView! Provided Texture hasn't provided!");
         return textureView;
     }
 
     const auto textureImpl = texture->m_Impl;
     if (!textureImpl)
     {
-        epiLogError("Failed to create TextureView! Texture has no implementation!");
+        epiLogError("Failed to create TextureView! Provided Texture has no implementation!");
         return textureView;
     }
 
@@ -279,7 +279,7 @@ std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolC
     const auto queueFamilyImpl = queueFamily.m_Impl;
     if (!queueFamilyImpl)
     {
-        epiLogError("Failed to create CommandPool! QueueFamily has no implementation!");
+        epiLogError("Failed to create CommandPool! Provided QueueFamily has no implementation!");
         return commnadPool;
     }
 

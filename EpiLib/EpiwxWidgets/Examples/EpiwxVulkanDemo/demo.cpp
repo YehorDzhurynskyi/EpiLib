@@ -226,6 +226,7 @@ public:
 protected:
     void OnPaint(wxPaintEvent& event);
     void OnEraseBackground(wxEraseEvent& event);
+    void OnSize(wxSizeEvent& event);
 
 protected:
     gfxQueueFamily m_QueueFamily;
@@ -236,6 +237,7 @@ protected:
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
     EVT_PAINT(epiWXVulkanDemoTriangleCanvas::OnPaint)
     EVT_ERASE_BACKGROUND(epiWXVulkanDemoTriangleCanvas::OnEraseBackground)
+    EVT_SIZE(epiWXVulkanDemoTriangleCanvas::OnSize)
 wxEND_EVENT_TABLE()
 
 void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
@@ -246,6 +248,43 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 void epiWXVulkanDemoTriangleCanvas::OnEraseBackground(wxEraseEvent&)
 {
     // NOTE: should reduce flickering
+}
+
+void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
+{
+    if (!m_Surface)
+    {
+        return;
+    }
+
+    const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(g_PhysicalDevice);
+
+    epiSize2u extent{};
+    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
+    {
+        extent = surfaceCapabilities.GetCurrentExtent();
+    }
+    else
+    {
+        extent.x = std::clamp(static_cast<epiU32>(event.GetSize().x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
+        extent.y = std::clamp(static_cast<epiU32>(event.GetSize().y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
+    }
+
+    gfxSurfaceFormat surfaceFormat;
+    surfaceFormat.SetFormat(kFormatRequired);
+    surfaceFormat.SetColorSpace(kColorSpaceRequired);
+
+    gfxSwapChainCreateInfo swapChainCreateInfo{};
+    swapChainCreateInfo.SetSurface(m_Surface);
+    swapChainCreateInfo.SetRenderPass(m_RenderPass);
+    swapChainCreateInfo.SetQueueFamily(m_QueueFamily);
+    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
+    swapChainCreateInfo.SetFormat(surfaceFormat);
+    swapChainCreateInfo.SetPresentMode(kPresentModeRequired);
+    swapChainCreateInfo.SetExtent(extent);
+
+    m_SwapChain.Recreate(swapChainCreateInfo);
+    m_SwapChain.AssignRenderPass(m_RenderPass, m_Pipeline);
 }
 
 DECLARE_APP(EpiwxVulkanDemo)

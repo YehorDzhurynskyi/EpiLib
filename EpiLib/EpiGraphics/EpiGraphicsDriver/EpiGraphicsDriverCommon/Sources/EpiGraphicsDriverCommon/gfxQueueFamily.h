@@ -85,6 +85,7 @@ EPI_GENREGION_END(gfxQueueFamily)
 public:
     friend class gfxDevice;
     friend class gfxSurface;
+    friend class gfxSwapChain;
 
 public:
     gfxQueueFamily() = default;

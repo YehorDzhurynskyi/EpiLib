@@ -22,6 +22,11 @@ gfxSurface::gfxSurface(const std::shared_ptr<internalgfx::gfxSurfaceImpl>& impl)
 {
 }
 
+gfxSurface::operator epiBool() const
+{
+    return static_cast<epiBool>(m_Impl);
+}
+
 epiBool gfxSurface::IsCompatibleWith(const gfxPhysicalDevice& device, const gfxSurfaceFormat& format, gfxSurfacePresentMode presentMode) const
 {
     if (!IsPresentSupportedFor(device))
