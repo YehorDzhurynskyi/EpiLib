@@ -1005,4 +1005,14 @@ VkDynamicState gfxPipelineDynamicStateTo(gfxPipelineDynamicState state)
     }
 }
 
+VkVertexInputRate gfxPipelineVertexInputRateTo(gfxPipelineVertexInputRate rate)
+{
+    switch (rate)
+    {
+    case gfxPipelineVertexInputRate::Vertex: return VK_VERTEX_INPUT_RATE_VERTEX;
+    case gfxPipelineVertexInputRate::Instance: return VK_VERTEX_INPUT_RATE_INSTANCE;
+    default: epiLogError("Unhandled gfxPipelineVertexInputRate=`{}`", rate); return VK_VERTEX_INPUT_RATE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
 EPI_NAMESPACE_END()

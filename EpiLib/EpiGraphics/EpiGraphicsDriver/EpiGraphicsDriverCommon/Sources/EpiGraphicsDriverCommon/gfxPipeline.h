@@ -79,6 +79,59 @@ protected:
 EPI_GENREGION_END(gfxPipelineColorBlendAttachment)
 };
 
+class gfxPipelineVertexInputAttributeDescription : public Object
+{
+EPI_GENREGION_BEGIN(gfxPipelineVertexInputAttributeDescription)
+
+EPI_GENHIDDEN_gfxPipelineVertexInputAttributeDescription()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xce0392ee};
+
+    enum gfxPipelineVertexInputAttributeDescription_PIDs
+    {
+        PID_Location = 0xa7e8eb9d,
+        PID_Format = 0xd91677e9,
+        PID_Offset = 0x5ea6cfe6,
+        PID_COUNT = 3
+    };
+
+protected:
+    epiU32 m_Location{0};
+    gfxFormat m_Format{};
+    epiU32 m_Offset{0};
+
+EPI_GENREGION_END(gfxPipelineVertexInputAttributeDescription)
+};
+
+class gfxPipelineVertexInputBindingDescription : public Object
+{
+EPI_GENREGION_BEGIN(gfxPipelineVertexInputBindingDescription)
+
+EPI_GENHIDDEN_gfxPipelineVertexInputBindingDescription()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x70dc9b70};
+
+    enum gfxPipelineVertexInputBindingDescription_PIDs
+    {
+        PID_Stride = 0x8df33e39,
+        PID_InputRate = 0xb4165636,
+        PID_AttributeDescriptions = 0x25f611b8,
+        PID_COUNT = 3
+    };
+
+protected:
+    epiU32 m_Stride{0};
+    gfxPipelineVertexInputRate m_InputRate{gfxPipelineVertexInputRate::Vertex};
+    epiArray<gfxPipelineVertexInputAttributeDescription> m_AttributeDescriptions{};
+
+EPI_GENREGION_END(gfxPipelineVertexInputBindingDescription)
+
+public:
+    gfxPipelineVertexInputBindingDescription& AddAttribute(epiU32 location, gfxFormat format, epiU32 offset);
+};
+
 class gfxPipelineGraphicsCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxPipelineGraphicsCreateInfo)
@@ -95,6 +148,7 @@ public:
         PID_InputAssemblyType = 0xe816cd01,
         PID_Viewports = 0xa8f1ee29,
         PID_Scissors = 0x7b580124,
+        PID_VertexInputBindingDescriptions = 0xedcbd1c7,
         PID_DepthClampEnable = 0xf410b2f0,
         PID_RasterizerDiscardEnable = 0xcc8a6a07,
         PID_PolygonMode = 0xbd90fa7f,
@@ -109,8 +163,8 @@ public:
         PID_ColorBlendLogicOpEnable = 0xa19e601f,
         PID_ColorBlendLogicOp = 0x7caacb6d,
         PID_ColorBlendConstants = 0x739a4ae9,
-        PID_DynamicState = 0x36394cf8,
-        PID_COUNT = 20
+        PID_DynamicStates = 0xa85e8c69,
+        PID_COUNT = 21
     };
 
 protected:
@@ -119,6 +173,7 @@ protected:
     gfxPipelineInputAssemblyType m_InputAssemblyType{gfxPipelineInputAssemblyType::None};
     epiArray<gfxPipelineViewport> m_Viewports{};
     epiArray<epiRect2s> m_Scissors{};
+    epiArray<gfxPipelineVertexInputBindingDescription> m_VertexInputBindingDescriptions{};
     epiBool m_DepthClampEnable{false};
     epiBool m_RasterizerDiscardEnable{false};
     gfxPolygonMode m_PolygonMode{gfxPolygonMode::Fill};
@@ -133,7 +188,7 @@ protected:
     epiBool m_ColorBlendLogicOpEnable{false};
     gfxLogicOp m_ColorBlendLogicOp{};
     epiVec4f m_ColorBlendConstants{};
-    epiArray<gfxPipelineDynamicState> m_DynamicState{};
+    epiArray<gfxPipelineDynamicState> m_DynamicStates{};
 
 EPI_GENREGION_END(gfxPipelineGraphicsCreateInfo)
 
@@ -142,6 +197,7 @@ public:
     gfxPipelineGraphicsCreateInfo& AddViewport(const gfxPipelineViewport& viewport);
     gfxPipelineGraphicsCreateInfo& AddColorBlendAttachment(const gfxPipelineColorBlendAttachment& attachment);
     gfxPipelineGraphicsCreateInfo& AddDynamicState(gfxPipelineDynamicState state);
+    gfxPipelineGraphicsCreateInfo& AddVertexInputBinding(const gfxPipelineVertexInputBindingDescription& vertexInputBinding);
 };
 
 class gfxPipelineGraphics : public Object

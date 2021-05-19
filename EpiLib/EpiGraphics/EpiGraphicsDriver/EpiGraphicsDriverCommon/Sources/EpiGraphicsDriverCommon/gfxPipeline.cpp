@@ -7,6 +7,18 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+gfxPipelineVertexInputBindingDescription& gfxPipelineVertexInputBindingDescription::AddAttribute(epiU32 location, gfxFormat format, epiU32 offset)
+{
+    gfxPipelineVertexInputAttributeDescription attr{};
+    attr.SetLocation(location);
+    attr.SetFormat(format);
+    attr.SetOffset(offset);
+
+    GetAttributeDescriptions().push_back(attr);
+
+    return *this;
+}
+
 gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddScissor(const epiRect2s& scissor)
 {
     GetScissors().push_back(scissor);
@@ -30,7 +42,14 @@ gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddColorBlendAttac
 
 gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddDynamicState(gfxPipelineDynamicState state)
 {
-    GetDynamicState().push_back(state);
+    GetDynamicStates().push_back(state);
+
+    return *this;
+}
+
+gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddVertexInputBinding(const gfxPipelineVertexInputBindingDescription& vertexInputBinding)
+{
+    GetVertexInputBindingDescriptions().push_back(vertexInputBinding);
 
     return *this;
 }

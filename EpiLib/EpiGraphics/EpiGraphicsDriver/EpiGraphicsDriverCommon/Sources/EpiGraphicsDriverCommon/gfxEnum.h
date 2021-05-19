@@ -892,4 +892,12 @@ EPI_GENREGION_BEGIN(gfxPipelineDynamicState)
 EPI_GENREGION_END(gfxPipelineDynamicState)
 };
 
+enum class gfxPipelineVertexInputRate : epiS32
+{
+EPI_GENREGION_BEGIN(gfxPipelineVertexInputRate)
+    Vertex = 0,
+    Instance = 1
+EPI_GENREGION_END(gfxPipelineVertexInputRate)
+};
+
 EPI_NAMESPACE_END()

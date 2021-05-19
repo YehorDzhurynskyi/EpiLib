@@ -36,5 +36,6 @@ VkPipelineStageFlagBits gfxPipelineStageTo(gfxPipelineStage stage);
 VkAccessFlagBits gfxAccessTo(gfxAccess access);
 VkDependencyFlagBits gfxDependencyTo(gfxDependency dependency);
 VkDynamicState gfxPipelineDynamicStateTo(gfxPipelineDynamicState state);
+VkVertexInputRate gfxPipelineVertexInputRateTo(gfxPipelineVertexInputRate rate);
 
 EPI_NAMESPACE_END()

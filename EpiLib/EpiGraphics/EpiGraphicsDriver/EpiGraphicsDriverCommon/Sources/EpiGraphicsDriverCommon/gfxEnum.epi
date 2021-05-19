@@ -823,3 +823,9 @@ enum gfxPipelineDynamicState
     StencilTestEnable,
     StencilOp
 };
+
+enum gfxPipelineVertexInputRate
+{
+    Vertex,
+    Instance
+};

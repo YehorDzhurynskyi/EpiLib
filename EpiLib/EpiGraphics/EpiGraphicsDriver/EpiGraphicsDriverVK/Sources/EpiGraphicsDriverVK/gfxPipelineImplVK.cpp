@@ -127,12 +127,39 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
         return false;
     }
 
-    VkPipelineVertexInputStateCreateInfo vertexInputInfo{}; // TODO: configure through gfxPipelineCreateInfo
+    std::vector<VkVertexInputBindingDescription> vertexBindingDescriptions;
+    std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions;
+
+    {
+        epiU32 binding = 0;
+        for (const gfxPipelineVertexInputBindingDescription& bindingDesc : info.GetVertexInputBindingDescriptions())
+        {
+            VkVertexInputBindingDescription& bindingDescVk = vertexBindingDescriptions.emplace_back();
+            bindingDescVk = {};
+            bindingDescVk.binding = binding;
+            bindingDescVk.inputRate = gfxPipelineVertexInputRateTo(bindingDesc.GetInputRate());
+            bindingDescVk.stride = bindingDesc.GetStride();
+
+            for (const gfxPipelineVertexInputAttributeDescription& attrDesc : bindingDesc.GetAttributeDescriptions())
+            {
+                VkVertexInputAttributeDescription& attrDescVk = vertexAttributeDescriptions.emplace_back();
+                attrDescVk = {};
+                attrDescVk.binding = binding;
+                attrDescVk.location = attrDesc.GetLocation();
+                attrDescVk.format = gfxFormatTo(attrDesc.GetFormat());
+                attrDescVk.offset = attrDesc.GetOffset();
+            }
+
+            ++binding;
+        }
+    }
+
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+    vertexInputInfo.vertexBindingDescriptionCount = vertexBindingDescriptions.size();
+    vertexInputInfo.pVertexBindingDescriptions = vertexBindingDescriptions.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptions.size();
+    vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
 
     std::vector<VkPipelineShaderStageCreateInfo> stages;
 
@@ -164,8 +191,8 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     }
 
     std::vector<VkDynamicState> dynamicStates;
-    std::transform(info.GetDynamicState().begin(),
-                   info.GetDynamicState().end(),
+    std::transform(info.GetDynamicStates().begin(),
+                   info.GetDynamicStates().end(),
                    std::back_inserter(dynamicStates),
                    [](const gfxPipelineDynamicState& state) {
         return gfxPipelineDynamicStateTo(state);

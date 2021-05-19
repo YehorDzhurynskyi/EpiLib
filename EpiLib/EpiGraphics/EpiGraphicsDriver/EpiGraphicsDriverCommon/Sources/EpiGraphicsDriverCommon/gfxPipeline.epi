@@ -17,6 +17,24 @@ class gfxPipelineColorBlendAttachment
     gfxColorComponent ColorWriteMask = gfxColorComponent::RGBA;
 };
 
+class gfxPipelineVertexInputAttributeDescription
+{
+    epiU32 Location;
+    gfxFormat Format;
+    epiU32 Offset;
+};
+
+class gfxPipelineVertexInputBindingDescription
+{
+    epiU32 Stride;
+    gfxPipelineVertexInputRate InputRate = gfxPipelineVertexInputRate::Vertex;
+
+    [ReadOnly]
+    {
+        epiArray<gfxPipelineVertexInputAttributeDescription> AttributeDescriptions;
+    }
+};
+
 class gfxPipelineGraphicsCreateInfo
 {
     gfxShaderProgram ShaderProgram;
@@ -29,6 +47,7 @@ class gfxPipelineGraphicsCreateInfo
     {
         epiArray<gfxPipelineViewport> Viewports;
         epiArray<epiRect2s> Scissors;
+        epiArray<gfxPipelineVertexInputBindingDescription> VertexInputBindingDescriptions;
     }
 
     epiBool DepthClampEnable = false;
@@ -54,7 +73,7 @@ class gfxPipelineGraphicsCreateInfo
 
     [ReadOnly]
     {
-        epiArray<gfxPipelineDynamicState> DynamicState;
+        epiArray<gfxPipelineDynamicState> DynamicStates;
     }
 };
 
