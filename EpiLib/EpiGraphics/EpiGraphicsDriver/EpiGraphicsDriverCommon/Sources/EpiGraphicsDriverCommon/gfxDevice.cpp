@@ -291,4 +291,35 @@ std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolC
     return commnadPool;
 }
 
+std::optional<gfxBuffer> gfxDevice::CreateBuffer(const gfxBufferCreateInfo& info) const
+{
+    std::optional<gfxBuffer> buffer;
+
+    if (std::shared_ptr<internalgfx::gfxBufferImpl> impl = m_Impl->CreateBuffer(info))
+    {
+        buffer = gfxBuffer(std::move(impl));
+    }
+
+    return buffer;
+}
+
+std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const
+{
+    std::optional<gfxDeviceMemory> deviceMemory;
+
+    const auto bufferImpl = info.GetBuffer().m_Impl;
+    if (!bufferImpl)
+    {
+        epiLogError("Failed to create DeviceMemory! Provided Buffer has no implementation!");
+        return deviceMemory;
+    }
+
+    if (std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> impl = m_Impl->CreateDeviceMemory(info, *bufferImpl))
+    {
+        deviceMemory = gfxDeviceMemory(std::move(impl));
+    }
+
+    return deviceMemory;
+}
+
 EPI_NAMESPACE_END()

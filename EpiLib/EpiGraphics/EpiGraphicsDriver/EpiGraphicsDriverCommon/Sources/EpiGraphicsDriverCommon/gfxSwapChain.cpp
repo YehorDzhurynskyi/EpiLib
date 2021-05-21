@@ -38,7 +38,7 @@ epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
     return m_Impl->Recreate(info, *surfaceImpl, *queueFamilyImpl, *renderPassImpl);
 }
 
-epiBool gfxSwapChain::AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline)
+epiBool gfxSwapChain::AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline, const gfxBuffer& buffer)
 {
     const auto renderPassImpl = renderPass.m_Impl;
     if (!renderPassImpl)
@@ -54,7 +54,14 @@ epiBool gfxSwapChain::AssignRenderPass(const gfxRenderPass& renderPass, const gf
         return false;
     }
 
-    return m_Impl->AssignRenderPass(*renderPassImpl, *pipelineImpl);
+    const auto bufferImpl = buffer.m_Impl;
+    if (!bufferImpl)
+    {
+        epiLogError("Failed to assign Buffer to the SwapChain! Buffer has no implementation!");
+        return false;
+    }
+
+    return m_Impl->AssignRenderPass(*renderPassImpl, *pipelineImpl, *bufferImpl);
 }
 
 epiBool gfxSwapChain::Present(const gfxQueue& queue)

@@ -1,0 +1,9 @@
+class gfxBufferCreateInfo
+{
+    epiSize_t Capacity;
+    gfxBufferUsage Usage;
+};
+
+class gfxBuffer
+{
+};

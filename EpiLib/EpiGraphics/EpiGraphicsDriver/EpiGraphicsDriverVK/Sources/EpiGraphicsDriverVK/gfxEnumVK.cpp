@@ -1015,4 +1015,36 @@ VkVertexInputRate gfxPipelineVertexInputRateTo(gfxPipelineVertexInputRate rate)
     }
 }
 
+VkBufferUsageFlagBits gfxBufferUsageTo(gfxBufferUsage usage)
+{
+    return epiMask((usage & gfxBufferUsage_TransferSrc) ? VK_BUFFER_USAGE_TRANSFER_SRC_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_TransferDst) ? VK_BUFFER_USAGE_TRANSFER_DST_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_UniformTexelBuffer) ? VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_StorageTexelBuffer) ? VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_UniformBuffer) ? VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_StorageBuffer) ? VK_BUFFER_USAGE_STORAGE_BUFFER_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_IndexBuffer) ? VK_BUFFER_USAGE_INDEX_BUFFER_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_VertexBuffer) ? VK_BUFFER_USAGE_VERTEX_BUFFER_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_IndirectBuffer) ? VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_ShaderDeviceAddress) ? VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_TransformFeedbackBuffer) ? VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_TransformFeedbackCounterBuffer) ? VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_ConditionalRendering) ? VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_AccelerationStructureBuildInputReadOnly) ? VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_AccelerationStructureStorage) ? VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR : VkBufferUsageFlagBits{},
+                   (usage & gfxBufferUsage_ShaderBindingTable) ? VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR : VkBufferUsageFlagBits{});
+}
+
+VkMemoryPropertyFlagBits gfxDeviceMemoryPropertyTo(gfxDeviceMemoryProperty properties)
+{
+    return epiMask((properties & gfxDeviceMemoryProperty_DeviceLocal) ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT : VkMemoryPropertyFlagBits{},
+                   (properties & gfxDeviceMemoryProperty_HostVisible) ? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT : VkMemoryPropertyFlagBits{},
+                   (properties & gfxDeviceMemoryProperty_HostCoherent) ? VK_MEMORY_PROPERTY_HOST_COHERENT_BIT : VkMemoryPropertyFlagBits{},
+                   (properties & gfxDeviceMemoryProperty_HostCached) ? VK_MEMORY_PROPERTY_HOST_CACHED_BIT : VkMemoryPropertyFlagBits{},
+                   (properties & gfxDeviceMemoryProperty_LazilyAllocated) ? VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT : VkMemoryPropertyFlagBits{},
+                   (properties & gfxDeviceMemoryProperty_Protected) ? VK_MEMORY_PROPERTY_PROTECTED_BIT : VkMemoryPropertyFlagBits{},
+                   (properties & gfxDeviceMemoryProperty_DeviceCoherent) ? VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD : VkMemoryPropertyFlagBits{},
+                   (properties & gfxDeviceMemoryProperty_DeviceUncached) ? VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD : VkMemoryPropertyFlagBits{});
+}
+
 EPI_NAMESPACE_END()

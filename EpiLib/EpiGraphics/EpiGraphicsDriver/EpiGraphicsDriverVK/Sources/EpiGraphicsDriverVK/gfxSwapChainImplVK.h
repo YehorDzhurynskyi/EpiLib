@@ -36,7 +36,7 @@ public:
                      const gfxQueueFamilyImpl& queueFamilyImpl,
                      const gfxRenderPassImpl& renderPassImpl) override;
 
-    epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline) override;
+    epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline, const gfxBufferImpl& buffer) override;
 
     epiBool Present(const gfxQueueImpl& queue) override;
 

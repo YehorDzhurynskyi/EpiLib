@@ -37,5 +37,7 @@ VkAccessFlagBits gfxAccessTo(gfxAccess access);
 VkDependencyFlagBits gfxDependencyTo(gfxDependency dependency);
 VkDynamicState gfxPipelineDynamicStateTo(gfxPipelineDynamicState state);
 VkVertexInputRate gfxPipelineVertexInputRateTo(gfxPipelineVertexInputRate rate);
+VkBufferUsageFlagBits gfxBufferUsageTo(gfxBufferUsage usage);
+VkMemoryPropertyFlagBits gfxDeviceMemoryPropertyTo(gfxDeviceMemoryProperty properties);
 
 EPI_NAMESPACE_END()

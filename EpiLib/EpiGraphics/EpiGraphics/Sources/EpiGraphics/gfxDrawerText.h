@@ -10,7 +10,6 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/Text/gfxTextFace.h"
 
 #include "EpiGraphicsDriverCommon/gfxVertexArray.h"
-#include "EpiGraphicsDriverCommon/gfxVertexBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
 
 #include "EpiCore/Color.h"
@@ -52,12 +51,13 @@ protected:
     gfxTextRenderedAtlas m_TextAtlas;
 
 private:
+    // TODO: repair
     gfxVertexArray m_VertexArrayText;
-    gfxVertexBuffer m_VertexBufferText;
+    // gfxVertexBuffer m_VertexBufferText;
     gfxShaderProgram m_ShaderProgramText;
 
 private:
-    gfxVertexBufferMapping m_VertexBufferMappingText;
+    // gfxVertexBufferMapping m_VertexBufferMappingText;
 };
 
 EPI_NAMESPACE_END()

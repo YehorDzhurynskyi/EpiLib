@@ -15,6 +15,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxTexture.h"
 #include "EpiGraphicsDriverCommon/gfxTextureView.h"
 #include "EpiGraphicsDriverCommon/gfxCommandPool.h"
+#include "EpiGraphicsDriverCommon/gfxBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxDeviceMemory.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -63,6 +65,8 @@ public:
     std::optional<gfxTexture> CreateTexture(const gfxTextureCreateInfo& info) const;
     std::optional<gfxTextureView> CreateTextureView(const gfxTextureViewCreateInfo& info) const;
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
+    std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info) const;
+    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const;
 
 protected:
     epiPimpl<internalgfx::gfxDeviceImpl> m_Impl;

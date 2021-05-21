@@ -82,8 +82,8 @@ std::unique_ptr<gfxDeviceImpl> gfxPhysicalDeviceImplVK::CreateDevice(gfxQueueDes
                                                                      const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
                                                                      const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const
 {
-    std::unique_ptr<gfxDeviceImplVK> device = std::make_unique<gfxDeviceImplVK>();
-    if (!device->Init(*this, queueDescriptorList, extensionsRequired, featuresRequired))
+    std::unique_ptr<gfxDeviceImplVK> device = std::make_unique<gfxDeviceImplVK>(*this);
+    if (!device->Init(queueDescriptorList, extensionsRequired, featuresRequired))
     {
         return nullptr;
     }

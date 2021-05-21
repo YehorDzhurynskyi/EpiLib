@@ -45,7 +45,8 @@ public:
     wxDECLARE_EVENT_TABLE();
 
 public:
-    epiWXVulkanDemoTriangleCanvas(wxWindow* parent,
+    epiWXVulkanDemoTriangleCanvas(const epiVec3f& color,
+                                  wxWindow* parent,
                                   wxWindowID id = wxID_ANY,
                                   const wxPoint& pos = wxDefaultPosition,
                                   const wxSize& size = wxDefaultSize,
@@ -227,8 +228,41 @@ public:
 
             m_Pipeline = *pipeline;
         }
+        const std::vector<Vertex> vertices = {
+            {{0.0f, -0.5f}, color},
+            {{0.5f, 0.5f}, color},
+            {{-0.5f, 0.5f}, color}
+        };
 
-        m_SwapChain.AssignRenderPass(m_RenderPass, m_Pipeline);
+        gfxBufferCreateInfo bufferCreateInfo;
+        bufferCreateInfo.SetCapacity(vertices.size() * sizeof(vertices[0]));
+        bufferCreateInfo.SetUsage(gfxBufferUsage_VertexBuffer);
+
+        {
+            std::optional<gfxBuffer> vertexBuffer = g_Device.CreateBuffer(bufferCreateInfo);
+            epiAssert(vertexBuffer.has_value());
+
+            m_VertexBuffer = *vertexBuffer;
+        }
+
+        gfxDeviceMemoryCreateInfo deviceMemoryCreateInfo;
+        deviceMemoryCreateInfo.SetBuffer(m_VertexBuffer);
+        deviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
+
+        {
+            std::optional<gfxDeviceMemory> deviceMemory = g_Device.CreateDeviceMemory(deviceMemoryCreateInfo);
+            epiAssert(deviceMemory.has_value());
+
+            m_DeviceMemory = *deviceMemory;
+        }
+
+        if (epiByte* mapped = m_DeviceMemory.Map(bufferCreateInfo.GetCapacity(), 0))
+        {
+            memcpy(mapped, vertices.data(), bufferCreateInfo.GetCapacity());
+            m_DeviceMemory.Unmap();
+        }
+
+        m_SwapChain.AssignRenderPass(m_RenderPass, m_Pipeline, m_VertexBuffer);
     }
 
 protected:
@@ -240,6 +274,8 @@ protected:
     gfxQueueFamily m_QueueFamily;
     gfxRenderPass m_RenderPass;
     gfxPipelineGraphics m_Pipeline;
+    gfxBuffer m_VertexBuffer;
+    gfxDeviceMemory m_DeviceMemory;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
@@ -292,7 +328,7 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
     swapChainCreateInfo.SetExtent(extent);
 
     m_SwapChain.Recreate(swapChainCreateInfo);
-    m_SwapChain.AssignRenderPass(m_RenderPass, m_Pipeline);
+    m_SwapChain.AssignRenderPass(m_RenderPass, m_Pipeline, m_VertexBuffer);
 }
 
 DECLARE_APP(EpiwxVulkanDemo)
@@ -433,8 +469,8 @@ epiWXVulkanDemoFrame::epiWXVulkanDemoFrame(wxWindow* parent, wxWindowID id, cons
     : wxFrame(parent, id, title, pos, size, style)
 {
     wxBoxSizer* vboxSizer = new wxBoxSizer(wxHORIZONTAL);
-    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
-    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
+    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(epiVec3f{1.0f, 0.0f, 1.0f}, this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
+    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(epiVec3f{0.0f, 1.0f, 1.0f}, this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
 
     SetSizerAndFit(vboxSizer);
 }

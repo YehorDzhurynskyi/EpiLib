@@ -9,7 +9,6 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/Text/gfxTextRenderedGlyph.h"
 #include "EpiGraphics/Text/gfxTextFace.h"
 #include "EpiGraphicsDriverCommon/gfxVertexArray.h"
-#include "EpiGraphicsDriverCommon/gfxVertexBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
 
 #include "EpiCore/Color.h"
@@ -46,17 +45,18 @@ public:
     void SceneEnd(const gfxCamera& camera);
 
 private:
+    // TODO: repair
     gfxVertexArray m_VertexArrayLines;
-    gfxVertexBuffer m_VertexBufferLines;
+    //gfxVertexBuffer m_VertexBufferLines;
     gfxShaderProgram m_ShaderProgramLines;
 
     gfxVertexArray m_VertexArrayQuads;
-    gfxVertexBuffer m_VertexBufferQuads;
+    //gfxVertexBuffer m_VertexBufferQuads;
     gfxShaderProgram m_ShaderProgramQuads;
 
 private:
-    gfxVertexBufferMapping m_VertexBufferMappingLines;
-    gfxVertexBufferMapping m_VertexBufferMappingQuads;
+    //gfxVertexBufferMapping m_VertexBufferMappingLines;
+    //gfxVertexBufferMapping m_VertexBufferMappingQuads;
 };
 
 EPI_NAMESPACE_END()

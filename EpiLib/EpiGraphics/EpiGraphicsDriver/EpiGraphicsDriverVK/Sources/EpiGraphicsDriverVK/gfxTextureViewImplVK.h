@@ -25,8 +25,8 @@ public:
     VkImageView_T* GetVkImageView() const;
 
 protected:
-    VkImageView_T* m_VkImageView{nullptr};
     VkDevice_T* m_VkDevice{nullptr};
+    VkImageView_T* m_VkImageView{nullptr};
 };
 
 } // namespace internalgfx

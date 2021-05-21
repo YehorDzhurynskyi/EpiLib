@@ -900,4 +900,40 @@ EPI_GENREGION_BEGIN(gfxPipelineVertexInputRate)
 EPI_GENREGION_END(gfxPipelineVertexInputRate)
 };
 
+enum gfxBufferUsage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxBufferUsage)
+    gfxBufferUsage_TransferSrc = (1 << 0),
+    gfxBufferUsage_TransferDst = (1 << 1),
+    gfxBufferUsage_UniformTexelBuffer = (1 << 2),
+    gfxBufferUsage_StorageTexelBuffer = (1 << 3),
+    gfxBufferUsage_UniformBuffer = (1 << 4),
+    gfxBufferUsage_StorageBuffer = (1 << 5),
+    gfxBufferUsage_IndexBuffer = (1 << 6),
+    gfxBufferUsage_VertexBuffer = (1 << 7),
+    gfxBufferUsage_IndirectBuffer = (1 << 8),
+    gfxBufferUsage_ShaderDeviceAddress = (1 << 9),
+    gfxBufferUsage_TransformFeedbackBuffer = (1 << 10),
+    gfxBufferUsage_TransformFeedbackCounterBuffer = (1 << 11),
+    gfxBufferUsage_ConditionalRendering = (1 << 12),
+    gfxBufferUsage_AccelerationStructureBuildInputReadOnly = (1 << 13),
+    gfxBufferUsage_AccelerationStructureStorage = (1 << 14),
+    gfxBufferUsage_ShaderBindingTable = (1 << 15)
+EPI_GENREGION_END(gfxBufferUsage)
+};
+
+enum gfxDeviceMemoryProperty : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryProperty)
+    gfxDeviceMemoryProperty_DeviceLocal = (1 << 0),
+    gfxDeviceMemoryProperty_HostVisible = (1 << 1),
+    gfxDeviceMemoryProperty_HostCoherent = (1 << 2),
+    gfxDeviceMemoryProperty_HostCached = (1 << 3),
+    gfxDeviceMemoryProperty_LazilyAllocated = (1 << 4),
+    gfxDeviceMemoryProperty_Protected = (1 << 5),
+    gfxDeviceMemoryProperty_DeviceCoherent = (1 << 6),
+    gfxDeviceMemoryProperty_DeviceUncached = (1 << 7)
+EPI_GENREGION_END(gfxDeviceMemoryProperty)
+};
+
 EPI_NAMESPACE_END()

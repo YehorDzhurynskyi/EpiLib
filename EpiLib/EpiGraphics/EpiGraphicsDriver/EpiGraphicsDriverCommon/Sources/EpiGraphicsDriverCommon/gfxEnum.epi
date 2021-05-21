@@ -829,3 +829,37 @@ enum gfxPipelineVertexInputRate
     Vertex,
     Instance
 };
+
+[FlagMask]
+enum gfxBufferUsage
+{
+    TransferSrc,
+    TransferDst,
+    UniformTexelBuffer,
+    StorageTexelBuffer,
+    UniformBuffer,
+    StorageBuffer,
+    IndexBuffer,
+    VertexBuffer,
+    IndirectBuffer,
+    ShaderDeviceAddress,
+    TransformFeedbackBuffer,
+    TransformFeedbackCounterBuffer,
+    ConditionalRendering,
+    AccelerationStructureBuildInputReadOnly,
+    AccelerationStructureStorage,
+    ShaderBindingTable
+};
+
+[FlagMask]
+enum gfxDeviceMemoryProperty
+{
+    DeviceLocal,
+    HostVisible,
+    HostCoherent,
+    HostCached,
+    LazilyAllocated,
+    Protected,
+    DeviceCoherent,
+    DeviceUncached
+};

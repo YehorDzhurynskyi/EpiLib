@@ -15,15 +15,14 @@ class gfxPhysicalDeviceImplVK;
 class gfxDeviceImplVK : public gfxDeviceImpl
 {
 public:
-    gfxDeviceImplVK() = default;
+    explicit gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice);
     gfxDeviceImplVK(const gfxDeviceImplVK& rhs) = delete;
     gfxDeviceImplVK& operator=(const gfxDeviceImplVK& rhs) = delete;
     gfxDeviceImplVK(gfxDeviceImplVK&& rhs) = default;
     gfxDeviceImplVK& operator=(gfxDeviceImplVK&& rhs) = default;
     ~gfxDeviceImplVK() override;
 
-    epiBool Init(const gfxPhysicalDeviceImplVK& physicalDevice,
-                 gfxQueueDescriptorList& queueDescriptorList,
+    epiBool Init(gfxQueueDescriptorList& queueDescriptorList,
                  const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
                  const epiArray<gfxPhysicalDeviceFeature>& featuresRequired);
 
@@ -41,10 +40,13 @@ public:
     std::shared_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const override;
     std::shared_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const override;
     std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const override;
+    std::shared_ptr<gfxBufferImpl> CreateBuffer(const gfxBufferCreateInfo& info) const override;
+    std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info, const gfxBufferImpl& bufferImpl) const override;
 
     VkDevice_T* GetVkDevice() const;
 
 protected:
+    const gfxPhysicalDeviceImplVK& m_PhysicalDevice;
     VkDevice_T* m_VkDevice{nullptr};
 
     epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};

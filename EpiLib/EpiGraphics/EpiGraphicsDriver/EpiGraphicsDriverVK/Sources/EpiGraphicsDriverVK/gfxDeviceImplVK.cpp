@@ -13,6 +13,8 @@
 #include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
 #include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
+#include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
+#include "EpiGraphicsDriverVK/gfxDeviceMemoryImplVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 
@@ -46,23 +48,27 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
-                              gfxQueueDescriptorList& queueDescriptorList,
+gfxDeviceImplVK::gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice)
+    : m_PhysicalDevice{physicalDevice}
+{
+}
+
+epiBool gfxDeviceImplVK::Init(gfxQueueDescriptorList& queueDescriptorList,
                               const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
                               const epiArray<gfxPhysicalDeviceFeature>& featuresRequired)
 {
     epiBool isSuitable = std::all_of(queueDescriptorList.begin(),
                                      queueDescriptorList.end(),
-                                     [&physicalDevice](const gfxQueueDescriptor& queueDescriptor)
+                                     [this](const gfxQueueDescriptor& queueDescriptor)
     {
-        return physicalDevice.IsQueueTypeSupported(queueDescriptor.GetTypeMask());
+        return m_PhysicalDevice.IsQueueTypeSupported(queueDescriptor.GetTypeMask());
     });
-    isSuitable = isSuitable && std::all_of(extensionsRequired.begin(), extensionsRequired.end(), [&physicalDevice](gfxPhysicalDeviceExtension extension) {
-        return physicalDevice.IsExtensionSupported(extension);
+    isSuitable = isSuitable && std::all_of(extensionsRequired.begin(), extensionsRequired.end(), [this](gfxPhysicalDeviceExtension extension) {
+        return m_PhysicalDevice.IsExtensionSupported(extension);
     });
-    isSuitable = isSuitable && std::all_of(featuresRequired.begin(), featuresRequired.end(), [&physicalDevice](gfxPhysicalDeviceFeature feature)
+    isSuitable = isSuitable && std::all_of(featuresRequired.begin(), featuresRequired.end(), [this](gfxPhysicalDeviceFeature feature)
     {
-        return physicalDevice.IsFeatureSupported(feature);
+        return m_PhysicalDevice.IsFeatureSupported(feature);
     });
 
     if (!isSuitable)
@@ -78,7 +84,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     for (gfxQueueDescriptor& queueDescriptor : queueDescriptorList)
     {
-        for (const gfxQueueFamilyDescriptorImplVK& queueFamilyDesc : physicalDevice.GetQueueFamilyDescriptors())
+        for (const gfxQueueFamilyDescriptorImplVK& queueFamilyDesc : m_PhysicalDevice.GetQueueFamilyDescriptors())
         {
             if (queueFamilyDesc.GetQueueCount() < queueDescriptor.GetQueueCount() ||
                 !queueFamilyDesc.IsQueueTypeSupported(queueDescriptor.GetTypeMask()))
@@ -90,9 +96,9 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
             {
                 const epiBool hasSupportForSurfaceTargets = std::all_of(surfaceTargets.begin(),
                                                                         surfaceTargets.end(),
-                                                                        [&physicalDevice, &queueFamilyDesc](const gfxSurfaceImpl* surfaceTarget)
+                                                                        [this, &queueFamilyDesc](const gfxSurfaceImpl* surfaceTarget)
                 {
-                    return surfaceTarget != nullptr && surfaceTarget->IsPresentSupportedFor(physicalDevice, queueFamilyDesc);
+                    return surfaceTarget != nullptr && surfaceTarget->IsPresentSupportedFor(m_PhysicalDevice, queueFamilyDesc);
                 });
 
                 if (!hasSupportForSurfaceTargets)
@@ -156,7 +162,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
     std::vector<const epiChar*> extensions;
     for (gfxPhysicalDeviceExtension extension : extensionsRequired)
     {
-        if (!physicalDevice.IsExtensionSupported(extension))
+        if (!m_PhysicalDevice.IsExtensionSupported(extension))
         {
             // TODO: get string representation
             epiLogError("Required Vulkan device extension=`{}` is not supported!", extension);
@@ -329,7 +335,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
 
     for (gfxPhysicalDeviceFeature feature : featuresRequired)
     {
-        if (!physicalDevice.IsFeatureSupported(feature))
+        if (!m_PhysicalDevice.IsFeatureSupported(feature))
         {
             // TODO: get string representation
             epiLogError("Required Vulkan device feature=`{}` is not supported!", feature);
@@ -342,7 +348,7 @@ epiBool gfxDeviceImplVK::Init(const gfxPhysicalDeviceImplVK& physicalDevice,
 
     createInfo.pNext = deviceCreateInfoNext;
 
-    if (const VkResult result = vkCreateDevice(physicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice); result != VK_SUCCESS)
+    if (const VkResult result = vkCreateDevice(m_PhysicalDevice.GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice); result != VK_SUCCESS)
     {
         gfxLogErrorEx(result, "Failed to call vkCreateDevice!");
         return false;
@@ -498,6 +504,28 @@ std::shared_ptr<gfxCommandPoolImpl> gfxDeviceImplVK::CreateCommandPool(const gfx
 {
     std::shared_ptr<gfxCommandPoolImplVK> impl = std::make_shared<gfxCommandPoolImplVK>(m_VkDevice);
     if (!impl->Init(info, queueFamilyImpl))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxBufferImpl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCreateInfo& info) const
+{
+    std::shared_ptr<gfxBufferImplVK> impl = std::make_shared<gfxBufferImplVK>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info, const gfxBufferImpl& bufferImpl) const
+{
+    std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
+    if (!impl->Init(info, m_PhysicalDevice, static_cast<const gfxBufferImplVK&>(bufferImpl)))
     {
         impl.reset();
     }

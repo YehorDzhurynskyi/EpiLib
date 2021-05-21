@@ -147,6 +147,8 @@ public:
     virtual std::shared_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const = 0;
     virtual std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
+    virtual std::shared_ptr<gfxBufferImpl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info, const gfxBufferImpl& bufferImpl) const = 0;
 
     const epiArray<std::shared_ptr<gfxQueueFamilyImpl>>& GetQueueFamilies() const { return m_QueueFamilies; }
 
@@ -209,7 +211,7 @@ public:
                              const gfxQueueFamilyImpl& queueFamilyImpl,
                              const gfxRenderPassImpl& renderPassImpl) = 0;
 
-    virtual epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline) = 0;
+    virtual epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline, const gfxBufferImpl& buffer) = 0;
 
     virtual epiBool Present(const gfxQueueImpl& queue) = 0;
 
@@ -257,53 +259,29 @@ public:
     virtual void UnBind() = 0;
 };
 
-class gfxVertexBufferLayoutAttributeImpl
+class gfxBufferImpl
 {
 public:
-    gfxVertexBufferLayoutAttributeImpl() = default;
-    gfxVertexBufferLayoutAttributeImpl(const gfxVertexBufferLayoutAttributeImpl& rhs) = delete;
-    gfxVertexBufferLayoutAttributeImpl& operator=(const gfxVertexBufferLayoutAttributeImpl& rhs) = delete;
-    gfxVertexBufferLayoutAttributeImpl(gfxVertexBufferLayoutAttributeImpl&& rhs) = default;
-    gfxVertexBufferLayoutAttributeImpl& operator=(gfxVertexBufferLayoutAttributeImpl&& rhs) = default;
-    virtual ~gfxVertexBufferLayoutAttributeImpl() = default;
-
-    virtual epiU32 GetLocation() const = 0;
-    virtual void SetLocation(epiU32 value) = 0;
-    virtual epiSize_t GetOffset() const = 0;
-    virtual void SetOffset(epiSize_t value) = 0;
-    virtual gfxFormat GetFormat() const = 0;
-    virtual void SetFormat(gfxFormat value) = 0;
-
-    virtual void Apply() const = 0;
+    gfxBufferImpl() = default;
+    gfxBufferImpl(const gfxBufferImpl& rhs) = delete;
+    gfxBufferImpl& operator=(const gfxBufferImpl& rhs) = delete;
+    gfxBufferImpl(gfxBufferImpl&& rhs) = default;
+    gfxBufferImpl& operator=(gfxBufferImpl&& rhs) = default;
+    virtual ~gfxBufferImpl() = default;
 };
 
-class gfxVertexBufferLayoutImpl
+class gfxDeviceMemoryImpl
 {
 public:
-    gfxVertexBufferLayoutImpl() = default;
-    gfxVertexBufferLayoutImpl(const gfxVertexBufferLayoutImpl& rhs) = delete;
-    gfxVertexBufferLayoutImpl& operator=(const gfxVertexBufferLayoutImpl& rhs) = delete;
-    gfxVertexBufferLayoutImpl(gfxVertexBufferLayoutImpl&& rhs) = default;
-    gfxVertexBufferLayoutImpl& operator=(gfxVertexBufferLayoutImpl&& rhs) = default;
-    virtual ~gfxVertexBufferLayoutImpl() = default;
+    gfxDeviceMemoryImpl() = default;
+    gfxDeviceMemoryImpl(const gfxDeviceMemoryImpl& rhs) = delete;
+    gfxDeviceMemoryImpl& operator=(const gfxDeviceMemoryImpl& rhs) = delete;
+    gfxDeviceMemoryImpl(gfxDeviceMemoryImpl&& rhs) = default;
+    gfxDeviceMemoryImpl& operator=(gfxDeviceMemoryImpl&& rhs) = default;
+    virtual ~gfxDeviceMemoryImpl() = default;
 
-    virtual epiU32 GetStride() const = 0;
-    virtual void SetStride(epiU32 value) = 0;
-
-    virtual void Apply() const = 0;
-
-    virtual void Add(gfxVertexBufferLayoutAttributeImpl&& attr) = 0;
-};
-
-class gfxVertexBufferImpl
-{
-public:
-    gfxVertexBufferImpl() = default;
-    gfxVertexBufferImpl(const gfxVertexBufferImpl& rhs) = delete;
-    gfxVertexBufferImpl& operator=(const gfxVertexBufferImpl& rhs) = delete;
-    gfxVertexBufferImpl(gfxVertexBufferImpl&& rhs) = default;
-    gfxVertexBufferImpl& operator=(gfxVertexBufferImpl&& rhs) = default;
-    virtual ~gfxVertexBufferImpl() = default;
+    virtual epiByte* Map(epiSize_t size, epiSize_t offset) = 0;
+    virtual void Unmap() = 0;
 };
 
 class gfxTextureImpl

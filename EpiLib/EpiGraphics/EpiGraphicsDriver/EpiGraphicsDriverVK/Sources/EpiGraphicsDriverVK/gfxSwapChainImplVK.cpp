@@ -9,6 +9,7 @@
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
+#include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxTextureView.h"
 
@@ -211,11 +212,12 @@ epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
     return Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl);
 }
 
-epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline)
+epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline, const gfxBufferImpl& buffer)
 {
     const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& commandBuffers = m_CommandPool->GetPrimaryCommandBuffers();
     const gfxRenderPassImplVK& renderPassVk = static_cast<const gfxRenderPassImplVK&>(renderPass);
     const gfxPipelineGraphicsImplVK& pipelineVk = static_cast<const gfxPipelineGraphicsImplVK&>(pipeline);
+    const gfxBufferImplVK& bufferVk = static_cast<const gfxBufferImplVK&>(buffer);
 
     const VkExtent2D extent{GetExtent().x, GetExtent().y};
 
@@ -263,6 +265,10 @@ epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass
             scissor.extent = extent;
             vkCmdSetScissor(commandBufferVk, 0, 1, &scissor);
         }
+
+        VkBuffer vertexBuffers[] = {bufferVk.GetVkBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(commandBufferVk, 0, 1, vertexBuffers, offsets);
 
         vkCmdDraw(commandBufferVk, 3, 1, 0, 0);
 

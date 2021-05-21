@@ -9,6 +9,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 #include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
+#include "EpiGraphicsDriverCommon/gfxBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -78,7 +79,7 @@ public:
 
     epiBool Recreate(const gfxSwapChainCreateInfo& info);
 
-    epiBool AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline);
+    epiBool AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline, const gfxBuffer& buffer);
 
     epiBool Present(const gfxQueue& queue);
 

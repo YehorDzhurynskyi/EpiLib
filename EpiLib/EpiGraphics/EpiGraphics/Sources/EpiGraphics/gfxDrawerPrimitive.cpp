@@ -125,14 +125,14 @@ struct VertexQuad
 EPI_NAMESPACE_BEGIN()
 
 gfxDrawerPrimitive::gfxDrawerPrimitive()
-    : m_VertexBufferMappingLines(m_VertexBufferLines)
-    , m_VertexBufferMappingQuads(m_VertexBufferQuads)
+    //: m_VertexBufferMappingLines(m_VertexBufferLines)
+    //, m_VertexBufferMappingQuads(m_VertexBufferQuads)
 {
     {
         // TODO: restore
         // gfxBindableScoped scope(m_VertexArrayLines);
 
-        gfxVertexBufferLayout layout;
+        //gfxVertexBufferLayout layout;
         // layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLine), offsetof(VertexLine, Position));
         // layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLine), offsetof(VertexLine, ColorTint));
 
@@ -145,7 +145,7 @@ gfxDrawerPrimitive::gfxDrawerPrimitive()
         // TODO: restore
         // gfxBindableScoped scope(m_VertexArrayQuads);
 
-        gfxVertexBufferLayout layout;
+        //gfxVertexBufferLayout layout;
         // layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexQuad), offsetof(VertexQuad, Position));
         // layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexQuad), offsetof(VertexQuad, ColorTint));
 
@@ -162,6 +162,7 @@ void gfxDrawerPrimitive::DrawLine(const epiVec2f& p1, const epiVec2f& p2, const 
 
 void gfxDrawerPrimitive::DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color1, const Color& color2, epiFloat z)
 {
+#if 0
     VertexLine& vertex1 = m_VertexBufferMappingLines.PushBack<VertexLine>();
     vertex1.Position.x = p1.x;
     vertex1.Position.y = p1.y;
@@ -173,6 +174,7 @@ void gfxDrawerPrimitive::DrawLine(const epiVec2f& p1, const epiVec2f& p2, const 
     vertex2.Position.y = p2.y;
     vertex2.Position.z = z;
     vertex2.ColorTint = color2.GetColor();
+#endif
 }
 
 void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color, epiFloat z)
@@ -182,6 +184,7 @@ void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color, epi
 
 void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color1, const Color& color2, epiFloat z)
 {
+#if 0
     VertexQuad& vertex1 = m_VertexBufferMappingQuads.PushBack<VertexQuad>();
     VertexQuad& vertex2 = m_VertexBufferMappingQuads.PushBack<VertexQuad>();
     VertexQuad& vertex3 = m_VertexBufferMappingQuads.PushBack<VertexQuad>();
@@ -220,12 +223,15 @@ void gfxDrawerPrimitive::DrawQuad(const epiRect2f& rect, const Color& color1, co
     vertex4.ColorTint = color1.GetColor();
     vertex5.ColorTint = color1.GetColor();
     vertex6.ColorTint = color2.GetColor();
+#endif
 }
 
 void gfxDrawerPrimitive::SceneBegin()
 {
+#if 0
     m_VertexBufferMappingLines.Map(gfxVertexBufferMapAccess::Write);
     m_VertexBufferMappingQuads.Map(gfxVertexBufferMapAccess::Write);
+#endif
 }
 
 void gfxDrawerPrimitive::SceneEnd(const gfxCamera& camera)

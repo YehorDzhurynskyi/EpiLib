@@ -117,13 +117,13 @@ struct VertexText
 EPI_NAMESPACE_BEGIN()
 
 gfxDrawerText::gfxDrawerText()
-    : m_VertexBufferMappingText(m_VertexBufferText)
+    //: m_VertexBufferMappingText(m_VertexBufferText)
 {
     {
         // TODO: restore
         // gfxBindableScoped scope(m_VertexArrayText);
 
-        gfxVertexBufferLayout layout;
+        //gfxVertexBufferLayout layout;
         // layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, Position));
         // layout.Add(2, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, UV));
         // layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexText), offsetof(VertexText, ColorTint));
@@ -183,6 +183,7 @@ void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epi
 
         const epiVec2f pen(pos.x + bearingX, pos.y + bearingY - h - descender);
 
+#if 0
         {
             VertexText& vertex = m_VertexBufferMappingText.PushBack<VertexText>();
             vertex.Position = epiVec3f(pen.x, pen.y, z);
@@ -226,17 +227,18 @@ void gfxDrawerText::DrawText(const epiWChar* text, const epiVec2f& position, epi
         }
 
         pos.x += advanceX;
+#endif
     }
 }
 
 void gfxDrawerText::SceneBegin()
 {
-    m_VertexBufferMappingText.Map(gfxVertexBufferMapAccess::Write);
+    //m_VertexBufferMappingText.Map(gfxVertexBufferMapAccess::Write);
 }
 
 void gfxDrawerText::SceneEnd(const gfxCamera& camera)
 {
-    const epiSize_t textVerticesCount = m_VertexBufferMappingText.UnMap() / sizeof(VertexText);
+    //const epiSize_t textVerticesCount = m_VertexBufferMappingText.UnMap() / sizeof(VertexText);
 
     {
         // TODO: restore

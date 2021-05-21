@@ -3,10 +3,10 @@ project(EpiGraphicsDriverVK)
 add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxDriverImplVK.h
     Sources/EpiGraphicsDriverVK/gfxDriverImplVK.cpp
-    Sources/EpiGraphicsDriverVK/gfxVertexArrayImplVK.h
-    Sources/EpiGraphicsDriverVK/gfxVertexArrayImplVK.cpp
-    Sources/EpiGraphicsDriverVK/gfxVertexBufferImplVK.h
-    Sources/EpiGraphicsDriverVK/gfxVertexBufferImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxDeviceMemoryImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxDeviceMemoryImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxBufferImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxBufferImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxTextureImplVK.h
     Sources/EpiGraphicsDriverVK/gfxTextureImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxTextureViewImplVK.h

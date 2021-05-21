@@ -71,13 +71,13 @@ struct VertexLineStip
 EPI_NAMESPACE_BEGIN()
 
 dvDrawerSeriesBase::dvDrawerSeriesBase()
-    : m_VertexBufferMappingLineStrip(m_VertexBufferLineStrip)
+    //: m_VertexBufferMappingLineStrip(m_VertexBufferLineStrip)
 {
     {
         // TODO: restore
         // gfxBindableScoped scope(m_VertexArrayLineStrip);
 
-        gfxVertexBufferLayout layout;
+        //gfxVertexBufferLayout layout;
         // layout.Add(3, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLineStip), offsetof(VertexLineStip, Position));
         // layout.Add(4, gfxVertexBufferLayoutAttributeType::FLOAT, false, sizeof(VertexLineStip), offsetof(VertexLineStip, ColorTint));
 
@@ -89,21 +89,23 @@ dvDrawerSeriesBase::dvDrawerSeriesBase()
 
 void dvDrawerSeriesBase::DrawLineStrip(const epiVec2f& p, const Color& color, epiFloat z)
 {
+#if 0
     VertexLineStip& v = m_VertexBufferMappingLineStrip.PushBack<VertexLineStip>();
     v.Position.x = p.x;
     v.Position.y = p.y;
     v.Position.z = z;
     v.ColorTint = color.GetColor();
+#endif
 }
 
 void dvDrawerSeriesBase::SceneBegin()
 {
-    m_VertexBufferMappingLineStrip.Map(gfxVertexBufferMapAccess::Write);
+    //m_VertexBufferMappingLineStrip.Map(gfxVertexBufferMapAccess::Write);
 }
 
 void dvDrawerSeriesBase::SceneEnd(const gfxCamera& camera)
 {
-    const epiSize_t lineStripVerticesCount = m_VertexBufferMappingLineStrip.UnMap() / sizeof(VertexLineStip);
+    //const epiSize_t lineStripVerticesCount = m_VertexBufferMappingLineStrip.UnMap() / sizeof(VertexLineStip);
 
     {
         // TODO: restore

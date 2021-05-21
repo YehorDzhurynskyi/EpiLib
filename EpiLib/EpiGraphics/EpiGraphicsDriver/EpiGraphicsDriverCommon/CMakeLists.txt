@@ -35,12 +35,12 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxPipeline.epi
     Sources/EpiGraphicsDriverCommon/gfxPipeline.h
     Sources/EpiGraphicsDriverCommon/gfxPipeline.cpp
-    Sources/EpiGraphicsDriverCommon/gfxVertexArray.epi
-    Sources/EpiGraphicsDriverCommon/gfxVertexArray.h
-    Sources/EpiGraphicsDriverCommon/gfxVertexArray.cpp
-    Sources/EpiGraphicsDriverCommon/gfxVertexBuffer.epi
-    Sources/EpiGraphicsDriverCommon/gfxVertexBuffer.h
-    Sources/EpiGraphicsDriverCommon/gfxVertexBuffer.cpp
+    Sources/EpiGraphicsDriverCommon/gfxDeviceMemory.epi
+    Sources/EpiGraphicsDriverCommon/gfxDeviceMemory.h
+    Sources/EpiGraphicsDriverCommon/gfxDeviceMemory.cpp
+    Sources/EpiGraphicsDriverCommon/gfxBuffer.epi
+    Sources/EpiGraphicsDriverCommon/gfxBuffer.h
+    Sources/EpiGraphicsDriverCommon/gfxBuffer.cpp
     Sources/EpiGraphicsDriverCommon/gfxTexture.epi
     Sources/EpiGraphicsDriverCommon/gfxTexture.h
     Sources/EpiGraphicsDriverCommon/gfxTexture.cpp
