@@ -30,18 +30,21 @@ public:
 
     enum gfxPipelineViewport_PIDs
     {
-        PID_ViewportRect = 0x8db0f4ec,
-        PID_ViewportMinDepth = 0x575b73e7,
-        PID_ViewportMaxDepth = 0xb13bdc06,
+        PID_Rect = 0x17e49cbf,
+        PID_MinDepth = 0x62aab39,
+        PID_MaxDepth = 0xe04a04d8,
         PID_COUNT = 3
     };
 
 protected:
-    epiRect2f m_ViewportRect{};
-    epiFloat m_ViewportMinDepth{0.0f};
-    epiFloat m_ViewportMaxDepth{1.0f};
+    epiRect2f m_Rect{};
+    epiFloat m_MinDepth{0.0f};
+    epiFloat m_MaxDepth{1.0f};
 
 EPI_GENREGION_END(gfxPipelineViewport)
+
+public:
+    epiBool IsValid() const;
 };
 
 class gfxPipelineColorBlendAttachment : public Object
@@ -193,8 +196,8 @@ protected:
 EPI_GENREGION_END(gfxPipelineGraphicsCreateInfo)
 
 public:
-    gfxPipelineGraphicsCreateInfo& AddScissor(const epiRect2s& scissor);
     gfxPipelineGraphicsCreateInfo& AddViewport(const gfxPipelineViewport& viewport);
+    gfxPipelineGraphicsCreateInfo& AddScissor(const epiRect2s& scissor);
     gfxPipelineGraphicsCreateInfo& AddColorBlendAttachment(const gfxPipelineColorBlendAttachment& attachment);
     gfxPipelineGraphicsCreateInfo& AddDynamicState(gfxPipelineDynamicState state);
     gfxPipelineGraphicsCreateInfo& AddVertexInputBinding(const gfxPipelineVertexInputBindingDescription& vertexInputBinding);
@@ -211,17 +214,29 @@ public:
 
     enum gfxPipelineGraphics_PIDs
     {
-        PID_COUNT = 0
+        PID_Viewports = 0xa8f1ee29,
+        PID_Scissors = 0x7b580124,
+        PID_COUNT = 2
     };
+
+protected:
+    const epiArray<gfxPipelineViewport>& GetViewports_Callback() const;
+    const epiArray<epiRect2s>& GetScissors_Callback() const;
 
 EPI_GENREGION_END(gfxPipelineGraphics)
 
 public:
-    friend class gfxSwapChain;
+    friend class gfxCommandBufferRecord;
 
 public:
     gfxPipelineGraphics() = default;
-    explicit gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> & impl);
+    explicit gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl>& impl);
+
+    epiBool IsDynamic(gfxPipelineDynamicState state) const;
+    void DynamicClearViewports();
+    void DynamicClearScissors();
+    void DynamicAddViewport(const gfxPipelineViewport& viewport);
+    void DynamicAddScissor(const epiRect2s& scissor);
 
 protected:
     epiPimpl<internalgfx::gfxPipelineGraphicsImpl> m_Impl;

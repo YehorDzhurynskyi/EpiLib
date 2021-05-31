@@ -112,12 +112,12 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
     const epiArray<gfxPipelineViewport>& viewports = info.GetViewports();
     const epiBool hasInvalidViewport = std::any_of(viewports.begin(), viewports.end(), [](const gfxPipelineViewport& v)
     {
-        return v.GetViewportRect().IsEmpty() || (v.GetViewportMinDepth() > v.GetViewportMaxDepth());
+        return !v.IsValid();
     });
 
     if (hasInvalidViewport)
     {
-        epiLogError("Failed to create Pipeline! Provided RenderPass has invalid viewport!");
+        epiLogError("Failed to create Pipeline! Some of the provided Viewports is invalid!");
         return pipeline;
     }
 
@@ -174,7 +174,7 @@ std::optional<gfxShaderProgram> gfxDevice::CreateShaderProgram(const gfxShaderPr
     internalgfx::gfxShaderProgramCreateInfoImpl infoImpl;
     if (const gfxShader* vertex = info.GetVertex(); vertex != nullptr)
     {
-        if (infoImpl.Vertex = const_cast<internalgfx::gfxShaderImpl*>(vertex->m_Impl.Impl()); infoImpl.Vertex == nullptr)
+        if (infoImpl.Vertex = const_cast<internalgfx::gfxShaderImpl*>(vertex->m_Impl.Ptr()); infoImpl.Vertex == nullptr)
         {
             return shaderProgram;
         }
@@ -182,7 +182,7 @@ std::optional<gfxShaderProgram> gfxDevice::CreateShaderProgram(const gfxShaderPr
 
     if (const gfxShader* geometry = info.GetGeometry(); geometry != nullptr)
     {
-        if (infoImpl.Geometry = const_cast<internalgfx::gfxShaderImpl*>(geometry->m_Impl.Impl()); infoImpl.Geometry == nullptr)
+        if (infoImpl.Geometry = const_cast<internalgfx::gfxShaderImpl*>(geometry->m_Impl.Ptr()); infoImpl.Geometry == nullptr)
         {
             return shaderProgram;
         }
@@ -190,7 +190,7 @@ std::optional<gfxShaderProgram> gfxDevice::CreateShaderProgram(const gfxShaderPr
 
     if (const gfxShader* fragment = info.GetFragment(); fragment != nullptr)
     {
-        if (infoImpl.Fragment = const_cast<internalgfx::gfxShaderImpl*>(fragment->m_Impl.Impl()); infoImpl.Fragment == nullptr)
+        if (infoImpl.Fragment = const_cast<internalgfx::gfxShaderImpl*>(fragment->m_Impl.Ptr()); infoImpl.Fragment == nullptr)
         {
             return shaderProgram;
         }

@@ -112,8 +112,17 @@ public:
 
     virtual epiBool GetIsPrimary() const = 0;
 
-    virtual epiBool RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) const = 0;
-    virtual epiBool RenderPassEnd() const = 0;
+    virtual epiBool RecordBegin() = 0;
+    virtual epiBool RecordEnd() = 0;
+
+    virtual void RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) = 0;
+    virtual void RenderPassEnd() = 0;
+
+    virtual void PipelineBind(const gfxPipelineGraphicsImpl& pipeline) = 0;
+
+    virtual void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
+
+    virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
 };
 
 struct gfxShaderProgramCreateInfoImpl
@@ -211,10 +220,10 @@ public:
                              const gfxQueueFamilyImpl& queueFamilyImpl,
                              const gfxRenderPassImpl& renderPassImpl) = 0;
 
-    virtual epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline, const gfxBufferImpl& buffer) = 0;
-
     virtual epiBool Present(const gfxQueueImpl& queue) = 0;
 
+    virtual const epiArray<std::shared_ptr<gfxFrameBufferImpl>>& GetFrameBuffers() const = 0;
+    virtual const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetCommandBuffers() const = 0;
     virtual epiSize2u GetExtent() const = 0;
 };
 
@@ -367,6 +376,18 @@ public:
     gfxPipelineGraphicsImpl(gfxPipelineGraphicsImpl&& rhs) = default;
     gfxPipelineGraphicsImpl& operator=(gfxPipelineGraphicsImpl&& rhs) = default;
     virtual ~gfxPipelineGraphicsImpl() = default;
+
+    epiBool IsDynamic(gfxPipelineDynamicState state) const { return m_DynamicStates[static_cast<epiU32>(state)]; }
+
+    const epiArray<gfxPipelineViewport>& GetViewports() const { return m_Viewports; }
+    epiArray<gfxPipelineViewport>& GetViewports() { return m_Viewports; }
+    const epiArray<epiRect2s>& GetScissors() const { return m_Scissors; }
+    epiArray<epiRect2s>& GetScissors() { return m_Scissors; }
+
+protected:
+    epiBool m_DynamicStates[static_cast<epiU32>(gfxPipelineDynamicState::COUNT)]{};
+    epiArray<gfxPipelineViewport> m_Viewports{};
+    epiArray<epiRect2s> m_Scissors{};
 };
 
 class gfxRenderPassImpl

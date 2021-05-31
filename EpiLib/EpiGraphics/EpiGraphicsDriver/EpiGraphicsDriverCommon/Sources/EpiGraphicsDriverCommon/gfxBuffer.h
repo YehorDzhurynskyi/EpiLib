@@ -58,7 +58,7 @@ EPI_GENREGION_END(gfxBuffer)
 
 public:
     friend class gfxDevice;
-    friend class gfxSwapChain;
+    friend class gfxCommandBufferRecord;
 
 public:
     gfxBuffer() = default;

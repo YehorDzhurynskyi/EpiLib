@@ -53,18 +53,6 @@ public:
                                   long style = 0,
                                   const wxString& name = wxASCII_STR("epiWXVulkanDemoTriangleCanvas"))
     {
-    #if 0
-        gfxAttachmentSchema attachmentSchema;
-        attachmentSchema.SetFormat(kFormatRequired);
-        attachmentSchema.SetSampleCount(gfxSampleCount::Sample1);
-
-        gfxRenderSubPassSchema renderSubPassSchema;
-        renderSubPassSchema.AddAttachment(attachmentSchema, 0, gfxAttachmentBindPoint::Color);
-
-        gfxRenderPassSchema renderPassSchema;
-        renderPassSchema.AddSubPass(std::move(renderSubPassSchema));
-    #endif
-
         {
             gfxAttachment attachment;
             attachment.SetFormat(kFormatRequired);
@@ -180,9 +168,9 @@ public:
         epiAssert(shaderProgram.has_value());
 
         gfxPipelineViewport viewport;
-        viewport.SetViewportRect(epiRect2f(0.0f, 0.0f, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
-        viewport.SetViewportMinDepth(0.0f);
-        viewport.SetViewportMaxDepth(1.0f);
+        viewport.SetRect(epiRect2f(0.0f, 0.0f, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
+        viewport.SetMinDepth(0.0f);
+        viewport.SetMaxDepth(1.0f);
 
         struct Vertex
         {
@@ -262,13 +250,15 @@ public:
             m_DeviceMemory.Unmap();
         }
 
-        m_SwapChain.AssignRenderPass(m_RenderPass, m_Pipeline, m_VertexBuffer);
+        RecordCommandBuffers();
     }
 
 protected:
     void OnPaint(wxPaintEvent& event);
     void OnEraseBackground(wxEraseEvent& event);
     void OnSize(wxSizeEvent& event);
+
+    void RecordCommandBuffers();
 
 protected:
     gfxQueueFamily m_QueueFamily;
@@ -328,7 +318,52 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
     swapChainCreateInfo.SetExtent(extent);
 
     m_SwapChain.Recreate(swapChainCreateInfo);
-    m_SwapChain.AssignRenderPass(m_RenderPass, m_Pipeline, m_VertexBuffer);
+
+    m_Pipeline.DynamicClearViewports();
+    m_Pipeline.DynamicClearScissors();
+
+    gfxPipelineViewport viewport;
+    viewport.SetRect(epiRect2f(0.0f, 0.0f, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
+    viewport.SetMinDepth(0.0f);
+    viewport.SetMaxDepth(1.0f);
+
+    m_Pipeline.DynamicAddViewport(viewport);
+    m_Pipeline.DynamicAddScissor(epiRect2s(0, 0, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
+
+
+    RecordCommandBuffers();
+}
+
+void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
+{
+    gfxRenderPassClearValue clearValue;
+    clearValue.SetColor({0.0f, 0.0f, 0.0f, 1.0f});
+
+    epiRect2s renderArea(0, 0, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y);
+
+    epiAssert(m_SwapChain.GetCommandBuffers().Size() == m_SwapChain.GetFrameBuffers().Size());
+
+    for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+    {
+        gfxCommandBuffer& cmdBuffer = m_SwapChain.GetCommandBuffers()[i];
+        gfxFrameBuffer& frameBuffer = m_SwapChain.GetFrameBuffers()[i];
+
+        if (gfxCommandBufferRecord record = cmdBuffer.RecordCommands())
+        {
+            gfxRenderPassBeginInfo renderPassBeginInfo;
+            renderPassBeginInfo.SetFrameBuffer(frameBuffer);
+            renderPassBeginInfo.SetRenderPass(m_RenderPass);
+            renderPassBeginInfo.SetClearValues({clearValue});
+            renderPassBeginInfo.SetRenderArea(renderArea);
+
+            record
+                .RenderPassBegin(renderPassBeginInfo)
+                .PipelineBind(m_Pipeline)
+                .VertexBuffersBind({m_VertexBuffer})
+                .Draw(3, 1, 0, 0)
+                .RenderPassEnd();
+        }
+    }
 }
 
 DECLARE_APP(EpiwxVulkanDemo)

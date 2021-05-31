@@ -1,8 +1,8 @@
 class gfxPipelineViewport
 {
-    epiRect2f ViewportRect;
-    epiFloat ViewportMinDepth = 0.0f;
-    epiFloat ViewportMaxDepth = 1.0f;
+    epiRect2f Rect;
+    epiFloat MinDepth = 0.0f;
+    epiFloat MaxDepth = 1.0f;
 };
 
 class gfxPipelineColorBlendAttachment
@@ -79,4 +79,9 @@ class gfxPipelineGraphicsCreateInfo
 
 class gfxPipelineGraphics
 {
+    [Virtual, ReadOnly]
+    {
+        epiArray<gfxPipelineViewport> Viewports;
+        epiArray<epiRect2s> Scissors;
+    }
 };

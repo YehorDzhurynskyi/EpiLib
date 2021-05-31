@@ -888,7 +888,8 @@ EPI_GENREGION_BEGIN(gfxPipelineDynamicState)
     DepthCompareOp = 26,
     DepthBoundsTestEnable = 27,
     StencilTestEnable = 28,
-    StencilOp = 29
+    StencilOp = 29,
+    COUNT = 30
 EPI_GENREGION_END(gfxPipelineDynamicState)
 };
 

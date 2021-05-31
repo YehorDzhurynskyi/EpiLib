@@ -36,10 +36,10 @@ public:
                      const gfxQueueFamilyImpl& queueFamilyImpl,
                      const gfxRenderPassImpl& renderPassImpl) override;
 
-    epiBool AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline, const gfxBufferImpl& buffer) override;
-
     epiBool Present(const gfxQueueImpl& queue) override;
 
+    const epiArray<std::shared_ptr<gfxFrameBufferImpl>>& GetFrameBuffers() const override;
+    const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetCommandBuffers() const override;
     epiSize2u GetExtent() const override;
 
 protected:

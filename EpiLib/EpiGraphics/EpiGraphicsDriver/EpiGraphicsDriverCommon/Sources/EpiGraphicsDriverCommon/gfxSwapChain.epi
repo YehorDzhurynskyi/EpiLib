@@ -15,4 +15,7 @@ class gfxSwapChain
     {
         epiSize2u Extent;
     }
+
+    epiArray<gfxFrameBuffer> FrameBuffers;
+    epiArray<gfxCommandBuffer> CommandBuffers;
 };

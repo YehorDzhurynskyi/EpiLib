@@ -63,7 +63,7 @@ public:
 EPI_GENREGION_END(gfxFrameBuffer)
 
 public:
-    friend class gfxCommandBuffer;
+    friend class gfxCommandBufferRecord;
 
 public:
     gfxFrameBuffer() = default;

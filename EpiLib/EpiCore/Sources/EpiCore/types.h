@@ -423,14 +423,14 @@ public:
 
     operator epiBool() const { return static_cast<epiBool>(m_Impl); }
 
-    TImpl* operator->() { return Impl(); }
-    const TImpl* operator->() const { return Impl(); }
+    TImpl* operator->() { return Ptr(); }
+    const TImpl* operator->() const { return Ptr(); }
 
-    TImpl& operator*() { return *Impl(); }
-    const TImpl& operator*() const { return *Impl(); }
+    TImpl& operator*() { return *Ptr(); }
+    const TImpl& operator*() const { return *Ptr(); }
 
-    const TImpl* Impl() const { return m_Impl.get(); }
-    TImpl* Impl() { return m_Impl.get(); }
+    const TImpl* Ptr() const { return m_Impl.get(); }
+    TImpl* Ptr() { return m_Impl.get(); }
 
 private:
     std::shared_ptr<TImpl> m_Impl{nullptr};

@@ -23,7 +23,7 @@ gfxQueueDescriptor::gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epi
             return nullptr;
         }
 
-        return surfaceTarget->m_Impl.Impl();
+        return surfaceTarget->m_Impl.Ptr();
     });
 }
 

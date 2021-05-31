@@ -10,6 +10,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxCommandPool.h"
+#include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -65,11 +67,17 @@ public:
     enum gfxSwapChain_PIDs
     {
         PID_Extent = 0x21a25c7e,
-        PID_COUNT = 1
+        PID_FrameBuffers = 0x139a7806,
+        PID_CommandBuffers = 0xc25694f,
+        PID_COUNT = 3
     };
 
 protected:
     epiSize2u GetExtent_Callback() const;
+
+protected:
+    epiArray<gfxFrameBuffer> m_FrameBuffers{};
+    epiArray<gfxCommandBuffer> m_CommandBuffers{};
 
 EPI_GENREGION_END(gfxSwapChain)
 
@@ -79,9 +87,10 @@ public:
 
     epiBool Recreate(const gfxSwapChainCreateInfo& info);
 
-    epiBool AssignRenderPass(const gfxRenderPass& renderPass, const gfxPipelineGraphics& pipeline, const gfxBuffer& buffer);
-
     epiBool Present(const gfxQueue& queue);
+
+protected:
+    void RebindImpl();
 
 protected:
     epiPimpl<internalgfx::gfxSwapChainImpl> m_Impl;

@@ -36,13 +36,16 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     {
         VkViewport& v = viewports.emplace_back();
         v = {};
-        v.x = viewport.GetViewportRect().LeftTop().x;
-        v.y = viewport.GetViewportRect().GetHeight() - viewport.GetViewportRect().LeftTop().y; // TODO: replace with image-space rect
-        v.width = viewport.GetViewportRect().GetWidth();
-        v.height = viewport.GetViewportRect().GetHeight();
-        v.minDepth = viewport.GetViewportMinDepth();
-        v.maxDepth = viewport.GetViewportMaxDepth();
+        v.x = viewport.GetRect().LeftTop().x;
+        v.y = viewport.GetRect().GetHeight() - viewport.GetRect().Top; // TODO: replace with image-space rect
+        v.width = viewport.GetRect().GetWidth();
+        v.height = viewport.GetRect().GetHeight();
+        v.minDepth = viewport.GetMinDepth();
+        v.maxDepth = viewport.GetMaxDepth();
     }
+
+    m_Viewports.Clear();
+    std::copy(info.GetViewports().begin(), info.GetViewports().end(), std::back_inserter(m_Viewports));
 
     std::vector<VkRect2D> scissors;
     scissors.reserve(info.GetScissors().Size());
@@ -50,11 +53,14 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     {
         VkRect2D& s = scissors.emplace_back();
         s = {};
-        s.offset.x = scissor.LeftTop().x;
-        s.offset.y = scissor.GetHeight() - scissor.LeftTop().y; // TODO: replace with image-space rect
+        s.offset.x = scissor.Left;
+        s.offset.y = scissor.GetHeight() - scissor.Top; // TODO: replace with image-space rect
         s.extent.width = scissor.GetWidth();
         s.extent.height = scissor.GetHeight();
     }
+
+    m_Scissors.Clear();
+    std::copy(info.GetScissors().begin(), info.GetScissors().end(), std::back_inserter(m_Scissors));
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -188,6 +194,11 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
         case gfxShaderType::Fragment: shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT; break;
         default: epiLogError("Unhandled gfxShaderType=`{}`", module->GetType()); shaderStageCreateInfo.stage = VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM; break; // TODO: get str repr of enum value
         }
+    }
+
+    for (gfxPipelineDynamicState state : info.GetDynamicStates())
+    {
+        m_DynamicStates[static_cast<epiU32>(state)] = true;
     }
 
     std::vector<VkDynamicState> dynamicStates;

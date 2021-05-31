@@ -23,8 +23,17 @@ public:
 
     epiBool GetIsPrimary() const override;
 
-    epiBool RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) const override;
-    epiBool RenderPassEnd() const override;
+    epiBool RecordBegin() override;
+    epiBool RecordEnd() override;
+
+    void RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) override;
+    void RenderPassEnd() override;
+
+    void PipelineBind(const gfxPipelineGraphicsImpl& pipeline) override;
+
+    void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) override;
+
+    void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) override;
 
     VkCommandBuffer_T* GetVkCommandBuffer() const;
 

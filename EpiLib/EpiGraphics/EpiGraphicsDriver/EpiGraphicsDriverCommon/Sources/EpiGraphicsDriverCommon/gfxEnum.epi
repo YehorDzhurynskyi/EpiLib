@@ -821,7 +821,8 @@ enum gfxPipelineDynamicState
     DepthCompareOp,
     DepthBoundsTestEnable,
     StencilTestEnable,
-    StencilOp
+    StencilOp,
+    COUNT
 };
 
 enum gfxPipelineVertexInputRate

@@ -13,6 +13,12 @@ class gfxRenderPassBeginInfo
     epiArray<gfxRenderPassClearValue> ClearValues;
 };
 
+class gfxCommandBufferRecord
+{
+    [ReadOnly]
+    epiBool IsInitialized;
+};
+
 class gfxCommandBuffer
 {
     [Virtual, ReadOnly]

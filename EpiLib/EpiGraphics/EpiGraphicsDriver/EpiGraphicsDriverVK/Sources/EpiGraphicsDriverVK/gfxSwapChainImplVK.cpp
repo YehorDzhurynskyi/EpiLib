@@ -212,6 +212,7 @@ epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
     return Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl);
 }
 
+#if 0
 epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline, const gfxBufferImpl& buffer)
 {
     const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& commandBuffers = m_CommandPool->GetPrimaryCommandBuffers();
@@ -252,7 +253,7 @@ epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass
 
         { // TODO: set dynamic state in a proper way (via gfxRenderPass interface)
             VkViewport viewport;
-            viewport.x = 0,
+            viewport.x = 0;
             viewport.y = 0;
             viewport.width = extent.width;
             viewport.height = extent.height;
@@ -283,6 +284,7 @@ epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass
 
     return true;
 }
+#endif
 
 epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
 {
@@ -365,6 +367,16 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
     ++m_CurrentFrame;
 
     return true;
+}
+
+const epiArray<std::shared_ptr<gfxFrameBufferImpl>>& gfxSwapChainImplVK::GetFrameBuffers() const
+{
+    return m_SwapChainFrameBuffers;
+}
+
+const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& gfxSwapChainImplVK::GetCommandBuffers() const
+{
+    return m_CommandPool->GetPrimaryCommandBuffers();
 }
 
 epiSize2u gfxSwapChainImplVK::GetExtent() const

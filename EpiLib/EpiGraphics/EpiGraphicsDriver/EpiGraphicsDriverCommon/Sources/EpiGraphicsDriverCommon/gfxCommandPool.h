@@ -9,6 +9,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 #include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 #include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -74,6 +75,45 @@ protected:
 EPI_GENREGION_END(gfxRenderPassBeginInfo)
 };
 
+class gfxCommandBufferRecord : public Object
+{
+EPI_GENREGION_BEGIN(gfxCommandBufferRecord)
+
+EPI_GENHIDDEN_gfxCommandBufferRecord()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xfa5418ce};
+
+    enum gfxCommandBufferRecord_PIDs
+    {
+        PID_IsInitialized = 0x101015d0,
+        PID_COUNT = 1
+    };
+
+protected:
+    epiBool m_IsInitialized{false};
+
+EPI_GENREGION_END(gfxCommandBufferRecord)
+
+public:
+    explicit gfxCommandBufferRecord(internalgfx::gfxCommandBufferImpl* impl);
+    ~gfxCommandBufferRecord();
+
+    operator epiBool() const;
+
+    gfxCommandBufferRecord& RenderPassBegin(const gfxRenderPassBeginInfo& info);
+    gfxCommandBufferRecord& RenderPassEnd();
+
+    gfxCommandBufferRecord& PipelineBind(const gfxPipelineGraphics& pipeline);
+
+    gfxCommandBufferRecord& VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {});
+
+    gfxCommandBufferRecord& Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance);
+
+protected:
+    internalgfx::gfxCommandBufferImpl* m_Impl{nullptr};
+};
+
 class gfxCommandBuffer : public Object
 {
 EPI_GENREGION_BEGIN(gfxCommandBuffer)
@@ -98,8 +138,7 @@ public:
     gfxCommandBuffer() = default;
     explicit gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& impl);
 
-    epiBool RenderPassBegin(const gfxRenderPassBeginInfo& info);
-    epiBool RenderPassEnd();
+    gfxCommandBufferRecord RecordCommands();
 
 protected:
     epiPimpl<internalgfx::gfxCommandBufferImpl> m_Impl;
@@ -150,9 +189,6 @@ EPI_GENREGION_END(gfxCommandPool)
 public:
     gfxCommandPool() = default;
     explicit gfxCommandPool(const std::shared_ptr<internalgfx::gfxCommandPoolImpl>& impl);
-
-    std::optional<gfxCommandBuffer> BufferAtPrimary(epiU32 index);
-    std::optional<gfxCommandBuffer> BufferAtSecondary(epiU32 index);
 
 protected:
     epiPimpl<internalgfx::gfxCommandPoolImpl> m_Impl;
