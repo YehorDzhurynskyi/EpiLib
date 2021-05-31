@@ -330,8 +330,9 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
     m_Pipeline.DynamicAddViewport(viewport);
     m_Pipeline.DynamicAddScissor(epiRect2s(0, 0, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
 
-
     RecordCommandBuffers();
+
+    Refresh();
 }
 
 void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()

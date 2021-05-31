@@ -197,6 +197,8 @@ epiBool gfxSwapChainImplVK::Reset()
     m_CurrentFrame = 0;
 
     vkDestroySwapchainKHR(m_Device.GetVkDevice(), m_VkSwapChain, nullptr);
+
+    return true;
 }
 
 epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
@@ -206,6 +208,7 @@ epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
 {
     if (!Reset())
     {
+        epiLogError("SwapChain Recreation has been failed since Reset failed!");
         return false;
     }
 
