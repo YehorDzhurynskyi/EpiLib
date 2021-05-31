@@ -25,6 +25,9 @@ public:
     gfxQueueImpl& operator=(gfxQueueImpl&& rhs) = default;
     virtual ~gfxQueueImpl() = default;
 
+    // TODO: implement full interface
+    virtual epiBool Submit(const gfxQueueSubmitInfo& info, const epiPtrArray<const gfxCommandBufferImpl>& commandBuffers) = 0;
+
     virtual gfxQueueType GetType() const = 0;
     virtual epiFloat GetPriority() const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
@@ -112,7 +115,7 @@ public:
 
     virtual epiBool GetIsPrimary() const = 0;
 
-    virtual epiBool RecordBegin() = 0;
+    virtual epiBool RecordBegin(gfxCommandBufferUsage usage) = 0;
     virtual epiBool RecordEnd() = 0;
 
     virtual void RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) = 0;
@@ -123,6 +126,7 @@ public:
     virtual void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
 
     virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
+    virtual void Copy(const gfxBufferImpl& src, const gfxBufferImpl& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
 };
 
 struct gfxShaderProgramCreateInfoImpl

@@ -1047,4 +1047,18 @@ VkMemoryPropertyFlagBits gfxDeviceMemoryPropertyTo(gfxDeviceMemoryProperty prope
                    (properties & gfxDeviceMemoryProperty_DeviceUncached) ? VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD : VkMemoryPropertyFlagBits{});
 }
 
+VkCommandBufferUsageFlagBits gfxCommandBufferUsageTo(gfxCommandBufferUsage usage)
+{
+    return epiMask((usage & gfxCommandBufferUsage_OneTimeSubmit) ? VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT : VkCommandBufferUsageFlagBits{},
+                   (usage & gfxCommandBufferUsage_RenderPassContinue) ? VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT : VkCommandBufferUsageFlagBits{},
+                   (usage & gfxCommandBufferUsage_SimultaneousUse) ? VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT : VkCommandBufferUsageFlagBits{});
+}
+
+VkCommandPoolCreateFlagBits gfxCommandPoolUsageTo(gfxCommandPoolUsage usage)
+{
+    return epiMask((usage & gfxCommandPoolUsage_TRANSIENT) ? VK_COMMAND_POOL_CREATE_TRANSIENT_BIT : VkCommandPoolCreateFlagBits{},
+                   (usage & gfxCommandPoolUsage_ResetCommandBuffer) ? VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT : VkCommandPoolCreateFlagBits{},
+                   (usage & gfxCommandPoolUsage_Protected) ? VK_COMMAND_POOL_CREATE_PROTECTED_BIT : VkCommandPoolCreateFlagBits{});
+}
+
 EPI_NAMESPACE_END()

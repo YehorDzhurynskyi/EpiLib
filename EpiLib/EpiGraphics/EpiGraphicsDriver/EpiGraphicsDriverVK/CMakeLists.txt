@@ -33,6 +33,8 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxFrameBufferImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxCommandPoolImplVK.h
     Sources/EpiGraphicsDriverVK/gfxCommandPoolImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxCommandBufferImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxCommandBufferImplVK.cpp
 )
 
 target_sources(EpiGraphicsDriverVK

@@ -864,3 +864,19 @@ enum gfxDeviceMemoryProperty
     DeviceCoherent,
     DeviceUncached
 };
+
+[FlagMask]
+enum gfxCommandPoolUsage
+{
+    TRANSIENT, # TODO: keyword conflict Transient
+    ResetCommandBuffer,
+    Protected
+};
+
+[FlagMask]
+enum gfxCommandBufferUsage
+{
+    OneTimeSubmit,
+    RenderPassContinue,
+    SimultaneousUse
+};

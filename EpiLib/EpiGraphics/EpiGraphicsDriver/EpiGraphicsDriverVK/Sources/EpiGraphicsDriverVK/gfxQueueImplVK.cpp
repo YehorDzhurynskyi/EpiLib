@@ -1,7 +1,9 @@
 #include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
+#include "EpiGraphicsDriverVK/gfxCommandBufferImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -35,6 +37,32 @@ gfxQueueImplVK& gfxQueueImplVK::operator=(gfxQueueImplVK&& rhs)
     rhs.m_Type = static_cast<gfxQueueType>(0);
 
     return *this;
+}
+
+epiBool gfxQueueImplVK::Submit(const gfxQueueSubmitInfo& info, const epiPtrArray<const gfxCommandBufferImpl>& commandBuffers)
+{
+    std::vector<VkCommandBuffer> commandBuffersVk;
+    commandBuffersVk.reserve(commandBuffers.Size());
+
+    std::transform(commandBuffers.begin(), commandBuffers.end(), std::back_inserter(commandBuffersVk), [](const gfxCommandBufferImpl* commandBuffer)
+    {
+        return static_cast<const gfxCommandBufferImplVK*>(commandBuffer)->GetVkCommandBuffer();
+    });
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = commandBuffersVk.size();
+    submitInfo.pCommandBuffers = commandBuffersVk.data();
+
+    if (const VkResult result = vkQueueSubmit(m_VkQueue, 1, &submitInfo, VK_NULL_HANDLE); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkQueueSubmit!");
+        return false;
+    }
+
+    vkQueueWaitIdle(m_VkQueue); // TODO: manage this with a parameter
+
+    return true;
 }
 
 gfxQueueType gfxQueueImplVK::GetType() const

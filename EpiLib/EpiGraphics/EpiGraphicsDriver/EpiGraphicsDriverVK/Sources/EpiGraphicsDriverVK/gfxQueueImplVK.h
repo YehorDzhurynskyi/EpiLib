@@ -21,6 +21,8 @@ public:
     gfxQueueImplVK& operator=(gfxQueueImplVK&& rhs);
     ~gfxQueueImplVK() override = default;
 
+    epiBool Submit(const gfxQueueSubmitInfo& info, const epiPtrArray<const gfxCommandBufferImpl>& commandBuffers) override;
+
     gfxQueueType GetType() const override;
     epiFloat GetPriority() const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;

@@ -7,6 +7,7 @@ EPI_GENREGION_END(include)
 #include "EpiCore/ObjectModel/Object.h"
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxCommandBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -16,6 +17,27 @@ namespace internalgfx
 class gfxQueueImpl;
 
 } // internalgfx
+
+class gfxQueueSubmitInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxQueueSubmitInfo)
+
+EPI_GENHIDDEN_gfxQueueSubmitInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x37aceed2};
+
+    enum gfxQueueSubmitInfo_PIDs
+    {
+        PID_CommandBuffers = 0xc25694f,
+        PID_COUNT = 1
+    };
+
+protected:
+    epiArray<gfxCommandBuffer> m_CommandBuffers{};
+
+EPI_GENREGION_END(gfxQueueSubmitInfo)
+};
 
 class gfxQueue : public Object
 {
@@ -45,6 +67,8 @@ public:
 public:
     gfxQueue() = default;
     explicit gfxQueue(const std::shared_ptr<internalgfx::gfxQueueImpl>& impl);
+
+    epiBool Submit(const gfxQueueSubmitInfo& info);
 
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
 

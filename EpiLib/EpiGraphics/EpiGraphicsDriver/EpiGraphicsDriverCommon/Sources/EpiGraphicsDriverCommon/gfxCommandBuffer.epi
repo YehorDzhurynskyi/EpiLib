@@ -1,0 +1,33 @@
+class gfxRenderPassClearValue
+{
+    epiVec4f Color;
+    epiFloat Depth;
+    epiU32 Stencil;
+};
+
+class gfxRenderPassBeginInfo
+{
+    gfxFrameBuffer FrameBuffer;
+    gfxRenderPass RenderPass;
+    epiRect2s RenderArea;
+    epiArray<gfxRenderPassClearValue> ClearValues;
+};
+
+class gfxCommandBufferRecordCopyRegion
+{
+    epiSize_t Size;
+    epiSize_t SrcOffset;
+    epiSize_t DstOffset;
+};
+
+class gfxCommandBufferRecord
+{
+    [ReadOnly]
+    epiBool IsInitialized;
+};
+
+class gfxCommandBuffer
+{
+    [Virtual, ReadOnly]
+    epiBool IsPrimary;
+};

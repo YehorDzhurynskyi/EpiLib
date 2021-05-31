@@ -1,3 +1,11 @@
+class gfxQueueSubmitInfo
+{
+    [ReadOnly]
+    {
+        epiArray<gfxCommandBuffer> CommandBuffers;
+    }
+};
+
 class gfxQueue
 {
     [Virtual, ReadOnly]

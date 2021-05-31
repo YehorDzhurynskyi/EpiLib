@@ -39,5 +39,7 @@ VkDynamicState gfxPipelineDynamicStateTo(gfxPipelineDynamicState state);
 VkVertexInputRate gfxPipelineVertexInputRateTo(gfxPipelineVertexInputRate rate);
 VkBufferUsageFlagBits gfxBufferUsageTo(gfxBufferUsage usage);
 VkMemoryPropertyFlagBits gfxDeviceMemoryPropertyTo(gfxDeviceMemoryProperty properties);
+VkCommandBufferUsageFlagBits gfxCommandBufferUsageTo(gfxCommandBufferUsage usage);
+VkCommandPoolCreateFlagBits gfxCommandPoolUsageTo(gfxCommandPoolUsage usage);
 
 EPI_NAMESPACE_END()

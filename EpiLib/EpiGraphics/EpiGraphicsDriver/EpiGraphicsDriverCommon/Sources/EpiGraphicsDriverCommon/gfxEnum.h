@@ -937,4 +937,22 @@ EPI_GENREGION_BEGIN(gfxDeviceMemoryProperty)
 EPI_GENREGION_END(gfxDeviceMemoryProperty)
 };
 
+enum gfxCommandPoolUsage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCommandPoolUsage)
+    gfxCommandPoolUsage_TRANSIENT = (1 << 0),
+    gfxCommandPoolUsage_ResetCommandBuffer = (1 << 1),
+    gfxCommandPoolUsage_Protected = (1 << 2)
+EPI_GENREGION_END(gfxCommandPoolUsage)
+};
+
+enum gfxCommandBufferUsage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCommandBufferUsage)
+    gfxCommandBufferUsage_OneTimeSubmit = (1 << 0),
+    gfxCommandBufferUsage_RenderPassContinue = (1 << 1),
+    gfxCommandBufferUsage_SimultaneousUse = (1 << 2)
+EPI_GENREGION_END(gfxCommandBufferUsage)
+};
+
 EPI_NAMESPACE_END()

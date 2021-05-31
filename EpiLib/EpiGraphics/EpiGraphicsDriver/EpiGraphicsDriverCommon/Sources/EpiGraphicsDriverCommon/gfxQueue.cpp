@@ -12,6 +12,35 @@ gfxQueue::gfxQueue(const std::shared_ptr<internalgfx::gfxQueueImpl>& impl)
 {
 }
 
+epiBool gfxQueue::Submit(const gfxQueueSubmitInfo& info)
+{
+    epiPtrArray<const internalgfx::gfxCommandBufferImpl> commandBuffersImpl;
+    commandBuffersImpl.Reserve(info.GetCommandBuffers().Size());
+
+    std::transform(info.GetCommandBuffers().begin(),
+                   info.GetCommandBuffers().end(),
+                   std::back_inserter(commandBuffersImpl),
+                   [](const gfxCommandBuffer& commandBuffer)
+    {
+        return commandBuffer.m_Impl.Ptr();
+    });
+
+    const epiBool hasInvalidCommandBuffer = std::any_of(commandBuffersImpl.begin(),
+                                                        commandBuffersImpl.end(),
+                                                        [](const internalgfx::gfxCommandBufferImpl* impl)
+    {
+        return impl == nullptr;
+    });
+
+    if (hasInvalidCommandBuffer)
+    {
+        epiLogError("Failed to Submit! Some CommandBuffer has no implementation!");
+        return false;
+    }
+
+    return m_Impl->Submit(info, commandBuffersImpl);
+}
+
 gfxQueueType gfxQueue::GetType_Callback() const
 {
     return m_Impl->GetType();

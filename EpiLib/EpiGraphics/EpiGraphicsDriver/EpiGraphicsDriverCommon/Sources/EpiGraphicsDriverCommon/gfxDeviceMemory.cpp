@@ -53,6 +53,8 @@ gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
     //
     // Add `epiBool flush = true` parameter:
     // call vkFlushMappedMemoryRanges if memory isn't coherent
+    //
+    // check whether memory is host-local
     return Mapping(m_Impl.Ptr(), size, offset);
 }
 

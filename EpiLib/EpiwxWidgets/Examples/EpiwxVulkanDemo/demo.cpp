@@ -222,34 +222,71 @@ public:
             {{-0.5f, 0.5f}, color}
         };
 
-        gfxBufferCreateInfo bufferCreateInfo;
-        bufferCreateInfo.SetCapacity(vertices.size() * sizeof(vertices[0]));
-        bufferCreateInfo.SetUsage(gfxBufferUsage_VertexBuffer);
+        const epiSize_t capacity = vertices.size() * sizeof(vertices[0]);
 
         {
-            std::optional<gfxBuffer> vertexBuffer = g_Device.CreateBuffer(bufferCreateInfo);
+            gfxBufferCreateInfo vertexBufferCreateInfo;
+            vertexBufferCreateInfo.SetCapacity(capacity);
+            vertexBufferCreateInfo.SetUsage(epiMask(gfxBufferUsage_VertexBuffer, gfxBufferUsage_TransferDst));
+
+            std::optional<gfxBuffer> vertexBuffer = g_Device.CreateBuffer(vertexBufferCreateInfo);
             epiAssert(vertexBuffer.has_value());
 
             m_VertexBuffer = *vertexBuffer;
-        }
 
-        gfxDeviceMemoryCreateInfo deviceMemoryCreateInfo;
-        deviceMemoryCreateInfo.SetBuffer(m_VertexBuffer);
-        deviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
+            gfxDeviceMemoryCreateInfo vertexDeviceMemoryCreateInfo;
+            vertexDeviceMemoryCreateInfo.SetBuffer(m_VertexBuffer);
+            vertexDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_DeviceLocal));
 
-        {
-            std::optional<gfxDeviceMemory> deviceMemory = g_Device.CreateDeviceMemory(deviceMemoryCreateInfo);
+            std::optional<gfxDeviceMemory> deviceMemory = g_Device.CreateDeviceMemory(vertexDeviceMemoryCreateInfo);
             epiAssert(deviceMemory.has_value());
 
-            m_DeviceMemory = *deviceMemory;
+            m_VertexDeviceMemory = *deviceMemory;
         }
 
-        if (gfxDeviceMemory::Mapping mapping = m_DeviceMemory.Map(bufferCreateInfo.GetCapacity()))
         {
-            for (const Vertex& v : vertices)
+            gfxBufferCreateInfo stagingBufferCreateInfo;
+            stagingBufferCreateInfo.SetCapacity(capacity);
+            stagingBufferCreateInfo.SetUsage(gfxBufferUsage_TransferSrc);
+
+            std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
+            epiAssert(stagingBuffer.has_value());
+
+            gfxDeviceMemoryCreateInfo stagingDeviceMemoryCreateInfo;
+            stagingDeviceMemoryCreateInfo.SetBuffer(*stagingBuffer);
+            stagingDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
+
+            std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
+            epiAssert(stagingDeviceMemory.has_value());
+
+            if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(capacity))
             {
-                mapping.PushBack(v);
+                for (const Vertex& v : vertices)
+                {
+                    mapping.PushBack(v);
+                }
             }
+
+            gfxCommandPoolCreateInfo commandPoolCreateInfo;
+            commandPoolCreateInfo.SetQueueFamily(m_QueueFamily);
+            commandPoolCreateInfo.SetUsage(gfxCommandPoolUsage_TRANSIENT);
+            commandPoolCreateInfo.SetPrimaryCommandBufferCount(1);
+
+            std::optional<gfxCommandPool> copyCmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
+            epiAssert(copyCmdPool.has_value());
+
+            if (gfxCommandBufferRecord record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+            {
+                gfxCommandBufferRecordCopyRegion copyRegion;
+                copyRegion.SetSize(capacity);
+
+                record.Copy(*stagingBuffer, m_VertexBuffer, {copyRegion});
+            }
+
+            gfxQueueSubmitInfo submitInfo;
+            submitInfo.GetCommandBuffers().push_back(copyCmdPool->GetPrimaryCommandBuffers()[0]);
+
+            m_QueueFamily[0].Submit(submitInfo);
         }
 
         RecordCommandBuffers();
@@ -267,7 +304,7 @@ protected:
     gfxRenderPass m_RenderPass;
     gfxPipelineGraphics m_Pipeline;
     gfxBuffer m_VertexBuffer;
-    gfxDeviceMemory m_DeviceMemory;
+    gfxDeviceMemory m_VertexDeviceMemory;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)

@@ -56,6 +56,9 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxCommandPool.epi
     Sources/EpiGraphicsDriverCommon/gfxCommandPool.h
     Sources/EpiGraphicsDriverCommon/gfxCommandPool.cpp
+    Sources/EpiGraphicsDriverCommon/gfxCommandBuffer.epi
+    Sources/EpiGraphicsDriverCommon/gfxCommandBuffer.h
+    Sources/EpiGraphicsDriverCommon/gfxCommandBuffer.cpp
 
     Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.epi
     Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.h
