@@ -244,10 +244,12 @@ public:
             m_DeviceMemory = *deviceMemory;
         }
 
-        if (epiByte* mapped = m_DeviceMemory.Map(bufferCreateInfo.GetCapacity(), 0))
+        if (gfxDeviceMemory::Mapping mapping = m_DeviceMemory.Map(bufferCreateInfo.GetCapacity()))
         {
-            memcpy(mapped, vertices.data(), bufferCreateInfo.GetCapacity());
-            m_DeviceMemory.Unmap();
+            for (const Vertex& v : vertices)
+            {
+                mapping.PushBack(v);
+            }
         }
 
         RecordCommandBuffers();

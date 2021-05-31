@@ -58,14 +58,45 @@ public:
 EPI_GENREGION_END(gfxDeviceMemory)
 
 public:
+    class Mapping final
+    {
+    public:
+        Mapping(internalgfx::gfxDeviceMemoryImpl* impl, epiSize_t size, epiSize_t offset);
+        ~Mapping();
+
+        epiBool IsMapped() const;
+        operator epiBool() const;
+
+        epiByte* Data();
+
+        template<typename T>
+        void PushBack(const T& value, epiSize_t stride = sizeof(T));
+
+    protected:
+        internalgfx::gfxDeviceMemoryImpl* m_Impl{nullptr};
+        epiByte* m_Data{nullptr};
+        epiSize_t m_Cursor{0};
+    };
+
+public:
     gfxDeviceMemory() = default;
     explicit gfxDeviceMemory(const std::shared_ptr<internalgfx::gfxDeviceMemoryImpl>& impl);
 
-    epiByte* Map(epiSize_t size, epiSize_t offset);
-    void Unmap();
+    Mapping Map(epiSize_t size, epiSize_t offset = 0);
 
 protected:
     epiPimpl<internalgfx::gfxDeviceMemoryImpl> m_Impl;
 };
+
+template<typename T>
+void gfxDeviceMemory::Mapping::PushBack(const T& value, epiSize_t stride)
+{
+    static_assert(std::is_trivially_copyable_v<T>);
+
+    memcpy(m_Data + m_Cursor, &value, stride);
+
+    m_Cursor += stride;
+}
+
 
 EPI_NAMESPACE_END()

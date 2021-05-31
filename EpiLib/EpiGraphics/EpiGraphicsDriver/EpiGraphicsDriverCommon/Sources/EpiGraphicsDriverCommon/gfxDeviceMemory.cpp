@@ -7,22 +7,53 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+
+gfxDeviceMemory::Mapping::Mapping(internalgfx::gfxDeviceMemoryImpl* impl, epiSize_t size, epiSize_t offset)
+    : m_Impl{impl}
+{
+    if (m_Impl)
+    {
+        m_Data = m_Impl->Map(size, offset);
+    }
+}
+
+gfxDeviceMemory::Mapping::~Mapping()
+{
+    if (IsMapped())
+    {
+        m_Impl->Unmap();
+    }
+}
+
+epiBool gfxDeviceMemory::Mapping::IsMapped() const
+{
+    return m_Impl != nullptr && m_Data != nullptr;
+}
+
+gfxDeviceMemory::Mapping::operator epiBool() const
+{
+    return IsMapped();
+}
+
+epiByte* gfxDeviceMemory::Mapping::Data()
+{
+    return m_Data;
+}
+
 gfxDeviceMemory::gfxDeviceMemory(const std::shared_ptr<internalgfx::gfxDeviceMemoryImpl>& impl)
     : m_Impl{impl}
 {
 }
 
-epiByte* gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
+gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
 {
     // TODO: add warning message if Map is used with a non-coherent memory to call flush:
     // - Use a memory heap that is host coherent, indicated with VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
     // - Call vkFlushMappedMemoryRanges after writing to the mapped memory, and call vkInvalidateMappedMemoryRanges before reading from the mapped memory
-    return m_Impl->Map(size, offset);
-}
-
-void gfxDeviceMemory::Unmap()
-{
-    m_Impl->Unmap();
+    //
+    // Add `epiBool flush = true` parameter:
+    // call vkFlushMappedMemoryRanges if memory isn't coherent
+    return Mapping(m_Impl.Ptr(), size, offset);
 }
 
 EPI_NAMESPACE_END()
