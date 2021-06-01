@@ -880,3 +880,11 @@ enum gfxCommandBufferUsage
     RenderPassContinue,
     SimultaneousUse
 };
+
+enum gfxIndexBufferType
+{
+    UInt16,
+    UInt32,
+    None,
+    UInt8
+};

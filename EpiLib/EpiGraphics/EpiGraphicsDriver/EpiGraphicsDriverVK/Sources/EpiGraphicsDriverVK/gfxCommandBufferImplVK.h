@@ -30,8 +30,10 @@ public:
     void PipelineBind(const gfxPipelineGraphicsImpl& pipeline) override;
 
     void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) override;
+    void IndexBufferBind(const gfxBufferImpl& bufferImpl, gfxIndexBufferType type, epiU32 offset = 0) override;
 
     void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) override;
+    void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) override;
     void Copy(const gfxBufferImpl& src, const gfxBufferImpl& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) override;
 
     VkCommandBuffer_T* GetVkCommandBuffer() const;

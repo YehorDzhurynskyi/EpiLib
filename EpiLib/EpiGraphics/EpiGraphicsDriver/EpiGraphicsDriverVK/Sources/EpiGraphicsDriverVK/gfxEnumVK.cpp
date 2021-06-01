@@ -1061,4 +1061,16 @@ VkCommandPoolCreateFlagBits gfxCommandPoolUsageTo(gfxCommandPoolUsage usage)
                    (usage & gfxCommandPoolUsage_Protected) ? VK_COMMAND_POOL_CREATE_PROTECTED_BIT : VkCommandPoolCreateFlagBits{});
 }
 
+VkIndexType gfxIndexBufferTypeTo(gfxIndexBufferType type)
+{
+    switch (type)
+    {
+    case gfxIndexBufferType::UInt16: return VK_INDEX_TYPE_UINT16;
+    case gfxIndexBufferType::UInt32: return VK_INDEX_TYPE_UINT32;
+    case gfxIndexBufferType::None: return VK_INDEX_TYPE_NONE_KHR;
+    case gfxIndexBufferType::UInt8: return VK_INDEX_TYPE_UINT8_EXT;
+    default: epiLogError("Unhandled gfxIndexBufferType=`{}`", type); return VK_INDEX_TYPE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
 EPI_NAMESPACE_END()

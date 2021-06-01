@@ -41,5 +41,6 @@ VkBufferUsageFlagBits gfxBufferUsageTo(gfxBufferUsage usage);
 VkMemoryPropertyFlagBits gfxDeviceMemoryPropertyTo(gfxDeviceMemoryProperty properties);
 VkCommandBufferUsageFlagBits gfxCommandBufferUsageTo(gfxCommandBufferUsage usage);
 VkCommandPoolCreateFlagBits gfxCommandPoolUsageTo(gfxCommandPoolUsage usage);
+VkIndexType gfxIndexBufferTypeTo(gfxIndexBufferType type);
 
 EPI_NAMESPACE_END()

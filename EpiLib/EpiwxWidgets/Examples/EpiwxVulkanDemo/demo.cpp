@@ -45,8 +45,14 @@ public:
     wxDECLARE_EVENT_TABLE();
 
 public:
-    epiWXVulkanDemoTriangleCanvas(const epiVec3f& color,
-                                  wxWindow* parent,
+    struct Vertex
+    {
+        epiVec2f Position;
+        epiVec3f Color;
+    };
+
+public:
+    epiWXVulkanDemoTriangleCanvas(wxWindow* parent,
                                   wxWindowID id = wxID_ANY,
                                   const wxPoint& pos = wxDefaultPosition,
                                   const wxSize& size = wxDefaultSize,
@@ -172,12 +178,6 @@ public:
         viewport.SetMinDepth(0.0f);
         viewport.SetMaxDepth(1.0f);
 
-        struct Vertex
-        {
-            epiVec2f Position;
-            epiVec3f Color;
-        };
-
         gfxPipelineVertexInputBindingDescription vertexInputBindingDescription;
         vertexInputBindingDescription.SetStride(sizeof(Vertex));
         vertexInputBindingDescription.SetInputRate(gfxPipelineVertexInputRate::Vertex);
@@ -216,17 +216,18 @@ public:
 
             m_Pipeline = *pipeline;
         }
-        const std::vector<Vertex> vertices = {
-            {{0.0f, -0.5f}, color},
-            {{0.5f, 0.5f}, color},
-            {{-0.5f, 0.5f}, color}
-        };
 
-        const epiSize_t capacity = vertices.size() * sizeof(vertices[0]);
+        m_Vertices = {
+            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+        };
+        const epiSize_t vertexBufferCapacity = m_Vertices.size() * sizeof(m_Vertices[0]);
 
         {
             gfxBufferCreateInfo vertexBufferCreateInfo;
-            vertexBufferCreateInfo.SetCapacity(capacity);
+            vertexBufferCreateInfo.SetCapacity(vertexBufferCapacity);
             vertexBufferCreateInfo.SetUsage(epiMask(gfxBufferUsage_VertexBuffer, gfxBufferUsage_TransferDst));
 
             std::optional<gfxBuffer> vertexBuffer = g_Device.CreateBuffer(vertexBufferCreateInfo);
@@ -236,7 +237,7 @@ public:
 
             gfxDeviceMemoryCreateInfo vertexDeviceMemoryCreateInfo;
             vertexDeviceMemoryCreateInfo.SetBuffer(m_VertexBuffer);
-            vertexDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_DeviceLocal));
+            vertexDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
 
             std::optional<gfxDeviceMemory> deviceMemory = g_Device.CreateDeviceMemory(vertexDeviceMemoryCreateInfo);
             epiAssert(deviceMemory.has_value());
@@ -246,7 +247,7 @@ public:
 
         {
             gfxBufferCreateInfo stagingBufferCreateInfo;
-            stagingBufferCreateInfo.SetCapacity(capacity);
+            stagingBufferCreateInfo.SetCapacity(vertexBufferCapacity);
             stagingBufferCreateInfo.SetUsage(gfxBufferUsage_TransferSrc);
 
             std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
@@ -259,9 +260,9 @@ public:
             std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
             epiAssert(stagingDeviceMemory.has_value());
 
-            if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(capacity))
+            if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(vertexBufferCapacity))
             {
-                for (const Vertex& v : vertices)
+                for (const Vertex& v : m_Vertices)
                 {
                     mapping.PushBack(v);
                 }
@@ -278,9 +279,77 @@ public:
             if (gfxCommandBufferRecord record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
             {
                 gfxCommandBufferRecordCopyRegion copyRegion;
-                copyRegion.SetSize(capacity);
+                copyRegion.SetSize(vertexBufferCapacity);
 
                 record.Copy(*stagingBuffer, m_VertexBuffer, {copyRegion});
+            }
+
+            gfxQueueSubmitInfo submitInfo;
+            submitInfo.GetCommandBuffers().push_back(copyCmdPool->GetPrimaryCommandBuffers()[0]);
+
+            m_QueueFamily[0].Submit(submitInfo);
+        }
+
+        m_Indices = { 0, 1, 2, 2, 3, 0 };
+        const epiSize_t indexBufferCapacity = m_Indices.size() * sizeof(m_Indices[0]);
+
+        {
+            gfxBufferCreateInfo indexBufferCreateInfo;
+            indexBufferCreateInfo.SetCapacity(indexBufferCapacity);
+            indexBufferCreateInfo.SetUsage(epiMask(gfxBufferUsage_IndexBuffer, gfxBufferUsage_TransferDst));
+
+            std::optional<gfxBuffer> indexBuffer = g_Device.CreateBuffer(indexBufferCreateInfo);
+            epiAssert(indexBuffer.has_value());
+
+            m_IndexBuffer = *indexBuffer;
+
+            gfxDeviceMemoryCreateInfo indexDeviceMemoryCreateInfo;
+            indexDeviceMemoryCreateInfo.SetBuffer(m_IndexBuffer);
+            indexDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
+
+            std::optional<gfxDeviceMemory> deviceMemory = g_Device.CreateDeviceMemory(indexDeviceMemoryCreateInfo);
+            epiAssert(deviceMemory.has_value());
+
+            m_IndexDeviceMemory = *deviceMemory;
+        }
+
+        {
+            gfxBufferCreateInfo stagingBufferCreateInfo;
+            stagingBufferCreateInfo.SetCapacity(indexBufferCapacity);
+            stagingBufferCreateInfo.SetUsage(gfxBufferUsage_TransferSrc);
+
+            std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
+            epiAssert(stagingBuffer.has_value());
+
+            gfxDeviceMemoryCreateInfo stagingDeviceMemoryCreateInfo;
+            stagingDeviceMemoryCreateInfo.SetBuffer(*stagingBuffer);
+            stagingDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
+
+            std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
+            epiAssert(stagingDeviceMemory.has_value());
+
+            if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(indexBufferCapacity))
+            {
+                for (const epiU16& v : m_Indices)
+                {
+                    mapping.PushBack(v);
+                }
+            }
+
+            gfxCommandPoolCreateInfo commandPoolCreateInfo;
+            commandPoolCreateInfo.SetQueueFamily(m_QueueFamily);
+            commandPoolCreateInfo.SetUsage(gfxCommandPoolUsage_TRANSIENT);
+            commandPoolCreateInfo.SetPrimaryCommandBufferCount(1);
+
+            std::optional<gfxCommandPool> copyCmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
+            epiAssert(copyCmdPool.has_value());
+
+            if (gfxCommandBufferRecord record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+            {
+                gfxCommandBufferRecordCopyRegion copyRegion;
+                copyRegion.SetSize(indexBufferCapacity);
+
+                record.Copy(*stagingBuffer, m_IndexBuffer, {copyRegion});
             }
 
             gfxQueueSubmitInfo submitInfo;
@@ -304,7 +373,11 @@ protected:
     gfxRenderPass m_RenderPass;
     gfxPipelineGraphics m_Pipeline;
     gfxBuffer m_VertexBuffer;
+    gfxBuffer m_IndexBuffer;
     gfxDeviceMemory m_VertexDeviceMemory;
+    gfxDeviceMemory m_IndexDeviceMemory;
+    std::vector<Vertex> m_Vertices;
+    std::vector<epiU16> m_Indices;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
@@ -400,7 +473,8 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
                 .RenderPassBegin(renderPassBeginInfo)
                 .PipelineBind(m_Pipeline)
                 .VertexBuffersBind({m_VertexBuffer})
-                .Draw(3, 1, 0, 0)
+                .IndexBufferBind(m_IndexBuffer, gfxIndexBufferType::UInt16)
+                .DrawIndexed(m_Indices.size(), 1, 0, 0, 0)
                 .RenderPassEnd();
         }
     }
@@ -544,8 +618,8 @@ epiWXVulkanDemoFrame::epiWXVulkanDemoFrame(wxWindow* parent, wxWindowID id, cons
     : wxFrame(parent, id, title, pos, size, style)
 {
     wxBoxSizer* vboxSizer = new wxBoxSizer(wxHORIZONTAL);
-    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(epiVec3f{1.0f, 0.0f, 1.0f}, this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
-    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(epiVec3f{0.0f, 1.0f, 1.0f}, this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
+    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
+    vboxSizer->Add(new epiWXVulkanDemoTriangleCanvas(this, wxID_ANY, wxDefaultPosition, {200, 300}), 1, wxALL | wxEXPAND, 20);
 
     SetSizerAndFit(vboxSizer);
 }

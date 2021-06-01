@@ -6,6 +6,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 #include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
@@ -128,8 +129,10 @@ public:
     gfxCommandBufferRecord& PipelineBind(const gfxPipelineGraphics& pipeline);
 
     gfxCommandBufferRecord& VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {});
+    gfxCommandBufferRecord& IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0);
 
     gfxCommandBufferRecord& Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance);
+    gfxCommandBufferRecord& DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance);
     gfxCommandBufferRecord& Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions);
 
 protected:

@@ -955,4 +955,14 @@ EPI_GENREGION_BEGIN(gfxCommandBufferUsage)
 EPI_GENREGION_END(gfxCommandBufferUsage)
 };
 
+enum class gfxIndexBufferType : epiS32
+{
+EPI_GENREGION_BEGIN(gfxIndexBufferType)
+    UInt16 = 0,
+    UInt32 = 1,
+    None = 2,
+    UInt8 = 3
+EPI_GENREGION_END(gfxIndexBufferType)
+};
+
 EPI_NAMESPACE_END()

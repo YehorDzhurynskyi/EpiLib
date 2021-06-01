@@ -179,9 +179,19 @@ void gfxCommandBufferImplVK::VertexBuffersBind(const epiPtrArray<const gfxBuffer
     vkCmdBindVertexBuffers(m_VkCommandBuffer, 0, buffersVk.size(), buffersVk.data(), offsetsVk.data());
 }
 
+void gfxCommandBufferImplVK::IndexBufferBind(const gfxBufferImpl& bufferImpl, gfxIndexBufferType type, epiU32 offset)
+{
+    vkCmdBindIndexBuffer(m_VkCommandBuffer, static_cast<const gfxBufferImplVK&>(bufferImpl).GetVkBuffer(), offset, gfxIndexBufferTypeTo(type));
+}
+
 void gfxCommandBufferImplVK::Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance)
 {
     vkCmdDraw(m_VkCommandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
+}
+
+void gfxCommandBufferImplVK::DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance)
+{
+    vkCmdDrawIndexed(m_VkCommandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
 
 void gfxCommandBufferImplVK::Copy(const gfxBufferImpl& src, const gfxBufferImpl& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions)

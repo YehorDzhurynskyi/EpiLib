@@ -120,9 +120,30 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::VertexBuffersBind(const epiArray
     return *this;
 }
 
+gfxCommandBufferRecord& gfxCommandBufferRecord::IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset)
+{
+    const auto bufferImpl = buffer.m_Impl;
+    if (!bufferImpl)
+    {
+        epiLogError("Failed to bind Index Buffer! Provided Buffer has no implementation!");
+        return *this;
+    }
+
+    m_Impl->IndexBufferBind(*bufferImpl, type, offset);
+
+    return *this;
+}
+
 gfxCommandBufferRecord& gfxCommandBufferRecord::Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance)
 {
     m_Impl->Draw(vertexCount, instanceCount, firstVertex, firstInstance);
+
+    return *this;
+}
+
+gfxCommandBufferRecord& gfxCommandBufferRecord::DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance)
+{
+    m_Impl->DrawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 
     return *this;
 }
