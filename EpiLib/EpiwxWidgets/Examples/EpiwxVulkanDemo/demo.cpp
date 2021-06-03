@@ -58,9 +58,9 @@ public:
 
     struct UniformBufferObject
     {
-        epiMat4x4f Model;
-        epiMat4x4f View;
-        epiMat4x4f Proj;
+        alignas(16) epiMat4x4f Model;
+        alignas(16) epiMat4x4f View;
+        alignas(16) epiMat4x4f Proj;
     };
 
 public:
@@ -158,7 +158,7 @@ public:
             #version 450
             #extension GL_ARB_separate_shader_objects : enable
 
-            layout(binding = 0) uniform UniformBufferObject {
+            layout(set = 0, binding = 0) uniform UniformBufferObject {
                 mat4 model;
                 mat4 view;
                 mat4 proj;
