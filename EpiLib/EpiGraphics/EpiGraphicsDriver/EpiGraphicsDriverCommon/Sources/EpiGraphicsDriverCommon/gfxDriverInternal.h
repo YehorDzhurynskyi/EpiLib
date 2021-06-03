@@ -125,6 +125,11 @@ public:
 
     virtual void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
     virtual void IndexBufferBind(const gfxBufferImpl& bufferImpl, gfxIndexBufferType type, epiU32 offset = 0) = 0;
+    virtual void DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                                    const gfxPipelineLayout& pipelineLayout,
+                                    const epiArray<gfxDescriptorSet>& sets,
+                                    const epiArray<epiU32>& offsets,
+                                    epiU32 firstSet) = 0;
 
     virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
     virtual void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) = 0;
@@ -151,9 +156,12 @@ public:
     virtual epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const = 0;
     virtual epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const = 0;
 
+    virtual epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const = 0;
+
     virtual std::shared_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxQueueFamilyImpl& queueFamilyImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
     virtual std::shared_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxRenderPassImpl> CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const = 0;
+    virtual std::shared_ptr<gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
     virtual std::shared_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
     virtual std::shared_ptr<gfxShaderImpl> CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
@@ -164,6 +172,8 @@ public:
     virtual std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
     virtual std::shared_ptr<gfxBufferImpl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info, const gfxBufferImpl& bufferImpl) const = 0;
+    virtual std::shared_ptr<gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
 
     const epiArray<std::shared_ptr<gfxQueueFamilyImpl>>& GetQueueFamilies() const { return m_QueueFamilies; }
 
@@ -226,7 +236,7 @@ public:
                              const gfxQueueFamilyImpl& queueFamilyImpl,
                              const gfxRenderPassImpl& renderPassImpl) = 0;
 
-    virtual epiBool Present(const gfxQueueImpl& queue) = 0;
+    virtual epiBool Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback) = 0;
 
     virtual const epiArray<std::shared_ptr<gfxFrameBufferImpl>>& GetFrameBuffers() const = 0;
     virtual const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetCommandBuffers() const = 0;
@@ -277,6 +287,9 @@ public:
 class gfxBufferImpl
 {
 public:
+    static const gfxBufferImpl* ExtractImpl(const gfxBuffer& buffer) { return buffer.m_Impl.Ptr(); }
+
+public:
     gfxBufferImpl() = default;
     gfxBufferImpl(const gfxBufferImpl& rhs) = delete;
     gfxBufferImpl& operator=(const gfxBufferImpl& rhs) = delete;
@@ -297,6 +310,50 @@ public:
 
     virtual epiByte* Map(epiSize_t size, epiSize_t offset) = 0;
     virtual void Unmap() = 0;
+};
+
+class gfxDescriptorSetLayoutImpl
+{
+public:
+    static const gfxDescriptorSetLayoutImpl* ExtractImpl(const gfxDescriptorSetLayout& layout) { return layout.m_Impl.Ptr(); }
+
+public:
+    gfxDescriptorSetLayoutImpl() = default;
+    gfxDescriptorSetLayoutImpl(const gfxDescriptorSetLayoutImpl& rhs) = delete;
+    gfxDescriptorSetLayoutImpl& operator=(const gfxDescriptorSetLayoutImpl& rhs) = delete;
+    gfxDescriptorSetLayoutImpl(gfxDescriptorSetLayoutImpl&& rhs) = default;
+    gfxDescriptorSetLayoutImpl& operator=(gfxDescriptorSetLayoutImpl&& rhs) = default;
+    virtual ~gfxDescriptorSetLayoutImpl() = default;
+};
+
+class gfxDescriptorSetImpl
+{
+public:
+    static const gfxDescriptorSetImpl* ExtractImpl(const gfxDescriptorSet& set) { return set.m_Impl.Ptr(); }
+
+public:
+    gfxDescriptorSetImpl() = default;
+    gfxDescriptorSetImpl(const gfxDescriptorSetImpl& rhs) = delete;
+    gfxDescriptorSetImpl& operator=(const gfxDescriptorSetImpl& rhs) = delete;
+    gfxDescriptorSetImpl(gfxDescriptorSetImpl&& rhs) = default;
+    gfxDescriptorSetImpl& operator=(gfxDescriptorSetImpl&& rhs) = default;
+    virtual ~gfxDescriptorSetImpl() = default;
+};
+
+class gfxDescriptorPoolImpl
+{
+public:
+    gfxDescriptorPoolImpl() = default;
+    gfxDescriptorPoolImpl(const gfxDescriptorPoolImpl& rhs) = delete;
+    gfxDescriptorPoolImpl& operator=(const gfxDescriptorPoolImpl& rhs) = delete;
+    gfxDescriptorPoolImpl(gfxDescriptorPoolImpl&& rhs) = default;
+    gfxDescriptorPoolImpl& operator=(gfxDescriptorPoolImpl&& rhs) = default;
+    virtual ~gfxDescriptorPoolImpl() = default;
+
+    const epiArray<std::shared_ptr<gfxDescriptorSetImpl>>& GetDescriptorSets() { return m_DescriptorSets; }
+
+protected:
+    epiArray<std::shared_ptr<gfxDescriptorSetImpl>> m_DescriptorSets;
 };
 
 class gfxTextureImpl
@@ -371,6 +428,20 @@ public:
     virtual void UniformVec3u(const epiChar* name, const epiVec3u& value) = 0;
     virtual void UniformVec4u(const epiChar* name, const epiVec4u& value) = 0;
 #endif
+};
+
+class gfxPipelineLayoutImpl
+{
+public:
+    static const gfxPipelineLayoutImpl* ExtractImpl(const gfxPipelineLayout& layout) { return layout.m_Impl.Ptr(); }
+
+public:
+    gfxPipelineLayoutImpl() = default;
+    gfxPipelineLayoutImpl(const gfxPipelineLayoutImpl& rhs) = delete;
+    gfxPipelineLayoutImpl& operator=(const gfxPipelineLayoutImpl& rhs) = delete;
+    gfxPipelineLayoutImpl(gfxPipelineLayoutImpl&& rhs) = default;
+    gfxPipelineLayoutImpl& operator=(gfxPipelineLayoutImpl&& rhs) = default;
+    virtual ~gfxPipelineLayoutImpl() = default;
 };
 
 class gfxPipelineGraphicsImpl

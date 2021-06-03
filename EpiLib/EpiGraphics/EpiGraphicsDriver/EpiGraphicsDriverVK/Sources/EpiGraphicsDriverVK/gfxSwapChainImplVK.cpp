@@ -216,81 +216,7 @@ epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
     return Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl);
 }
 
-#if 0
-epiBool gfxSwapChainImplVK::AssignRenderPass(const gfxRenderPassImpl& renderPass, const gfxPipelineGraphicsImpl& pipeline, const gfxBufferImpl& buffer)
-{
-    const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& commandBuffers = m_CommandPool->GetPrimaryCommandBuffers();
-    const gfxRenderPassImplVK& renderPassVk = static_cast<const gfxRenderPassImplVK&>(renderPass);
-    const gfxPipelineGraphicsImplVK& pipelineVk = static_cast<const gfxPipelineGraphicsImplVK&>(pipeline);
-    const gfxBufferImplVK& bufferVk = static_cast<const gfxBufferImplVK&>(buffer);
-
-    const VkExtent2D extent{GetExtent().x, GetExtent().y};
-
-    for (epiU32 i = 0; i < commandBuffers.Size(); ++i)
-    {
-        const std::shared_ptr<gfxCommandBufferImpl>& commandBuffer = commandBuffers[i];
-
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-        VkCommandBuffer commandBufferVk = static_cast<const gfxCommandBufferImplVK*>(commandBuffer.get())->GetVkCommandBuffer();
-        if (const VkResult result = vkBeginCommandBuffer(commandBufferVk, &beginInfo); result != VK_SUCCESS)
-        {
-            gfxLogErrorEx(result, "Failed to call vkBeginCommandBuffer!");
-            return false;
-        }
-
-        VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
-
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = renderPassVk.GetVkRenderPass();
-        renderPassInfo.framebuffer = static_cast<const gfxFrameBufferImplVK*>(m_SwapChainFrameBuffers[i].get())->GetVkFrameBuffer();
-        renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = extent;
-        renderPassInfo.clearValueCount = 1;
-        renderPassInfo.pClearValues = &clearColor;
-
-        vkCmdBeginRenderPass(commandBufferVk, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-        vkCmdBindPipeline(commandBufferVk, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineVk.GetVkPipeline());
-
-        { // TODO: set dynamic state in a proper way (via gfxRenderPass interface)
-            VkViewport viewport;
-            viewport.x = 0;
-            viewport.y = 0;
-            viewport.width = extent.width;
-            viewport.height = extent.height;
-            viewport.minDepth = 0.0f;
-            viewport.maxDepth = 1.0f;
-            vkCmdSetViewport(commandBufferVk, 0, 1, &viewport);
-
-            VkRect2D scissor;
-            scissor.offset = {0, 0};
-            scissor.extent = extent;
-            vkCmdSetScissor(commandBufferVk, 0, 1, &scissor);
-        }
-
-        VkBuffer vertexBuffers[] = {bufferVk.GetVkBuffer()};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBufferVk, 0, 1, vertexBuffers, offsets);
-
-        vkCmdDraw(commandBufferVk, 3, 1, 0, 0);
-
-        vkCmdEndRenderPass(commandBufferVk);
-
-        if (const VkResult result = vkEndCommandBuffer(commandBufferVk); result != VK_SUCCESS)
-        {
-            gfxLogErrorEx(result, "Failed to call vkEndCommandBuffer!");
-            return false;
-        }
-    }
-
-    return true;
-}
-#endif
-
-epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
+epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback)
 {
     const epiU32 frameIndex = m_CurrentFrame % kMaxFramesInFlight;
 
@@ -325,6 +251,8 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
 
     static_assert(epiArrLen(waitSemaphores) == epiArrLen(waitStages));
 
+    callback(frameIndex);
+
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.waitSemaphoreCount = epiArrLen(waitSemaphores);
@@ -347,7 +275,7 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue)
 
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.waitSemaphoreCount = epiArrLen(signalSemaphores);
     presentInfo.pWaitSemaphores = signalSemaphores;
     presentInfo.swapchainCount = epiArrLen(swapChains);
     presentInfo.pSwapchains = swapChains;

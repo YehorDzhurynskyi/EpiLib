@@ -1,4 +1,4 @@
-#include "common.h"
+#include "EpiCore/common.h"
 
 #ifdef EPI_BUILD_PROFILE
 #include <easy/profiler.h>

@@ -9,7 +9,9 @@ EPI_NAMESPACE_BEGIN()
 
 epiMat4x4f gfxCameraPersp::GetProjectionMatrix_Internal() const
 {
-    return glm::perspective(GetFOV(), GetAspectRatio(), GetPlaneNear(), GetPlaneFar());
+    // TODO: handle different hand rule depending on API
+    // RH for OpenGL, LH for the others
+    return glm::perspectiveLH_ZO(GetFOV(), GetAspectRatio(), GetPlaneNear(), GetPlaneFar());
 }
 
 EPI_NAMESPACE_END()

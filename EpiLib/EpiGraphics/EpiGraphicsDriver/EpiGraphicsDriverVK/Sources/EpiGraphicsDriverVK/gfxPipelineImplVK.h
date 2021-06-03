@@ -1,11 +1,15 @@
 #pragma once
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-#include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 
-struct VkPipelineLayout_T;
-struct VkPipeline_T;
+#include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
+#include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
+#include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
+#include "EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.h"
+
 struct VkDevice_T;
+struct VkPipeline_T;
+struct VkDescriptorSetLayout_T;
 
 EPI_NAMESPACE_BEGIN()
 
@@ -22,14 +26,15 @@ public:
     gfxPipelineGraphicsImplVK& operator=(gfxPipelineGraphicsImplVK&& rhs) = default;
     ~gfxPipelineGraphicsImplVK() override;
 
-    epiBool Init(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl);
+    epiBool Init(const gfxPipelineGraphicsCreateInfo& info,
+                 const gfxShaderProgramImplVK& shaderProgramImpl,
+                 const gfxRenderPassImplVK& renderPassImpl);
 
     VkPipeline_T* GetVkPipeline() const;
 
 protected:
     const gfxDeviceImplVK& m_Device;
     VkPipeline_T* m_VkPipeline{nullptr};
-    VkPipelineLayout_T* m_VkPipelineLayout{nullptr};
 };
 
 } // namespace internalgfx

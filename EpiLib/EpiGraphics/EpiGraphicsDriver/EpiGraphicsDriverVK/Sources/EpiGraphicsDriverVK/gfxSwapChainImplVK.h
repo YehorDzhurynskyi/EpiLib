@@ -36,7 +36,7 @@ public:
                      const gfxQueueFamilyImpl& queueFamilyImpl,
                      const gfxRenderPassImpl& renderPassImpl) override;
 
-    epiBool Present(const gfxQueueImpl& queue) override;
+    epiBool Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback) override;
 
     const epiArray<std::shared_ptr<gfxFrameBufferImpl>>& GetFrameBuffers() const override;
     const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetCommandBuffers() const override;

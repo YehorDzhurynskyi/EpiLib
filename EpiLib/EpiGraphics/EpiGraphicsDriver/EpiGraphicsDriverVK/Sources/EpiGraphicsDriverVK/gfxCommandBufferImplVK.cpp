@@ -5,7 +5,9 @@
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
+#include "EpiGraphicsDriverVK/gfxPipelineLayoutImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
+#include "EpiGraphicsDriverVK/gfxDescriptorSetImplVK.h"
 #include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
 
 #include <vulkan/vulkan.h>
@@ -182,6 +184,48 @@ void gfxCommandBufferImplVK::VertexBuffersBind(const epiPtrArray<const gfxBuffer
 void gfxCommandBufferImplVK::IndexBufferBind(const gfxBufferImpl& bufferImpl, gfxIndexBufferType type, epiU32 offset)
 {
     vkCmdBindIndexBuffer(m_VkCommandBuffer, static_cast<const gfxBufferImplVK&>(bufferImpl).GetVkBuffer(), offset, gfxIndexBufferTypeTo(type));
+}
+
+void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                                                const gfxPipelineLayout& pipelineLayout,
+                                                const epiArray<gfxDescriptorSet>& sets,
+                                                const epiArray<epiU32>& offsets,
+                                                epiU32 firstSet)
+{
+    const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayoutImpl::ExtractImpl(pipelineLayout));
+    if (pipelineLayoutVk == nullptr)
+    {
+        epiLogError("Failed to Bind DescriptorSets! Provided PipelineLayout has no implementation!");
+        return;
+    }
+
+    const epiBool setsAreValid = std::all_of(sets.begin(), sets.end(), [](const gfxDescriptorSet& set)
+    {
+        return gfxDescriptorSetImpl::ExtractImpl(set) != nullptr;
+    });
+
+    if (!setsAreValid)
+    {
+        epiLogError("Failed to Bind DescriptorSets! Some of the provided DescriptorSet has no implementation!");
+        return;
+    }
+
+    std::vector<VkDescriptorSet> descriptorSets;
+    descriptorSets.reserve(sets.GetSize());
+
+    std::transform(sets.begin(), sets.end(), std::back_inserter(descriptorSets), [](const gfxDescriptorSet& set)
+    {
+        return static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSetImpl::ExtractImpl(set))->GetVkDescriptorSet();
+    });
+
+    vkCmdBindDescriptorSets(m_VkCommandBuffer,
+                            gfxPipelineBindPointTo(bindPoint),
+                            pipelineLayoutVk->GetVkPipelineLayout(),
+                            firstSet,
+                            descriptorSets.size(),
+                            descriptorSets.data(),
+                            offsets.Size(),
+                            offsets.data());
 }
 
 void gfxCommandBufferImplVK::Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance)

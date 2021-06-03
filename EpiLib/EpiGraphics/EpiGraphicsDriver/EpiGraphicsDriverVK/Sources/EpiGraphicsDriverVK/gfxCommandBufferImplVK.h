@@ -31,6 +31,11 @@ public:
 
     void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) override;
     void IndexBufferBind(const gfxBufferImpl& bufferImpl, gfxIndexBufferType type, epiU32 offset = 0) override;
+    void DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                            const gfxPipelineLayout& pipelineLayout,
+                            const epiArray<gfxDescriptorSet>& sets,
+                            const epiArray<epiU32>& offsets,
+                            epiU32 firstSet) override;
 
     void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) override;
     void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) override;

@@ -88,14 +88,15 @@ constexpr bool epiEqual(const T& lhs, const T& rhs)
     }
 }
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
 
-#define epiLogTrace(MSG, ...)   spdlog::trace(MSG, __VA_ARGS__)
-#define epiLogDebug(MSG, ...)   spdlog::debug(MSG, __VA_ARGS__)
-#define epiLogInfo(MSG, ...)    spdlog::info(MSG, __VA_ARGS__)
-#define epiLogWarn(MSG, ...)    spdlog::warn(MSG, __VA_ARGS__)
-#define epiLogError(MSG, ...)   spdlog::error(MSG, __VA_ARGS__)
-#define epiLogFatal(MSG, ...)   spdlog::critical(MSG, __VA_ARGS__)
+#define epiLogTrace(...)   SPDLOG_TRACE(__VA_ARGS__)
+#define epiLogDebug(...)   SPDLOG_DEBUG(__VA_ARGS__)
+#define epiLogInfo(...)    SPDLOG_INFO(__VA_ARGS__)
+#define epiLogWarn(...)    SPDLOG_WARN(__VA_ARGS__)
+#define epiLogError(...)   SPDLOG_ERROR(__VA_ARGS__)
+#define epiLogFatal(...)   SPDLOG_CRITICAL(__VA_ARGS__)
 
 #ifdef EPI_BUILD_PROFILE
 #include <easy/profiler.h>

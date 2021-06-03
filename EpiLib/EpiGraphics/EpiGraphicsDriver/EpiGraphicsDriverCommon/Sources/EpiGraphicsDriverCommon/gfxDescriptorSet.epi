@@ -1,0 +1,43 @@
+class gfxDescriptorBufferInfo
+{
+    gfxBuffer Buffer;
+    epiSize_t Offset;
+    epiSize_t Range;
+};
+
+class gfxDescriptorImageInfo
+{
+};
+
+class gfxDescriptorSet
+{
+};
+
+class gfxDescriptorSetWrite
+{
+    gfxDescriptorSet DstSet;
+    epiU32 DstBinding;
+    epiU32 DstArrayElement;
+
+    epiU32 DescriptorCount;
+    gfxDescriptorType DescriptorType;
+
+    [ReadOnly]
+    {
+        epiArray<gfxDescriptorBufferInfo> BufferInfos;
+        epiArray<gfxDescriptorImageInfo> ImageInfos;
+    }
+};
+
+class gfxDescriptorSetCopy
+{
+    gfxDescriptorSet SrcSet;
+    epiU32 SrcBinding;
+    epiU32 SrcArrayElement;
+
+    gfxDescriptorSet DstSet;
+    epiU32 DstBinding;
+    epiU32 DstArrayElement;
+
+    epiU32 DescriptorCount;
+};

@@ -37,6 +37,7 @@ class gfxPipelineVertexInputBindingDescription
 
 class gfxPipelineGraphicsCreateInfo
 {
+    gfxPipelineLayout PipelineLayout;
     gfxShaderProgram ShaderProgram;
 
     epiU32 RenderSubPassIndex;

@@ -1,0 +1,25 @@
+class gfxDescriptorPoolSize
+{
+    gfxDescriptorType DescriptorType;
+    epiU32 DescriptorCount;
+};
+
+class gfxDescriptorPoolCreateInfo
+{
+    gfxDescriptorPoolUsage UsageMask;
+    epiU32 MaxSets;
+
+    [ReadOnly]
+    {
+        epiArray<gfxDescriptorPoolSize> PoolSizes;
+        epiArray<gfxDescriptorSetLayout> DescriptorSetLayouts;
+    }
+};
+
+class gfxDescriptorPool
+{
+    [ReadOnly]
+    {
+        epiArray<gfxDescriptorSet> DescriptorSets;
+    }
+};

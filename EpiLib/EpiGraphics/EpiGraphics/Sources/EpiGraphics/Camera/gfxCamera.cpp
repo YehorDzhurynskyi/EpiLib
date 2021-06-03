@@ -14,7 +14,9 @@ epiMat4x4f gfxCamera::GetProjectionMatrix_Callback() const
 
 epiMat4x4f gfxCamera::GetViewMatrix_Callback() const
 {
-    return glm::lookAt(GetPosition(), GetLookAtPosition(), GetUpDirection());
+    // TODO: handle different hand rule depending on API
+    // RH for OpenGL, LH for the others
+    return glm::lookAtLH(GetPosition(), GetLookAtPosition(), GetUpDirection());
 }
 
 epiMat4x4f gfxCamera::GetProjectionMatrixInverse_Callback() const

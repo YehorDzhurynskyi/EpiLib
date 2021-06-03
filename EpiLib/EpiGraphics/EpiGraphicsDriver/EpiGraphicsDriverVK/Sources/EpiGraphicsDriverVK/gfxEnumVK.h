@@ -42,5 +42,9 @@ VkMemoryPropertyFlagBits gfxDeviceMemoryPropertyTo(gfxDeviceMemoryProperty prope
 VkCommandBufferUsageFlagBits gfxCommandBufferUsageTo(gfxCommandBufferUsage usage);
 VkCommandPoolCreateFlagBits gfxCommandPoolUsageTo(gfxCommandPoolUsage usage);
 VkIndexType gfxIndexBufferTypeTo(gfxIndexBufferType type);
+VkDescriptorSetLayoutCreateFlagBits gfxDescriptorSetLayoutUsageTo(gfxDescriptorSetLayoutUsage usage);
+VkDescriptorType gfxDescriptorTypeTo(gfxDescriptorType type);
+VkShaderStageFlagBits gfxShaderStageTo(gfxShaderStage mask);
+VkDescriptorPoolCreateFlags gfxDescriptorPoolUsageTo(gfxDescriptorPoolUsage usage);
 
 EPI_NAMESPACE_END()

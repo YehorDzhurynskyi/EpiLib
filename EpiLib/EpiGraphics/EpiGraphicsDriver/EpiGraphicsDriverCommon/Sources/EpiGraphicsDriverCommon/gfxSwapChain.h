@@ -87,7 +87,7 @@ public:
 
     epiBool Recreate(const gfxSwapChainCreateInfo& info);
 
-    epiBool Present(const gfxQueue& queue);
+    epiBool Present(const gfxQueue& queue, std::function<void(epiU32)> callback);
 
 protected:
     void RebindImpl();

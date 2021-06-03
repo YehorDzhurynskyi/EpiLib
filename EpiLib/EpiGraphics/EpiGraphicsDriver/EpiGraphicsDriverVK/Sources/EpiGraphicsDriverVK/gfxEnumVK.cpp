@@ -1073,4 +1073,58 @@ VkIndexType gfxIndexBufferTypeTo(gfxIndexBufferType type)
     }
 }
 
+VkDescriptorSetLayoutCreateFlagBits gfxDescriptorSetLayoutUsageTo(gfxDescriptorSetLayoutUsage usage)
+{
+    return epiMask((usage & gfxDescriptorSetLayoutUsage_UpdateAfterBindPool) ? VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT : VkDescriptorSetLayoutCreateFlagBits{},
+                   (usage & gfxDescriptorSetLayoutUsage_PushDescriptor) ? VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR : VkDescriptorSetLayoutCreateFlagBits{});
+}
+
+VkDescriptorType gfxDescriptorTypeTo(gfxDescriptorType type)
+{
+    switch (type)
+    {
+    case gfxDescriptorType::Sampler: return VK_DESCRIPTOR_TYPE_SAMPLER;
+    case gfxDescriptorType::CombinedImageSampler: return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    case gfxDescriptorType::SampledImage: return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    case gfxDescriptorType::StorageImage: return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+    case gfxDescriptorType::UniformTexelBuffer: return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+    case gfxDescriptorType::StorageTexelBuffer: return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+    case gfxDescriptorType::UniformBuffer: return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    case gfxDescriptorType::StorageBuffer: return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    case gfxDescriptorType::UniformBufferDynamic: return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    case gfxDescriptorType::StorageBufferDynamic: return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+    case gfxDescriptorType::InputAttachment: return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+    case gfxDescriptorType::InlineUniformBlock: return VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT;
+    case gfxDescriptorType::AccelerationStructure: return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+    case gfxDescriptorType::AccelerationStructureNV: return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV;
+    default: epiLogError("Unhandled gfxDescriptorType=`{}`", type); return VK_DESCRIPTOR_TYPE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkShaderStageFlagBits gfxShaderStageTo(gfxShaderStage mask)
+{
+    return epiMask((mask & gfxShaderStage_Vertex) ? VK_SHADER_STAGE_VERTEX_BIT : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_TessellationControl) ? VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT: VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_TessellationEvaluation) ? VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Geometry) ? VK_SHADER_STAGE_GEOMETRY_BIT : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Fragment) ? VK_SHADER_STAGE_FRAGMENT_BIT : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Compute) ? VK_SHADER_STAGE_COMPUTE_BIT : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_AllGraphics) ? VK_SHADER_STAGE_ALL_GRAPHICS : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Raygen) ? VK_SHADER_STAGE_RAYGEN_BIT_KHR : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_AnyHit) ? VK_SHADER_STAGE_ANY_HIT_BIT_KHR : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_ClosestHit) ? VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Miss) ? VK_SHADER_STAGE_MISS_BIT_KHR : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Intersection) ? VK_SHADER_STAGE_INTERSECTION_BIT_KHR : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Callable) ? VK_SHADER_STAGE_CALLABLE_BIT_KHR : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Task) ? VK_SHADER_STAGE_TASK_BIT_NV : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_Mesh) ? VK_SHADER_STAGE_MESH_BIT_NV : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_All) ? VK_SHADER_STAGE_ALL : VkShaderStageFlagBits{});
+}
+
+VkDescriptorPoolCreateFlags gfxDescriptorPoolUsageTo(gfxDescriptorPoolUsage usage)
+{
+    return epiMask((usage & gfxDescriptorPoolUsage_FreeDescriptorSet) ? VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : VkDescriptorPoolCreateFlags{},
+                   (usage & gfxDescriptorPoolUsage_UpdateAfterBind) ? VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT : VkDescriptorPoolCreateFlags{});
+}
+
 EPI_NAMESPACE_END()

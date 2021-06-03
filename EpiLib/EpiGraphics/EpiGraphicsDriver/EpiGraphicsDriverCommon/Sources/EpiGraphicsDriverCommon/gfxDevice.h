@@ -10,6 +10,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxSwapChain.h"
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
+#include "EpiGraphicsDriverCommon/gfxPipelineLayout.h"
 #include "EpiGraphicsDriverCommon/gfxPipeline.h"
 #include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxTexture.h"
@@ -17,6 +18,9 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxCommandPool.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxDeviceMemory.h"
+#include "EpiGraphicsDriverCommon/gfxDescriptorPool.h"
+#include "EpiGraphicsDriverCommon/gfxDescriptorSetLayout.h"
+#include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -54,9 +58,12 @@ public:
     epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const;
 
+    epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const;
+
     std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const;
+    std::optional<gfxPipelineLayout> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const;
     std::optional<gfxPipelineGraphics> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxRenderPass& renderPass) const;
     std::optional<gfxShader> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const;
     std::optional<gfxShader> CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") const;
@@ -67,6 +74,8 @@ public:
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
     std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info) const;
     std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const;
+    std::optional<gfxDescriptorSetLayout> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const;
+    std::optional<gfxDescriptorPool> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const;
 
 protected:
     epiPimpl<internalgfx::gfxDeviceImpl> m_Impl;

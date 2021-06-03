@@ -32,6 +32,9 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxRenderPass.epi
     Sources/EpiGraphicsDriverCommon/gfxRenderPass.h
     Sources/EpiGraphicsDriverCommon/gfxRenderPass.cpp
+    Sources/EpiGraphicsDriverCommon/gfxPipelineLayout.epi
+    Sources/EpiGraphicsDriverCommon/gfxPipelineLayout.h
+    Sources/EpiGraphicsDriverCommon/gfxPipelineLayout.cpp
     Sources/EpiGraphicsDriverCommon/gfxPipeline.epi
     Sources/EpiGraphicsDriverCommon/gfxPipeline.h
     Sources/EpiGraphicsDriverCommon/gfxPipeline.cpp
@@ -59,6 +62,15 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxCommandBuffer.epi
     Sources/EpiGraphicsDriverCommon/gfxCommandBuffer.h
     Sources/EpiGraphicsDriverCommon/gfxCommandBuffer.cpp
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorPool.epi
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorPool.h
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorPool.cpp
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorSet.epi
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorSet.h
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorSet.cpp
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorSetLayout.epi
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorSetLayout.h
+    Sources/EpiGraphicsDriverCommon/gfxDescriptorSetLayout.cpp
 
     Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.epi
     Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.h

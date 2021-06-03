@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common.h"
+#include "EpiCore/common.h"
+
 #include <string>
 #include <cwchar>
 #include <ccomplex>

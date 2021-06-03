@@ -965,4 +965,66 @@ EPI_GENREGION_BEGIN(gfxIndexBufferType)
 EPI_GENREGION_END(gfxIndexBufferType)
 };
 
+enum gfxShaderStage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxShaderStage)
+    gfxShaderStage_Vertex = (1 << 0),
+    gfxShaderStage_TessellationControl = (1 << 1),
+    gfxShaderStage_TessellationEvaluation = (1 << 2),
+    gfxShaderStage_Geometry = (1 << 3),
+    gfxShaderStage_Fragment = (1 << 4),
+    gfxShaderStage_Compute = (1 << 5),
+    gfxShaderStage_AllGraphics = gfxShaderStage_Vertex | gfxShaderStage_TessellationControl | gfxShaderStage_TessellationEvaluation | gfxShaderStage_Geometry | gfxShaderStage_Fragment,
+    gfxShaderStage_Raygen = (1 << 6),
+    gfxShaderStage_AnyHit = (1 << 7),
+    gfxShaderStage_ClosestHit = (1 << 8),
+    gfxShaderStage_Miss = (1 << 9),
+    gfxShaderStage_Intersection = (1 << 10),
+    gfxShaderStage_Callable = (1 << 11),
+    gfxShaderStage_Task = (1 << 12),
+    gfxShaderStage_Mesh = (1 << 13),
+    gfxShaderStage_All = gfxShaderStage_Vertex | gfxShaderStage_TessellationControl | gfxShaderStage_TessellationEvaluation | gfxShaderStage_Geometry | gfxShaderStage_Fragment | gfxShaderStage_Compute | gfxShaderStage_Raygen | gfxShaderStage_AnyHit | gfxShaderStage_ClosestHit | gfxShaderStage_Miss | gfxShaderStage_Intersection | gfxShaderStage_Callable | gfxShaderStage_Task | gfxShaderStage_Mesh
+EPI_GENREGION_END(gfxShaderStage)
+};
+
+enum gfxDescriptorPoolUsage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDescriptorPoolUsage)
+    gfxDescriptorPoolUsage_FreeDescriptorSet = (1 << 0),
+    gfxDescriptorPoolUsage_UpdateAfterBind = (1 << 1),
+    gfxDescriptorPoolUsage_HostOnly = (1 << 2)
+EPI_GENREGION_END(gfxDescriptorPoolUsage)
+};
+
+enum class gfxDescriptorType : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDescriptorType)
+    None = 0,
+    Sampler = 1,
+    CombinedImageSampler = 2,
+    SampledImage = 3,
+    StorageImage = 4,
+    UniformTexelBuffer = 5,
+    StorageTexelBuffer = 6,
+    UniformBuffer = 7,
+    StorageBuffer = 8,
+    UniformBufferDynamic = 9,
+    StorageBufferDynamic = 10,
+    InputAttachment = 11,
+    InlineUniformBlock = 12,
+    AccelerationStructure = 13,
+    AccelerationStructureNV = 14,
+    MutableValve = 15
+EPI_GENREGION_END(gfxDescriptorType)
+};
+
+enum gfxDescriptorSetLayoutUsage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDescriptorSetLayoutUsage)
+    gfxDescriptorSetLayoutUsage_UpdateAfterBindPool = (1 << 0),
+    gfxDescriptorSetLayoutUsage_PushDescriptor = (1 << 1),
+    gfxDescriptorSetLayoutUsage_HostOnlyPool = (1 << 2)
+EPI_GENREGION_END(gfxDescriptorSetLayoutUsage)
+};
+
 EPI_NAMESPACE_END()

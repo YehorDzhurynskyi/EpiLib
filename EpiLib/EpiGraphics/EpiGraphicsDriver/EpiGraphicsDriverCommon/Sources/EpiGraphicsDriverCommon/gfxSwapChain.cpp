@@ -46,7 +46,7 @@ epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
     return true;
 }
 
-epiBool gfxSwapChain::Present(const gfxQueue& queue)
+epiBool gfxSwapChain::Present(const gfxQueue& queue, std::function<void(epiU32)> callback)
 {
     const auto queueImpl = queue.m_Impl;
     if (!queueImpl)
@@ -55,7 +55,7 @@ epiBool gfxSwapChain::Present(const gfxQueue& queue)
         return false;
     }
 
-    return m_Impl->Present(*queueImpl);
+    return m_Impl->Present(*queueImpl, callback);
 }
 
 void gfxSwapChain::RebindImpl()

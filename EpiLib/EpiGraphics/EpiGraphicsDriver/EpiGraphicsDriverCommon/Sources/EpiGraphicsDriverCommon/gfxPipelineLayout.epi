@@ -1,0 +1,11 @@
+class gfxPipelineLayoutCreateInfo
+{
+    [ReadOnly]
+    {
+        epiArray<gfxDescriptorSetLayout> DescriptorSetLayouts;
+    }
+};
+
+class gfxPipelineLayout
+{
+};

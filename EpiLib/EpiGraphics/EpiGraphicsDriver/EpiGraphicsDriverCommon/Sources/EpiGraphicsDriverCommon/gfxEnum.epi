@@ -888,3 +888,60 @@ enum gfxIndexBufferType
     None,
     UInt8
 };
+
+enum gfxDescriptorType
+{
+    None,
+    Sampler,
+    CombinedImageSampler,
+    SampledImage,
+    StorageImage,
+    UniformTexelBuffer,
+    StorageTexelBuffer,
+    UniformBuffer,
+    StorageBuffer,
+    UniformBufferDynamic,
+    StorageBufferDynamic,
+    InputAttachment,
+    InlineUniformBlock,
+    AccelerationStructure,
+    AccelerationStructureNV,
+    MutableValve
+};
+
+[FlagMask]
+enum gfxShaderStage
+{
+    Vertex,
+    TessellationControl,
+    TessellationEvaluation,
+    Geometry,
+    Fragment,
+    Compute,
+    AllGraphics = Vertex | TessellationControl | TessellationEvaluation | Geometry | Fragment,
+    Raygen,
+    AnyHit,
+    ClosestHit,
+    Miss,
+    Intersection,
+    Callable,
+    Task,
+    Mesh,
+    All = Vertex | TessellationControl | TessellationEvaluation | Geometry | Fragment | Compute | Raygen | AnyHit | ClosestHit | Miss | Intersection | Callable | Task | Mesh
+};
+
+[FlagMask]
+enum gfxDescriptorSetLayoutUsage
+{
+    UpdateAfterBindPool,
+    PushDescriptor,
+    HostOnlyPool
+};
+
+[FlagMask]
+enum gfxDescriptorPoolUsage
+{
+    FreeDescriptorSet,
+    UpdateAfterBind,
+    HostOnly
+};

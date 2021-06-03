@@ -59,6 +59,7 @@ EPI_GENREGION_END(gfxBuffer)
 public:
     friend class gfxDevice;
     friend class gfxCommandBufferRecord;
+    friend class internalgfx::gfxBufferImpl;
 
 public:
     gfxBuffer() = default;

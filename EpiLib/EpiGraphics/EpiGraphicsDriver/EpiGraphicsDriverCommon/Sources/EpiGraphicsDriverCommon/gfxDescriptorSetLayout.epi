@@ -1,0 +1,21 @@
+class gfxDescriptorSetLayoutBinding
+{
+    epiU32 Binding;
+    gfxDescriptorType DescriptorType;
+    epiU32 DescriptorCount;
+    gfxShaderStage ShaderStageMask;
+};
+
+class gfxDescriptorSetLayoutCreateInfo
+{
+    gfxDescriptorSetLayoutUsage UsageMask;
+
+    [ReadOnly]
+    {
+        epiArray<gfxDescriptorSetLayoutBinding> Bindings;
+    }
+};
+
+class gfxDescriptorSetLayout
+{
+};

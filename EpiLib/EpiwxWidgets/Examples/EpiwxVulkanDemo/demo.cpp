@@ -1,11 +1,16 @@
 #pragma once
 
 #include "EpiGraphicsDriver/gfxDriver.h"
+#include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
 
 #include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/window.h>
 #include <wx/sizer.h>
+#include <wx/timer.h>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "EpiGraphics/Camera/gfxCameraPersp.h"
 
 #include "EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h"
 
@@ -49,6 +54,13 @@ public:
     {
         epiVec2f Position;
         epiVec3f Color;
+    };
+
+    struct UniformBufferObject
+    {
+        epiMat4x4f Model;
+        epiMat4x4f View;
+        epiMat4x4f Proj;
     };
 
 public:
@@ -122,6 +134,16 @@ public:
             return;
         }
 
+        {
+            gfxDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo;
+            descriptorSetLayoutCreateInfo.AddBinding(0, gfxDescriptorType::UniformBuffer, 1, gfxShaderStage_Vertex);
+
+            std::optional<gfxDescriptorSetLayout> descriptorSetLayout = g_Device.CreateDescriptorSetLayout(descriptorSetLayoutCreateInfo);
+            epiAssert(descriptorSetLayout.has_value());
+
+            m_DescriptorSetLayout = *descriptorSetLayout;
+        }
+
         gfxPipelineColorBlendAttachment colorBlendAttachment;
         colorBlendAttachment.SetColorWriteMask(gfxColorComponent_RGBA);
         colorBlendAttachment.SetBlendEnable(false);
@@ -136,13 +158,19 @@ public:
             #version 450
             #extension GL_ARB_separate_shader_objects : enable
 
+            layout(binding = 0) uniform UniformBufferObject {
+                mat4 model;
+                mat4 view;
+                mat4 proj;
+            } ubo;
+
             layout(location = 0) in vec2 inPosition;
             layout(location = 1) in vec3 inColor;
 
             layout(location = 0) out vec3 outFragColor;
 
             void main() {
-                gl_Position = vec4(inPosition, 0.0, 1.0);
+                gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 0.0, 1.0);
                 outFragColor = inColor;
             }
         )";
@@ -185,7 +213,18 @@ public:
             .AddAttribute(0, gfxFormat::R32G32_SFLOAT, offsetof(Vertex, Position))
             .AddAttribute(1, gfxFormat::R32G32B32_SFLOAT, offsetof(Vertex, Color));
 
+        {
+            gfxPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
+            pipelineLayoutCreateInfo.AddDescriptorSetLayout(m_DescriptorSetLayout);
+
+            std::optional<gfxPipelineLayout> pipelineLayout = g_Device.CreatePipelineLayout(pipelineLayoutCreateInfo);
+            epiAssert(pipelineLayout.has_value());
+
+            m_PipelineLayout = *pipelineLayout;
+        }
+
         gfxPipelineGraphicsCreateInfo pipelineCreateInfo;
+        pipelineCreateInfo.SetPipelineLayout(m_PipelineLayout);
         pipelineCreateInfo.SetInputAssemblyType(gfxPipelineInputAssemblyType::TriangleList);
         pipelineCreateInfo.AddViewport(viewport);
         pipelineCreateInfo.AddScissor(epiRect2s(0, 0, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
@@ -193,7 +232,7 @@ public:
         pipelineCreateInfo.SetRasterizerDiscardEnable(false);
         pipelineCreateInfo.SetPolygonMode(gfxPolygonMode::Fill);
         pipelineCreateInfo.SetLineWidth(1.0f);
-        pipelineCreateInfo.SetCullMode(gfxCullMode::Back);
+        pipelineCreateInfo.SetCullMode(gfxCullMode::None);
         pipelineCreateInfo.SetFrontFace(gfxFrontFace::CW);
         pipelineCreateInfo.SetDepthClampEnable(false);
         pipelineCreateInfo.SetDepthBiasConstantFactor(0.0f);
@@ -358,24 +397,98 @@ public:
             m_QueueFamily[0].Submit(submitInfo);
         }
 
+        {
+            m_UniformBuffers.Resize(m_SwapChain.GetCommandBuffers().Size());
+            m_UniformDeviceMemories.Resize(m_SwapChain.GetCommandBuffers().Size());
+            for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+            {
+                gfxBufferCreateInfo uniformBufferCreateInfo;
+                uniformBufferCreateInfo.SetCapacity(sizeof(UniformBufferObject));
+                uniformBufferCreateInfo.SetUsage(gfxBufferUsage_UniformBuffer);
+
+                std::optional<gfxBuffer> uniformBuffer = g_Device.CreateBuffer(uniformBufferCreateInfo);
+                epiAssert(uniformBuffer.has_value());
+
+                m_UniformBuffers[i] = *uniformBuffer;
+
+                gfxDeviceMemoryCreateInfo uniformDeviceMemoryCreateInfo;
+                uniformDeviceMemoryCreateInfo.SetBuffer(m_UniformBuffers[i]);
+                uniformDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
+
+                std::optional<gfxDeviceMemory> uniformDeviceMemory = g_Device.CreateDeviceMemory(uniformDeviceMemoryCreateInfo);
+                epiAssert(uniformDeviceMemory.has_value());
+
+                m_UniformDeviceMemories[i] = *uniformDeviceMemory;
+            }
+
+            {
+                gfxDescriptorPoolSize poolSize;
+                poolSize.SetDescriptorType(gfxDescriptorType::UniformBuffer);
+                poolSize.SetDescriptorCount(m_SwapChain.GetCommandBuffers().Size());
+
+                gfxDescriptorPoolCreateInfo descriptorPoolCreateInfo;
+                descriptorPoolCreateInfo.SetMaxSets(m_SwapChain.GetCommandBuffers().Size());
+                descriptorPoolCreateInfo.AddDescriptorPoolSize(poolSize);
+
+                for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+                {
+                    descriptorPoolCreateInfo.AddDescriptorSetLayout(m_DescriptorSetLayout);
+                }
+
+                std::optional<gfxDescriptorPool> descriptorPool = g_Device.CreateDescriptorPool(descriptorPoolCreateInfo);
+                epiAssert(descriptorPool.has_value());
+
+                m_DescriptorPool = *descriptorPool;
+
+                for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+                {
+                    gfxDescriptorBufferInfo bufferInfo;
+                    bufferInfo.SetBuffer(m_UniformBuffers[i]);
+                    bufferInfo.SetOffset(0);
+                    bufferInfo.SetRange(sizeof(UniformBufferObject));
+
+                    gfxDescriptorSetWrite descriptorWrite;
+                    descriptorWrite.SetDstSet(m_DescriptorPool.GetDescriptorSets()[i]);
+                    descriptorWrite.SetDstBinding(0);
+                    descriptorWrite.SetDstArrayElement(0);
+                    descriptorWrite.SetDescriptorType(gfxDescriptorType::UniformBuffer);
+                    descriptorWrite.SetDescriptorCount(1);
+                    descriptorWrite.AddBufferInfo(bufferInfo);
+
+                    g_Device.UpdateDescriptorSets({descriptorWrite}, {});
+                }
+            }
+        }
+
         RecordCommandBuffers();
+
+        m_Timer.SetOwner(this, -1);
+        m_Timer.Start(30);
     }
 
 protected:
     void OnPaint(wxPaintEvent& event);
     void OnEraseBackground(wxEraseEvent& event);
     void OnSize(wxSizeEvent& event);
+    void OnTimer(wxTimerEvent& event);
 
     void RecordCommandBuffers();
 
 protected:
+    wxTimer m_Timer;
+
+    gfxDescriptorSetLayout m_DescriptorSetLayout;
     gfxQueueFamily m_QueueFamily;
     gfxRenderPass m_RenderPass;
+    gfxPipelineLayout m_PipelineLayout;
     gfxPipelineGraphics m_Pipeline;
     gfxBuffer m_VertexBuffer;
     gfxBuffer m_IndexBuffer;
+    epiArray<gfxBuffer> m_UniformBuffers;
     gfxDeviceMemory m_VertexDeviceMemory;
     gfxDeviceMemory m_IndexDeviceMemory;
+    epiArray<gfxDeviceMemory> m_UniformDeviceMemories;
+    gfxDescriptorPool m_DescriptorPool;
     std::vector<Vertex> m_Vertices;
     std::vector<epiU16> m_Indices;
 };
@@ -384,11 +497,39 @@ wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
     EVT_PAINT(epiWXVulkanDemoTriangleCanvas::OnPaint)
     EVT_ERASE_BACKGROUND(epiWXVulkanDemoTriangleCanvas::OnEraseBackground)
     EVT_SIZE(epiWXVulkanDemoTriangleCanvas::OnSize)
+    EVT_TIMER(-1, epiWXVulkanDemoTriangleCanvas::OnTimer)
 wxEND_EVENT_TABLE()
 
 void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 {
-    m_SwapChain.Present(m_QueueFamily[0]);
+    m_SwapChain.Present(m_QueueFamily[0], [this](epiU32 frameIndex)
+
+    {
+        static auto startTime = std::chrono::high_resolution_clock::now();
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+        UniformBufferObject ubo{};
+
+        gfxCameraPersp camera;
+        camera.SetPosition(epiVec3f{0.0f, 0.0f, 2.0f});
+        camera.SetLookAtPosition(epiVec3f{0.0f, 0.0f, 0.0f});
+        camera.SetUpDirection(epiVec3f{0.0f, 1.0f, 0.0f});
+        camera.SetFOV(90.0f);
+        camera.SetAspectRatio(static_cast<epiFloat>(m_SwapChain.GetExtent().x) / m_SwapChain.GetExtent().y);
+        camera.SetPlaneNear(0.1f);
+        camera.SetPlaneNear(10.0f);
+
+        ubo.Model = glm::rotate(epiMat4x4f{1.0f}, time, epiVec3f{0.0f, 1.0f, 0.0f}); // TODO: replace with epiMat4x4fRotate()
+        ubo.View = camera.GetViewMatrix();
+        ubo.Proj = camera.GetProjectionMatrix();
+
+        if (gfxDeviceMemory::Mapping mapping = m_UniformDeviceMemories[frameIndex].Map(sizeof(ubo)))
+        {
+            mapping.PushBack(ubo);
+        }
+    });
 }
 
 void epiWXVulkanDemoTriangleCanvas::OnEraseBackground(wxEraseEvent&)
@@ -429,7 +570,76 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
     swapChainCreateInfo.SetPresentMode(kPresentModeRequired);
     swapChainCreateInfo.SetExtent(extent);
 
+    // TODO: recreate descriptor pool
+
     m_SwapChain.Recreate(swapChainCreateInfo);
+
+    m_UniformBuffers.Clear();
+    m_UniformDeviceMemories.Clear();
+
+    // TODO: bind uniform buffers to the swapchain recreation in a proper way
+    {
+        m_UniformBuffers.Resize(m_SwapChain.GetCommandBuffers().Size());
+        m_UniformDeviceMemories.Resize(m_SwapChain.GetCommandBuffers().Size());
+        for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+        {
+            gfxBufferCreateInfo uniformBufferCreateInfo;
+            uniformBufferCreateInfo.SetCapacity(sizeof(UniformBufferObject));
+            uniformBufferCreateInfo.SetUsage(gfxBufferUsage_UniformBuffer);
+
+            std::optional<gfxBuffer> uniformBuffer = g_Device.CreateBuffer(uniformBufferCreateInfo);
+            epiAssert(uniformBuffer.has_value());
+
+            m_UniformBuffers[i] = *uniformBuffer;
+
+            gfxDeviceMemoryCreateInfo uniformDeviceMemoryCreateInfo;
+            uniformDeviceMemoryCreateInfo.SetBuffer(m_UniformBuffers[i]);
+            uniformDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
+
+            std::optional<gfxDeviceMemory> uniformDeviceMemory = g_Device.CreateDeviceMemory(uniformDeviceMemoryCreateInfo);
+            epiAssert(uniformDeviceMemory.has_value());
+
+            m_UniformDeviceMemories[i] = *uniformDeviceMemory;
+        }
+
+        {
+            gfxDescriptorPoolSize poolSize;
+            poolSize.SetDescriptorType(gfxDescriptorType::UniformBuffer);
+            poolSize.SetDescriptorCount(m_SwapChain.GetCommandBuffers().Size());
+
+            gfxDescriptorPoolCreateInfo descriptorPoolCreateInfo;
+            descriptorPoolCreateInfo.SetMaxSets(m_SwapChain.GetCommandBuffers().Size());
+            descriptorPoolCreateInfo.AddDescriptorPoolSize(poolSize);
+
+            for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+            {
+                descriptorPoolCreateInfo.AddDescriptorSetLayout(m_DescriptorSetLayout);
+            }
+
+            std::optional<gfxDescriptorPool> descriptorPool = g_Device.CreateDescriptorPool(descriptorPoolCreateInfo);
+            epiAssert(descriptorPool.has_value());
+
+            m_DescriptorPool = *descriptorPool;
+
+            for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+            {
+                gfxDescriptorBufferInfo bufferInfo;
+                bufferInfo.SetBuffer(m_UniformBuffers[i]);
+                bufferInfo.SetOffset(0);
+                bufferInfo.SetRange(sizeof(UniformBufferObject));
+
+                gfxDescriptorSetWrite descriptorWrite;
+                descriptorWrite.SetDstSet(m_DescriptorPool.GetDescriptorSets()[i]);
+                descriptorWrite.SetDstBinding(0);
+                descriptorWrite.SetDstArrayElement(0);
+                descriptorWrite.SetDescriptorType(gfxDescriptorType::UniformBuffer);
+                descriptorWrite.SetDescriptorCount(1);
+                descriptorWrite.AddBufferInfo(bufferInfo);
+
+                g_Device.UpdateDescriptorSets({descriptorWrite}, {});
+            }
+        }
+    }
 
     m_Pipeline.DynamicClearViewports();
     m_Pipeline.DynamicClearScissors();
@@ -447,6 +657,11 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
     Refresh();
 }
 
+void epiWXVulkanDemoTriangleCanvas::OnTimer(wxTimerEvent& event)
+{
+    Refresh();
+}
+
 void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
 {
     gfxRenderPassClearValue clearValue;
@@ -459,7 +674,8 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
     for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
     {
         gfxCommandBuffer& cmdBuffer = m_SwapChain.GetCommandBuffers()[i];
-        gfxFrameBuffer& frameBuffer = m_SwapChain.GetFrameBuffers()[i];
+        const gfxFrameBuffer& frameBuffer = m_SwapChain.GetFrameBuffers()[i];
+        const gfxDescriptorSet& descriptorSet = m_DescriptorPool.GetDescriptorSets()[i];
 
         if (gfxCommandBufferRecord record = cmdBuffer.RecordCommands())
         {
@@ -474,6 +690,7 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
                 .PipelineBind(m_Pipeline)
                 .VertexBuffersBind({m_VertexBuffer})
                 .IndexBufferBind(m_IndexBuffer, gfxIndexBufferType::UInt16)
+                .DescriptorSetsBind(gfxPipelineBindPoint::Graphics, m_PipelineLayout, {descriptorSet})
                 .DrawIndexed(m_Indices.size(), 1, 0, 0, 0)
                 .RenderPassEnd();
         }
@@ -488,7 +705,7 @@ IMPLEMENT_WX_THEME_SUPPORT;
 int main(int argc, char* argv[])
 {
     spdlog::set_level(spdlog::level::debug);
-    spdlog::set_pattern("%^[%l][%H:%M:%S:%e][thread %t] %v%$");
+    spdlog::set_pattern("%^[%l][%H:%M:%S:%e][%s:%#] %v%$");
 
     epiArray<gfxDriverExtension> driverExtensionsRequired;
     driverExtensionsRequired.push_back(gfxDriverExtension::Surface);

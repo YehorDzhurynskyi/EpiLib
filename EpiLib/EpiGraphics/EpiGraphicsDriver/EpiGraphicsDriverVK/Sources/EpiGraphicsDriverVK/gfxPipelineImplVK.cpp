@@ -2,8 +2,7 @@
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
-#include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
-#include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
+#include "EpiGraphicsDriverVK/gfxPipelineLayoutImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -20,11 +19,19 @@ gfxPipelineGraphicsImplVK::gfxPipelineGraphicsImplVK(const gfxDeviceImplVK& devi
 gfxPipelineGraphicsImplVK::~gfxPipelineGraphicsImplVK()
 {
     vkDestroyPipeline(m_Device.GetVkDevice(), m_VkPipeline, nullptr);
-    vkDestroyPipelineLayout(m_Device.GetVkDevice(), m_VkPipelineLayout, nullptr);
 }
 
-epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl)
+epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& info,
+                                        const gfxShaderProgramImplVK& shaderProgramImpl,
+                                        const gfxRenderPassImplVK& renderPassImpl)
 {
+    const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayoutImpl::ExtractImpl(info.GetPipelineLayout()));
+    if (pipelineLayoutVk == nullptr)
+    {
+        epiLogError("Failed to Init PipelineGraphics! Provided PipelineLayout has no implementation!");
+        return false;
+    }
+
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = gfxPipelineInputAssemblyTypeTo(info.GetInputAssemblyType());
@@ -119,20 +126,6 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     colorBlending.blendConstants[2] = info.GetColorBlendConstants().b;
     colorBlending.blendConstants[3] = info.GetColorBlendConstants().a;
 
-    // TODO: configure through gfxPipelineCreateInfo
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;
-    pipelineLayoutInfo.pSetLayouts = nullptr;
-    pipelineLayoutInfo.pushConstantRangeCount = 0;
-    pipelineLayoutInfo.pPushConstantRanges = nullptr;
-
-    if (const VkResult result = vkCreatePipelineLayout(m_Device.GetVkDevice(), &pipelineLayoutInfo, nullptr, &m_VkPipelineLayout); result != VK_SUCCESS)
-    {
-        gfxLogErrorEx(result, "Failed to call vkCreatePipelineLayout!");
-        return false;
-    }
-
     std::vector<VkVertexInputBindingDescription> vertexBindingDescriptions;
     std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions;
 
@@ -169,14 +162,13 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
 
     std::vector<VkPipelineShaderStageCreateInfo> stages;
 
-    const gfxShaderProgramImplVK& shaderProgramImplVk = static_cast<const gfxShaderProgramImplVK&>(shaderProgramImpl);
-    if (!shaderProgramImplVk.GetIsCreated())
+    if (!shaderProgramImpl.GetIsCreated())
     {
         epiLogError("Failed to initialize Pipeline! ShaderProgram isn't created!");
         return false;
     }
 
-    const epiArray<gfxShaderImplVK*> modules = shaderProgramImplVk.GetCompiledModules();
+    const epiArray<gfxShaderImplVK*> modules = shaderProgramImpl.GetCompiledModules();
     stages.reserve(modules.Size());
 
     for (const gfxShaderImplVK* module : modules)
@@ -226,8 +218,8 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     pipelineInfo.pDepthStencilState = nullptr; // TODO: set
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = nullptr;
-    pipelineInfo.layout = m_VkPipelineLayout;
-    pipelineInfo.renderPass = static_cast<const gfxRenderPassImplVK&>(renderPassImpl).GetVkRenderPass();
+    pipelineInfo.layout = pipelineLayoutVk->GetVkPipelineLayout();
+    pipelineInfo.renderPass = renderPassImpl.GetVkRenderPass();
     pipelineInfo.subpass = info.GetRenderSubPassIndex();
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex = -1;

@@ -34,6 +34,11 @@ epiBool gfxDevice::IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const
     return m_Impl->IsFeatureEnabled(feature);
 }
 
+epiBool gfxDevice::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const
+{
+    return m_Impl->UpdateDescriptorSets(writes, copies);
+}
+
 std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateInfo& info) const
 {
     std::optional<gfxSwapChain> swapChain;
@@ -89,6 +94,18 @@ std::optional<gfxRenderPass> gfxDevice::CreateRenderPassFromSchema(const gfxRend
     }
 
     return renderPass;
+}
+
+std::optional<gfxPipelineLayout> gfxDevice::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
+{
+    std::optional<gfxPipelineLayout> pipelineLayout;
+
+    if (std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> impl = m_Impl->CreatePipelineLayout(info))
+    {
+        pipelineLayout = gfxPipelineLayout(std::move(impl));
+    }
+
+    return pipelineLayout;
 }
 
 std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxRenderPass& renderPass) const
@@ -320,6 +337,54 @@ std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemo
     }
 
     return deviceMemory;
+}
+
+std::optional<gfxDescriptorSetLayout> gfxDevice::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const
+{
+    std::optional<gfxDescriptorSetLayout> descriptorSetLayout;
+
+    if (std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl> impl = m_Impl->CreateDescriptorSetLayout(info))
+    {
+        descriptorSetLayout = gfxDescriptorSetLayout(std::move(impl));
+    }
+
+    return descriptorSetLayout;
+}
+
+std::optional<gfxDescriptorPool> gfxDevice::CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const
+{
+    std::optional<gfxDescriptorPool> descriptorPool;
+
+    epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImpl> layoutImpls;
+    layoutImpls.Reserve(info.GetDescriptorSetLayouts().Size());
+
+    std::transform(info.GetDescriptorSetLayouts().begin(),
+                   info.GetDescriptorSetLayouts().end(),
+                   std::back_inserter(layoutImpls),
+                   [](const gfxDescriptorSetLayout& layout)
+    {
+        return layout.m_Impl.Ptr();
+    });
+
+    const epiBool hasInvalidLayout = std::any_of(layoutImpls.begin(),
+                                                 layoutImpls.end(),
+                                                 [](const internalgfx::gfxDescriptorSetLayoutImpl* impl)
+    {
+        return impl == nullptr;
+    });
+
+    if (hasInvalidLayout)
+    {
+        epiLogError("Failed to create DescriptorPool! Some DescriptorSetLayout has no implementation!");
+        return descriptorPool;
+    }
+
+    if (std::shared_ptr<internalgfx::gfxDescriptorPoolImpl> impl = m_Impl->CreateDescriptorPool(info, layoutImpls))
+    {
+        descriptorPool = gfxDescriptorPool(std::move(impl));
+    }
+
+    return descriptorPool;
 }
 
 EPI_NAMESPACE_END()

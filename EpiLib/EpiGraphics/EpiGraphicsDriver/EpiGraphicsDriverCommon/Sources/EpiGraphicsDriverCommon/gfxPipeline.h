@@ -9,6 +9,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 #include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
+#include "EpiGraphicsDriverCommon/gfxPipelineLayout.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -146,6 +147,7 @@ public:
 
     enum gfxPipelineGraphicsCreateInfo_PIDs
     {
+        PID_PipelineLayout = 0xd1bf14df,
         PID_ShaderProgram = 0xe4812959,
         PID_RenderSubPassIndex = 0xdaca0981,
         PID_InputAssemblyType = 0xe816cd01,
@@ -167,10 +169,11 @@ public:
         PID_ColorBlendLogicOp = 0x7caacb6d,
         PID_ColorBlendConstants = 0x739a4ae9,
         PID_DynamicStates = 0xa85e8c69,
-        PID_COUNT = 21
+        PID_COUNT = 22
     };
 
 protected:
+    gfxPipelineLayout m_PipelineLayout{};
     gfxShaderProgram m_ShaderProgram{};
     epiU32 m_RenderSubPassIndex{0};
     gfxPipelineInputAssemblyType m_InputAssemblyType{gfxPipelineInputAssemblyType::None};

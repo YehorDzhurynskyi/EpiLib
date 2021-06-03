@@ -10,6 +10,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 #include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxPipelineLayout.h"
+#include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -130,6 +132,11 @@ public:
 
     gfxCommandBufferRecord& VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {});
     gfxCommandBufferRecord& IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0);
+    gfxCommandBufferRecord& DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                                               const gfxPipelineLayout& pipelineLayout,
+                                               const epiArray<gfxDescriptorSet>& sets,
+                                               const epiArray<epiU32>& offsets = {},
+                                               epiU32 firstSet = 0);
 
     gfxCommandBufferRecord& Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance);
     gfxCommandBufferRecord& DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance);

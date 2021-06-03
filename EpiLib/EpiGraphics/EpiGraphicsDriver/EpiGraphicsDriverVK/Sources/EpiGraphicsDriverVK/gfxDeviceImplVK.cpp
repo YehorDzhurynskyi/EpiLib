@@ -1,12 +1,14 @@
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
+#include "EpiGraphicsDriverVK/gfxEnumVK.h"
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSwapChainImplVK.h"
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
+#include "EpiGraphicsDriverVK/gfxPipelineLayoutImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
@@ -15,6 +17,9 @@
 #include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
 #include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceMemoryImplVK.h"
+#include "EpiGraphicsDriverVK/gfxDescriptorPoolImplVK.h"
+#include "EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.h"
+#include "EpiGraphicsDriverVK/gfxDescriptorSetImplVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 
@@ -180,8 +185,9 @@ epiBool gfxDeviceImplVK::Init(gfxQueueDescriptorList& queueDescriptorList,
 
     // TODO: introduce RETAIL build config
 #if EPI_NVIDIA_NSIGHT_AFTERMATH
-    extensions.push_back(VK_NV_DEVICE_DIAGNOSTICS_CONFIG_EXTENSION_NAME);
-    extensions.push_back(VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME);
+    // NOTE: can't be used with a RenderDoc together
+    // extensions.push_back(VK_NV_DEVICE_DIAGNOSTICS_CONFIG_EXTENSION_NAME);
+    // extensions.push_back(VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME);
 
     VkDeviceDiagnosticsConfigCreateInfoNV diagnosticsConfigCreateInfoNV{};
     diagnosticsConfigCreateInfoNV.sType = VK_STRUCTURE_TYPE_DEVICE_DIAGNOSTICS_CONFIG_CREATE_INFO_NV;
@@ -385,6 +391,175 @@ epiBool gfxDeviceImplVK::IsFeatureEnabled(gfxPhysicalDeviceFeature feature) cons
     return m_FeatureEnabled[static_cast<epiU32>(feature)];
 }
 
+epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const
+{
+    auto transformImageInfos = [](const gfxDescriptorSetWrite& write) -> std::vector<VkDescriptorImageInfo>
+    {
+        std::vector<VkDescriptorImageInfo> imageInfos;
+        imageInfos.reserve(write.GetImageInfos().Size());
+
+        std::transform(write.GetImageInfos().begin(),
+                       write.GetImageInfos().end(),
+                       std::back_inserter(imageInfos),
+                       [](const gfxDescriptorImageInfo& imageInfo)
+        {
+            // TODO: implement
+            VkDescriptorImageInfo imageInfoVk{};
+            return imageInfoVk;
+        });
+
+        return imageInfos;
+    };
+
+    auto transformBufferInfos = [](const gfxDescriptorSetWrite& write) -> std::vector<VkDescriptorBufferInfo>
+    {
+        std::vector<VkDescriptorBufferInfo> bufferInfos;
+        bufferInfos.reserve(write.GetBufferInfos().Size());
+
+        std::transform(write.GetBufferInfos().begin(),
+                       write.GetBufferInfos().end(),
+                       std::back_inserter(bufferInfos),
+                       [](const gfxDescriptorBufferInfo& bufferInfo)
+        {
+            const gfxBufferImplVK* buffer = static_cast<const gfxBufferImplVK*>(gfxBufferImpl::ExtractImpl(bufferInfo.GetBuffer()));
+            epiAssert(buffer != nullptr);
+
+            VkDescriptorBufferInfo bufferInfoVk{};
+            bufferInfoVk.buffer = buffer->GetVkBuffer();
+            bufferInfoVk.offset = bufferInfo.GetOffset();
+            bufferInfoVk.range = bufferInfo.GetRange();
+
+            return bufferInfoVk;
+        });
+
+        return bufferInfos;
+    };
+
+    auto transformBufferViewInfos = [](const gfxDescriptorSetWrite& write) -> std::vector<VkBufferView>
+    {
+        // TODO: implement
+        std::vector<VkBufferView> bufferViewInfos;
+        return bufferViewInfos;
+    };
+
+    const epiBool writesAreValid = std::all_of(writes.begin(), writes.end(), [](const gfxDescriptorSetWrite& write)
+    {
+        // NOTE: should be provided either image infos or buffer infos or buffer view infos
+        const epiBool isValid = (gfxDescriptorSetImpl::ExtractImpl(write.GetDstSet()) != nullptr) &&
+                                ((write.GetImageInfos().Size() ^ write.GetBufferInfos().Size()) /* TODO: ^ write.GetBufferViewInfos() */);
+        if (!isValid)
+        {
+            return false;
+        }
+
+        // TODO: validate image infos
+        // TODO: validate buffer view infos
+
+        const epiBool isBufferInfosValid = write.GetBufferInfos().IsEmpty() || std::all_of(write.GetBufferInfos().begin(),
+                                                                                           write.GetBufferInfos().end(),
+                                                                                           [](const gfxDescriptorBufferInfo& bufferInfo)
+        {
+            return gfxBufferImpl::ExtractImpl(bufferInfo.GetBuffer()) != nullptr;
+        });
+
+        if (!isBufferInfosValid)
+        {
+            return false;
+        }
+
+        return true;
+    });
+
+    if (!writesAreValid)
+    {
+        epiLogError("Failed to Update Descriptor Sets! Some of the provided DescriptorSetWrite is invalid!");
+        return false;
+    }
+
+    const epiBool copiesAreValid = std::all_of(copies.begin(), copies.end(), [](const gfxDescriptorSetCopy& copy)
+    {
+        return gfxDescriptorSetImpl::ExtractImpl(copy.GetSrcSet()) != nullptr && gfxDescriptorSetImpl::ExtractImpl(copy.GetDstSet()) != nullptr;
+    });
+
+    if (!copiesAreValid)
+    {
+        epiLogError("Failed to Update Descriptor Sets! Some of the provided DescriptorSetCopy is invalid!");
+        return false;
+    }
+
+    std::vector<VkWriteDescriptorSet> writesVk;
+    writesVk.reserve(writes.Size());
+
+    std::vector<std::vector<VkDescriptorImageInfo>> writesImageInfosVk;
+    writesImageInfosVk.reserve(writes.Size());
+
+    std::vector<std::vector<VkDescriptorBufferInfo>> writesBufferInfosVk;
+    writesBufferInfosVk.reserve(writes.Size());
+
+    std::vector<std::vector<VkBufferView>> writesBufferViewInfosVk;
+    writesBufferViewInfosVk.reserve(writes.Size());
+
+    std::transform(writes.begin(),
+                   writes.end(),
+                   std::back_inserter(writesVk),
+                   [&writesImageInfosVk,
+                    &writesBufferInfosVk,
+                    &writesBufferViewInfosVk,
+                    &transformImageInfos,
+                    &transformBufferInfos,
+                    &transformBufferViewInfos](const gfxDescriptorSetWrite& write)
+    {
+        const gfxDescriptorSetImplVK* set = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSetImpl::ExtractImpl(write.GetDstSet()));
+        epiAssert(set != nullptr);
+
+        std::vector<VkDescriptorImageInfo>& imageInfos = writesImageInfosVk.emplace_back(std::move(transformImageInfos(write)));
+        std::vector<VkDescriptorBufferInfo>& bufferInfos = writesBufferInfosVk.emplace_back(std::move(transformBufferInfos(write)));
+        std::vector<VkBufferView>& bufferViewInfos = writesBufferViewInfosVk.emplace_back(std::move(transformBufferViewInfos(write)));
+
+        VkWriteDescriptorSet writeVk{};
+        writeVk.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeVk.dstSet = set->GetVkDescriptorSet();
+        writeVk.dstBinding = write.GetDstBinding();
+        writeVk.dstArrayElement = write.GetDstArrayElement();
+        writeVk.descriptorCount = write.GetDescriptorCount();
+        writeVk.descriptorType = gfxDescriptorTypeTo(write.GetDescriptorType());
+        writeVk.pImageInfo = !imageInfos.empty() ? imageInfos.data() : nullptr;
+        writeVk.pBufferInfo = !bufferInfos.empty() ? bufferInfos.data() : nullptr;
+        writeVk.pTexelBufferView = !bufferViewInfos.empty() ? bufferViewInfos.data() : nullptr;
+
+        return writeVk;
+    });
+
+    std::vector<VkCopyDescriptorSet> copiesVk;
+    copiesVk.reserve(copies.Size());
+
+    std::transform(copies.begin(),
+                   copies.end(),
+                   std::back_inserter(copiesVk),
+                   [](const gfxDescriptorSetCopy& copy)
+    {
+        const gfxDescriptorSetImplVK* srcSet = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSetImpl::ExtractImpl(copy.GetSrcSet()));
+        epiAssert(srcSet != nullptr);
+
+        const gfxDescriptorSetImplVK* dstSet = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSetImpl::ExtractImpl(copy.GetDstSet()));
+        epiAssert(dstSet != nullptr);
+
+        VkCopyDescriptorSet copyVk{};
+        copyVk.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+        copyVk.srcSet = srcSet->GetVkDescriptorSet();
+        copyVk.srcBinding = copy.GetSrcBinding();
+        copyVk.srcArrayElement = copy.GetSrcArrayElement();
+        copyVk.dstSet = dstSet->GetVkDescriptorSet();
+        copyVk.dstBinding = copy.GetDstBinding();
+        copyVk.dstArrayElement = copy.GetDstArrayElement();
+        copyVk.descriptorCount = copy.GetDescriptorCount();
+
+        return copyVk;
+    });
+
+    vkUpdateDescriptorSets(m_VkDevice, writesVk.size(), writesVk.data(), copiesVk.size(), copiesVk.data());
+}
+
 std::shared_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info,
                                                                    const gfxSurfaceImpl& surfaceImpl,
                                                                    const gfxQueueFamilyImpl& queueFamilyImpl,
@@ -421,12 +596,25 @@ std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPassFromSchema(c
     return impl;
 }
 
+std::shared_ptr<gfxPipelineLayoutImpl> gfxDeviceImplVK::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
+{
+    std::shared_ptr<gfxPipelineLayoutImplVK> impl = std::make_shared<gfxPipelineLayoutImplVK>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
 std::shared_ptr<gfxPipelineGraphicsImpl> gfxDeviceImplVK::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info,
                                                                                  const gfxShaderProgramImpl& shaderProgramImpl,
                                                                                  const gfxRenderPassImpl& renderPassImpl) const
 {
     std::shared_ptr<gfxPipelineGraphicsImplVK> impl = std::make_shared<gfxPipelineGraphicsImplVK>(*this);
-    if (!impl->Init(info, shaderProgramImpl, renderPassImpl))
+    if (!impl->Init(info,
+                    static_cast<const gfxShaderProgramImplVK&>(shaderProgramImpl),
+                    static_cast<const gfxRenderPassImplVK&>(renderPassImpl)))
     {
         impl.reset();
     }
@@ -526,6 +714,36 @@ std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const g
 {
     std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
     if (!impl->Init(info, m_PhysicalDevice, static_cast<const gfxBufferImplVK&>(bufferImpl)))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxDescriptorSetLayoutImpl> gfxDeviceImplVK::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const
+{
+    std::shared_ptr<gfxDescriptorSetLayoutImplVK> impl = std::make_shared<gfxDescriptorSetLayoutImplVK>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxDescriptorPoolImpl> gfxDeviceImplVK::CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const
+{
+    epiPtrArray<const gfxDescriptorSetLayoutImplVK> layoutsImplsVk;
+    layoutsImplsVk.Reserve(layoutsImpls.Size());
+
+    std::transform(layoutsImpls.begin(), layoutsImpls.end(), std::back_inserter(layoutsImplsVk), [](const gfxDescriptorSetLayoutImpl* layoutImpl)
+    {
+        return static_cast<const gfxDescriptorSetLayoutImplVK*>(layoutImpl);
+    });
+
+    std::shared_ptr<gfxDescriptorPoolImplVK> impl = std::make_shared<gfxDescriptorPoolImplVK>(m_VkDevice);
+    if (!impl->Init(info, layoutsImplsVk))
     {
         impl.reset();
     }

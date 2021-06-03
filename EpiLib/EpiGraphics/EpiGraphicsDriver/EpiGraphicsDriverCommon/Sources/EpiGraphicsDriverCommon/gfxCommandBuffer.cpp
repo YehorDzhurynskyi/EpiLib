@@ -134,6 +134,17 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::IndexBufferBind(const gfxBuffer&
     return *this;
 }
 
+gfxCommandBufferRecord& gfxCommandBufferRecord::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                                                                   const gfxPipelineLayout& pipelineLayout,
+                                                                   const epiArray<gfxDescriptorSet>& sets,
+                                                                   const epiArray<epiU32>& offsets,
+                                                                   epiU32 firstSet)
+{
+    m_Impl->DescriptorSetsBind(bindPoint, pipelineLayout, sets, offsets, firstSet);
+
+    return *this;
+}
+
 gfxCommandBufferRecord& gfxCommandBufferRecord::Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance)
 {
     m_Impl->Draw(vertexCount, instanceCount, firstVertex, firstInstance);

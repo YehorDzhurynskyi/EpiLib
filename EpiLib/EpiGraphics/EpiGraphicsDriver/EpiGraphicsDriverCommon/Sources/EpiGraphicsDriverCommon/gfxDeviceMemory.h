@@ -92,6 +92,7 @@ template<typename T>
 void gfxDeviceMemory::Mapping::PushBack(const T& value, epiSize_t stride)
 {
     static_assert(std::is_trivially_copyable_v<T>);
+    epiAssert(stride >= sizeof(T));
 
     memcpy(m_Data + m_Cursor, &value, stride);
 

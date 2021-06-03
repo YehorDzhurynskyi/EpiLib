@@ -25,6 +25,8 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxSurfaceImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxSwapChainImplVK.h
     Sources/EpiGraphicsDriverVK/gfxSwapChainImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxPipelineLayoutImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxPipelineLayoutImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxPipelineImplVK.h
     Sources/EpiGraphicsDriverVK/gfxPipelineImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxRenderPassImplVK.h
@@ -35,6 +37,12 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxCommandPoolImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxCommandBufferImplVK.h
     Sources/EpiGraphicsDriverVK/gfxCommandBufferImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxDescriptorPoolImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxDescriptorPoolImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxDescriptorSetImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxDescriptorSetImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.cpp
 )
 
 target_sources(EpiGraphicsDriverVK
