@@ -120,8 +120,14 @@ protected:
 EPI_GENREGION_END(gfxCommandBufferRecord)
 
 public:
-    gfxCommandBufferRecord(internalgfx::gfxCommandBufferImpl* impl, gfxCommandBufferUsage usage);
+    gfxCommandBufferRecord() = default;
+    gfxCommandBufferRecord(const gfxCommandBufferRecord& rhs) = delete;
+    gfxCommandBufferRecord& operator=(const gfxCommandBufferRecord& rhs) = delete;
+    gfxCommandBufferRecord(gfxCommandBufferRecord&& rhs);
+    gfxCommandBufferRecord& operator=(gfxCommandBufferRecord&& rhs);
     ~gfxCommandBufferRecord();
+
+    void RecordBegin(internalgfx::gfxCommandBufferImpl* impl, gfxCommandBufferUsage usage);
 
     operator epiBool() const;
 

@@ -8,6 +8,7 @@
 #include <wx/window.h>
 #include <wx/sizer.h>
 #include <wx/timer.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "EpiGraphics/Camera/gfxCameraPersp.h"
@@ -398,9 +399,9 @@ public:
         }
 
         {
-            m_UniformBuffers.Resize(m_SwapChain.GetCommandBuffers().Size());
-            m_UniformDeviceMemories.Resize(m_SwapChain.GetCommandBuffers().Size());
-            for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+            m_UniformBuffers.Resize(m_SwapChain.GetBufferCount());
+            m_UniformDeviceMemories.Resize(m_SwapChain.GetBufferCount());
+            for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
             {
                 gfxBufferCreateInfo uniformBufferCreateInfo;
                 uniformBufferCreateInfo.SetCapacity(sizeof(UniformBufferObject));
@@ -424,13 +425,13 @@ public:
             {
                 gfxDescriptorPoolSize poolSize;
                 poolSize.SetDescriptorType(gfxDescriptorType::UniformBuffer);
-                poolSize.SetDescriptorCount(m_SwapChain.GetCommandBuffers().Size());
+                poolSize.SetDescriptorCount(m_SwapChain.GetBufferCount());
 
                 gfxDescriptorPoolCreateInfo descriptorPoolCreateInfo;
-                descriptorPoolCreateInfo.SetMaxSets(m_SwapChain.GetCommandBuffers().Size());
+                descriptorPoolCreateInfo.SetMaxSets(m_SwapChain.GetBufferCount());
                 descriptorPoolCreateInfo.AddDescriptorPoolSize(poolSize);
 
-                for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+                for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
                 {
                     descriptorPoolCreateInfo.AddDescriptorSetLayout(m_DescriptorSetLayout);
                 }
@@ -440,7 +441,7 @@ public:
 
                 m_DescriptorPool = *descriptorPool;
 
-                for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+                for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
                 {
                     gfxDescriptorBufferInfo bufferInfo;
                     bufferInfo.SetBuffer(m_UniformBuffers[i]);
@@ -503,7 +504,6 @@ wxEND_EVENT_TABLE()
 void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 {
     m_SwapChain.Present(m_QueueFamily[0], [this](epiU32 frameIndex)
-
     {
         static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -579,9 +579,9 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
 
     // TODO: bind uniform buffers to the swapchain recreation in a proper way
     {
-        m_UniformBuffers.Resize(m_SwapChain.GetCommandBuffers().Size());
-        m_UniformDeviceMemories.Resize(m_SwapChain.GetCommandBuffers().Size());
-        for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+        m_UniformBuffers.Resize(m_SwapChain.GetBufferCount());
+        m_UniformDeviceMemories.Resize(m_SwapChain.GetBufferCount());
+        for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
         {
             gfxBufferCreateInfo uniformBufferCreateInfo;
             uniformBufferCreateInfo.SetCapacity(sizeof(UniformBufferObject));
@@ -605,13 +605,13 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
         {
             gfxDescriptorPoolSize poolSize;
             poolSize.SetDescriptorType(gfxDescriptorType::UniformBuffer);
-            poolSize.SetDescriptorCount(m_SwapChain.GetCommandBuffers().Size());
+            poolSize.SetDescriptorCount(m_SwapChain.GetBufferCount());
 
             gfxDescriptorPoolCreateInfo descriptorPoolCreateInfo;
-            descriptorPoolCreateInfo.SetMaxSets(m_SwapChain.GetCommandBuffers().Size());
+            descriptorPoolCreateInfo.SetMaxSets(m_SwapChain.GetBufferCount());
             descriptorPoolCreateInfo.AddDescriptorPoolSize(poolSize);
 
-            for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+            for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
             {
                 descriptorPoolCreateInfo.AddDescriptorSetLayout(m_DescriptorSetLayout);
             }
@@ -621,7 +621,7 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
 
             m_DescriptorPool = *descriptorPool;
 
-            for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+            for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
             {
                 gfxDescriptorBufferInfo bufferInfo;
                 bufferInfo.SetBuffer(m_UniformBuffers[i]);
@@ -667,26 +667,17 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
     gfxRenderPassClearValue clearValue;
     clearValue.SetColor({0.0f, 0.0f, 0.0f, 1.0f});
 
-    epiRect2s renderArea(0, 0, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y);
+    epiArray<gfxRenderPassClearValue> clearValues;
+    clearValues.push_back(clearValue);
 
-    epiAssert(m_SwapChain.GetCommandBuffers().Size() == m_SwapChain.GetFrameBuffers().Size());
-
-    for (epiU32 i = 0; i < m_SwapChain.GetCommandBuffers().Size(); ++i)
+    for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
     {
-        gfxCommandBuffer& cmdBuffer = m_SwapChain.GetCommandBuffers()[i];
-        const gfxFrameBuffer& frameBuffer = m_SwapChain.GetFrameBuffers()[i];
-        const gfxDescriptorSet& descriptorSet = m_DescriptorPool.GetDescriptorSets()[i];
-
-        if (gfxCommandBufferRecord record = cmdBuffer.RecordCommands())
+        if (gfxCommandBufferRecord record = m_SwapChain.ForBufferRecordCommands(i))
         {
-            gfxRenderPassBeginInfo renderPassBeginInfo;
-            renderPassBeginInfo.SetFrameBuffer(frameBuffer);
-            renderPassBeginInfo.SetRenderPass(m_RenderPass);
-            renderPassBeginInfo.SetClearValues({clearValue});
-            renderPassBeginInfo.SetRenderArea(renderArea);
+            const gfxDescriptorSet& descriptorSet = m_DescriptorPool.GetDescriptorSets()[i];
 
             record
-                .RenderPassBegin(renderPassBeginInfo)
+                .RenderPassBegin(m_SwapChain.ForBufferCreateRenderPassBeginInfo(i, m_RenderPass, clearValues))
                 .PipelineBind(m_Pipeline)
                 .VertexBuffersBind({m_VertexBuffer})
                 .IndexBufferBind(m_IndexBuffer, gfxIndexBufferType::UInt16)

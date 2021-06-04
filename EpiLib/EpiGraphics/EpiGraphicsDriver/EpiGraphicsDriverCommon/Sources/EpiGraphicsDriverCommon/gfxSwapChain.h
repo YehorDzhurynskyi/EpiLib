@@ -66,18 +66,14 @@ public:
 
     enum gfxSwapChain_PIDs
     {
+        PID_BufferCount = 0xd1605dff,
         PID_Extent = 0x21a25c7e,
-        PID_FrameBuffers = 0x139a7806,
-        PID_CommandBuffers = 0xc25694f,
-        PID_COUNT = 3
+        PID_COUNT = 2
     };
 
 protected:
+    epiU32 GetBufferCount_Callback() const;
     epiSize2u GetExtent_Callback() const;
-
-protected:
-    epiArray<gfxFrameBuffer> m_FrameBuffers{};
-    epiArray<gfxCommandBuffer> m_CommandBuffers{};
 
 EPI_GENREGION_END(gfxSwapChain)
 
@@ -87,10 +83,12 @@ public:
 
     epiBool Recreate(const gfxSwapChainCreateInfo& info);
 
-    epiBool Present(const gfxQueue& queue, std::function<void(epiU32)> callback);
+    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0});
+    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
+                                                              const gfxRenderPass& renderPass,
+                                                              const epiArray<gfxRenderPassClearValue>& renderPassClearValues);
 
-protected:
-    void RebindImpl();
+    epiBool Present(const gfxQueue& queue, std::function<void(epiU32)> callback);
 
 protected:
     epiPimpl<internalgfx::gfxSwapChainImpl> m_Impl;

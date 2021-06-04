@@ -216,6 +216,55 @@ epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
     return Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl);
 }
 
+gfxCommandBufferRecord gfxSwapChainImplVK::ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask)
+{
+    gfxCommandBufferRecord record;
+
+    if (bufferIndex >= GetBufferCount())
+    {
+        epiLogError("Failed to record command buffer! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
+        return record;
+    }
+
+    gfxCommandBufferImpl* cmdImpl = m_CommandPool->GetPrimaryCommandBuffers()[bufferIndex].get();
+    if (cmdImpl == nullptr)
+    {
+        epiLogError("Failed to record command buffer! Buffer at index=`{}` is nullptr!", bufferIndex);
+        return record;
+    }
+
+    record.RecordBegin(cmdImpl, usageMask);
+
+    return record;
+}
+
+gfxRenderPassBeginInfo gfxSwapChainImplVK::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
+                                                                              const gfxRenderPass& renderPass,
+                                                                              const epiArray<gfxRenderPassClearValue>& renderPassClearValues)
+{
+    gfxRenderPassBeginInfo beginInfo;
+
+    if (bufferIndex >= GetBufferCount())
+    {
+        epiLogError("Failed to create RenderPassBeginInfo! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
+        return beginInfo;
+    }
+
+    const gfxRenderPassImplVK* renderPassImpl = static_cast<const gfxRenderPassImplVK*>(gfxRenderPassImpl::ExtractImpl(renderPass));
+    if (renderPassImpl == nullptr)
+    {
+        epiLogError("Failed to create RenderPassBeginInfo! Provided RenderPass has no implementation!");
+        return beginInfo;
+    }
+
+    beginInfo.SetRenderPass(renderPass);
+    beginInfo.SetClearValues(renderPassClearValues);
+    beginInfo.SetFrameBuffer(gfxFrameBuffer(m_SwapChainFrameBuffers[bufferIndex]));
+    beginInfo.SetRenderArea(epiRect2s{0, 0, static_cast<epiS32>(GetExtent().x), static_cast<epiS32>(GetExtent().y)});
+
+    return beginInfo;
+}
+
 epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback)
 {
     const epiU32 frameIndex = m_CurrentFrame % kMaxFramesInFlight;
@@ -301,14 +350,9 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue, std::function<voi
     return true;
 }
 
-const epiArray<std::shared_ptr<gfxFrameBufferImpl>>& gfxSwapChainImplVK::GetFrameBuffers() const
+epiU32 gfxSwapChainImplVK::GetBufferCount() const
 {
-    return m_SwapChainFrameBuffers;
-}
-
-const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& gfxSwapChainImplVK::GetCommandBuffers() const
-{
-    return m_CommandPool->GetPrimaryCommandBuffers();
+    return m_SwapChainImageViews.Size();
 }
 
 epiSize2u gfxSwapChainImplVK::GetExtent() const

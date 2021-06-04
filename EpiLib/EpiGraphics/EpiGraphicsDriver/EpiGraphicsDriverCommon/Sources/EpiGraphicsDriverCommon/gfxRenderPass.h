@@ -331,6 +331,7 @@ public:
     friend class gfxDevice;
     friend class gfxSwapChain;
     friend class gfxCommandBufferRecord;
+    friend class internalgfx::gfxRenderPassImpl;
 
 public:
     gfxRenderPass() = default;

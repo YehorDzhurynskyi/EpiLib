@@ -11,11 +11,11 @@ class gfxSwapChainCreateInfo
 
 class gfxSwapChain
 {
-    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
+    [Virtual, ReadOnly]
     {
+        epiU32 BufferCount;
+
+        [ReadCallback(SuppressRef=true)]
         epiSize2u Extent;
     }
-
-    epiArray<gfxFrameBuffer> FrameBuffers;
-    epiArray<gfxCommandBuffer> CommandBuffers;
 };

@@ -7,28 +7,30 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxCommandBuffer::gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& impl)
-    : m_Impl{impl}
+gfxCommandBufferRecord::gfxCommandBufferRecord(gfxCommandBufferRecord&& rhs)
 {
-}
-
-epiBool gfxCommandBuffer::GetIsPrimary_Callback() const
-{
-    return m_Impl->GetIsPrimary();
-}
-
-gfxCommandBufferRecord gfxCommandBuffer::RecordCommands(gfxCommandBufferUsage usage)
-{
-    return gfxCommandBufferRecord(m_Impl.Ptr(), usage);
-}
-
-gfxCommandBufferRecord::gfxCommandBufferRecord(internalgfx::gfxCommandBufferImpl* impl, gfxCommandBufferUsage usage)
-    : m_Impl{impl}
-{
-    if (m_Impl)
+    if (&rhs != this)
     {
-        m_IsInitialized = m_Impl->RecordBegin(usage);
+        m_IsInitialized = rhs.m_IsInitialized;
+        m_Impl = rhs.m_Impl;
+
+        rhs.m_IsInitialized = false;
+        rhs.m_Impl = nullptr;
     }
+}
+
+gfxCommandBufferRecord& gfxCommandBufferRecord::operator=(gfxCommandBufferRecord&& rhs)
+{
+    if (&rhs != this)
+    {
+        m_IsInitialized = rhs.m_IsInitialized;
+        m_Impl = rhs.m_Impl;
+
+        rhs.m_IsInitialized = false;
+        rhs.m_Impl = nullptr;
+    }
+
+    return *this;
 }
 
 gfxCommandBufferRecord::~gfxCommandBufferRecord()
@@ -37,6 +39,12 @@ gfxCommandBufferRecord::~gfxCommandBufferRecord()
     {
         m_Impl->RecordEnd();
     }
+}
+
+void gfxCommandBufferRecord::RecordBegin(internalgfx::gfxCommandBufferImpl* impl, gfxCommandBufferUsage usage)
+{
+    m_Impl = impl;
+    m_IsInitialized = m_Impl != nullptr && m_Impl->RecordBegin(usage);
 }
 
 gfxCommandBufferRecord::operator epiBool() const
@@ -178,6 +186,24 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const
     m_Impl->Copy(*srcImpl, *dstImpl, copyRegions);
 
     return *this;
+}
+
+gfxCommandBuffer::gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& impl)
+    : m_Impl{impl}
+{
+}
+
+epiBool gfxCommandBuffer::GetIsPrimary_Callback() const
+{
+    return m_Impl->GetIsPrimary();
+}
+
+gfxCommandBufferRecord gfxCommandBuffer::RecordCommands(gfxCommandBufferUsage usage)
+{
+    gfxCommandBufferRecord record;
+    record.RecordBegin(m_Impl.Ptr(), usage);
+
+    return record;
 }
 
 EPI_NAMESPACE_END()

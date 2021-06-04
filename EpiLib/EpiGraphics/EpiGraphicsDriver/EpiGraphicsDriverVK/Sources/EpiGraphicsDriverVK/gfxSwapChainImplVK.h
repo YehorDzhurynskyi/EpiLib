@@ -36,10 +36,14 @@ public:
                      const gfxQueueFamilyImpl& queueFamilyImpl,
                      const gfxRenderPassImpl& renderPassImpl) override;
 
+    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) override;
+    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
+                                                              const gfxRenderPass& renderPass,
+                                                              const epiArray<gfxRenderPassClearValue>& renderPassClearValues) override;
+
     epiBool Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback) override;
 
-    const epiArray<std::shared_ptr<gfxFrameBufferImpl>>& GetFrameBuffers() const override;
-    const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetCommandBuffers() const override;
+    epiU32 GetBufferCount() const override;
     epiSize2u GetExtent() const override;
 
 protected:

@@ -236,10 +236,14 @@ public:
                              const gfxQueueFamilyImpl& queueFamilyImpl,
                              const gfxRenderPassImpl& renderPassImpl) = 0;
 
+    virtual gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) = 0;
+    virtual gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
+                                                                      const gfxRenderPass& renderPass,
+                                                                      const epiArray<gfxRenderPassClearValue>& renderPassClearValues) = 0;
+
     virtual epiBool Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback) = 0;
 
-    virtual const epiArray<std::shared_ptr<gfxFrameBufferImpl>>& GetFrameBuffers() const = 0;
-    virtual const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetCommandBuffers() const = 0;
+    virtual epiU32 GetBufferCount() const = 0;
     virtual epiSize2u GetExtent() const = 0;
 };
 
@@ -469,6 +473,9 @@ protected:
 
 class gfxRenderPassImpl
 {
+public:
+    static const gfxRenderPassImpl* ExtractImpl(const gfxRenderPass& renderPass) { return renderPass.m_Impl.Ptr(); }
+
 public:
     gfxRenderPassImpl() = default;
     gfxRenderPassImpl(const gfxRenderPassImpl& rhs) = delete;

@@ -10,7 +10,6 @@ EPI_NAMESPACE_BEGIN()
 gfxSwapChain::gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl)
     : m_Impl{impl}
 {
-    RebindImpl();
 }
 
 epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
@@ -41,9 +40,19 @@ epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
         return false;
     }
 
-    RebindImpl();
-
     return true;
+}
+
+gfxCommandBufferRecord gfxSwapChain::ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask)
+{
+    return m_Impl->ForBufferRecordCommands(bufferIndex, usageMask);
+}
+
+gfxRenderPassBeginInfo gfxSwapChain::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
+                                                            const gfxRenderPass& renderPass,
+                                                            const epiArray<gfxRenderPassClearValue>& renderPassClearValues)
+{
+    return m_Impl->ForBufferCreateRenderPassBeginInfo(bufferIndex, renderPass, renderPassClearValues);
 }
 
 epiBool gfxSwapChain::Present(const gfxQueue& queue, std::function<void(epiU32)> callback)
@@ -58,35 +67,9 @@ epiBool gfxSwapChain::Present(const gfxQueue& queue, std::function<void(epiU32)>
     return m_Impl->Present(*queueImpl, callback);
 }
 
-void gfxSwapChain::RebindImpl()
+epiU32 gfxSwapChain::GetBufferCount_Callback() const
 {
-    {
-        epiArray<gfxCommandBuffer>& commandBuffers = GetCommandBuffers();
-        commandBuffers.Clear();
-        commandBuffers.Reserve(m_Impl->GetCommandBuffers().Size());
-
-        std::transform(m_Impl->GetCommandBuffers().begin(),
-                       m_Impl->GetCommandBuffers().end(),
-                       std::back_inserter(commandBuffers),
-                       [](const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& commandBufferImpl)
-        {
-            return gfxCommandBuffer(commandBufferImpl);
-        });
-    }
-
-    {
-        epiArray<gfxFrameBuffer>& frameBuffers = GetFrameBuffers();
-        frameBuffers.Clear();
-        frameBuffers.Reserve(m_Impl->GetFrameBuffers().Size());
-
-        std::transform(m_Impl->GetFrameBuffers().begin(),
-                       m_Impl->GetFrameBuffers().end(),
-                       std::back_inserter(frameBuffers),
-                       [](const std::shared_ptr<internalgfx::gfxFrameBufferImpl>& frameBufferImpl)
-        {
-            return gfxFrameBuffer(frameBufferImpl);
-        });
-    }
+    return m_Impl->GetBufferCount();
 }
 
 epiSize2u gfxSwapChain::GetExtent_Callback() const
