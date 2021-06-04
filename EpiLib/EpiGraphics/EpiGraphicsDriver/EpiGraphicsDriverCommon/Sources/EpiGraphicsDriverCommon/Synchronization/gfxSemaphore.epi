@@ -1,0 +1,19 @@
+class gfxSemaphoreWaitInfo
+{
+    gfxSemaphoreWaitMask WaitMask;
+
+    [ReadOnly]
+    {
+        epiArray<gfxSemaphore> Semaphores;
+        epiArray<epiU64> Values;
+    }
+};
+
+class gfxSemaphoreCreateInfo
+{
+    gfxSemaphoreCreateMask CreateMask;
+};
+
+class gfxSemaphore
+{
+};

@@ -46,5 +46,8 @@ VkDescriptorSetLayoutCreateFlagBits gfxDescriptorSetLayoutUsageTo(gfxDescriptorS
 VkDescriptorType gfxDescriptorTypeTo(gfxDescriptorType type);
 VkShaderStageFlagBits gfxShaderStageTo(gfxShaderStage mask);
 VkDescriptorPoolCreateFlags gfxDescriptorPoolUsageTo(gfxDescriptorPoolUsage usage);
+VkFenceCreateFlagBits gfxFenceCreateMaskTo(gfxFenceCreateMask mask);
+VkSemaphoreCreateFlags gfxSemaphoreCreateMaskTo(gfxSemaphoreCreateMask mask);
+VkSemaphoreWaitFlagBits gfxSemaphoreWaitMaskTo(gfxSemaphoreWaitMask mask);
 
 EPI_NAMESPACE_END()

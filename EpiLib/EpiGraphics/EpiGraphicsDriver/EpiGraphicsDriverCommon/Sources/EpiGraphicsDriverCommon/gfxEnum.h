@@ -1027,4 +1027,24 @@ EPI_GENREGION_BEGIN(gfxDescriptorSetLayoutUsage)
 EPI_GENREGION_END(gfxDescriptorSetLayoutUsage)
 };
 
+enum gfxFenceCreateMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxFenceCreateMask)
+    gfxFenceCreateMask_Signaled = (1 << 0)
+EPI_GENREGION_END(gfxFenceCreateMask)
+};
+
+enum gfxSemaphoreCreateMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSemaphoreCreateMask)
+EPI_GENREGION_END(gfxSemaphoreCreateMask)
+};
+
+enum gfxSemaphoreWaitMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSemaphoreWaitMask)
+    gfxSemaphoreWaitMask_WaitAny = (1 << 0)
+EPI_GENREGION_END(gfxSemaphoreWaitMask)
+};
+
 EPI_NAMESPACE_END()

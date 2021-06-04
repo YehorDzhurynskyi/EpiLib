@@ -1,0 +1,8 @@
+class gfxFenceCreateInfo
+{
+    gfxFenceCreateMask CreateMask;
+};
+
+class gfxFence
+{
+};

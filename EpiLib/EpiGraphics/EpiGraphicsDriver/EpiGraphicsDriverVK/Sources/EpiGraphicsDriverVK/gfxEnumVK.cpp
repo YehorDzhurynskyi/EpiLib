@@ -1127,4 +1127,19 @@ VkDescriptorPoolCreateFlags gfxDescriptorPoolUsageTo(gfxDescriptorPoolUsage usag
                    (usage & gfxDescriptorPoolUsage_UpdateAfterBind) ? VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT : VkDescriptorPoolCreateFlags{});
 }
 
+VkFenceCreateFlagBits gfxFenceCreateMaskTo(gfxFenceCreateMask mask)
+{
+    return epiMask((mask & gfxFenceCreateMask_Signaled) ? VK_FENCE_CREATE_SIGNALED_BIT : VkFenceCreateFlagBits{});
+}
+
+VkSemaphoreCreateFlags gfxSemaphoreCreateMaskTo(gfxSemaphoreCreateMask)
+{
+    return VkSemaphoreCreateFlags{};
+}
+
+VkSemaphoreWaitFlagBits gfxSemaphoreWaitMaskTo(gfxSemaphoreWaitMask mask)
+{
+    return epiMask((mask & gfxSemaphoreWaitMask_WaitAny) ? VK_SEMAPHORE_WAIT_ANY_BIT : VkSemaphoreWaitFlagBits{});
+}
+
 EPI_NAMESPACE_END()

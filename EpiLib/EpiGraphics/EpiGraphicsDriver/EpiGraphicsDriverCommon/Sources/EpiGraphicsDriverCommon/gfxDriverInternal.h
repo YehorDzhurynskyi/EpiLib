@@ -5,6 +5,7 @@
 #include "EpiGraphicsDriverCommon/gfxWindow.h"
 #include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
+#include "EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.h"
 
 #include "EpiCore/common.h"
 #include "EpiCore/types.h"
@@ -245,6 +246,36 @@ public:
 
     virtual epiU32 GetBufferCount() const = 0;
     virtual epiSize2u GetExtent() const = 0;
+};
+
+class gfxFenceImpl
+{
+public:
+    gfxFenceImpl() = default;
+    gfxFenceImpl(const gfxFenceImpl& rhs) = delete;
+    gfxFenceImpl& operator=(const gfxFenceImpl& rhs) = delete;
+    gfxFenceImpl(gfxFenceImpl&& rhs) = default;
+    gfxFenceImpl& operator=(gfxFenceImpl&& rhs) = default;
+    virtual ~gfxFenceImpl() = default;
+
+    virtual epiBool Reset() = 0;
+    virtual epiBool Wait(epiU64 timeout) = 0;
+};
+
+class gfxSemaphoreImpl
+{
+public:
+    static const gfxSemaphoreImpl* ExtractImpl(const gfxSemaphore& semaphore) { return semaphore.m_Impl.Ptr(); }
+
+public:
+    gfxSemaphoreImpl() = default;
+    gfxSemaphoreImpl(const gfxSemaphoreImpl& rhs) = delete;
+    gfxSemaphoreImpl& operator=(const gfxSemaphoreImpl& rhs) = delete;
+    gfxSemaphoreImpl(gfxSemaphoreImpl&& rhs) = default;
+    gfxSemaphoreImpl& operator=(gfxSemaphoreImpl&& rhs) = default;
+    virtual ~gfxSemaphoreImpl() = default;
+
+    virtual epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout) = 0;
 };
 
 class gfxDriverImpl

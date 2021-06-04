@@ -72,6 +72,13 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxDescriptorSetLayout.h
     Sources/EpiGraphicsDriverCommon/gfxDescriptorSetLayout.cpp
 
+    Sources/EpiGraphicsDriverCommon/Synchronization/gfxFence.epi
+    Sources/EpiGraphicsDriverCommon/Synchronization/gfxFence.h
+    Sources/EpiGraphicsDriverCommon/Synchronization/gfxFence.cpp
+    Sources/EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.epi
+    Sources/EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.h
+    Sources/EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.cpp
+
     Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.epi
     Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.h
     Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.cpp

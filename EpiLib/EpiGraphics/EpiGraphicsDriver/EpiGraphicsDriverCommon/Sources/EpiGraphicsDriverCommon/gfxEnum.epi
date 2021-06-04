@@ -945,3 +945,20 @@ enum gfxDescriptorPoolUsage
     UpdateAfterBind,
     HostOnly
 };
+
+[FlagMask]
+enum gfxFenceCreateMask
+{
+    Signaled
+};
+
+[FlagMask]
+enum gfxSemaphoreCreateMask
+{
+};
+
+[FlagMask]
+enum gfxSemaphoreWaitMask
+{
+    WaitAny
+};
