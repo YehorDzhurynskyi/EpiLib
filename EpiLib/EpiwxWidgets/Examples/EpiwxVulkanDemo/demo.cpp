@@ -398,68 +398,7 @@ public:
             m_QueueFamily[0].Submit(submitInfo);
         }
 
-        {
-            m_UniformBuffers.Resize(m_SwapChain.GetBufferCount());
-            m_UniformDeviceMemories.Resize(m_SwapChain.GetBufferCount());
-            for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
-            {
-                gfxBufferCreateInfo uniformBufferCreateInfo;
-                uniformBufferCreateInfo.SetCapacity(sizeof(UniformBufferObject));
-                uniformBufferCreateInfo.SetUsage(gfxBufferUsage_UniformBuffer);
-
-                std::optional<gfxBuffer> uniformBuffer = g_Device.CreateBuffer(uniformBufferCreateInfo);
-                epiAssert(uniformBuffer.has_value());
-
-                m_UniformBuffers[i] = *uniformBuffer;
-
-                gfxDeviceMemoryCreateInfo uniformDeviceMemoryCreateInfo;
-                uniformDeviceMemoryCreateInfo.SetBuffer(m_UniformBuffers[i]);
-                uniformDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
-
-                std::optional<gfxDeviceMemory> uniformDeviceMemory = g_Device.CreateDeviceMemory(uniformDeviceMemoryCreateInfo);
-                epiAssert(uniformDeviceMemory.has_value());
-
-                m_UniformDeviceMemories[i] = *uniformDeviceMemory;
-            }
-
-            {
-                gfxDescriptorPoolSize poolSize;
-                poolSize.SetDescriptorType(gfxDescriptorType::UniformBuffer);
-                poolSize.SetDescriptorCount(m_SwapChain.GetBufferCount());
-
-                gfxDescriptorPoolCreateInfo descriptorPoolCreateInfo;
-                descriptorPoolCreateInfo.SetMaxSets(m_SwapChain.GetBufferCount());
-                descriptorPoolCreateInfo.AddDescriptorPoolSize(poolSize);
-
-                for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
-                {
-                    descriptorPoolCreateInfo.AddDescriptorSetLayout(m_DescriptorSetLayout);
-                }
-
-                std::optional<gfxDescriptorPool> descriptorPool = g_Device.CreateDescriptorPool(descriptorPoolCreateInfo);
-                epiAssert(descriptorPool.has_value());
-
-                m_DescriptorPool = *descriptorPool;
-
-                for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
-                {
-                    gfxDescriptorBufferInfo bufferInfo;
-                    bufferInfo.SetBuffer(m_UniformBuffers[i]);
-                    bufferInfo.SetOffset(0);
-                    bufferInfo.SetRange(sizeof(UniformBufferObject));
-
-                    gfxDescriptorSetWrite descriptorWrite;
-                    descriptorWrite.SetDstSet(m_DescriptorPool.GetDescriptorSets()[i]);
-                    descriptorWrite.SetDstBinding(0);
-                    descriptorWrite.SetDstArrayElement(0);
-                    descriptorWrite.SetDescriptorType(gfxDescriptorType::UniformBuffer);
-                    descriptorWrite.SetDescriptorCount(1);
-                    descriptorWrite.AddBufferInfo(bufferInfo);
-
-                    g_Device.UpdateDescriptorSets({descriptorWrite}, {});
-                }
-            }
-        }
+        RecreateUniformBuffers();
 
         RecordCommandBuffers();
 
@@ -474,6 +413,7 @@ protected:
     void OnTimer(wxTimerEvent& event);
 
     void RecordCommandBuffers();
+    void RecreateUniformBuffers();
 
 protected:
     wxTimer m_Timer;
@@ -537,50 +477,14 @@ void epiWXVulkanDemoTriangleCanvas::OnEraseBackground(wxEraseEvent&)
     // NOTE: should reduce flickering
 }
 
-void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
+void epiWXVulkanDemoTriangleCanvas::RecreateUniformBuffers()
 {
-    if (!m_Surface)
     {
-        return;
-    }
-
-    const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(g_PhysicalDevice);
-
-    epiSize2u extent{};
-    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
-    {
-        extent = surfaceCapabilities.GetCurrentExtent();
-    }
-    else
-    {
-        extent.x = std::clamp(static_cast<epiU32>(event.GetSize().x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
-        extent.y = std::clamp(static_cast<epiU32>(event.GetSize().y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
-    }
-
-    gfxSurfaceFormat surfaceFormat;
-    surfaceFormat.SetFormat(kFormatRequired);
-    surfaceFormat.SetColorSpace(kColorSpaceRequired);
-
-    gfxSwapChainCreateInfo swapChainCreateInfo{};
-    swapChainCreateInfo.SetSurface(m_Surface);
-    swapChainCreateInfo.SetRenderPass(m_RenderPass);
-    swapChainCreateInfo.SetQueueFamily(m_QueueFamily);
-    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
-    swapChainCreateInfo.SetFormat(surfaceFormat);
-    swapChainCreateInfo.SetPresentMode(kPresentModeRequired);
-    swapChainCreateInfo.SetExtent(extent);
-
-    // TODO: recreate descriptor pool
-
-    m_SwapChain.Recreate(swapChainCreateInfo);
-
-    m_UniformBuffers.Clear();
-    m_UniformDeviceMemories.Clear();
-
-    // TODO: bind uniform buffers to the swapchain recreation in a proper way
-    {
+        m_UniformBuffers.Clear();
         m_UniformBuffers.Resize(m_SwapChain.GetBufferCount());
+        m_UniformDeviceMemories.Clear();
         m_UniformDeviceMemories.Resize(m_SwapChain.GetBufferCount());
+
         for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
         {
             gfxBufferCreateInfo uniformBufferCreateInfo;
@@ -640,6 +544,47 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
             }
         }
     }
+}
+
+void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
+{
+    if (!m_Surface)
+    {
+        return;
+    }
+
+    const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(g_PhysicalDevice);
+
+    epiSize2u extent{};
+    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
+    {
+        extent = surfaceCapabilities.GetCurrentExtent();
+    }
+    else
+    {
+        extent.x = std::clamp(static_cast<epiU32>(event.GetSize().x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
+        extent.y = std::clamp(static_cast<epiU32>(event.GetSize().y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
+    }
+
+    gfxSurfaceFormat surfaceFormat;
+    surfaceFormat.SetFormat(kFormatRequired);
+    surfaceFormat.SetColorSpace(kColorSpaceRequired);
+
+    gfxSwapChainCreateInfo swapChainCreateInfo{};
+    swapChainCreateInfo.SetSurface(m_Surface);
+    swapChainCreateInfo.SetRenderPass(m_RenderPass);
+    swapChainCreateInfo.SetQueueFamily(m_QueueFamily);
+    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
+    swapChainCreateInfo.SetFormat(surfaceFormat);
+    swapChainCreateInfo.SetPresentMode(kPresentModeRequired);
+    swapChainCreateInfo.SetExtent(extent);
+
+    // TODO: recreate descriptor pool
+
+    m_SwapChain.Recreate(swapChainCreateInfo);
+
+    // TODO: bind uniform buffers to the swapchain recreation in a proper way
+    RecreateUniformBuffers();
 
     m_Pipeline.DynamicClearViewports();
     m_Pipeline.DynamicClearScissors();
