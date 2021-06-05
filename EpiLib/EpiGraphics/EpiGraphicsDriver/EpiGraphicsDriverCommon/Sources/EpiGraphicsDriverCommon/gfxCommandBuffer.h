@@ -174,6 +174,7 @@ EPI_GENREGION_END(gfxCommandBuffer)
 
 public:
     friend class gfxQueue;
+    friend class internalgfx::gfxCommandBufferImpl;
 
 public:
     gfxCommandBuffer() = default;

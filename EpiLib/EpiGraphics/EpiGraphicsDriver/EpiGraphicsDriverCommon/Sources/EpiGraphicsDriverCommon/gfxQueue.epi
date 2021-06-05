@@ -2,6 +2,9 @@ class gfxQueueSubmitInfo
 {
     [ReadOnly]
     {
+        epiArray<gfxSemaphore> WaitSemaphores;
+        epiArray<gfxPipelineStage> WaitDstStageMasks;
+        epiArray<gfxSemaphore> SignalSemaphores;
         epiArray<gfxCommandBuffer> CommandBuffers;
     }
 };

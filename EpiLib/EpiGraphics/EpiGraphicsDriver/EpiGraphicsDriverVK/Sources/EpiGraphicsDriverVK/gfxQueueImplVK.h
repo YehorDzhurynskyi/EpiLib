@@ -3,6 +3,7 @@
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
 struct VkQueue_T;
+struct VkFence_T;
 
 EPI_NAMESPACE_BEGIN()
 
@@ -21,13 +22,18 @@ public:
     gfxQueueImplVK& operator=(gfxQueueImplVK&& rhs);
     ~gfxQueueImplVK() override = default;
 
-    epiBool Submit(const gfxQueueSubmitInfo& info, const epiPtrArray<const gfxCommandBufferImpl>& commandBuffers) override;
+    epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos) override;
+    epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence) override;
+    epiBool Wait() override;
 
     gfxQueueType GetType() const override;
     epiFloat GetPriority() const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
 
     VkQueue_T* GetVkQueue() const;
+
+protected:
+    epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFence_T* signalFence);
 
 protected:
     VkQueue_T* m_VkQueue{nullptr};

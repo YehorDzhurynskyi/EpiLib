@@ -19,6 +19,9 @@ namespace internalgfx
 class gfxQueueImpl
 {
 public:
+    static const gfxQueueImpl* ExtractImpl(const gfxQueue& queue) { return queue.m_Impl.Ptr(); }
+
+public:
     gfxQueueImpl() = default;
     gfxQueueImpl(const gfxQueueImpl& rhs) = delete;
     gfxQueueImpl& operator=(const gfxQueueImpl& rhs) = delete;
@@ -26,8 +29,9 @@ public:
     gfxQueueImpl& operator=(gfxQueueImpl&& rhs) = default;
     virtual ~gfxQueueImpl() = default;
 
-    // TODO: implement full interface
-    virtual epiBool Submit(const gfxQueueSubmitInfo& info, const epiPtrArray<const gfxCommandBufferImpl>& commandBuffers) = 0;
+    virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos) = 0;
+    virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence) = 0;
+    virtual epiBool Wait() = 0;
 
     virtual gfxQueueType GetType() const = 0;
     virtual epiFloat GetPriority() const = 0;
@@ -106,6 +110,9 @@ protected:
 
 class gfxCommandBufferImpl
 {
+public:
+    static const gfxCommandBufferImpl* ExtractImpl(const gfxCommandBuffer& commandBuffer) { return commandBuffer.m_Impl.Ptr(); }
+
 public:
     gfxCommandBufferImpl() = default;
     gfxCommandBufferImpl(const gfxCommandBufferImpl& rhs) = delete;
@@ -250,6 +257,9 @@ public:
 
 class gfxFenceImpl
 {
+public:
+    static const gfxFenceImpl* ExtractImpl(const gfxFence& fence) { return fence.m_Impl.Ptr(); }
+
 public:
     gfxFenceImpl() = default;
     gfxFenceImpl(const gfxFenceImpl& rhs) = delete;
@@ -526,6 +536,23 @@ public:
     gfxAttachmentImpl& operator=(gfxAttachmentImpl&& rhs) = default;
     virtual ~gfxAttachmentImpl() = default;
 };
+
+template<typename TImpl, typename T>
+epiBool HasImpl(const T& obj)
+{
+    return TImpl::ExtractImpl(obj) != nullptr;
+}
+
+template<typename TImpl, typename It>
+epiBool HasImpl(It begin, It end)
+{
+    using T = typename It::value_type;
+
+    return std::all_of(begin, end, [](const T& obj)
+    {
+        return HasImpl<TImpl>(obj);
+    });
+}
 
 } // namespace internalgfx
 

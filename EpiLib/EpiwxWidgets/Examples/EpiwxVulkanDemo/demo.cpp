@@ -1,7 +1,10 @@
 #pragma once
 
 #include "EpiGraphicsDriver/gfxDriver.h"
+
 #include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
+
+#include "EpiGraphics/Camera/gfxCameraPersp.h"
 
 #include <wx/app.h>
 #include <wx/frame.h>
@@ -10,8 +13,6 @@
 #include <wx/timer.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-
-#include "EpiGraphics/Camera/gfxCameraPersp.h"
 
 #include "EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h"
 
@@ -328,6 +329,7 @@ public:
             submitInfo.GetCommandBuffers().push_back(copyCmdPool->GetPrimaryCommandBuffers()[0]);
 
             m_QueueFamily[0].Submit(submitInfo);
+            m_QueueFamily[0].Wait();
         }
 
         m_Indices = { 0, 1, 2, 2, 3, 0 };
@@ -396,6 +398,7 @@ public:
             submitInfo.GetCommandBuffers().push_back(copyCmdPool->GetPrimaryCommandBuffers()[0]);
 
             m_QueueFamily[0].Submit(submitInfo);
+            m_QueueFamily[0].Wait();
         }
 
         RecreateUniformBuffers();

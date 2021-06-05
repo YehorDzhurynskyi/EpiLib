@@ -55,6 +55,9 @@ public:
 EPI_GENREGION_END(gfxFence)
 
 public:
+    friend class internalgfx::gfxFenceImpl;
+
+public:
     gfxFence() = default;
     explicit gfxFence(const std::shared_ptr<internalgfx::gfxFenceImpl>& impl);
 
