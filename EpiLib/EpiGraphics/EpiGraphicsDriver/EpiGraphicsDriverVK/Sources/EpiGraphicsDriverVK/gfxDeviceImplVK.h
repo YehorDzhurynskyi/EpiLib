@@ -47,6 +47,8 @@ public:
     std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info, const gfxBufferImpl& bufferImpl) const override;
     std::shared_ptr<gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const override;
     std::shared_ptr<gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const override;
+    std::shared_ptr<gfxSemaphoreImpl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const override;
+    std::shared_ptr<gfxFenceImpl> CreateFence(const gfxFenceCreateInfo& info) const override;
 
     VkDevice_T* GetVkDevice() const;
 

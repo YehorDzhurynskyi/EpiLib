@@ -9,6 +9,16 @@ class gfxQueueSubmitInfo
     }
 };
 
+class gfxQueuePresentInfo
+{
+    [ReadOnly]
+    {
+        epiArray<gfxSemaphore> WaitSemaphores;
+        epiArray<gfxSwapChain> SwapChains;
+        epiArray<epiU32> SwapChainImageIndices;
+    }
+};
+
 class gfxQueue
 {
     [Virtual, ReadOnly]

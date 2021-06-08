@@ -21,6 +21,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxDescriptorPool.h"
 #include "EpiGraphicsDriverCommon/gfxDescriptorSetLayout.h"
 #include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
+#include "EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.h"
+#include "EpiGraphicsDriverCommon/Synchronization/gfxFence.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -60,6 +62,7 @@ public:
 
     epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const;
 
+    // TODO: add From suffix
     std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const;
@@ -76,6 +79,8 @@ public:
     std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const;
     std::optional<gfxDescriptorSetLayout> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const;
     std::optional<gfxDescriptorPool> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const;
+    std::optional<gfxSemaphore> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const;
+    std::optional<gfxFence> CreateFence(const gfxFenceCreateInfo& info) const;
 
 protected:
     epiPimpl<internalgfx::gfxDeviceImpl> m_Impl;

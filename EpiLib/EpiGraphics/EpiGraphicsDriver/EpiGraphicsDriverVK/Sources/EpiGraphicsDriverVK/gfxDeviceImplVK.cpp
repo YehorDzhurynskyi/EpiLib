@@ -21,6 +21,9 @@
 #include "EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDescriptorSetImplVK.h"
 
+#include "EpiGraphicsDriverVK/Synchronization/gfxSemaphoreImplVK.h"
+#include "EpiGraphicsDriverVK/Synchronization/gfxFenceImplVK.h"
+
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 
 #include <vulkan/vulkan.h>
@@ -749,6 +752,29 @@ std::shared_ptr<gfxDescriptorPoolImpl> gfxDeviceImplVK::CreateDescriptorPool(con
     }
 
     return impl;
+}
+
+std::shared_ptr<gfxSemaphoreImpl> gfxDeviceImplVK::CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const
+{
+    std::shared_ptr<gfxSemaphoreImplVK> impl = std::make_shared<gfxSemaphoreImplVK>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxFenceImpl> gfxDeviceImplVK::CreateFence(const gfxFenceCreateInfo& info) const
+{
+    std::shared_ptr<gfxFenceImplVK> impl = std::make_shared<gfxFenceImplVK>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+
 }
 
 VkDevice gfxDeviceImplVK::GetVkDevice() const

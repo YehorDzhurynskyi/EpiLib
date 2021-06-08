@@ -61,6 +61,8 @@ public:
     gfxFence() = default;
     explicit gfxFence(const std::shared_ptr<internalgfx::gfxFenceImpl>& impl);
 
+    epiBool HasImpl() const;
+
     epiBool Reset();
     epiBool Wait(epiU64 timeout = std::numeric_limits<epiU64>::max());
 

@@ -36,15 +36,16 @@ public:
                      const gfxQueueFamilyImpl& queueFamilyImpl,
                      const gfxRenderPassImpl& renderPassImpl) override;
 
-    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) override;
-    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
-                                                              const gfxRenderPass& renderPass,
-                                                              const epiArray<gfxRenderPassClearValue>& renderPassClearValues) override;
+    epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) override;
 
-    epiBool Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback) override;
+    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) override;
+    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex) override;
+    gfxQueueSubmitInfo ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex) override;
 
     epiU32 GetBufferCount() const override;
     epiSize2u GetExtent() const override;
+
+    VkSwapchainKHR_T* GetVkSwapChain() const;
 
 protected:
     epiBool Reset();
@@ -52,15 +53,10 @@ protected:
 protected:
     const gfxDeviceImplVK& m_Device;
     VkSwapchainKHR_T* m_VkSwapChain{nullptr};
-    epiArray<std::shared_ptr<gfxTextureViewImpl>> m_SwapChainImageViews;
-    epiArray<std::shared_ptr<gfxFrameBufferImpl>> m_SwapChainFrameBuffers;
-    std::shared_ptr<gfxCommandPoolImpl> m_CommandPool;
 
-    epiU32 m_CurrentFrame{0};
-    std::vector<VkSemaphore_T*> m_VkSemaphoreImageAvailable;
-    std::vector<VkSemaphore_T*> m_VkSemaphoreRenderFinished;
-    std::vector<VkFence_T*> m_VkFencesInFlight;
-    std::vector<VkFence_T*> m_VkFencesImagesInFlight;
+    std::vector<std::shared_ptr<gfxTextureViewImpl>> m_SwapChainImageViews;
+    std::vector<std::shared_ptr<gfxFrameBufferImpl>> m_SwapChainFrameBuffers;
+    std::shared_ptr<gfxCommandPoolImpl> m_CommandPool;
 
     epiSize2u m_Extent{};
 };

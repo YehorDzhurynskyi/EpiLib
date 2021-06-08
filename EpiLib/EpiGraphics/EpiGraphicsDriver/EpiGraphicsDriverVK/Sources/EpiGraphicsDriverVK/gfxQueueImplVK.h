@@ -24,6 +24,9 @@ public:
 
     epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos) override;
     epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence) override;
+
+    epiBool Present(const gfxQueuePresentInfo& info) override;
+
     epiBool Wait() override;
 
     gfxQueueType GetType() const override;

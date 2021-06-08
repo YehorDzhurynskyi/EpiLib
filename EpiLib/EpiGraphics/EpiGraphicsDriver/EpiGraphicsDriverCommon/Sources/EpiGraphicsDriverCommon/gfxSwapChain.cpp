@@ -43,28 +43,42 @@ epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
     return true;
 }
 
+epiS32 gfxSwapChain::AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout)
+{
+    if (signalSemaphore != nullptr)
+    {
+        if (!internalgfx::HasImpl<internalgfx::gfxSemaphoreImpl>(*signalSemaphore))
+        {
+            epiLogError("Failed to AcquireNextImage! The provided signal Semaphore has no implementation!");
+            return -1;
+        }
+    }
+
+    if (signalFence != nullptr)
+    {
+        if (!internalgfx::HasImpl<internalgfx::gfxFenceImpl>(*signalFence))
+        {
+            epiLogError("Failed to AcquireNextImage! The provided signal Fence has no implementation!");
+            return -1;
+        }
+    }
+
+    return m_Impl->AcquireNextImage(signalSemaphore, signalFence, timeout);
+}
+
 gfxCommandBufferRecord gfxSwapChain::ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask)
 {
     return m_Impl->ForBufferRecordCommands(bufferIndex, usageMask);
 }
 
-gfxRenderPassBeginInfo gfxSwapChain::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
-                                                            const gfxRenderPass& renderPass,
-                                                            const epiArray<gfxRenderPassClearValue>& renderPassClearValues)
+gfxRenderPassBeginInfo gfxSwapChain::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex)
 {
-    return m_Impl->ForBufferCreateRenderPassBeginInfo(bufferIndex, renderPass, renderPassClearValues);
+    return m_Impl->ForBufferCreateRenderPassBeginInfo(bufferIndex);
 }
 
-epiBool gfxSwapChain::Present(const gfxQueue& queue, std::function<void(epiU32)> callback)
+gfxQueueSubmitInfo gfxSwapChain::ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex)
 {
-    const auto queueImpl = queue.m_Impl;
-    if (!queueImpl)
-    {
-        epiLogError("Failed to present SwapChain! Queue has no implementation!");
-        return false;
-    }
-
-    return m_Impl->Present(*queueImpl, callback);
+    return m_Impl->ForBufferCreateQueueSubmitInfo(bufferIndex);
 }
 
 epiU32 gfxSwapChain::GetBufferCount_Callback() const

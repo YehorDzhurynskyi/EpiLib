@@ -25,6 +25,13 @@ constexpr gfxFormat kFormatRequired = gfxFormat::B8G8R8A8_SRGB;
 constexpr gfxSurfaceColorSpace kColorSpaceRequired = gfxSurfaceColorSpace::SRGB_NONLINEAR;
 constexpr gfxSurfacePresentMode kPresentModeRequired = gfxSurfacePresentMode::MAILBOX;
 
+namespace
+{
+
+constexpr epiU32 kMaxFramesInFlight = 2;
+
+} // namespace
+
 class epiWXVulkanDemoFrame : public wxFrame
 {
 public:
@@ -264,7 +271,7 @@ public:
             {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
             {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
         };
-        const epiSize_t vertexBufferCapacity = m_Vertices.size() * sizeof(m_Vertices[0]);
+        const epiSize_t vertexBufferCapacity = m_Vertices.Size() * sizeof(m_Vertices[0]);
 
         {
             gfxBufferCreateInfo vertexBufferCreateInfo;
@@ -333,7 +340,7 @@ public:
         }
 
         m_Indices = { 0, 1, 2, 2, 3, 0 };
-        const epiSize_t indexBufferCapacity = m_Indices.size() * sizeof(m_Indices[0]);
+        const epiSize_t indexBufferCapacity = m_Indices.Size() * sizeof(m_Indices[0]);
 
         {
             gfxBufferCreateInfo indexBufferCreateInfo;
@@ -416,6 +423,8 @@ protected:
     void OnTimer(wxTimerEvent& event);
 
     void RecordCommandBuffers();
+    void RecreteSwapChain(const epiSize2u& size);
+    void RecreateSynchronizationPrimitives();
     void RecreateUniformBuffers();
 
 protected:
@@ -433,8 +442,14 @@ protected:
     gfxDeviceMemory m_IndexDeviceMemory;
     epiArray<gfxDeviceMemory> m_UniformDeviceMemories;
     gfxDescriptorPool m_DescriptorPool;
-    std::vector<Vertex> m_Vertices;
-    std::vector<epiU16> m_Indices;
+    epiArray<Vertex> m_Vertices;
+    epiArray<epiU16> m_Indices;
+
+    epiU32 m_CurrentFrame{0};
+    epiArray<gfxSemaphore> m_SemaphoreImageAvailable;
+    epiArray<gfxSemaphore> m_SemaphoreRenderFinished;
+    epiArray<gfxFence> m_FencesInFlight;
+    epiArray<gfxFence> m_FencesImagesInFlight;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
@@ -446,7 +461,21 @@ wxEND_EVENT_TABLE()
 
 void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 {
-    m_SwapChain.Present(m_QueueFamily[0], [this](epiU32 frameIndex)
+    const epiU32 frameIndex = m_CurrentFrame % kMaxFramesInFlight;
+
+    m_FencesInFlight[frameIndex].Wait();
+
+    const epiS32 imageIndex = m_SwapChain.AcquireNextImage(&m_SemaphoreImageAvailable[frameIndex], nullptr);
+    epiAssert(imageIndex >= 0);
+
+    if (m_FencesImagesInFlight[imageIndex].HasImpl())
+    {
+        m_FencesImagesInFlight[imageIndex].Wait();
+    }
+
+    // Mark the image as now being in use by this frame
+    m_FencesImagesInFlight[imageIndex] = m_FencesInFlight[frameIndex];
+
     {
         static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -472,12 +501,123 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
         {
             mapping.PushBack(ubo);
         }
-    });
+    }
+
+    m_FencesInFlight[frameIndex].Reset();
+
+    gfxQueueSubmitInfo queueSubmitInfo = m_SwapChain.ForBufferCreateQueueSubmitInfo(imageIndex);
+    queueSubmitInfo.GetWaitSemaphores().push_back(m_SemaphoreImageAvailable[frameIndex]);
+    queueSubmitInfo.GetWaitDstStageMasks().push_back(gfxPipelineStage_ColorAttachmentOutput);
+    queueSubmitInfo.GetSignalSemaphores().push_back(m_SemaphoreRenderFinished[frameIndex]);
+
+    m_QueueFamily[0].Submit(queueSubmitInfo, m_FencesInFlight[frameIndex]);
+
+    gfxQueuePresentInfo queuePresentInfo{};
+    queuePresentInfo.GetWaitSemaphores().push_back(m_SemaphoreRenderFinished[frameIndex]);
+    queuePresentInfo.GetSwapChains().push_back(m_SwapChain);
+    queuePresentInfo.GetSwapChainImageIndices().push_back(imageIndex);
+
+    m_QueueFamily[0].Present(queuePresentInfo);
+
+    ++m_CurrentFrame;
 }
 
 void epiWXVulkanDemoTriangleCanvas::OnEraseBackground(wxEraseEvent&)
 {
     // NOTE: should reduce flickering
+}
+
+void epiWXVulkanDemoTriangleCanvas::RecreteSwapChain(const epiSize2u& size)
+{
+    const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(g_PhysicalDevice);
+
+    epiSize2u extent{};
+    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
+    {
+        extent = surfaceCapabilities.GetCurrentExtent();
+    }
+    else
+    {
+        extent.x = std::clamp(static_cast<epiU32>(size.x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
+        extent.y = std::clamp(static_cast<epiU32>(size.y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
+    }
+
+    gfxSurfaceFormat surfaceFormat;
+    surfaceFormat.SetFormat(kFormatRequired);
+    surfaceFormat.SetColorSpace(kColorSpaceRequired);
+
+    gfxSwapChainCreateInfo swapChainCreateInfo{};
+    swapChainCreateInfo.SetSurface(m_Surface);
+    swapChainCreateInfo.SetRenderPass(m_RenderPass);
+    swapChainCreateInfo.SetQueueFamily(m_QueueFamily);
+    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
+    swapChainCreateInfo.SetFormat(surfaceFormat);
+    swapChainCreateInfo.SetPresentMode(kPresentModeRequired);
+    swapChainCreateInfo.SetExtent(extent);
+
+    // TODO: recreate descriptor pool
+    m_CurrentFrame = 0;
+
+    m_SwapChain.Recreate(swapChainCreateInfo);
+
+    RecreateSynchronizationPrimitives();
+
+    // TODO: bind uniform buffers to the swapchain recreation in a proper way
+    RecreateUniformBuffers();
+
+    m_Pipeline.DynamicClearViewports();
+    m_Pipeline.DynamicClearScissors();
+
+    gfxPipelineViewport viewport;
+    viewport.SetRect(epiRect2f(0.0f, 0.0f, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
+    viewport.SetMinDepth(0.0f);
+    viewport.SetMaxDepth(1.0f);
+
+    m_Pipeline.DynamicAddViewport(viewport);
+    m_Pipeline.DynamicAddScissor(epiRect2s(0, 0, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
+
+    RecordCommandBuffers();
+}
+
+void epiWXVulkanDemoTriangleCanvas::RecreateSynchronizationPrimitives()
+{
+    gfxSemaphoreCreateInfo semaphoreCreateInfo{};
+    gfxFenceCreateInfo fenceCreateInfo{};
+    fenceCreateInfo.SetCreateMask(gfxFenceCreateMask_Signaled);
+
+    m_SemaphoreImageAvailable.Clear();
+    m_SemaphoreRenderFinished.Clear();
+    m_FencesInFlight.Clear();
+    m_FencesImagesInFlight.Clear();
+
+    m_SemaphoreImageAvailable.Reserve(kMaxFramesInFlight);
+    m_SemaphoreRenderFinished.Reserve(kMaxFramesInFlight);
+    m_FencesInFlight.Reserve(kMaxFramesInFlight);
+    m_FencesImagesInFlight.Resize(m_SwapChain.GetBufferCount());
+
+    for (epiU32 i = 0; i < kMaxFramesInFlight; ++i)
+    {
+        {
+            std::optional<gfxSemaphore> semaphore = g_Device.CreateSemaphoreFrom(semaphoreCreateInfo);
+            epiAssert(semaphore.has_value());
+
+            m_SemaphoreImageAvailable.push_back(*semaphore);
+        }
+
+        {
+            std::optional<gfxSemaphore> semaphore = g_Device.CreateSemaphoreFrom(semaphoreCreateInfo);
+            epiAssert(semaphore.has_value());
+
+            m_SemaphoreRenderFinished.push_back(*semaphore);
+        }
+
+        {
+            std::optional<gfxFence> fence = g_Device.CreateFence(fenceCreateInfo);
+            epiAssert(fence.has_value());
+
+            m_FencesInFlight.push_back(*fence);
+        }
+    }
 }
 
 void epiWXVulkanDemoTriangleCanvas::RecreateUniformBuffers()
@@ -556,51 +696,7 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
         return;
     }
 
-    const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(g_PhysicalDevice);
-
-    epiSize2u extent{};
-    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
-    {
-        extent = surfaceCapabilities.GetCurrentExtent();
-    }
-    else
-    {
-        extent.x = std::clamp(static_cast<epiU32>(event.GetSize().x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
-        extent.y = std::clamp(static_cast<epiU32>(event.GetSize().y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
-    }
-
-    gfxSurfaceFormat surfaceFormat;
-    surfaceFormat.SetFormat(kFormatRequired);
-    surfaceFormat.SetColorSpace(kColorSpaceRequired);
-
-    gfxSwapChainCreateInfo swapChainCreateInfo{};
-    swapChainCreateInfo.SetSurface(m_Surface);
-    swapChainCreateInfo.SetRenderPass(m_RenderPass);
-    swapChainCreateInfo.SetQueueFamily(m_QueueFamily);
-    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
-    swapChainCreateInfo.SetFormat(surfaceFormat);
-    swapChainCreateInfo.SetPresentMode(kPresentModeRequired);
-    swapChainCreateInfo.SetExtent(extent);
-
-    // TODO: recreate descriptor pool
-
-    m_SwapChain.Recreate(swapChainCreateInfo);
-
-    // TODO: bind uniform buffers to the swapchain recreation in a proper way
-    RecreateUniformBuffers();
-
-    m_Pipeline.DynamicClearViewports();
-    m_Pipeline.DynamicClearScissors();
-
-    gfxPipelineViewport viewport;
-    viewport.SetRect(epiRect2f(0.0f, 0.0f, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
-    viewport.SetMinDepth(0.0f);
-    viewport.SetMaxDepth(1.0f);
-
-    m_Pipeline.DynamicAddViewport(viewport);
-    m_Pipeline.DynamicAddScissor(epiRect2s(0, 0, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
-
-    RecordCommandBuffers();
+    RecreteSwapChain({event.GetSize().x, event.GetSize().y});
 
     Refresh();
 }
@@ -624,13 +720,17 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
         {
             const gfxDescriptorSet& descriptorSet = m_DescriptorPool.GetDescriptorSets()[i];
 
+            gfxRenderPassBeginInfo renderPassBeginInfo = m_SwapChain.ForBufferCreateRenderPassBeginInfo(i);
+            renderPassBeginInfo.SetRenderPass(m_RenderPass);
+            renderPassBeginInfo.SetClearValues(clearValues);
+
             record
-                .RenderPassBegin(m_SwapChain.ForBufferCreateRenderPassBeginInfo(i, m_RenderPass, clearValues))
+                .RenderPassBegin(renderPassBeginInfo)
                 .PipelineBind(m_Pipeline)
                 .VertexBuffersBind({m_VertexBuffer})
                 .IndexBufferBind(m_IndexBuffer, gfxIndexBufferType::UInt16)
                 .DescriptorSetsBind(gfxPipelineBindPoint::Graphics, m_PipelineLayout, {descriptorSet})
-                .DrawIndexed(m_Indices.size(), 1, 0, 0, 0)
+                .DrawIndexed(m_Indices.Size(), 1, 0, 0, 0)
                 .RenderPassEnd();
         }
     }

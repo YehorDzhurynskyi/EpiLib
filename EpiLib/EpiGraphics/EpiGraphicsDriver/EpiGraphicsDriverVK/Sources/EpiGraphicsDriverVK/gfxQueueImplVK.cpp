@@ -5,6 +5,7 @@
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxCommandBufferImplVK.h"
+#include "EpiGraphicsDriverVK/gfxSwapChainImplVK.h"
 #include "EpiGraphicsDriverVK/Synchronization/gfxSemaphoreImplVK.h"
 #include "EpiGraphicsDriverVK/Synchronization/gfxFenceImplVK.h"
 
@@ -146,6 +147,48 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFenc
     if (const VkResult result = vkQueueSubmit(m_VkQueue, submitInfosVk.size(), submitInfosVk.data(), signalFence); result != VK_SUCCESS)
     {
         gfxLogErrorEx(result, "Failed to call vkQueueSubmit!");
+        return false;
+    }
+
+    return true;
+}
+
+epiBool gfxQueueImplVK::Present(const gfxQueuePresentInfo& info)
+{
+    std::vector<VkSwapchainKHR> swapChainsVk;
+    swapChainsVk.reserve(info.GetSwapChains().Size());
+
+    std::vector<VkSemaphore> waitSemaphoresVk;
+    waitSemaphoresVk.reserve(info.GetWaitSemaphores().Size());
+
+    std::transform(info.GetSwapChains().begin(), info.GetSwapChains().end(), std::back_inserter(swapChainsVk), [](const gfxSwapChain& swapChain)
+    {
+        const gfxSwapChainImplVK* swapChainImpl = static_cast<const gfxSwapChainImplVK*>(gfxSwapChainImpl::ExtractImpl(swapChain));
+        epiAssert(swapChainImpl != nullptr);
+
+        return swapChainImpl->GetVkSwapChain();
+    });
+
+    std::transform(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end(), std::back_inserter(waitSemaphoresVk), [](const gfxSemaphore& semaphore)
+    {
+        const gfxSemaphoreImplVK* semaphorempl = static_cast<const gfxSemaphoreImplVK*>(gfxSemaphoreImpl::ExtractImpl(semaphore));
+        epiAssert(semaphorempl != nullptr);
+
+        return semaphorempl->GetVkSemaphore();
+    });
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.swapchainCount = swapChainsVk.size();
+    presentInfo.pSwapchains = swapChainsVk.data();
+    presentInfo.waitSemaphoreCount = waitSemaphoresVk.size();
+    presentInfo.pWaitSemaphores = waitSemaphoresVk.data();
+    presentInfo.pImageIndices = info.GetSwapChainImageIndices().data();
+    presentInfo.pResults = nullptr; // TODO: set
+
+    if (const VkResult result = vkQueuePresentKHR(m_VkQueue, &presentInfo); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkQueuePresentKHR!");
         return false;
     }
 

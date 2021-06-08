@@ -78,17 +78,21 @@ protected:
 EPI_GENREGION_END(gfxSwapChain)
 
 public:
+    friend class internalgfx::gfxSwapChainImpl;
+
+public:
     gfxSwapChain() = default;
     explicit gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl);
 
     epiBool Recreate(const gfxSwapChainCreateInfo& info);
 
-    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0});
-    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
-                                                              const gfxRenderPass& renderPass,
-                                                              const epiArray<gfxRenderPassClearValue>& renderPassClearValues);
+    epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore = nullptr,
+                            const gfxFence* signalFence = nullptr,
+                            epiU64 timeout = std::numeric_limits<epiU64>::max());
 
-    epiBool Present(const gfxQueue& queue, std::function<void(epiU32)> callback);
+    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0});
+    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex);
+    gfxQueueSubmitInfo ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex);
 
 protected:
     epiPimpl<internalgfx::gfxSwapChainImpl> m_Impl;

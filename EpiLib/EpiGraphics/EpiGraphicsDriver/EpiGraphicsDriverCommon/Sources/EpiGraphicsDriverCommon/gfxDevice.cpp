@@ -387,4 +387,29 @@ std::optional<gfxDescriptorPool> gfxDevice::CreateDescriptorPool(const gfxDescri
     return descriptorPool;
 }
 
+std::optional<gfxSemaphore> gfxDevice::CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const
+{
+    std::optional<gfxSemaphore> semaphore;
+
+    if (std::shared_ptr<internalgfx::gfxSemaphoreImpl> impl = m_Impl->CreateSemaphoreFrom(info))
+    {
+        semaphore = gfxSemaphore(std::move(impl));
+    }
+
+    return semaphore;
+}
+
+std::optional<gfxFence> gfxDevice::CreateFence(const gfxFenceCreateInfo& info) const
+{
+    std::optional<gfxFence> fence;
+
+    if (std::shared_ptr<internalgfx::gfxFenceImpl> impl = m_Impl->CreateFence(info))
+    {
+        fence = gfxFence(std::move(impl));
+    }
+
+    return fence;
+
+}
+
 EPI_NAMESPACE_END()

@@ -11,17 +11,12 @@
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
+#include "EpiGraphicsDriverVK/Synchronization/gfxSemaphoreImplVK.h"
+#include "EpiGraphicsDriverVK/Synchronization/gfxFenceImplVK.h"
 
 #include "EpiGraphicsDriverCommon/gfxTextureView.h"
 
 #include <vulkan/vulkan.h>
-
-namespace
-{
-
-constexpr epiU32 kMaxFramesInFlight = 2;
-
-} // namespace
 
 EPI_NAMESPACE_BEGIN()
 
@@ -122,42 +117,9 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
     }
 
     gfxCommandPoolCreateInfo commandPoolCreateInfo;
-    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChainFrameBuffers.Size());
+    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChainFrameBuffers.size());
 
     m_CommandPool = m_Device.CreateCommandPool(commandPoolCreateInfo, queueFamilyImpl);
-
-    VkSemaphoreCreateInfo semaphoreInfo{};
-    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-    VkFenceCreateInfo fenceInfo{};
-    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-    m_VkSemaphoreImageAvailable.resize(kMaxFramesInFlight);
-    m_VkSemaphoreRenderFinished.resize(kMaxFramesInFlight);
-    m_VkFencesInFlight.resize(kMaxFramesInFlight);
-    m_VkFencesImagesInFlight.resize(m_SwapChainFrameBuffers.Size(), VK_NULL_HANDLE);
-
-    for (epiU32 i = 0; i < kMaxFramesInFlight; ++i)
-    {
-        if (const VkResult result = vkCreateSemaphore(m_Device.GetVkDevice(), &semaphoreInfo, nullptr, &m_VkSemaphoreImageAvailable[i]); result != VK_SUCCESS)
-        {
-            gfxLogErrorEx(result, "Failed to call vkCreateSemaphore!");
-            return false;
-        }
-
-        if (const VkResult result = vkCreateSemaphore(m_Device.GetVkDevice(), &semaphoreInfo, nullptr, &m_VkSemaphoreRenderFinished[i]); result != VK_SUCCESS)
-        {
-            gfxLogErrorEx(result, "Failed to call vkCreateSemaphore!");
-            return false;
-        }
-
-        if (const VkResult result = vkCreateFence(m_Device.GetVkDevice(), &fenceInfo, nullptr, &m_VkFencesInFlight[i]); result != VK_SUCCESS)
-        {
-            gfxLogErrorEx(result, "Failed to call vkCreateFence!");
-            return false;
-        }
-    }
 
     return true;
 }
@@ -171,31 +133,9 @@ epiBool gfxSwapChainImplVK::Reset()
         return false;
     }
 
-    for (VkSemaphore semaphore : m_VkSemaphoreRenderFinished)
-    {
-        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
-    }
-
-    for (VkSemaphore semaphore : m_VkSemaphoreImageAvailable)
-    {
-        vkDestroySemaphore(m_Device.GetVkDevice(), semaphore, nullptr);
-    }
-
-    for (VkFence fence : m_VkFencesInFlight)
-    {
-        vkDestroyFence(m_Device.GetVkDevice(), fence, nullptr);
-    }
-
-    m_VkSemaphoreImageAvailable.clear();
-    m_VkSemaphoreRenderFinished.clear();
-    m_VkFencesInFlight.clear();
-    m_VkFencesImagesInFlight.clear();
-
     m_CommandPool.reset();
-    m_SwapChainFrameBuffers.Clear();
-    m_SwapChainImageViews.Clear();
-
-    m_CurrentFrame = 0;
+    m_SwapChainFrameBuffers.clear();
+    m_SwapChainImageViews.clear();
 
     vkDestroySwapchainKHR(m_Device.GetVkDevice(), m_VkSwapChain, nullptr);
 
@@ -214,6 +154,45 @@ epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
     }
 
     return Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl);
+}
+
+epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout)
+{
+    VkSemaphore signalSemaphoreVk = VK_NULL_HANDLE;
+    VkFence signalFenceVk = VK_NULL_HANDLE;
+
+    if (signalSemaphore != nullptr)
+    {
+        const gfxSemaphoreImplVK* signalSemaphoreImpl = static_cast<const gfxSemaphoreImplVK*>(gfxSemaphoreImpl::ExtractImpl(*signalSemaphore));
+        epiAssert(signalSemaphoreImpl != nullptr);
+
+        signalSemaphoreVk = signalSemaphoreImpl->GetVkSemaphore();
+    }
+
+    if (signalFence != nullptr)
+    {
+        const gfxFenceImplVK* signalFenceImpl = static_cast<const gfxFenceImplVK*>(gfxFenceImpl::ExtractImpl(*signalFence));
+        epiAssert(signalFenceImpl != nullptr);
+
+        signalFenceVk = signalFenceImpl->GetVkFence();
+    }
+
+    epiU32 imageIndex = 0;
+    if (const VkResult result = vkAcquireNextImageKHR(m_Device.GetVkDevice(),
+                                                      m_VkSwapChain,
+                                                      timeout,
+                                                      signalSemaphoreVk,
+                                                      signalFenceVk,
+                                                      &imageIndex); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkAcquireNextImageKHR!");
+        if (result != VK_SUBOPTIMAL_KHR)
+        {
+            return -1;
+        }
+    }
+
+    return imageIndex;
 }
 
 gfxCommandBufferRecord gfxSwapChainImplVK::ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask)
@@ -238,9 +217,7 @@ gfxCommandBufferRecord gfxSwapChainImplVK::ForBufferRecordCommands(epiU32 buffer
     return record;
 }
 
-gfxRenderPassBeginInfo gfxSwapChainImplVK::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
-                                                                              const gfxRenderPass& renderPass,
-                                                                              const epiArray<gfxRenderPassClearValue>& renderPassClearValues)
+gfxRenderPassBeginInfo gfxSwapChainImplVK::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex)
 {
     gfxRenderPassBeginInfo beginInfo;
 
@@ -250,21 +227,28 @@ gfxRenderPassBeginInfo gfxSwapChainImplVK::ForBufferCreateRenderPassBeginInfo(ep
         return beginInfo;
     }
 
-    const gfxRenderPassImplVK* renderPassImpl = static_cast<const gfxRenderPassImplVK*>(gfxRenderPassImpl::ExtractImpl(renderPass));
-    if (renderPassImpl == nullptr)
-    {
-        epiLogError("Failed to create RenderPassBeginInfo! Provided RenderPass has no implementation!");
-        return beginInfo;
-    }
-
-    beginInfo.SetRenderPass(renderPass);
-    beginInfo.SetClearValues(renderPassClearValues);
     beginInfo.SetFrameBuffer(gfxFrameBuffer(m_SwapChainFrameBuffers[bufferIndex]));
     beginInfo.SetRenderArea(epiRect2s{0, 0, static_cast<epiS32>(GetExtent().x), static_cast<epiS32>(GetExtent().y)});
 
     return beginInfo;
 }
 
+gfxQueueSubmitInfo gfxSwapChainImplVK::ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex)
+{
+    gfxQueueSubmitInfo queueSubmitInfo;
+
+    if (bufferIndex >= GetBufferCount())
+    {
+        epiLogError("Failed to create QueueSubmitInfo! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
+        return queueSubmitInfo;
+    }
+
+    queueSubmitInfo.GetCommandBuffers().push_back(gfxCommandBuffer(m_CommandPool->GetPrimaryCommandBuffers()[bufferIndex]));
+
+    return queueSubmitInfo;
+}
+
+#if 0
 epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback)
 {
     const epiU32 frameIndex = m_CurrentFrame % kMaxFramesInFlight;
@@ -349,15 +333,21 @@ epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue, std::function<voi
 
     return true;
 }
+#endif
 
 epiU32 gfxSwapChainImplVK::GetBufferCount() const
 {
-    return m_SwapChainImageViews.Size();
+    return m_SwapChainImageViews.size();
 }
 
 epiSize2u gfxSwapChainImplVK::GetExtent() const
 {
     return m_Extent;
+}
+
+VkSwapchainKHR gfxSwapChainImplVK::GetVkSwapChain() const
+{
+    return m_VkSwapChain;
 }
 
 } // namespace internalgfx

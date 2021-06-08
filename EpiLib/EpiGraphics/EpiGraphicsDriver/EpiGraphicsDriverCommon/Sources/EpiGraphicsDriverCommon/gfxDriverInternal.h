@@ -31,6 +31,9 @@ public:
 
     virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos) = 0;
     virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence) = 0;
+
+    virtual epiBool Present(const gfxQueuePresentInfo& info) = 0;
+
     virtual epiBool Wait() = 0;
 
     virtual gfxQueueType GetType() const = 0;
@@ -182,6 +185,8 @@ public:
     virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info, const gfxBufferImpl& bufferImpl) const = 0;
     virtual std::shared_ptr<gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
+    virtual std::shared_ptr<gfxSemaphoreImpl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxFenceImpl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
 
     const epiArray<std::shared_ptr<gfxQueueFamilyImpl>>& GetQueueFamilies() const { return m_QueueFamilies; }
 
@@ -232,6 +237,9 @@ public:
 class gfxSwapChainImpl
 {
 public:
+    static const gfxSwapChainImpl* ExtractImpl(const gfxSwapChain& swapChain) { return swapChain.m_Impl.Ptr(); }
+
+public:
     gfxSwapChainImpl() = default;
     gfxSwapChainImpl(const gfxSwapChainImpl& rhs) = delete;
     gfxSwapChainImpl& operator=(const gfxSwapChainImpl& rhs) = delete;
@@ -244,12 +252,11 @@ public:
                              const gfxQueueFamilyImpl& queueFamilyImpl,
                              const gfxRenderPassImpl& renderPassImpl) = 0;
 
-    virtual gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) = 0;
-    virtual gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex,
-                                                                      const gfxRenderPass& renderPass,
-                                                                      const epiArray<gfxRenderPassClearValue>& renderPassClearValues) = 0;
+    virtual epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) = 0;
 
-    virtual epiBool Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback) = 0;
+    virtual gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) = 0;
+    virtual gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex) = 0;
+    virtual gfxQueueSubmitInfo ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex) = 0;
 
     virtual epiU32 GetBufferCount() const = 0;
     virtual epiSize2u GetExtent() const = 0;

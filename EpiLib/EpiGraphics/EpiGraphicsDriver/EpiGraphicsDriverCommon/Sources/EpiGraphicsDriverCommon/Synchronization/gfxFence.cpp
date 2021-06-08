@@ -12,13 +12,30 @@ gfxFence::gfxFence(const std::shared_ptr<internalgfx::gfxFenceImpl>& impl)
 {
 }
 
+epiBool gfxFence::HasImpl() const
+{
+    return !!m_Impl;
+}
+
 epiBool gfxFence::Reset()
 {
+    if (!HasImpl())
+    {
+        epiLogError("A calling object has no implementation!");
+        return false;
+    }
+
     return m_Impl->Reset();
 }
 
 epiBool gfxFence::Wait(epiU64 timeout)
 {
+    if (!HasImpl())
+    {
+        epiLogError("A calling object has no implementation!");
+        return false;
+    }
+
     return m_Impl->Wait(timeout);
 }
 

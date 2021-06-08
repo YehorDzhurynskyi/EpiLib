@@ -88,6 +88,38 @@ epiBool gfxQueue::Submit(const gfxQueueSubmitInfo& info, const gfxFence& signalF
     return Submit(epiArray<gfxQueueSubmitInfo>{info}, signalFence);
 }
 
+epiBool gfxQueue::Present(const gfxQueuePresentInfo& info)
+{
+    if (!IsQueueTypeSupported(gfxQueueType_Graphics))
+    {
+        epiLogError("Failed to Present QueuePresentInfo! Present should be called on graphics Queue!");
+        return false;
+    }
+
+    if (!internalgfx::HasImpl<internalgfx::gfxSemaphoreImpl>(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end()))
+    {
+        epiLogError("Failed to Present QueuePresentInfo! Some of the provided wait Semaphores has no implementation!");
+        return false;
+    }
+
+    if (!internalgfx::HasImpl<internalgfx::gfxSwapChainImpl>(info.GetSwapChains().begin(), info.GetSwapChains().end()))
+    {
+        epiLogError("Failed to Present QueuePresentInfo! Some of the provided wait SwapChains has no implementation!");
+        return false;
+    }
+
+    if (info.GetSwapChains().Size() != info.GetSwapChainImageIndices().Size())
+    {
+        epiLogError("Failed to Present QueuePresentInfo! The number of the SwapChain image indices "
+                    "(count=`{}`) and SwapChains (count=`{}`) should be equal!",
+                    info.GetSwapChainImageIndices().Size(),
+                    info.GetSwapChains().Size());
+        return false;
+    }
+
+    return m_Impl->Present(info);
+}
+
 epiBool gfxQueue::Wait()
 {
     return m_Impl->Wait();
