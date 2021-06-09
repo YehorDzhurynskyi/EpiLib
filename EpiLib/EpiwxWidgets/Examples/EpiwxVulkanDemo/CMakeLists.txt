@@ -10,3 +10,5 @@ target_link_libraries(EpiwxVulkanDemo PUBLIC EpiwxWidgets)
 epi_module_register(EpiwxVulkanDemo
     FOLDER "EpiLib/Examples"
 )
+
+configure_file("texture.jpg" . COPYONLY)

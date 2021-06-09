@@ -6,6 +6,8 @@
 
 #include "EpiGraphics/Camera/gfxCameraPersp.h"
 
+#include "EpiMultimedia/Image/mmImage.h"
+
 #include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/window.h>
@@ -412,6 +414,9 @@ public:
 
         RecordCommandBuffers();
 
+        m_TextureImage = mmImage::LoadFromFile("texture.jpg");
+        // TODO: check whether m_TextureImage is a non-empty
+
         m_Timer.SetOwner(this, -1);
         m_Timer.Start(30);
     }
@@ -450,6 +455,8 @@ protected:
     epiArray<gfxSemaphore> m_SemaphoreRenderFinished;
     epiArray<gfxFence> m_FencesInFlight;
     epiArray<gfxFence> m_FencesImagesInFlight;
+
+    mmImage m_TextureImage;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)

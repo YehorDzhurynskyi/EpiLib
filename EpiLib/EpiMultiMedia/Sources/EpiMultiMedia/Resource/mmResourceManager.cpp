@@ -160,6 +160,31 @@ epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const
                                                      1);
             epiAssert(imageBytes > 0);
         }
+        else if (mmImage* image = epiAs<mmImage>(media))
+        {
+            parsingContext.SWSContext = sws_getContext(parsingContext.CodecContext->coded_width,
+                                                       parsingContext.CodecContext->coded_height,
+                                                       parsingContext.CodecContext->pix_fmt,
+                                                       parsingContext.CodecContext->width,
+                                                       parsingContext.CodecContext->height,
+                                                       AV_PIX_FMT_RGB24,
+                                                       SWS_BILINEAR,
+                                                       nullptr,
+                                                       nullptr,
+                                                       nullptr);
+            epiAssert(parsingContext.SWSContext != nullptr);
+
+            parsingContext.FrameDecoded = av_frame_alloc();
+            epiAssert(parsingContext.FrameDecoded != nullptr);
+
+            const epiS32 imageBytes = av_image_alloc(parsingContext.FrameDecoded->data,
+                                                     parsingContext.FrameDecoded->linesize,
+                                                     parsingContext.CodecContext->width,
+                                                     parsingContext.CodecContext->height,
+                                                     AV_PIX_FMT_RGB24,
+                                                     1);
+            epiAssert(imageBytes > 0);
+        }
         else
         {
             epiLogError("Unhandled media type: `{}`!", media->ToString());
@@ -250,15 +275,58 @@ epiBool ParseMedia(mmResource& resource, AVFormatContext& avFormatContext, const
                 // TODO: set bit depth
                 // imageDst.SetBitDepth(parsingContext.FrameDecoded->bit)
 
-#ifdef EPI_DEBUG
+#ifdef EPI_BUILD_DEBUG
                 for (epiS32 i = 1; i < AV_NUM_DATA_POINTERS; ++i)
                 {
                     epiAssert(parsingContext.FrameDecoded->data[i] == nullptr);
                     epiAssert(parsingContext.FrameDecoded->linesize[i] == 0);
                 }
-#endif // EPI_DEBUG
+#endif // EPI_BUILD_DEBUG
 
                 epiArray<epiByte>& dataDst = imageDst.GetData();
+                const epiS32 bufferSize = av_image_get_buffer_size(AV_PIX_FMT_RGB24,
+                                                                   parsingContext.CodecContext->width,
+                                                                   parsingContext.CodecContext->height,
+                                                                   1);
+                epiAssert(bufferSize > 0);
+
+                dataDst.Resize(bufferSize);
+
+                const epiS32 bytesCopied = av_image_copy_to_buffer(dataDst.GetData(),
+                                                                   dataDst.GetSize(),
+                                                                   parsingContext.FrameDecoded->data,
+                                                                   parsingContext.FrameDecoded->linesize,
+                                                                   AV_PIX_FMT_RGB24,
+                                                                   parsingContext.CodecContext->width,
+                                                                   parsingContext.CodecContext->height,
+                                                                   1);
+                epiAssert(bytesCopied == bufferSize);
+            }
+            else if (mmImage* image = epiAs<mmImage>(media))
+            {
+                sws_scale(parsingContext.SWSContext,
+                          frameRaw->data,
+                          frameRaw->linesize,
+                          0,
+                          parsingContext.CodecContext->height,
+                          parsingContext.FrameDecoded->data,
+                          parsingContext.FrameDecoded->linesize);
+
+                image->SetWidth(parsingContext.CodecContext->width);
+                image->SetHeight(parsingContext.CodecContext->height);
+
+                // TODO: set bit depth
+                // imageDst.SetBitDepth(parsingContext.FrameDecoded->bit)
+
+#ifdef EPI_BUILD_DEBUG
+                for (epiS32 i = 1; i < AV_NUM_DATA_POINTERS; ++i)
+                {
+                    epiAssert(parsingContext.FrameDecoded->data[i] == nullptr);
+                    epiAssert(parsingContext.FrameDecoded->linesize[i] == 0);
+                }
+#endif // EPI_BUILD_DEBUG
+
+                epiArray<epiByte>& dataDst = image->GetData();
                 const epiS32 bufferSize = av_image_get_buffer_size(AV_PIX_FMT_RGB24,
                                                                    parsingContext.CodecContext->width,
                                                                    parsingContext.CodecContext->height,
@@ -321,17 +389,20 @@ EPI_NAMESPACE_BEGIN()
 mmResource* mmResourceManager::LoadResource(const epiChar* url, epiBool deepLoad)
 {
     std::unique_ptr<mmResource>& resource = m_Resources[url];
-    resource = std::make_unique<mmResource>();
-    resource->SetURL(url);
-    resource->SetStatus(mmResourceStatus::Empty);
+    if (!resource)
+    {
+        resource = std::make_unique<mmResource>();
+        resource->SetURL(url);
+        resource->SetStatus(mmResourceStatus::Empty);
 
-    if (deepLoad)
-    {
-        LoadResourceDeep(*resource);
-    }
-    else
-    {
-        LoadResourceShallow(*resource);
+        if (deepLoad)
+        {
+            LoadResourceDeep(*resource);
+        }
+        else
+        {
+            LoadResourceShallow(*resource);
+        }
     }
 
     return resource.get();
@@ -350,7 +421,7 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
 
     resource.SetStatus(mmResourceStatus::LoadingShallow);
 
-    while (1)
+    do
     {
         // TODO: investigate `options` parameter
         AVFormatContext* avFormatContext = nullptr;
@@ -364,19 +435,30 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
             {
                 auto& media = resource.GetMedia();
 
-                for (epiU32 i = 0; i < avFormatContext->nb_streams; ++i)
+                const epiBool isImage = avFormatContext->nb_streams == 1 &&
+                                        avFormatContext->streams[0]->codec->codec_type == AVMEDIA_TYPE_VIDEO &&
+                                        strncmp(avFormatContext->iformat->name, "image2", strlen("image2")) == 0;
+
+                if (isImage)
                 {
-                    switch (avFormatContext->streams[i]->codec->codec_type)
+                    media.push_back(new mmImage());
+                }
+                else
+                {
+                    for (epiU32 i = 0; i < avFormatContext->nb_streams; ++i)
                     {
-                    case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("Unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
-                    case AVMEDIA_TYPE_AUDIO:
-                    {
-                        media.push_back(new mmAudio());
-                    } break;
-                    case AVMEDIA_TYPE_VIDEO:
-                    {
-                        media.push_back(new mmVideo());
-                    } break;
+                        switch (avFormatContext->streams[i]->codec->codec_type)
+                        {
+                        case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("Unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
+                        case AVMEDIA_TYPE_AUDIO:
+                        {
+                            media.push_back(new mmAudio());
+                        } break;
+                        case AVMEDIA_TYPE_VIDEO:
+                        {
+                            media.push_back(new mmVideo());
+                        } break;
+                        }
                     }
                 }
 
@@ -399,7 +481,7 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
 
         resource.SetStatus(mmResourceStatus::LoadedShallow);
         return;
-    }
+    } while (0);
 
     resource.SetStatus(mmResourceStatus::Broken);
 }
@@ -419,7 +501,7 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
     const mmResourceStatus previuosStatus = resource.GetStatus();
     resource.SetStatus(mmResourceStatus::LoadingDeep);
 
-    while (1)
+    do
     {
         // TODO: investigate `options` parameter
         AVFormatContext* avFormatContext = nullptr;
@@ -434,61 +516,90 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                 std::map<epiS32, mmMediaBase*> streams;
 
                 auto& media = resource.GetMedia();
-                for (epiU32 streamIdx = 0; streamIdx < avFormatContext->nb_streams; ++streamIdx)
+                const epiBool isImage = avFormatContext->nb_streams == 1 &&
+                                        avFormatContext->streams[0]->codec->codec_type == AVMEDIA_TYPE_VIDEO &&
+                                        strncmp(avFormatContext->iformat->name, "image2", strlen("image2")) == 0;
+
+                if (isImage)
                 {
-                    switch (avFormatContext->streams[streamIdx]->codec->codec_type)
+                    mmImage* image = nullptr;
+                    if (previuosStatus == mmResourceStatus::LoadedShallow)
                     {
-                    case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("Unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
-                    case AVMEDIA_TYPE_AUDIO:
+                        mmMediaBase* mediaBase = media[0];
+                        if (image = epiAs<mmImage>(mediaBase); image == nullptr)
+                        {
+                            epiLogError("Media stream matching has failed (`mmImage` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
+                        }
+                    }
+                    else if (previuosStatus == mmResourceStatus::Empty)
                     {
-                        mmAudio* audio = nullptr;
-                        if (previuosStatus == mmResourceStatus::LoadedShallow)
-                        {
-                            mmMediaBase* mediaBase = media[streamIdx];
-                            if (audio = epiAs<mmAudio>(mediaBase); audio == nullptr)
-                            {
-                                epiLogError("Media stream matching has failed (`mmAudio` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
-                            }
-                        }
-                        else if (previuosStatus == mmResourceStatus::Empty)
-                        {
-                            audio = new mmAudio();
-                            media.push_back(audio);
-                        }
+                        image = new mmImage();
+                        media.push_back(image);
+                    }
 
-                        epiAssert(audio != nullptr);
-                        streams[streamIdx] = audio;
-                    } break;
-                    case AVMEDIA_TYPE_VIDEO:
+                    epiAssert(image != nullptr);
+                    streams[0] = image;
+                }
+                else
+                {
+                    for (epiU32 streamIdx = 0; streamIdx < avFormatContext->nb_streams; ++streamIdx)
                     {
-                        mmVideo* video = nullptr;
-                        if (previuosStatus == mmResourceStatus::LoadedShallow)
+                        switch (avFormatContext->streams[streamIdx]->codec->codec_type)
                         {
-                            mmMediaBase* mediaBase = media[streamIdx];
-                            if (video = epiAs<mmVideo>(mediaBase); video == nullptr)
+                        case AVMEDIA_TYPE_UNKNOWN: epiLogWarn("Unknown media type has occurred: url=`{}`!", resource.GetURL()); break;
+                        case AVMEDIA_TYPE_AUDIO:
+                        {
+                            mmAudio* audio = nullptr;
+                            if (previuosStatus == mmResourceStatus::LoadedShallow)
                             {
-                                epiLogError("Media stream matching has failed (`mmVideo` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
+                                mmMediaBase* mediaBase = media[streamIdx];
+                                if (audio = epiAs<mmAudio>(mediaBase); audio == nullptr)
+                                {
+                                    epiLogError("Media stream matching has failed (`mmAudio` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
+                                }
                             }
-                        }
-                        else if (previuosStatus == mmResourceStatus::Empty)
-                        {
-                            video = new mmVideo();
-                            media.push_back(video);
-                        }
+                            else if (previuosStatus == mmResourceStatus::Empty)
+                            {
+                                audio = new mmAudio();
+                                media.push_back(audio);
+                            }
 
-                        epiAssert(video != nullptr);
-                        streams[streamIdx] = video;
-                    } break;
+                            epiAssert(audio != nullptr);
+                            streams[streamIdx] = audio;
+                        } break;
+                        case AVMEDIA_TYPE_VIDEO:
+                        {
+                            mmVideo* video = nullptr;
+                            if (previuosStatus == mmResourceStatus::LoadedShallow)
+                            {
+                                mmMediaBase* mediaBase = media[streamIdx];
+                                if (video = epiAs<mmVideo>(mediaBase); video == nullptr)
+                                {
+                                    epiLogError("Media stream matching has failed (`mmVideo` was expected, but `{}` occurred): url=`{}`!", mediaBase->GetMetaClass().GetName(), resource.GetURL());
+                                }
+                            }
+                            else if (previuosStatus == mmResourceStatus::Empty)
+                            {
+                                video = new mmVideo();
+                                media.push_back(video);
+                            }
+
+                            epiAssert(video != nullptr);
+                            streams[streamIdx] = video;
+                        } break;
+                        }
                     }
                 }
 
-                if (!ParseMedia(resource, *avFormatContext, streams))
-                {
-                    break;
-                }
+                const epiBool parseMediaSucceed = ParseMedia(resource, *avFormatContext, streams);
 
                 // TODO: figure out whether `avformat_close_input` should be called on `avformat_...` failure
                 avformat_close_input(&avFormatContext);
+
+                if (!parseMediaSucceed)
+                {
+                    break;
+                }
             }
             else
             {
@@ -504,7 +615,7 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
 
         resource.SetStatus(mmResourceStatus::LoadedDeep);
         return;
-    }
+    } while (0);
 
     resource.SetStatus(mmResourceStatus::Broken);
 }

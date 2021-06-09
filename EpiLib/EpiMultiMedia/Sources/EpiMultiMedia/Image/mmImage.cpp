@@ -3,6 +3,8 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiMultimedia/Image/mmImage.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiMultimedia/Resource/mmResourceManager.h"
+
 namespace
 {
 
@@ -1730,6 +1732,26 @@ void mmImage::SetPixelFormat_Callback(mmImagePixelFormat value)
     m_PixelFormat = value;
     m_BPP = mmImage::BPP(value);
     m_BPC = mmImage::BPC(value);
+}
+
+mmImage mmImage::LoadFromFile(const epiChar* path)
+{
+    mmImage image;
+
+    // TODO: add non-persistent flag, so this image won't be saved by the resource manager
+    constexpr epiBool kDeepLoad = true;
+    if (mmResource* resource = mmResourceManager::GetInstance().LoadResource(path, kDeepLoad); resource->GetStatus() != mmResourceStatus::Broken)
+    {
+        if (resource->GetMedia().Size() == 1)
+        {
+            if (mmImage* loaded = epiAs<mmImage>(resource->GetMedia()[0]))
+            {
+                image = loaded->Duplicate();
+            }
+        }
+    }
+
+    return image;
 }
 
 EPI_NAMESPACE_END()

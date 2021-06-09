@@ -67,6 +67,8 @@ public:
     static constexpr epiVec4u BPC(mmImagePixelFormat fmt);
     static constexpr epiU32 ChannelsOf(mmImagePixelFormat fmt);
 
+    static mmImage LoadFromFile(const epiChar* path);
+
     static mmImage FromSeries2Df_ToGRAYSCALE(const dSeries2Df& series, epiBool clamp = true);
     static mmImage FromSeries2Df_ToGRAYSCALE(const dSeries2Df& series, const epiVec2f& minmax);
 
