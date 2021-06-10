@@ -260,12 +260,6 @@ mmImage mmImage::FromSeries2Df_ToR8G8B8(const dSeries2Df& seriesR,
     return image;
 }
 
-mmImage::mmImage()
-{
-    m_BPP = mmImage::BPP(GetPixelFormat());
-    m_BPC = mmImage::BPC(GetPixelFormat());
-}
-
 mmImage::mmImage(const dSeries2Df& series)
 {
     *this = FromSeries2Df_ToGRAYSCALE(series);
@@ -1727,13 +1721,6 @@ epiSize_t mmImage::GetBytes_Callback() const
     return GetPitch() * GetHeight();
 }
 
-void mmImage::SetPixelFormat_Callback(mmImagePixelFormat value)
-{
-    m_PixelFormat = value;
-    m_BPP = mmImage::BPP(value);
-    m_BPC = mmImage::BPC(value);
-}
-
 mmImage mmImage::LoadFromFile(const epiChar* path)
 {
     mmImage image;
@@ -1752,6 +1739,21 @@ mmImage mmImage::LoadFromFile(const epiChar* path)
     }
 
     return image;
+}
+
+epiBool mmImage::GetIsEmpty_Callback() const
+{
+    return GetData().IsEmpty() || GetWidth() <= 0 || GetHeight() <= 0;
+}
+
+epiU32 mmImage::GetBPP_Callback() const
+{
+    return BPP(GetPixelFormat());
+}
+
+epiVec4u mmImage::GetBPC_Callback() const
+{
+    return BPC(GetPixelFormat());
 }
 
 EPI_NAMESPACE_END()

@@ -36,25 +36,26 @@ public:
 
     enum mmImage_PIDs
     {
+        PID_IsEmpty = 0xae6d7566,
         PID_BPP = 0x5d8f8c1c,
         PID_BPC = 0xd931cdc2,
-        PID_Width = 0x4ddb6a2b,
-        PID_Height = 0xf2e1e039,
         PID_Pitch = 0xe65e91dd,
         PID_Bytes = 0x70586cca,
+        PID_Width = 0x4ddb6a2b,
+        PID_Height = 0xf2e1e039,
         PID_Data = 0xdc15c5d,
         PID_PixelFormat = 0xc9797cbb,
-        PID_COUNT = 8
+        PID_COUNT = 9
     };
 
 protected:
+    epiBool GetIsEmpty_Callback() const;
+    epiU32 GetBPP_Callback() const;
+    epiVec4u GetBPC_Callback() const;
     epiSize_t GetPitch_Callback() const;
     epiSize_t GetBytes_Callback() const;
-    void SetPixelFormat_Callback(mmImagePixelFormat value);
 
 protected:
-    epiU32 m_BPP{0};
-    epiVec4u m_BPC{};
     epiSize_t m_Width{0};
     epiSize_t m_Height{0};
     epiArray<epiU8> m_Data{};
@@ -86,7 +87,7 @@ public:
                                           const epiVec2f& minmaxB);
 
 public:
-    mmImage();
+    mmImage() = default;
     mmImage(const dSeries2Df& series);
     mmImage(const dSeries2Df& series, epiFloat min, epiFloat max);
 

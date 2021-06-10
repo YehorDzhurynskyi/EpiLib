@@ -415,7 +415,7 @@ public:
         RecordCommandBuffers();
 
         m_TextureImage = mmImage::LoadFromFile("texture.jpg");
-        // TODO: check whether m_TextureImage is a non-empty
+        epiAssert(!m_TextureImage.GetIsEmpty());
 
         m_Timer.SetOwner(this, -1);
         m_Timer.Start(30);

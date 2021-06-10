@@ -9,14 +9,15 @@ class mmImage : mmMediaBase
 {
     # TODO: add [Editor(ReadOnly=True)]
     {
-        [ReadOnly]
+        [Virtual, ReadOnly]
         {
+            epiBool IsEmpty;
+
             epiU32 BPP;
+
+            [ReadCallback(SuppressRef=true)]
             epiVec4u BPC;
         }
-
-        epiSize_t Width;
-        epiSize_t Height;
 
         [Virtual]
         {
@@ -32,8 +33,10 @@ class mmImage : mmMediaBase
         }
     }
 
+    epiSize_t Width;
+    epiSize_t Height;
+
     epiArray<epiU8> Data;
 
-    [WriteCallback]
     mmImagePixelFormat PixelFormat;
 };
