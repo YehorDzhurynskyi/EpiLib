@@ -49,5 +49,7 @@ VkDescriptorPoolCreateFlags gfxDescriptorPoolUsageTo(gfxDescriptorPoolUsage usag
 VkFenceCreateFlagBits gfxFenceCreateMaskTo(gfxFenceCreateMask mask);
 VkSemaphoreCreateFlags gfxSemaphoreCreateMaskTo(gfxSemaphoreCreateMask mask);
 VkSemaphoreWaitFlagBits gfxSemaphoreWaitMaskTo(gfxSemaphoreWaitMask mask);
+VkImageTiling gfxImageTilingTo(gfxImageTiling tiling);
+VkImageAspectFlagBits gfxImageAspectTo(gfxImageAspect mask);
 
 EPI_NAMESPACE_END()

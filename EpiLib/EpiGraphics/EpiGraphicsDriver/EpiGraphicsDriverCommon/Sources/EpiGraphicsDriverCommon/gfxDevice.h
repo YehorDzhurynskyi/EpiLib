@@ -76,7 +76,8 @@ public:
     std::optional<gfxTextureView> CreateTextureView(const gfxTextureViewCreateInfo& info) const;
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
     std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info) const;
-    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const;
+    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const;
+    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const;
     std::optional<gfxDescriptorSetLayout> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const;
     std::optional<gfxDescriptorPool> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const;
     std::optional<gfxSemaphore> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const;

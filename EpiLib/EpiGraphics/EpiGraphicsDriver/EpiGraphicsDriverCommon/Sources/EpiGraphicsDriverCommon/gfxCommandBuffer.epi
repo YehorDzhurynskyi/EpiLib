@@ -20,6 +20,26 @@ class gfxCommandBufferRecordCopyRegion
     epiSize_t DstOffset;
 };
 
+class gfxCommandBufferRecordCopyBufferToImage
+{
+    epiSize_t BufferOffset;
+    epiU32 BufferRowLength;
+    epiU32 BufferImageHeight;
+    gfxImageSubresourceLayers ImageSubresource;
+    epiVec3s ImageOffset;
+    epiVec3u ImageExtent;
+};
+
+class gfxCommandBufferRecordPipelineBarier
+{
+    gfxPipelineStage SrcStageMask;
+    gfxPipelineStage DstStageMask;
+    gfxDependency DependencyFlags;
+    epiArray<gfxMemoryBarrier> MemoryBarriers;
+    epiArray<gfxBufferMemoryBarrier> BufferMemoryBarriers;
+    epiArray<gfxImageMemoryBarrier> ImageMemoryBarriers;
+};
+
 class gfxCommandBufferRecord
 {
     [ReadOnly]

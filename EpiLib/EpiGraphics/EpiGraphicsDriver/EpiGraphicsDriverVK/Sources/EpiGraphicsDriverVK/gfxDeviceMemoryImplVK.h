@@ -23,7 +23,8 @@ public:
     gfxDeviceMemoryImplVK& operator=(gfxDeviceMemoryImplVK&& rhs) = default;
     ~gfxDeviceMemoryImplVK() override;
 
-    epiBool Init(const gfxDeviceMemoryCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl, const gfxBufferImplVK& bufferImpl);
+    epiBool Init(const gfxDeviceMemoryBufferCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl, const gfxBufferImplVK& bufferImpl);
+    epiBool Init(const gfxDeviceMemoryImageCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl);
 
     epiByte* Map(epiSize_t size, epiSize_t offset) override;
     void Unmap() override;

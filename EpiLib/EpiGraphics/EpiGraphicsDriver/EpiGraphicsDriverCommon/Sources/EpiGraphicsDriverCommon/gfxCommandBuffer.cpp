@@ -107,6 +107,39 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBind(const gfxPipelineGr
     return *this;
 }
 
+gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier)
+{
+    const epiBool bufferMemoryBarriersValid = internalgfx::HasImpl(pipelineBarrier.GetBufferMemoryBarriers().begin(),
+                                                                   pipelineBarrier.GetBufferMemoryBarriers().end(),
+                                                                   [](const gfxBufferMemoryBarrier& barrier)
+    {
+        return internalgfx::HasImpl<internalgfx::gfxBufferImpl>(barrier.GetBuffer());
+    });
+
+    if (!bufferMemoryBarriersValid)
+    {
+        epiLogError("Failed to barrier Pipeline! Some of the provided BufferMemoryBarrier has no Buffer implementation!");
+        return *this;
+    }
+
+    const epiBool imageMemoryBarriersValid = internalgfx::HasImpl(pipelineBarrier.GetImageMemoryBarriers().begin(),
+                                                                  pipelineBarrier.GetImageMemoryBarriers().end(),
+                                                                  [](const gfxImageMemoryBarrier& barrier)
+    {
+        return internalgfx::HasImpl<internalgfx::gfxTextureImpl>(barrier.GetImage());
+    });
+
+    if (!imageMemoryBarriersValid)
+    {
+        epiLogError("Failed to barrier Pipeline! Some of the provided ImageMemoryBarrier has no Image implementation!");
+        return *this;
+    }
+
+    m_Impl->PipelineBarrier(pipelineBarrier);
+
+    return *this;
+}
+
 gfxCommandBufferRecord& gfxCommandBufferRecord::VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets)
 {
     epiPtrArray<const internalgfx::gfxBufferImpl> buffersImpl;
@@ -184,6 +217,25 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const
     }
 
     m_Impl->Copy(*srcImpl, *dstImpl, copyRegions);
+
+    return *this;
+}
+
+gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
+{
+    if (!internalgfx::HasImpl<internalgfx::gfxBufferImpl>(src))
+    {
+        epiLogError("Failed to Copy! Source Buffer has no implementation!");
+        return *this;
+    }
+
+    if (!internalgfx::HasImpl<internalgfx::gfxTextureImpl>(dst))
+    {
+        epiLogError("Failed to Copy! Destination Image has no implementation!");
+        return *this;
+    }
+
+    m_Impl->Copy(src, dst, dstLayout, copyRegions);
 
     return *this;
 }

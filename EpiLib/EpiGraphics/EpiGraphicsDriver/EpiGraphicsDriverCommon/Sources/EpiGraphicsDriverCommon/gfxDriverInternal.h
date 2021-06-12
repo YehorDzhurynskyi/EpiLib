@@ -133,6 +133,7 @@ public:
     virtual void RenderPassEnd() = 0;
 
     virtual void PipelineBind(const gfxPipelineGraphicsImpl& pipeline) = 0;
+    virtual void PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier) = 0;
 
     virtual void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
     virtual void IndexBufferBind(const gfxBufferImpl& bufferImpl, gfxIndexBufferType type, epiU32 offset = 0) = 0;
@@ -145,6 +146,7 @@ public:
     virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
     virtual void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) = 0;
     virtual void Copy(const gfxBufferImpl& src, const gfxBufferImpl& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
+    virtual void Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) = 0;
 };
 
 struct gfxShaderProgramCreateInfoImpl
@@ -182,7 +184,8 @@ public:
     virtual std::shared_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const = 0;
     virtual std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
     virtual std::shared_ptr<gfxBufferImpl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info, const gfxBufferImpl& bufferImpl) const = 0;
+    virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info, const gfxBufferImpl& bufferImpl) const = 0;
+    virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
     virtual std::shared_ptr<gfxSemaphoreImpl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
@@ -411,6 +414,9 @@ protected:
 class gfxTextureImpl
 {
 public:
+    static const gfxTextureImpl* ExtractImpl(const gfxTexture& image) { return image.m_Impl.Ptr(); }
+
+public:
     gfxTextureImpl() = default;
     gfxTextureImpl(const gfxTextureImpl& rhs) = delete;
     gfxTextureImpl& operator=(const gfxTextureImpl& rhs) = delete;
@@ -559,6 +565,12 @@ epiBool HasImpl(It begin, It end)
     {
         return HasImpl<TImpl>(obj);
     });
+}
+
+template<typename It, typename Callback>
+epiBool HasImpl(It begin, It end, Callback callback)
+{
+    return std::all_of(begin, end, callback);
 }
 
 } // namespace internalgfx

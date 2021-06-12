@@ -38,7 +38,7 @@ epiBool gfxTextureImplVKOwner::Init(const gfxTextureCreateInfo& info)
     imageCreateInfo.mipLevels = info.GetMipLevels();
     imageCreateInfo.arrayLayers = info.GetArrayLayers();
     imageCreateInfo.samples = gfxSampleCountTo(info.GetSampleCount());
-    imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL; // TODO: configure via gfxTextureCreateInfo
+    imageCreateInfo.tiling = gfxImageTilingTo(info.GetTiling());
     imageCreateInfo.usage = gfxImageUsageTo(info.GetUsage());
     imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // TODO: configure
     imageCreateInfo.queueFamilyIndexCount = -1; // TBD

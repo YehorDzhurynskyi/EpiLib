@@ -1142,4 +1142,29 @@ VkSemaphoreWaitFlagBits gfxSemaphoreWaitMaskTo(gfxSemaphoreWaitMask mask)
     return epiMask((mask & gfxSemaphoreWaitMask_WaitAny) ? VK_SEMAPHORE_WAIT_ANY_BIT : VkSemaphoreWaitFlagBits{});
 }
 
+VkImageTiling gfxImageTilingTo(gfxImageTiling tiling)
+{
+    switch (tiling)
+    {
+    case gfxImageTiling::Optimal: return VK_IMAGE_TILING_OPTIMAL;
+    case gfxImageTiling::Linear: return VK_IMAGE_TILING_LINEAR;
+    default: epiLogError("Unhandled gfxImageTiling=`{}`", tiling); return VK_IMAGE_TILING_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkImageAspectFlagBits gfxImageAspectTo(gfxImageAspect mask)
+{
+    return epiMask((mask & gfxImageAspect_Color) ? VK_IMAGE_ASPECT_COLOR_BIT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_Depth) ? VK_IMAGE_ASPECT_DEPTH_BIT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_Stencil) ? VK_IMAGE_ASPECT_STENCIL_BIT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_Metadata) ? VK_IMAGE_ASPECT_METADATA_BIT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_Plane0) ? VK_IMAGE_ASPECT_PLANE_0_BIT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_Plane1) ? VK_IMAGE_ASPECT_PLANE_1_BIT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_Plane2) ? VK_IMAGE_ASPECT_PLANE_2_BIT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_MemoryPlane0) ? VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_MemoryPlane1) ? VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_MemoryPlane2) ? VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT : VkImageAspectFlagBits{},
+                   (mask & gfxImageAspect_MemoryPlane3) ? VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT : VkImageAspectFlagBits{});
+}
+
 EPI_NAMESPACE_END()

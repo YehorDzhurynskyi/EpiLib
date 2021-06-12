@@ -9,6 +9,7 @@
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDescriptorSetImplVK.h"
 #include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
+#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -162,6 +163,89 @@ void gfxCommandBufferImplVK::PipelineBind(const gfxPipelineGraphicsImpl& pipelin
     }
 }
 
+void gfxCommandBufferImplVK::PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier)
+{
+    std::vector<VkMemoryBarrier> memoryBarriers;
+    memoryBarriers.reserve(pipelineBarrier.GetMemoryBarriers().Size());
+
+    std::vector<VkBufferMemoryBarrier> bufferMemoryBarriers;
+    bufferMemoryBarriers.reserve(pipelineBarrier.GetBufferMemoryBarriers().Size());
+
+    std::vector<VkImageMemoryBarrier> imageMemoryBarriers;
+    imageMemoryBarriers.reserve(pipelineBarrier.GetImageMemoryBarriers().Size());
+
+    std::transform(pipelineBarrier.GetMemoryBarriers().begin(),
+                   pipelineBarrier.GetMemoryBarriers().end(),
+                   std::back_inserter(memoryBarriers),
+                   [](const gfxMemoryBarrier& barrier)
+    {
+        VkMemoryBarrier barrierVk{};
+        barrierVk.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+        barrierVk.srcAccessMask = gfxAccessTo(barrier.GetSrcAccessMask());
+        barrierVk.dstAccessMask = gfxAccessTo(barrier.GetDstAccessMask());
+
+        return barrierVk;
+    });
+
+    std::transform(pipelineBarrier.GetBufferMemoryBarriers().begin(),
+                   pipelineBarrier.GetBufferMemoryBarriers().end(),
+                   std::back_inserter(bufferMemoryBarriers),
+                   [](const gfxBufferMemoryBarrier& barrier)
+    {
+        const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBufferImpl::ExtractImpl(barrier.GetBuffer()));
+        epiAssert(bufferImpl != nullptr);
+
+        VkBufferMemoryBarrier barrierVk{};
+        barrierVk.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+        barrierVk.srcAccessMask = gfxAccessTo(barrier.GetSrcAccessMask());
+        barrierVk.dstAccessMask = gfxAccessTo(barrier.GetDstAccessMask());
+        barrierVk.srcQueueFamilyIndex = barrier.GetIsSrcQueueFamilyIndexIgnored() ? VK_QUEUE_FAMILY_IGNORED : barrier.GetSrcQueueFamilyIndex();
+        barrierVk.dstQueueFamilyIndex = barrier.GetIsDstQueueFamilyIndexIgnored() ? VK_QUEUE_FAMILY_IGNORED : barrier.GetDstQueueFamilyIndex();
+        barrierVk.buffer = bufferImpl->GetVkBuffer();
+        barrierVk.offset = barrier.GetOffset();
+        barrierVk.size = barrier.GetSize();
+
+        return barrierVk;
+    });
+
+    std::transform(pipelineBarrier.GetImageMemoryBarriers().begin(),
+                   pipelineBarrier.GetImageMemoryBarriers().end(),
+                   std::back_inserter(imageMemoryBarriers),
+                   [](const gfxImageMemoryBarrier& barrier)
+    {
+        const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTextureImpl::ExtractImpl(barrier.GetImage()));
+        epiAssert(imageImpl != nullptr);
+
+        VkImageMemoryBarrier barrierVk{};
+        barrierVk.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrierVk.srcAccessMask = gfxAccessTo(barrier.GetSrcAccessMask());
+        barrierVk.dstAccessMask = gfxAccessTo(barrier.GetDstAccessMask());
+        barrierVk.oldLayout = gfxImageLayoutTo(barrier.GetOldLayout());
+        barrierVk.newLayout = gfxImageLayoutTo(barrier.GetNewLayout());;
+        barrierVk.srcQueueFamilyIndex = barrier.GetIsSrcQueueFamilyIndexIgnored() ? VK_QUEUE_FAMILY_IGNORED : barrier.GetSrcQueueFamilyIndex();
+        barrierVk.dstQueueFamilyIndex = barrier.GetIsDstQueueFamilyIndexIgnored() ? VK_QUEUE_FAMILY_IGNORED : barrier.GetDstQueueFamilyIndex();
+        barrierVk.image = imageImpl->GetVkImage();
+        barrierVk.subresourceRange.aspectMask = gfxImageAspectTo(barrier.GetSubresourceRange().GetAspectMask());
+        barrierVk.subresourceRange.baseArrayLayer = barrier.GetSubresourceRange().GetBaseArrayLayer();
+        barrierVk.subresourceRange.baseMipLevel = barrier.GetSubresourceRange().GetBaseMipLevel();
+        barrierVk.subresourceRange.layerCount = barrier.GetSubresourceRange().GetLayerCount();
+        barrierVk.subresourceRange.levelCount = barrier.GetSubresourceRange().GetLevelCount();
+
+        return barrierVk;
+    });
+
+    vkCmdPipelineBarrier(m_VkCommandBuffer,
+                         gfxPipelineStageTo(pipelineBarrier.GetSrcStageMask()),
+                         gfxPipelineStageTo(pipelineBarrier.GetDstStageMask()),
+                         gfxDependencyTo(pipelineBarrier.GetDependencyFlags()),
+                         memoryBarriers.size(),
+                         memoryBarriers.data(),
+                         bufferMemoryBarriers.size(),
+                         bufferMemoryBarriers.data(),
+                         imageMemoryBarriers.size(),
+                         imageMemoryBarriers.data());
+}
+
 void gfxCommandBufferImplVK::VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets)
 {
     std::vector<VkBuffer> buffersVk;
@@ -258,6 +342,39 @@ void gfxCommandBufferImplVK::Copy(const gfxBufferImpl& src, const gfxBufferImpl&
                     static_cast<const gfxBufferImplVK&>(dst).GetVkBuffer(),
                     copyRegionsVk.size(),
                     copyRegionsVk.data());
+}
+
+void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
+{
+    const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBufferImpl::ExtractImpl(src));
+    epiAssert(bufferImpl != nullptr);
+
+    const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTextureImpl::ExtractImpl(dst));
+    epiAssert(imageImpl != nullptr);
+
+    std::vector<VkBufferImageCopy> regions;
+    regions.reserve(copyRegions.Size());
+
+    std::transform(copyRegions.begin(), copyRegions.end(), std::back_inserter(regions), [](const gfxCommandBufferRecordCopyBufferToImage& region)
+    {
+        const VkOffset3D offsetVk{region.GetImageOffset().x, region.GetImageOffset().y, region.GetImageOffset().z};
+        const VkExtent3D extentVk{region.GetImageExtent().x, region.GetImageExtent().y, region.GetImageExtent().z};
+
+        VkBufferImageCopy regionVk{};
+        regionVk.bufferOffset = region.GetBufferOffset();
+        regionVk.bufferRowLength = region.GetBufferRowLength();
+        regionVk.bufferImageHeight = region.GetBufferImageHeight();
+        regionVk.imageSubresource.aspectMask = gfxImageAspectTo(region.GetImageSubresource().GetAspectMask());
+        regionVk.imageSubresource.mipLevel = region.GetImageSubresource().GetMipLevel();
+        regionVk.imageSubresource.baseArrayLayer = region.GetImageSubresource().GetBaseArrayLayer();
+        regionVk.imageSubresource.layerCount = region.GetImageSubresource().GetLayerCount();
+        regionVk.imageOffset = offsetVk;
+        regionVk.imageExtent = extentVk;
+
+        return regionVk;
+    });
+
+    vkCmdCopyBufferToImage(m_VkCommandBuffer, bufferImpl->GetVkBuffer(), imageImpl->GetVkImage(), gfxImageLayoutTo(dstLayout), regions.size(), regions.data());
 }
 
 VkCommandBuffer gfxCommandBufferImplVK::GetVkCommandBuffer() const

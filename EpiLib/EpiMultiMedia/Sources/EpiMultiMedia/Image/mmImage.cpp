@@ -1670,7 +1670,7 @@ mmImage mmImage::ToR8G8B8A8() const
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu};
+        mmImageGetColorValueCallback get[]{&Color::GetRu, &Color::GetGu, &Color::GetBu, &Color::GetAu};
         return ConvertTo(*this,
                          mmImagePixelFormat::R8G8B8A8,
                          get,

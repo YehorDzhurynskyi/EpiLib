@@ -285,7 +285,7 @@ public:
 
             m_VertexBuffer = *vertexBuffer;
 
-            gfxDeviceMemoryCreateInfo vertexDeviceMemoryCreateInfo;
+            gfxDeviceMemoryBufferCreateInfo vertexDeviceMemoryCreateInfo;
             vertexDeviceMemoryCreateInfo.SetBuffer(m_VertexBuffer);
             vertexDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
 
@@ -303,7 +303,7 @@ public:
             std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
             epiAssert(stagingBuffer.has_value());
 
-            gfxDeviceMemoryCreateInfo stagingDeviceMemoryCreateInfo;
+            gfxDeviceMemoryBufferCreateInfo stagingDeviceMemoryCreateInfo;
             stagingDeviceMemoryCreateInfo.SetBuffer(*stagingBuffer);
             stagingDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
 
@@ -354,7 +354,7 @@ public:
 
             m_IndexBuffer = *indexBuffer;
 
-            gfxDeviceMemoryCreateInfo indexDeviceMemoryCreateInfo;
+            gfxDeviceMemoryBufferCreateInfo indexDeviceMemoryCreateInfo;
             indexDeviceMemoryCreateInfo.SetBuffer(m_IndexBuffer);
             indexDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
 
@@ -372,7 +372,7 @@ public:
             std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
             epiAssert(stagingBuffer.has_value());
 
-            gfxDeviceMemoryCreateInfo stagingDeviceMemoryCreateInfo;
+            gfxDeviceMemoryBufferCreateInfo stagingDeviceMemoryCreateInfo;
             stagingDeviceMemoryCreateInfo.SetBuffer(*stagingBuffer);
             stagingDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
 
@@ -414,8 +414,175 @@ public:
 
         RecordCommandBuffers();
 
-        m_TextureImage = mmImage::LoadFromFile("texture.jpg");
-        epiAssert(!m_TextureImage.GetIsEmpty());
+        {
+            mmImage image = mmImage::LoadFromFile("texture.jpg").ToR8G8B8A8();
+            epiAssert(!image.GetIsEmpty());
+
+            gfxBufferCreateInfo stagingBufferCreateInfo;
+            stagingBufferCreateInfo.SetCapacity(image.GetBytes());
+            stagingBufferCreateInfo.SetUsage(gfxBufferUsage_TransferSrc);
+
+            std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
+            epiAssert(stagingBuffer.has_value());
+
+            gfxDeviceMemoryBufferCreateInfo stagingDeviceMemoryCreateInfo;
+            stagingDeviceMemoryCreateInfo.SetBuffer(*stagingBuffer);
+            stagingDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
+
+            std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
+            epiAssert(stagingDeviceMemory.has_value());
+
+            if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(image.GetBytes()))
+            {
+                memcpy(mapping.Data(), image.GetData().data(), image.GetBytes());
+            }
+
+            gfxTextureCreateInfo textureCreateInfo{};
+            textureCreateInfo.SetType(gfxTextureType::Texture2D);
+            textureCreateInfo.SetExtent(epiVec3u{image.GetWidth(), image.GetHeight(), 1});
+            textureCreateInfo.SetMipLevels(1);
+            textureCreateInfo.SetArrayLayers(1);
+            textureCreateInfo.SetFormat(gfxFormat::R8G8B8A8_SRGB);
+            textureCreateInfo.SetInitialLayout(gfxImageLayout::Undefined);
+            textureCreateInfo.SetUsage(epiMask(gfxImageUsage_TRANSFER_DST, gfxImageUsage_SAMPLED));
+            textureCreateInfo.SetSampleCount(gfxSampleCount::Sample1);
+            textureCreateInfo.SetTiling(gfxImageTiling::Optimal);
+
+            std::optional<gfxTexture> texture = g_Device.CreateTexture(textureCreateInfo);
+            epiAssert(texture.has_value());
+
+            m_Image = *texture;
+
+            gfxDeviceMemoryImageCreateInfo imageDeviceMemoryCreateInfo;
+            imageDeviceMemoryCreateInfo.SetImage(*texture);
+            imageDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
+
+            std::optional<gfxDeviceMemory> imageDeviceMemory = g_Device.CreateDeviceMemory(imageDeviceMemoryCreateInfo);
+            epiAssert(imageDeviceMemory.has_value());
+
+            m_ImageDeviceMemory = *imageDeviceMemory;
+
+            { // pipeline barrier
+                gfxCommandPoolCreateInfo commandPoolCreateInfo;
+                commandPoolCreateInfo.SetQueueFamily(m_QueueFamily);
+                commandPoolCreateInfo.SetUsage(gfxCommandPoolUsage_TRANSIENT);
+                commandPoolCreateInfo.SetPrimaryCommandBufferCount(1);
+
+                std::optional<gfxCommandPool> cmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
+                epiAssert(cmdPool.has_value());
+
+                if (gfxCommandBufferRecord record = cmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+                {
+                    gfxImageSubresourceRange subresourceRange;
+                    subresourceRange.SetAspectMask(gfxImageAspect_Color);
+                    subresourceRange.SetBaseMipLevel(0);
+                    subresourceRange.SetLevelCount(1);
+                    subresourceRange.SetBaseArrayLayer(0);
+                    subresourceRange.SetLayerCount(1);
+
+                    gfxImageMemoryBarrier imageBarrier;
+                    imageBarrier.SetImage(m_Image);
+                    imageBarrier.SetOldLayout(gfxImageLayout::Undefined);
+                    imageBarrier.SetNewLayout(gfxImageLayout::TransferDstOptimal);
+                    imageBarrier.SetIsSrcQueueFamilyIndexIgnored(true);
+                    imageBarrier.SetIsDstQueueFamilyIndexIgnored(true);
+                    imageBarrier.SetSubresourceRange(subresourceRange);
+                    imageBarrier.SetSrcAccessMask(gfxAccess{0});
+                    imageBarrier.SetDstAccessMask(gfxAccess_TransferWrite);
+
+                    gfxCommandBufferRecordPipelineBarier pipelineBarrier;
+                    pipelineBarrier.SetSrcStageMask(gfxPipelineStage_TopOfPipe);
+                    pipelineBarrier.SetDstStageMask(gfxPipelineStage_Transfer);
+                    pipelineBarrier.GetImageMemoryBarriers().push_back(imageBarrier);
+
+                    record.PipelineBarrier(pipelineBarrier);
+                }
+
+                gfxQueueSubmitInfo submitInfo;
+                submitInfo.GetCommandBuffers().push_back(cmdPool->GetPrimaryCommandBuffers()[0]);
+
+                m_QueueFamily[0].Submit(submitInfo);
+                m_QueueFamily[0].Wait();
+            }
+
+            { // copy image
+                gfxCommandPoolCreateInfo commandPoolCreateInfo;
+                commandPoolCreateInfo.SetQueueFamily(m_QueueFamily);
+                commandPoolCreateInfo.SetUsage(gfxCommandPoolUsage_TRANSIENT);
+                commandPoolCreateInfo.SetPrimaryCommandBufferCount(1);
+
+                std::optional<gfxCommandPool> copyCmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
+                epiAssert(copyCmdPool.has_value());
+
+                if (gfxCommandBufferRecord record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+                {
+                    gfxImageSubresourceLayers subresource;
+                    subresource.SetAspectMask(gfxImageAspect_Color);
+                    subresource.SetMipLevel(0);
+                    subresource.SetBaseArrayLayer(0);
+                    subresource.SetLayerCount(1);
+
+                    gfxCommandBufferRecordCopyBufferToImage copyRegion;
+                    copyRegion.SetBufferOffset(0);
+                    copyRegion.SetBufferRowLength(0);
+                    copyRegion.SetBufferImageHeight(0);
+                    copyRegion.SetImageOffset(epiVec3s{0, 0, 0});
+                    copyRegion.SetImageExtent(epiVec3u{image.GetWidth(), image.GetHeight(), 1});
+                    copyRegion.SetImageSubresource(subresource);
+
+                    record.Copy(*stagingBuffer, m_Image, gfxImageLayout::TransferDstOptimal, {copyRegion});
+                }
+
+                gfxQueueSubmitInfo submitInfo;
+                submitInfo.GetCommandBuffers().push_back(copyCmdPool->GetPrimaryCommandBuffers()[0]);
+
+                m_QueueFamily[0].Submit(submitInfo);
+                m_QueueFamily[0].Wait();
+            }
+
+            { // pipeline barrier
+                gfxCommandPoolCreateInfo commandPoolCreateInfo;
+                commandPoolCreateInfo.SetQueueFamily(m_QueueFamily);
+                commandPoolCreateInfo.SetUsage(gfxCommandPoolUsage_TRANSIENT);
+                commandPoolCreateInfo.SetPrimaryCommandBufferCount(1);
+
+                std::optional<gfxCommandPool> cmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
+                epiAssert(cmdPool.has_value());
+
+                if (gfxCommandBufferRecord record = cmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+                {
+                    gfxImageSubresourceRange subresourceRange;
+                    subresourceRange.SetAspectMask(gfxImageAspect_Color);
+                    subresourceRange.SetBaseMipLevel(0);
+                    subresourceRange.SetLevelCount(1);
+                    subresourceRange.SetBaseArrayLayer(0);
+                    subresourceRange.SetLayerCount(1);
+
+                    gfxImageMemoryBarrier imageBarrier;
+                    imageBarrier.SetImage(m_Image);
+                    imageBarrier.SetOldLayout(gfxImageLayout::TransferDstOptimal);
+                    imageBarrier.SetNewLayout(gfxImageLayout::ShaderReadOnlyOptimal);
+                    imageBarrier.SetIsSrcQueueFamilyIndexIgnored(true);
+                    imageBarrier.SetIsDstQueueFamilyIndexIgnored(true);
+                    imageBarrier.SetSubresourceRange(subresourceRange);
+                    imageBarrier.SetSrcAccessMask(gfxAccess_TransferWrite);
+                    imageBarrier.SetDstAccessMask(gfxAccess_ShaderRead);
+
+                    gfxCommandBufferRecordPipelineBarier pipelineBarrier;
+                    pipelineBarrier.SetSrcStageMask(gfxPipelineStage_Transfer);
+                    pipelineBarrier.SetDstStageMask(gfxPipelineStage_FragmentShader);
+                    pipelineBarrier.GetImageMemoryBarriers().push_back(imageBarrier);
+
+                    record.PipelineBarrier(pipelineBarrier);
+                }
+
+                gfxQueueSubmitInfo submitInfo;
+                submitInfo.GetCommandBuffers().push_back(cmdPool->GetPrimaryCommandBuffers()[0]);
+
+                m_QueueFamily[0].Submit(submitInfo);
+                m_QueueFamily[0].Wait();
+            }
+        }
 
         m_Timer.SetOwner(this, -1);
         m_Timer.Start(30);
@@ -456,7 +623,8 @@ protected:
     epiArray<gfxFence> m_FencesInFlight;
     epiArray<gfxFence> m_FencesImagesInFlight;
 
-    mmImage m_TextureImage;
+    gfxTexture m_Image;
+    gfxDeviceMemory m_ImageDeviceMemory;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
@@ -646,7 +814,7 @@ void epiWXVulkanDemoTriangleCanvas::RecreateUniformBuffers()
 
             m_UniformBuffers[i] = *uniformBuffer;
 
-            gfxDeviceMemoryCreateInfo uniformDeviceMemoryCreateInfo;
+            gfxDeviceMemoryBufferCreateInfo uniformDeviceMemoryCreateInfo;
             uniformDeviceMemoryCreateInfo.SetBuffer(m_UniformBuffers[i]);
             uniformDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
 

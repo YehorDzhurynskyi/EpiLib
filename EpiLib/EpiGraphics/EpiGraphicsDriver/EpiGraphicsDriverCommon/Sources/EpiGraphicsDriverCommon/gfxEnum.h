@@ -1047,4 +1047,29 @@ EPI_GENREGION_BEGIN(gfxSemaphoreWaitMask)
 EPI_GENREGION_END(gfxSemaphoreWaitMask)
 };
 
+enum class gfxImageTiling : epiS32
+{
+EPI_GENREGION_BEGIN(gfxImageTiling)
+    Optimal = 0,
+    Linear = 1
+EPI_GENREGION_END(gfxImageTiling)
+};
+
+enum gfxImageAspect : epiS32
+{
+EPI_GENREGION_BEGIN(gfxImageAspect)
+    gfxImageAspect_Color = (1 << 0),
+    gfxImageAspect_Depth = (1 << 1),
+    gfxImageAspect_Stencil = (1 << 2),
+    gfxImageAspect_Metadata = (1 << 3),
+    gfxImageAspect_Plane0 = (1 << 4),
+    gfxImageAspect_Plane1 = (1 << 5),
+    gfxImageAspect_Plane2 = (1 << 6),
+    gfxImageAspect_MemoryPlane0 = (1 << 7),
+    gfxImageAspect_MemoryPlane1 = (1 << 8),
+    gfxImageAspect_MemoryPlane2 = (1 << 9),
+    gfxImageAspect_MemoryPlane3 = (1 << 10)
+EPI_GENREGION_END(gfxImageAspect)
+};
+
 EPI_NAMESPACE_END()

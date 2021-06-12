@@ -8,6 +8,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxTexture.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -18,16 +19,39 @@ class gfxDeviceMemoryImpl;
 
 } // namespace internalgfx
 
-class gfxDeviceMemoryCreateInfo : public Object
+class gfxMemoryBarrier : public Object
 {
-EPI_GENREGION_BEGIN(gfxDeviceMemoryCreateInfo)
+EPI_GENREGION_BEGIN(gfxMemoryBarrier)
 
-EPI_GENHIDDEN_gfxDeviceMemoryCreateInfo()
+EPI_GENHIDDEN_gfxMemoryBarrier()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xd2391506};
+    constexpr static epiMetaTypeID TypeID{0xbed81168};
 
-    enum gfxDeviceMemoryCreateInfo_PIDs
+    enum gfxMemoryBarrier_PIDs
+    {
+        PID_SrcAccessMask = 0xe4d2b1e8,
+        PID_DstAccessMask = 0x31ce8c4d,
+        PID_COUNT = 2
+    };
+
+protected:
+    gfxAccess m_SrcAccessMask{};
+    gfxAccess m_DstAccessMask{};
+
+EPI_GENREGION_END(gfxMemoryBarrier)
+};
+
+class gfxDeviceMemoryBufferCreateInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryBufferCreateInfo)
+
+EPI_GENHIDDEN_gfxDeviceMemoryBufferCreateInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xe0466a67};
+
+    enum gfxDeviceMemoryBufferCreateInfo_PIDs
     {
         PID_Buffer = 0x36f6f5c4,
         PID_PropertyMask = 0x483bfadf,
@@ -38,7 +62,30 @@ protected:
     gfxBuffer m_Buffer{};
     gfxDeviceMemoryProperty m_PropertyMask{};
 
-EPI_GENREGION_END(gfxDeviceMemoryCreateInfo)
+EPI_GENREGION_END(gfxDeviceMemoryBufferCreateInfo)
+};
+
+class gfxDeviceMemoryImageCreateInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryImageCreateInfo)
+
+EPI_GENHIDDEN_gfxDeviceMemoryImageCreateInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xa512b933};
+
+    enum gfxDeviceMemoryImageCreateInfo_PIDs
+    {
+        PID_Image = 0x4fc2b5b,
+        PID_PropertyMask = 0x483bfadf,
+        PID_COUNT = 2
+    };
+
+protected:
+    gfxTexture m_Image{};
+    gfxDeviceMemoryProperty m_PropertyMask{};
+
+EPI_GENREGION_END(gfxDeviceMemoryImageCreateInfo)
 };
 
 class gfxDeviceMemory : public Object
@@ -98,6 +145,5 @@ void gfxDeviceMemory::Mapping::PushBack(const T& value, epiSize_t stride)
 
     m_Cursor += stride;
 }
-
 
 EPI_NAMESPACE_END()

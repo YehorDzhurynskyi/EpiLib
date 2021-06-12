@@ -12,6 +12,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxPipelineLayout.h"
 #include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
+#include "EpiGraphicsDriverCommon/gfxDeviceMemory.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -99,6 +100,68 @@ protected:
 EPI_GENREGION_END(gfxCommandBufferRecordCopyRegion)
 };
 
+class gfxCommandBufferRecordCopyBufferToImage : public Object
+{
+EPI_GENREGION_BEGIN(gfxCommandBufferRecordCopyBufferToImage)
+
+EPI_GENHIDDEN_gfxCommandBufferRecordCopyBufferToImage()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xaf2e47cc};
+
+    enum gfxCommandBufferRecordCopyBufferToImage_PIDs
+    {
+        PID_BufferOffset = 0xd7e09c30,
+        PID_BufferRowLength = 0xaa97b8f2,
+        PID_BufferImageHeight = 0xa85bff1e,
+        PID_ImageSubresource = 0x29375a7b,
+        PID_ImageOffset = 0x45472804,
+        PID_ImageExtent = 0x3a43bb9c,
+        PID_COUNT = 6
+    };
+
+protected:
+    epiSize_t m_BufferOffset{0};
+    epiU32 m_BufferRowLength{0};
+    epiU32 m_BufferImageHeight{0};
+    gfxImageSubresourceLayers m_ImageSubresource{};
+    epiVec3s m_ImageOffset{};
+    epiVec3u m_ImageExtent{};
+
+EPI_GENREGION_END(gfxCommandBufferRecordCopyBufferToImage)
+};
+
+class gfxCommandBufferRecordPipelineBarier : public Object
+{
+EPI_GENREGION_BEGIN(gfxCommandBufferRecordPipelineBarier)
+
+EPI_GENHIDDEN_gfxCommandBufferRecordPipelineBarier()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x28dc5fc7};
+
+    enum gfxCommandBufferRecordPipelineBarier_PIDs
+    {
+        PID_SrcStageMask = 0x5890cb97,
+        PID_DstStageMask = 0x24ec8ab5,
+        PID_DependencyFlags = 0x68167a5,
+        PID_MemoryBarriers = 0xb0ffaf07,
+        PID_BufferMemoryBarriers = 0x7471824,
+        PID_ImageMemoryBarriers = 0x7d257b36,
+        PID_COUNT = 6
+    };
+
+protected:
+    gfxPipelineStage m_SrcStageMask{};
+    gfxPipelineStage m_DstStageMask{};
+    gfxDependency m_DependencyFlags{};
+    epiArray<gfxMemoryBarrier> m_MemoryBarriers{};
+    epiArray<gfxBufferMemoryBarrier> m_BufferMemoryBarriers{};
+    epiArray<gfxImageMemoryBarrier> m_ImageMemoryBarriers{};
+
+EPI_GENREGION_END(gfxCommandBufferRecordPipelineBarier)
+};
+
 class gfxCommandBufferRecord : public Object
 {
 EPI_GENREGION_BEGIN(gfxCommandBufferRecord)
@@ -135,6 +198,7 @@ public:
     gfxCommandBufferRecord& RenderPassEnd();
 
     gfxCommandBufferRecord& PipelineBind(const gfxPipelineGraphics& pipeline);
+    gfxCommandBufferRecord& PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier);
 
     gfxCommandBufferRecord& VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {});
     gfxCommandBufferRecord& IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0);
@@ -147,6 +211,7 @@ public:
     gfxCommandBufferRecord& Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance);
     gfxCommandBufferRecord& DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance);
     gfxCommandBufferRecord& Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions);
+    gfxCommandBufferRecord& Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions);
 
 protected:
     internalgfx::gfxCommandBufferImpl* m_Impl{nullptr};

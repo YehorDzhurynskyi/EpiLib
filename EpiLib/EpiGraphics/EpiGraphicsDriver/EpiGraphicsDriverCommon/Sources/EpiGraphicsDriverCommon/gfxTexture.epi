@@ -8,8 +8,41 @@ class gfxTextureCreateInfo
     gfxSampleCount SampleCount = gfxSampleCount::Sample1;
     gfxImageUsage Usage;
     gfxImageLayout InitialLayout = gfxImageLayout::Undefined;
+    gfxImageTiling Tiling;
 };
 
+# TODO: rename gfxImage
 class gfxTexture
 {
+};
+
+class gfxImageSubresourceLayers
+{
+    gfxImageAspect AspectMask;
+    epiU32 MipLevel;
+    epiU32 BaseArrayLayer;
+    epiU32 LayerCount;
+};
+
+class gfxImageSubresourceRange
+{
+    gfxImageAspect AspectMask;
+    epiU32 BaseMipLevel;
+    epiU32 LevelCount;
+    epiU32 BaseArrayLayer;
+    epiU32 LayerCount;
+};
+
+class gfxImageMemoryBarrier
+{
+    gfxTexture Image;
+    gfxAccess SrcAccessMask;
+    gfxAccess DstAccessMask;
+    gfxImageLayout OldLayout;
+    gfxImageLayout NewLayout;
+    epiU32 SrcQueueFamilyIndex;
+    epiU32 DstQueueFamilyIndex;
+    epiBool IsSrcQueueFamilyIndexIgnored;
+    epiBool IsDstQueueFamilyIndexIgnored;
+    gfxImageSubresourceRange SubresourceRange;
 };

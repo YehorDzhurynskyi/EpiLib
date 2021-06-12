@@ -58,6 +58,9 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
 
 epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl)
 {
+    // TODO: free cmd buffer independently if pool is able to
+    // TODO: allocate cmd buffers independently from cmd pool initialization
+
     const gfxQueueFamilyImplVK& queueFamilyImplVk = static_cast<const gfxQueueFamilyImplVK&>(queueFamilyImpl);
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

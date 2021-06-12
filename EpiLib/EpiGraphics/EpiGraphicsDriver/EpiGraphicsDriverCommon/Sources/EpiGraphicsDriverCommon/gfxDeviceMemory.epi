@@ -1,6 +1,18 @@
-class gfxDeviceMemoryCreateInfo
+class gfxMemoryBarrier
+{
+    gfxAccess SrcAccessMask;
+    gfxAccess DstAccessMask;
+};
+
+class gfxDeviceMemoryBufferCreateInfo
 {
     gfxBuffer Buffer;
+    gfxDeviceMemoryProperty PropertyMask;
+};
+
+class gfxDeviceMemoryImageCreateInfo
+{
+    gfxTexture Image;
     gfxDeviceMemoryProperty PropertyMask;
 };
 

@@ -713,10 +713,21 @@ std::shared_ptr<gfxBufferImpl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCrea
     return impl;
 }
 
-std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info, const gfxBufferImpl& bufferImpl) const
+std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info, const gfxBufferImpl& bufferImpl) const
 {
     std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
     if (!impl->Init(info, m_PhysicalDevice, static_cast<const gfxBufferImplVK&>(bufferImpl)))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const
+{
+    std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
+    if (!impl->Init(info, m_PhysicalDevice))
     {
         impl.reset();
     }

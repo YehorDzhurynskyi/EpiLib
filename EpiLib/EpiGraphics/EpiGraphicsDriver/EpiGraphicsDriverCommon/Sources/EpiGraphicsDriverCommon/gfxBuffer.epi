@@ -7,3 +7,16 @@ class gfxBufferCreateInfo
 class gfxBuffer
 {
 };
+
+class gfxBufferMemoryBarrier
+{
+    gfxBuffer Buffer;
+    gfxAccess SrcAccessMask;
+    gfxAccess DstAccessMask;
+    epiU32 SrcQueueFamilyIndex;
+    epiU32 DstQueueFamilyIndex;
+    epiBool IsSrcQueueFamilyIndexIgnored;
+    epiBool IsDstQueueFamilyIndexIgnored;
+    epiSize_t Offset;
+    epiSize_t Size;
+};
