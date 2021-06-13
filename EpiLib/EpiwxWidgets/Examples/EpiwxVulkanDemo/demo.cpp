@@ -65,6 +65,7 @@ public:
     {
         epiVec2f Position;
         epiVec3f Color;
+        epiVec2f UV;
     };
 
     struct UniformBufferObject
@@ -148,6 +149,7 @@ public:
         {
             gfxDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo;
             descriptorSetLayoutCreateInfo.AddBinding(0, gfxDescriptorType::UniformBuffer, 1, gfxShaderStage_Vertex);
+            descriptorSetLayoutCreateInfo.AddBinding(1, gfxDescriptorType::CombinedImageSampler, 1, gfxShaderStage_Fragment);
 
             std::optional<gfxDescriptorSetLayout> descriptorSetLayout = g_Device.CreateDescriptorSetLayout(descriptorSetLayoutCreateInfo);
             epiAssert(descriptorSetLayout.has_value());
@@ -177,12 +179,15 @@ public:
 
             layout(location = 0) in vec2 inPosition;
             layout(location = 1) in vec3 inColor;
+            layout(location = 2) in vec2 inUV;
 
-            layout(location = 0) out vec3 outFragColor;
+            layout(location = 0) out vec3 fragColor;
+            layout(location = 1) out vec2 fragUV;
 
             void main() {
                 gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 0.0, 1.0);
-                outFragColor = inColor;
+                fragColor = inColor;
+                fragUV = inUV;
             }
         )";
 
@@ -190,12 +195,15 @@ public:
             #version 450
             #extension GL_ARB_separate_shader_objects : enable
 
+            layout(binding = 1) uniform sampler2D texSampler;
+
             layout(location = 0) in vec3 fragColor;
+            layout(location = 1) in vec2 fragUV;
 
             layout(location = 0) out vec4 outColor;
 
             void main() {
-                outColor = vec4(fragColor, 1.0);
+                outColor = vec4(fragColor * texture(texSampler, fragUV).rgb, 1.0);
             }
         )";
 
@@ -222,7 +230,8 @@ public:
         vertexInputBindingDescription.SetInputRate(gfxPipelineVertexInputRate::Vertex);
         vertexInputBindingDescription
             .AddAttribute(0, gfxFormat::R32G32_SFLOAT, offsetof(Vertex, Position))
-            .AddAttribute(1, gfxFormat::R32G32B32_SFLOAT, offsetof(Vertex, Color));
+            .AddAttribute(1, gfxFormat::R32G32B32_SFLOAT, offsetof(Vertex, Color))
+            .AddAttribute(2, gfxFormat::R32G32_SFLOAT, offsetof(Vertex, UV));
 
         {
             gfxPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
@@ -268,10 +277,10 @@ public:
         }
 
         m_Vertices = {
-            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
         };
         const epiSize_t vertexBufferCapacity = m_Vertices.Size() * sizeof(m_Vertices[0]);
 
@@ -409,10 +418,6 @@ public:
             m_QueueFamily[0].Submit(submitInfo);
             m_QueueFamily[0].Wait();
         }
-
-        RecreateUniformBuffers();
-
-        RecordCommandBuffers();
 
         {
             mmImage image = mmImage::LoadFromFile("texture.jpg").ToR8G8B8A8();
@@ -627,6 +632,10 @@ public:
                 m_ImageSampler = *sampler;
             }
         }
+
+        RecreateUniformBuffers();
+
+        RecordCommandBuffers();
 
         m_Timer.SetOwner(this, -1);
         m_Timer.Start(30);
@@ -871,13 +880,18 @@ void epiWXVulkanDemoTriangleCanvas::RecreateUniformBuffers()
         }
 
         {
-            gfxDescriptorPoolSize poolSize;
-            poolSize.SetDescriptorType(gfxDescriptorType::UniformBuffer);
-            poolSize.SetDescriptorCount(m_SwapChain.GetBufferCount());
+            gfxDescriptorPoolSize poolSizeUniform;
+            poolSizeUniform.SetDescriptorType(gfxDescriptorType::UniformBuffer);
+            poolSizeUniform.SetDescriptorCount(m_SwapChain.GetBufferCount());
+
+            gfxDescriptorPoolSize poolSizeSampler;
+            poolSizeSampler.SetDescriptorType(gfxDescriptorType::CombinedImageSampler);
+            poolSizeSampler.SetDescriptorCount(m_SwapChain.GetBufferCount());
 
             gfxDescriptorPoolCreateInfo descriptorPoolCreateInfo;
             descriptorPoolCreateInfo.SetMaxSets(m_SwapChain.GetBufferCount());
-            descriptorPoolCreateInfo.AddDescriptorPoolSize(poolSize);
+            descriptorPoolCreateInfo.AddDescriptorPoolSize(poolSizeUniform);
+            descriptorPoolCreateInfo.AddDescriptorPoolSize(poolSizeSampler);
 
             for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
             {
@@ -896,15 +910,28 @@ void epiWXVulkanDemoTriangleCanvas::RecreateUniformBuffers()
                 bufferInfo.SetOffset(0);
                 bufferInfo.SetRange(sizeof(UniformBufferObject));
 
-                gfxDescriptorSetWrite descriptorWrite;
-                descriptorWrite.SetDstSet(m_DescriptorPool.GetDescriptorSets()[i]);
-                descriptorWrite.SetDstBinding(0);
-                descriptorWrite.SetDstArrayElement(0);
-                descriptorWrite.SetDescriptorType(gfxDescriptorType::UniformBuffer);
-                descriptorWrite.SetDescriptorCount(1);
-                descriptorWrite.AddBufferInfo(bufferInfo);
+                gfxDescriptorSetWrite descriptorWriteUniform;
+                descriptorWriteUniform.SetDstSet(m_DescriptorPool.GetDescriptorSets()[i]);
+                descriptorWriteUniform.SetDstBinding(0);
+                descriptorWriteUniform.SetDstArrayElement(0);
+                descriptorWriteUniform.SetDescriptorType(gfxDescriptorType::UniformBuffer);
+                descriptorWriteUniform.SetDescriptorCount(1);
+                descriptorWriteUniform.AddBufferInfo(bufferInfo);
 
-                g_Device.UpdateDescriptorSets({descriptorWrite}, {});
+                gfxDescriptorImageInfo imageInfo;
+                imageInfo.SetSampler(m_ImageSampler);
+                imageInfo.SetImageView(m_ImageView);
+                imageInfo.SetImageLayout(gfxImageLayout::ShaderReadOnlyOptimal);
+
+                gfxDescriptorSetWrite descriptorWriteSampler;
+                descriptorWriteSampler.SetDstSet(m_DescriptorPool.GetDescriptorSets()[i]);
+                descriptorWriteSampler.SetDstBinding(1);
+                descriptorWriteSampler.SetDstArrayElement(0);
+                descriptorWriteSampler.SetDescriptorType(gfxDescriptorType::CombinedImageSampler);
+                descriptorWriteSampler.SetDescriptorCount(1);
+                descriptorWriteSampler.AddImageInfo(imageInfo);
+
+                g_Device.UpdateDescriptorSets({descriptorWriteUniform, descriptorWriteSampler}, {});
             }
         }
     }

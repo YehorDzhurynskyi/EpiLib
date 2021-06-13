@@ -70,6 +70,7 @@ EPI_GENREGION_END(gfxTextureView)
 
 public:
     friend class gfxDevice;
+    friend class internalgfx::gfxTextureViewImpl;
 
 public:
     gfxTextureView() = default;

@@ -83,7 +83,7 @@ epiBool gfxShaderImplVK::InitFromSource(const epiChar* source, gfxShaderType typ
 
     shaderc::CompileOptions options; // TODO: set compile options (optimization level etc)
     shaderc::Compiler compiler;
-    const shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, shaderKind, "", entryPoint, options);
+    const shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, shaderKind, "filename" /* TODO: provide filename/shadername */, entryPoint, options);
     if (result.GetCompilationStatus() != shaderc_compilation_status_success)
     {
         epiLogError("Vulkan shader compilation error: {}", result.GetErrorMessage());

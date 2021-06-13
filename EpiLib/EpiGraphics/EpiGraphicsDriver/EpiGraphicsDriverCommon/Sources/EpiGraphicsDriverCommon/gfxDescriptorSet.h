@@ -7,6 +7,8 @@ EPI_GENREGION_END(include)
 #include "EpiCore/ObjectModel/Object.h"
 
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
+#include "EpiGraphicsDriverCommon/gfxSampler.h"
+#include "EpiGraphicsDriverCommon/gfxTextureView.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -53,8 +55,16 @@ public:
 
     enum gfxDescriptorImageInfo_PIDs
     {
-        PID_COUNT = 0
+        PID_Sampler = 0xa1285e7d,
+        PID_ImageView = 0xc9bf4fba,
+        PID_ImageLayout = 0x26778936,
+        PID_COUNT = 3
     };
+
+protected:
+    gfxSampler m_Sampler{};
+    gfxTextureView m_ImageView{};
+    gfxImageLayout m_ImageLayout{};
 
 EPI_GENREGION_END(gfxDescriptorImageInfo)
 };

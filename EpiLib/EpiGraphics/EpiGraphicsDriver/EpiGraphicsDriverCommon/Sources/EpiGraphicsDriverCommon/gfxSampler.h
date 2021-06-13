@@ -86,6 +86,7 @@ EPI_GENREGION_END(gfxSampler)
 
 public:
     friend class gfxDevice;
+    friend class internalgfx::gfxSamplerImpl;
 
 public:
     gfxSampler() = default;

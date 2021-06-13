@@ -407,8 +407,17 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                        std::back_inserter(imageInfos),
                        [](const gfxDescriptorImageInfo& imageInfo)
         {
-            // TODO: implement
+            const gfxSamplerImplVK* sampler = static_cast<const gfxSamplerImplVK*>(gfxSamplerImpl::ExtractImpl(imageInfo.GetSampler()));
+            epiAssert(sampler != nullptr);
+
+            const gfxTextureViewImplVK* imageView = static_cast<const gfxTextureViewImplVK*>(gfxTextureViewImpl::ExtractImpl(imageInfo.GetImageView()));
+            epiAssert(imageView != nullptr);
+
             VkDescriptorImageInfo imageInfoVk{};
+            imageInfoVk.sampler = sampler->GetVkSampler();
+            imageInfoVk.imageView = imageView->GetVkImageView();
+            imageInfoVk.imageLayout = gfxImageLayoutTo(imageInfo.GetImageLayout());
+
             return imageInfoVk;
         });
 

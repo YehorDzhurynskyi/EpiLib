@@ -430,6 +430,9 @@ public:
 class gfxTextureViewImpl
 {
 public:
+    static const gfxTextureViewImpl* ExtractImpl(const gfxTextureView& imageView) { return imageView.m_Impl.Ptr(); }
+
+public:
     gfxTextureViewImpl() = default;
     gfxTextureViewImpl(const gfxTextureViewImpl& rhs) = delete;
     gfxTextureViewImpl& operator=(const gfxTextureViewImpl& rhs) = delete;
@@ -440,6 +443,9 @@ public:
 
 class gfxSamplerImpl
 {
+public:
+    static const gfxSamplerImpl* ExtractImpl(const gfxSampler& sampler) { return sampler.m_Impl.Ptr(); }
+
 public:
     gfxSamplerImpl() = default;
     gfxSamplerImpl(const gfxSamplerImpl& rhs) = delete;
