@@ -54,29 +54,29 @@ public:
     dSeries2Df Duplicate() const;
 
     dSeries2Df Add(epiFloat scalar) const;
-    dSeries2Df Add(const dSeries2Df& series, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    dSeries2Df Add(const dSeries2Df& series, dSeriesAddressMode addressMode = dSeriesAddressMode::Zero) const;
     dSeries2Df Mult(epiFloat scalar) const;
-    dSeries2Df Mult(const dSeries2Df& series, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    dSeries2Df Mult(const dSeries2Df& series, dSeriesAddressMode addressMode = dSeriesAddressMode::Zero) const;
     dSeries2Df Log(epiFloat base) const;
     dSeries2Df Exp(epiFloat base) const;
 
     dSeries2Df Threshold(epiFloat low, epiFloat high) const;
 
-    dSeries2Df Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
-    epiFloat CorrelateElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
-    dSeries2Df Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
-    epiFloat ConvolveElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, KernelPPCallback callback = nullptr) const;
+    dSeries2Df Correlate(const dSeries2Df& kernel, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect, KernelPPCallback callback = nullptr) const;
+    epiFloat CorrelateElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect, KernelPPCallback callback = nullptr) const;
+    dSeries2Df Convolve(const dSeries2Df& kernel, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect, KernelPPCallback callback = nullptr) const;
+    epiFloat ConvolveElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect, KernelPPCallback callback = nullptr) const;
 
-    dSeries2Df MeanArithmetic(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, epiFloat trim = 0.0f) const;
-    dSeries2Df MeanGeometric(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
-    dSeries2Df MeanHarmonic(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
-    dSeries2Df MeanContraHarmonic(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect, epiFloat order = 0.0f) const;
+    dSeries2Df MeanArithmetic(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect, epiFloat trim = 0.0f) const;
+    dSeries2Df MeanGeometric(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect) const;
+    dSeries2Df MeanHarmonic(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect) const;
+    dSeries2Df MeanContraHarmonic(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect, epiFloat order = 0.0f) const;
 
-    dSeries2Df Median(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    dSeries2Df Median(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect) const;
 
-    dSeries2Df Min(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
-    dSeries2Df Max(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
-    dSeries2Df MidPoint(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect) const;
+    dSeries2Df Min(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect) const;
+    dSeries2Df Max(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect) const;
+    dSeries2Df MidPoint(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect) const;
 
     dSeries2Dc DFT_R2C() const;
     dSeries2Df DFT_Shift() const;
@@ -86,9 +86,9 @@ public:
 
     dSeries2Df Transform(std::function<epiFloat(epiFloat)>&& callback) const;
 
-    epiFloat At(epiS32 index, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
+    epiFloat At(epiS32 index, dSeriesAddressMode addressMode = dSeriesAddressMode::Error) const;
     epiFloat& At(epiS32 index);
-    epiFloat At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
+    epiFloat At(epiS32 r, epiS32 c, dSeriesAddressMode addressMode = dSeriesAddressMode::Error) const;
     epiFloat& At(epiS32 r, epiS32 c);
 
     friend epiBool operator==(const dSeries2Df& lhs, const dSeries2Df& rhs);

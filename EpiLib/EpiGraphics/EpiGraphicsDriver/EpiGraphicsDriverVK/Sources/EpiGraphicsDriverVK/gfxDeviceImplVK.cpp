@@ -14,6 +14,7 @@
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
+#include "EpiGraphicsDriverVK/gfxSamplerImplVK.h"
 #include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
 #include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceMemoryImplVK.h"
@@ -684,6 +685,17 @@ std::shared_ptr<gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfx
 {
     std::shared_ptr<gfxTextureViewImplVK> impl = std::make_shared<gfxTextureViewImplVK>(m_VkDevice);
     if (!impl->Init(info, textureImpl))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxSamplerImpl> gfxDeviceImplVK::CreateSampler(const gfxSamplerCreateInfo& info) const
+{
+    std::shared_ptr<gfxSamplerImplVK> impl = std::make_shared<gfxSamplerImplVK>(m_VkDevice);
+    if (!impl->Init(info))
     {
         impl.reset();
     }

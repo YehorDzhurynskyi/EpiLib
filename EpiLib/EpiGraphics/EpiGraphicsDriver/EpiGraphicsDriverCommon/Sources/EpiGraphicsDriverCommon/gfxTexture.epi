@@ -1,6 +1,6 @@
 class gfxTextureCreateInfo
 {
-    gfxTextureType Type = gfxTextureType::None;
+    gfxTextureType Type;
     gfxFormat Format = gfxFormat::UNDEFINED;
     epiVec3u Extent;
     epiU32 MipLevels;

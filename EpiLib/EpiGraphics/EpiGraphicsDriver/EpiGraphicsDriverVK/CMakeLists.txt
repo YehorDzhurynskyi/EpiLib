@@ -43,6 +43,8 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxDescriptorSetImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.h
     Sources/EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxSamplerImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxSamplerImplVK.cpp
 
     Sources/EpiGraphicsDriverVK/Synchronization/gfxFenceImplVK.h
     Sources/EpiGraphicsDriverVK/Synchronization/gfxFenceImplVK.cpp

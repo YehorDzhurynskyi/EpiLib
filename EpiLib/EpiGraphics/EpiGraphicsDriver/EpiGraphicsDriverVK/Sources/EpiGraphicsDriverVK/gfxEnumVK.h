@@ -51,5 +51,12 @@ VkSemaphoreCreateFlags gfxSemaphoreCreateMaskTo(gfxSemaphoreCreateMask mask);
 VkSemaphoreWaitFlagBits gfxSemaphoreWaitMaskTo(gfxSemaphoreWaitMask mask);
 VkImageTiling gfxImageTilingTo(gfxImageTiling tiling);
 VkImageAspectFlagBits gfxImageAspectTo(gfxImageAspect mask);
+VkCompareOp gfxCompareOpTo(gfxCompareOp op);
+VkSamplerCreateFlagBits gfxSamplerCreateMaskTo(gfxSamplerCreateMask mask);
+VkFilter gfxSamplerFilterModeTo(gfxSamplerFilterMode mode);
+VkSamplerMipmapMode gfxSamplerMipmapModeTo(gfxSamplerMipmapMode mode);
+VkSamplerAddressMode gfxSamplerAddressModeTo(gfxSamplerAddressMode mode);
+VkBorderColor gfxSamplerBorderColorTo(gfxSamplerBorderColor borderColor);
+VkComponentSwizzle gfxComponentSwizzleTo(gfxComponentSwizzle swizzle);
 
 EPI_NAMESPACE_END()

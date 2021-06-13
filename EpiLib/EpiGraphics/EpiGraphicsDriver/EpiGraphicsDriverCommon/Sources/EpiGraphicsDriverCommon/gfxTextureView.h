@@ -28,16 +28,26 @@ public:
 
     enum gfxTextureViewCreateInfo_PIDs
     {
-        PID_Texture = 0x4ddb34ee,
+        PID_Image = 0x4fc2b5b,
         PID_ViewType = 0xf626a923,
         PID_Format = 0xd91677e9,
-        PID_COUNT = 3
+        PID_ComponentSwizzleMappingR = 0xf2df524c,
+        PID_ComponentSwizzleMappingG = 0x9f02b6a7,
+        PID_ComponentSwizzleMappingB = 0xef684228,
+        PID_ComponentSwizzleMappingA = 0x76611392,
+        PID_SubresourceRange = 0x5a75fb0e,
+        PID_COUNT = 8
     };
 
 protected:
-    gfxTexture* m_Texture{nullptr};
-    gfxTextureViewType m_ViewType{gfxTextureViewType::None};
+    gfxTexture m_Image{};
+    gfxTextureViewType m_ViewType{};
     gfxFormat m_Format{gfxFormat::UNDEFINED};
+    gfxComponentSwizzle m_ComponentSwizzleMappingR{gfxComponentSwizzle::Identity};
+    gfxComponentSwizzle m_ComponentSwizzleMappingG{gfxComponentSwizzle::Identity};
+    gfxComponentSwizzle m_ComponentSwizzleMappingB{gfxComponentSwizzle::Identity};
+    gfxComponentSwizzle m_ComponentSwizzleMappingA{gfxComponentSwizzle::Identity};
+    gfxImageSubresourceRange m_SubresourceRange{};
 
 EPI_GENREGION_END(gfxTextureViewCreateInfo)
 };

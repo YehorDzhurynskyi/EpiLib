@@ -1,0 +1,23 @@
+class gfxSamplerCreateInfo
+{
+    gfxSamplerCreateMask CreateMask;
+    gfxSamplerFilterMode MagFilter;
+    gfxSamplerFilterMode MinFilter;
+    gfxSamplerAddressMode AddressModeU;
+    gfxSamplerAddressMode AddressModeV;
+    gfxSamplerAddressMode AddressModeW;
+    gfxSamplerMipmapMode MipmapMode;
+    epiFloat MipmapLODBias;
+    epiBool IsAnisotropyEnabled;
+    epiFloat AnisotropyMax;
+    epiBool IsCompareEnabled;
+    gfxCompareOp CompareOp;
+    epiFloat MinLOD;
+    epiFloat MaxLOD;
+    gfxSamplerBorderColor BorderColor;
+    epiBool IsUnnormalizedCoordinates;
+};
+
+class gfxSampler
+{
+};

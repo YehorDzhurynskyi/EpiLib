@@ -182,6 +182,7 @@ public:
     virtual std::shared_ptr<gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const gfxTextureViewImpl>& textureViewImpls) const = 0;
     virtual std::shared_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const = 0;
+    virtual std::shared_ptr<gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
     virtual std::shared_ptr<gfxBufferImpl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info, const gfxBufferImpl& bufferImpl) const = 0;
@@ -207,6 +208,7 @@ public:
     gfxPhysicalDeviceImpl& operator=(gfxPhysicalDeviceImpl&& rhs) = default;
     virtual ~gfxPhysicalDeviceImpl() = default;
 
+    virtual epiFloat GetMaxSamplerAnisotropy() const = 0;
     virtual epiString GetName() const = 0;
     virtual gfxPhysicalDeviceType GetType() const = 0;
 
@@ -434,6 +436,17 @@ public:
     gfxTextureViewImpl(gfxTextureViewImpl&& rhs) = default;
     gfxTextureViewImpl& operator=(gfxTextureViewImpl&& rhs) = default;
     virtual ~gfxTextureViewImpl() = default;
+};
+
+class gfxSamplerImpl
+{
+public:
+    gfxSamplerImpl() = default;
+    gfxSamplerImpl(const gfxSamplerImpl& rhs) = delete;
+    gfxSamplerImpl& operator=(const gfxSamplerImpl& rhs) = delete;
+    gfxSamplerImpl(gfxSamplerImpl&& rhs) = default;
+    gfxSamplerImpl& operator=(gfxSamplerImpl&& rhs) = default;
+    virtual ~gfxSamplerImpl() = default;
 };
 
 class gfxShaderImpl

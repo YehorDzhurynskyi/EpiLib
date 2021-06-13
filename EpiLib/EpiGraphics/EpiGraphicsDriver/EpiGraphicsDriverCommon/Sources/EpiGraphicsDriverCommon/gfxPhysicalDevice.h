@@ -54,6 +54,9 @@ public:
                                           const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
                                           const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const;
 
+    // TODO: Introduce PhysicalDeviceLimits struct and move it there
+    epiFloat GetMaxSamplerAnisotropy() const;
+
     epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;

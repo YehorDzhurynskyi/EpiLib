@@ -41,7 +41,7 @@ public:
     };
 
 protected:
-    gfxTextureType m_Type{gfxTextureType::None};
+    gfxTextureType m_Type{};
     gfxFormat m_Format{gfxFormat::UNDEFINED};
     epiVec3u m_Extent{};
     epiU32 m_MipLevels{0};

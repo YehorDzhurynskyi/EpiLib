@@ -18,7 +18,7 @@ void mmVMImageSharpening::SetScaleFactor_Callback(epiFloat value)
             kernel.At(1, 2) = 1.0f;
             kernel.At(2, 1) = 1.0f;
 
-            SetImage(imageSrc->Add(imageSrc->Convolve(kernel, dSeriesEdgeHandling::Reflect).Mult(1.0f + value)));
+            SetImage(imageSrc->Add(imageSrc->Convolve(kernel, dSeriesAddressMode::Reflect).Mult(1.0f + value)));
 
             epiPropertyChangedCheckAndTrigger(ScaleFactor, value);
         }

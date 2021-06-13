@@ -11,7 +11,7 @@ void mmVMImageMedian::SetWindowSize_Callback(epiU8 value)
     {
         if (mmImage* imageSrc = GetImageSrc())
         {
-            SetImage(imageSrc->Median(value, dSeriesEdgeHandling::Reflect));
+            SetImage(imageSrc->Median(value, dSeriesAddressMode::Reflect));
 
             epiPropertyChangedCheckAndTrigger(WindowSize, value);
         }

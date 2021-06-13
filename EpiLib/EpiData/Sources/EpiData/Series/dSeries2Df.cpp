@@ -120,7 +120,7 @@ dSeries2Df dSeries2Df::Add(epiFloat scalar) const
     return result;
 }
 
-dSeries2Df dSeries2Df::Add(const dSeries2Df& series, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::Add(const dSeries2Df& series, dSeriesAddressMode addressMode) const
 {
     dSeries2Df result;
     result.Resize(GetSize());
@@ -135,7 +135,7 @@ dSeries2Df dSeries2Df::Add(const dSeries2Df& series, dSeriesEdgeHandling edge) c
     {
         for (epiS32 c = 0; c < GetWidth(); ++c)
         {
-            result.At(r, c) = At(r, c) + series.At(r, c, edge);
+            result.At(r, c) = At(r, c) + series.At(r, c, addressMode);
         }
     }
 
@@ -150,7 +150,7 @@ dSeries2Df dSeries2Df::Mult(epiFloat scalar) const
     return result;
 }
 
-dSeries2Df dSeries2Df::Mult(const dSeries2Df& series, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::Mult(const dSeries2Df& series, dSeriesAddressMode addressMode) const
 {
     dSeries2Df result;
     result.Resize(GetSize());
@@ -165,7 +165,7 @@ dSeries2Df dSeries2Df::Mult(const dSeries2Df& series, dSeriesEdgeHandling edge) 
     {
         for (epiS32 c = 0; c < GetWidth(); ++c)
         {
-            result.At(r, c) = At(r, c) * series.At(r, c, edge);
+            result.At(r, c) = At(r, c) * series.At(r, c, addressMode);
         }
     }
 
@@ -207,7 +207,7 @@ epiSize_t dSeries2Df::GetHeight_Callback() const
     return GetSize() / GetWidth();
 }
 
-dSeries2Df dSeries2Df::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling edge, KernelPPCallback callback) const
+dSeries2Df dSeries2Df::Correlate(const dSeries2Df& kernel, dSeriesAddressMode addressMode, KernelPPCallback callback) const
 {
     dSeries2Df series;
     series.Resize(GetSize());
@@ -221,7 +221,7 @@ dSeries2Df dSeries2Df::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling e
         const epiS32 r = i / w;
         const epiS32 c = i % w;
 
-        series.At(r, c) = CorrelateElement(r, c, kernel, edge, callback);
+        series.At(r, c) = CorrelateElement(r, c, kernel, addressMode, callback);
 
         ++i;
     }
@@ -229,14 +229,14 @@ dSeries2Df dSeries2Df::Correlate(const dSeries2Df& kernel, dSeriesEdgeHandling e
     return series;
 }
 
-epiFloat dSeries2Df::CorrelateElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge, KernelPPCallback callback) const
+epiFloat dSeries2Df::CorrelateElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesAddressMode addressMode, KernelPPCallback callback) const
 {
     epiFloat sum = 0.0f;
     for (epiS32 kR = 0; kR < kernel.GetHeight(); ++kR)
     {
         for (epiS32 kC = 0; kC < kernel.GetWidth(); ++kC)
         {
-            const epiFloat v = At(r + kR - kernel.GetHeight() / 2, c + kC - kernel.GetWidth() / 2, edge);
+            const epiFloat v = At(r + kR - kernel.GetHeight() / 2, c + kC - kernel.GetWidth() / 2, addressMode);
             const epiFloat vKernel = kernel.At(kR, kC);
 
             sum += v * vKernel;
@@ -246,7 +246,7 @@ epiFloat dSeries2Df::CorrelateElement(epiS32 r, epiS32 c, const dSeries2Df& kern
     return callback != nullptr ? callback(*this, sum, r, c) : sum;
 }
 
-dSeries2Df dSeries2Df::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling edge, KernelPPCallback callback) const
+dSeries2Df dSeries2Df::Convolve(const dSeries2Df& kernel, dSeriesAddressMode addressMode, KernelPPCallback callback) const
 {
     dSeries2Df series;
     series.Resize(GetSize());
@@ -260,7 +260,7 @@ dSeries2Df dSeries2Df::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling ed
         const epiS32 r = i / w;
         const epiS32 c = i % w;
 
-        series.At(r, c) = ConvolveElement(r, c, kernel, edge, callback);
+        series.At(r, c) = ConvolveElement(r, c, kernel, addressMode, callback);
 
         ++i;
     }
@@ -268,14 +268,14 @@ dSeries2Df dSeries2Df::Convolve(const dSeries2Df& kernel, dSeriesEdgeHandling ed
     return series;
 }
 
-epiFloat dSeries2Df::ConvolveElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesEdgeHandling edge, KernelPPCallback callback) const
+epiFloat dSeries2Df::ConvolveElement(epiS32 r, epiS32 c, const dSeries2Df& kernel, dSeriesAddressMode addressMode, KernelPPCallback callback) const
 {
     epiFloat sum = 0.0f;
     for (epiS32 kR = 0; kR < kernel.GetHeight(); ++kR)
     {
         for (epiS32 kC = 0; kC < kernel.GetWidth(); ++kC)
         {
-            const epiFloat v = At(r - (kR - kernel.GetHeight() / 2), c - (kC - kernel.GetWidth() / 2), edge);
+            const epiFloat v = At(r - (kR - kernel.GetHeight() / 2), c - (kC - kernel.GetWidth() / 2), addressMode);
             const epiFloat vKernel = kernel.At(kR, kC);
 
             sum += v * vKernel;
@@ -285,7 +285,7 @@ epiFloat dSeries2Df::ConvolveElement(epiS32 r, epiS32 c, const dSeries2Df& kerne
     return callback != nullptr ? callback(*this, sum, r, c) : sum;
 }
 
-dSeries2Df dSeries2Df::MeanArithmetic(epiSize_t windowSize, dSeriesEdgeHandling edge, epiFloat trim) const
+dSeries2Df dSeries2Df::MeanArithmetic(epiSize_t windowSize, dSeriesAddressMode addressMode, epiFloat trim) const
 {
     if (windowSize == 0)
     {
@@ -293,10 +293,10 @@ dSeries2Df dSeries2Df::MeanArithmetic(epiSize_t windowSize, dSeriesEdgeHandling 
     }
 
     const dSeries2Df kernel = dSeries2Df::Full(windowSize * windowSize, windowSize, 1.0f / (windowSize * windowSize - trim));
-    return Convolve(kernel, edge);
+    return Convolve(kernel, addressMode);
 }
 
-dSeries2Df dSeries2Df::MeanGeometric(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::MeanGeometric(epiSize_t windowSize, dSeriesAddressMode addressMode) const
 {
     if (windowSize == 0)
     {
@@ -320,7 +320,7 @@ dSeries2Df dSeries2Df::MeanGeometric(epiSize_t windowSize, dSeriesEdgeHandling e
         {
             for (epiS32 kC = 0; kC < windowSize; ++kC)
             {
-                prod *= At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), edge);
+                prod *= At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), addressMode);
             }
         }
 
@@ -332,7 +332,7 @@ dSeries2Df dSeries2Df::MeanGeometric(epiSize_t windowSize, dSeriesEdgeHandling e
     return series;
 }
 
-dSeries2Df dSeries2Df::MeanHarmonic(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::MeanHarmonic(epiSize_t windowSize, dSeriesAddressMode addressMode) const
 {
     if (windowSize == 0)
     {
@@ -356,7 +356,7 @@ dSeries2Df dSeries2Df::MeanHarmonic(epiSize_t windowSize, dSeriesEdgeHandling ed
         {
             for (epiS32 kC = 0; kC < windowSize; ++kC)
             {
-                sum += 1.0f / At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), edge);
+                sum += 1.0f / At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), addressMode);
             }
         }
 
@@ -368,7 +368,7 @@ dSeries2Df dSeries2Df::MeanHarmonic(epiSize_t windowSize, dSeriesEdgeHandling ed
     return series;
 }
 
-dSeries2Df dSeries2Df::MeanContraHarmonic(epiSize_t windowSize, dSeriesEdgeHandling edge, epiFloat order) const
+dSeries2Df dSeries2Df::MeanContraHarmonic(epiSize_t windowSize, dSeriesAddressMode addressMode, epiFloat order) const
 {
     if (windowSize == 0)
     {
@@ -393,7 +393,7 @@ dSeries2Df dSeries2Df::MeanContraHarmonic(epiSize_t windowSize, dSeriesEdgeHandl
         {
             for (epiS32 kC = 0; kC < windowSize; ++kC)
             {
-                const epiFloat v = At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), edge);
+                const epiFloat v = At(r - (kR - windowSize / 2), c - (kC - windowSize / 2), addressMode);
                 const epiFloat y = std::pow(v, order);
 
                 sumNum += y * v;
@@ -409,7 +409,7 @@ dSeries2Df dSeries2Df::MeanContraHarmonic(epiSize_t windowSize, dSeriesEdgeHandl
     return series;
 }
 
-dSeries2Df dSeries2Df::Median(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::Median(epiSize_t windowSize, dSeriesAddressMode addressMode) const
 {
     if (windowSize == 0)
     {
@@ -436,8 +436,8 @@ dSeries2Df dSeries2Df::Median(epiSize_t windowSize, dSeriesEdgeHandling edge) co
 
         for (epiS32 k = 0; k < windowSize; ++k)
         {
-            localR[k] = At(r, c - (k - windowSize / 2), edge);
-            localC[k] = At(r - (k - windowSize / 2), c, edge);
+            localR[k] = At(r, c - (k - windowSize / 2), addressMode);
+            localC[k] = At(r - (k - windowSize / 2), c, addressMode);
         }
 
         std::sort(localR.begin(), localR.end());
@@ -459,7 +459,7 @@ dSeries2Df dSeries2Df::Median(epiSize_t windowSize, dSeriesEdgeHandling edge) co
     return series;
 }
 
-dSeries2Df dSeries2Df::Min(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::Min(epiSize_t windowSize, dSeriesAddressMode addressMode) const
 {
     if (windowSize == 0)
     {
@@ -482,8 +482,8 @@ dSeries2Df dSeries2Df::Min(epiSize_t windowSize, dSeriesEdgeHandling edge) const
         epiFloat minC = std::numeric_limits<epiFloat>::max();
         for (epiS32 k = 0; k < windowSize; ++k)
         {
-            minR = std::min(minR, At(r, c - (k - windowSize / 2), edge));
-            minC = std::min(minC, At(r - (k - windowSize / 2), c, edge));
+            minR = std::min(minR, At(r, c - (k - windowSize / 2), addressMode));
+            minC = std::min(minC, At(r - (k - windowSize / 2), c, addressMode));
         }
 
         series.At(r, c) = 0.5f * (minR + minC);
@@ -494,7 +494,7 @@ dSeries2Df dSeries2Df::Min(epiSize_t windowSize, dSeriesEdgeHandling edge) const
     return series;
 }
 
-dSeries2Df dSeries2Df::Max(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::Max(epiSize_t windowSize, dSeriesAddressMode addressMode) const
 {
     if (windowSize == 0)
     {
@@ -517,8 +517,8 @@ dSeries2Df dSeries2Df::Max(epiSize_t windowSize, dSeriesEdgeHandling edge) const
         epiFloat maxC = std::numeric_limits<epiFloat>::min();
         for (epiS32 k = 0; k < windowSize; ++k)
         {
-            maxR = std::max(maxR, At(r, c - (k - windowSize / 2), edge));
-            maxC = std::max(maxC, At(r - (k - windowSize / 2), c, edge));
+            maxR = std::max(maxR, At(r, c - (k - windowSize / 2), addressMode));
+            maxC = std::max(maxC, At(r - (k - windowSize / 2), c, addressMode));
         }
 
         series.At(r, c) = 0.5f * (maxR + maxC);
@@ -529,7 +529,7 @@ dSeries2Df dSeries2Df::Max(epiSize_t windowSize, dSeriesEdgeHandling edge) const
     return series;
 }
 
-dSeries2Df dSeries2Df::MidPoint(epiSize_t windowSize, dSeriesEdgeHandling edge) const
+dSeries2Df dSeries2Df::MidPoint(epiSize_t windowSize, dSeriesAddressMode addressMode) const
 {
     if (windowSize == 0)
     {
@@ -554,8 +554,8 @@ dSeries2Df dSeries2Df::MidPoint(epiSize_t windowSize, dSeriesEdgeHandling edge) 
         epiFloat maxC = std::numeric_limits<epiFloat>::min();
         for (epiS32 k = 0; k < windowSize; ++k)
         {
-            const epiFloat vR = At(r, c - (k - windowSize / 2), edge);
-            const epiFloat vC = At(r - (k - windowSize / 2), c, edge);
+            const epiFloat vR = At(r, c - (k - windowSize / 2), addressMode);
+            const epiFloat vC = At(r - (k - windowSize / 2), c, addressMode);
 
             minR = std::min(minR, vR);
             minC = std::min(minC, vC);
@@ -771,13 +771,13 @@ dSeries2Df dSeries2Df::Transform(std::function<epiFloat(epiFloat)>&& callback) c
     return static_cast<dSeries2Df&>(Duplicate().dSeriesf::Transform(std::move(callback)));
 }
 
-epiFloat dSeries2Df::At(epiS32 index, dSeriesEdgeHandling edge) const
+epiFloat dSeries2Df::At(epiS32 index, dSeriesAddressMode addressMode) const
 {
     const epiSize_t w = GetWidth();
 
     epiAssert(w != 0);
 
-    return At(index / w, index % w, edge);
+    return At(index / w, index % w, addressMode);
 }
 
 epiFloat& dSeries2Df::At(epiS32 index)
@@ -785,16 +785,16 @@ epiFloat& dSeries2Df::At(epiS32 index)
     return dSeriesf::At(index);
 }
 
-epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
+epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesAddressMode addressMode) const
 {
     const epiS32 w = static_cast<epiS32>(GetWidth());
     const epiS32 h = static_cast<epiS32>(GetHeight());
 
     epiS32 x = 0;
     epiS32 y = 0;
-    switch (edge)
+    switch (addressMode)
     {
-    case dSeriesEdgeHandling::Error:
+    case dSeriesAddressMode::Error:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -805,7 +805,7 @@ epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::Zero:
+    case dSeriesAddressMode::Zero:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -815,7 +815,7 @@ epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::One:
+    case dSeriesAddressMode::One:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -825,7 +825,7 @@ epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::FF:
+    case dSeriesAddressMode::FF:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -835,12 +835,12 @@ epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::Nearest:
+    case dSeriesAddressMode::Nearest:
     {
         x = std::clamp(c, 0, w - 1);
         y = std::clamp(r, 0, h - 1);
     } break;
-    case dSeriesEdgeHandling::Wrap:
+    case dSeriesAddressMode::Wrap:
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {
@@ -855,7 +855,7 @@ epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::Reflect:
+    case dSeriesAddressMode::Reflect:
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {
@@ -870,7 +870,7 @@ epiFloat dSeries2Df::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::Mirror:
+    case dSeriesAddressMode::Mirror:
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {

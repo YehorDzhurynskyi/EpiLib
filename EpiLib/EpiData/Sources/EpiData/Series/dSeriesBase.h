@@ -8,9 +8,9 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class dSeriesEdgeHandling : epiS32
+enum class dSeriesAddressMode : epiS32
 {
-EPI_GENREGION_BEGIN(dSeriesEdgeHandling)
+EPI_GENREGION_BEGIN(dSeriesAddressMode)
     Error = 0,
     Zero = 1,
     One = 2,
@@ -19,7 +19,7 @@ EPI_GENREGION_BEGIN(dSeriesEdgeHandling)
     Wrap = 5,
     Reflect = 6,
     Mirror = 7
-EPI_GENREGION_END(dSeriesEdgeHandling)
+EPI_GENREGION_END(dSeriesAddressMode)
 };
 
 class dSeriesBase : public Object

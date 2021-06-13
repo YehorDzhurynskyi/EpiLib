@@ -100,10 +100,10 @@ public:
 
     [[nodiscard]] mmImage Add(epiFloat scalar) const;
     [[nodiscard]] mmImage Add(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const;
-    [[nodiscard]] mmImage Add(const mmImage& image, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    [[nodiscard]] mmImage Add(const mmImage& image, dSeriesAddressMode addressMode = dSeriesAddressMode::Zero) const;
     [[nodiscard]] mmImage Mult(epiFloat scalar) const;
     [[nodiscard]] mmImage Mult(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const;
-    [[nodiscard]] mmImage Mult(const mmImage& image, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Zero) const;
+    [[nodiscard]] mmImage Mult(const mmImage& image, dSeriesAddressMode addressMode = dSeriesAddressMode::Zero) const;
     [[nodiscard]] mmImage Log(epiFloat base) const;
     [[nodiscard]] mmImage Log(epiFloat baseR, epiFloat baseG, epiFloat baseB) const;
     [[nodiscard]] mmImage Exp(epiFloat base) const;
@@ -126,35 +126,35 @@ public:
     void ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 shiftA = 0);
 
     [[nodiscard]] mmImage Convolve(const dSeries2Df& kernel,
-                                   dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect,
+                                   dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect,
                                    dSeries2Df::KernelPPCallback callback = nullptr) const;
     [[nodiscard]] mmImage Convolve(const dSeries2Df& kernelR,
                                    const dSeries2Df& kernelG,
                                    const dSeries2Df& kernelB,
-                                   dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect,
+                                   dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect,
                                    dSeries2Df::KernelPPCallback callback = nullptr) const;
 
     [[nodiscard]] mmImage Correlate(const dSeries2Df& kernel,
-                                    dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect,
+                                    dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect,
                                     dSeries2Df::KernelPPCallback callback = nullptr) const;
     [[nodiscard]] mmImage Correlate(const dSeries2Df& kernelR,
                                     const dSeries2Df& kernelG,
                                     const dSeries2Df& kernelB,
-                                    dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect,
+                                    dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect,
                                     dSeries2Df::KernelPPCallback callback = nullptr) const;
 
-    [[nodiscard]] mmImage Crop(const epiRect2u& crop, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
+    [[nodiscard]] mmImage Crop(const epiRect2u& crop, dSeriesAddressMode addressMode = dSeriesAddressMode::Error) const;
 
-    [[nodiscard]] mmImage Median(epiSize_t windowSize, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Reflect);
+    [[nodiscard]] mmImage Median(epiSize_t windowSize, dSeriesAddressMode addressMode = dSeriesAddressMode::Reflect);
 
     void Overlap(const mmImage& image, const epiVec2s& shift, const Color& colorTint = Color(1.0f, 1.0f, 1.0f, 1.0f));
 
     epiU8& At(epiS32 index, epiU32 channel);
     epiU8& At(epiS32 r, epiS32 c, epiU32 channel);
-    epiU8 At(epiS32 index, epiU32 channel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
-    epiU8 At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
-    Color At(epiS32 index, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
-    Color At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge = dSeriesEdgeHandling::Error) const;
+    epiU8 At(epiS32 index, epiU32 channel, dSeriesAddressMode addressMode = dSeriesAddressMode::Error) const;
+    epiU8 At(epiS32 r, epiS32 c, epiU32 channel, dSeriesAddressMode addressMode = dSeriesAddressMode::Error) const;
+    Color At(epiS32 index, dSeriesAddressMode addressMode = dSeriesAddressMode::Error) const;
+    Color At(epiS32 r, epiS32 c, dSeriesAddressMode addressMode = dSeriesAddressMode::Error) const;
 
     operator dSeries2Df() const;
     dSeries2Df ToSeries2Df(mmImageGetColorValueCallback get = &Color::GetLumau) const;

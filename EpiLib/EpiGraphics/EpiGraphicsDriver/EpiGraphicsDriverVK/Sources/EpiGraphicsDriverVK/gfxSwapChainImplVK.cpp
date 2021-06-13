@@ -97,10 +97,18 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
         std::shared_ptr<gfxTextureImplVK> textureImpl = std::make_shared<gfxTextureImplVK>(image);
         gfxTexture texture(textureImpl);
 
+        gfxImageSubresourceRange subresourceRange{};
+        subresourceRange.SetAspectMask(gfxImageAspect_Color);
+        subresourceRange.SetBaseMipLevel(0);
+        subresourceRange.SetLevelCount(1);
+        subresourceRange.SetBaseArrayLayer(0);
+        subresourceRange.SetLayerCount(1);
+
         gfxTextureViewCreateInfo textureViewCreateInfo;
-        textureViewCreateInfo.SetFormat(info.GetFormat().GetFormat());
+        textureViewCreateInfo.SetImage(texture);
         textureViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
-        textureViewCreateInfo.SetTexture(&texture);
+        textureViewCreateInfo.SetFormat(info.GetFormat().GetFormat());
+        textureViewCreateInfo.SetSubresourceRange(subresourceRange);
 
         std::shared_ptr<gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImpl);
         m_SwapChainImageViews.push_back(std::move(textureViewImpl));

@@ -52,6 +52,14 @@ void gfxPhysicalDeviceImplVK::Init(VkPhysicalDevice device)
     }
 }
 
+epiFloat gfxPhysicalDeviceImplVK::GetMaxSamplerAnisotropy() const
+{
+    VkPhysicalDeviceProperties properties;
+    vkGetPhysicalDeviceProperties(m_VkDevice, &properties);
+
+    return properties.limits.maxSamplerAnisotropy;
+}
+
 epiString gfxPhysicalDeviceImplVK::GetName() const
 {
     VkPhysicalDeviceProperties properties;

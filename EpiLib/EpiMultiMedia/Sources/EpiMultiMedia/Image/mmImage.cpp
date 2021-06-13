@@ -430,7 +430,7 @@ mmImage mmImage::Add(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) const
     }
 }
 
-mmImage mmImage::Add(const mmImage& image, dSeriesEdgeHandling edge) const
+mmImage mmImage::Add(const mmImage& image, dSeriesAddressMode addressMode) const
 {
     switch (GetPixelFormat())
     {
@@ -440,16 +440,16 @@ mmImage mmImage::Add(const mmImage& image, dSeriesEdgeHandling edge) const
         {
         case mmImagePixelFormat::GRAYSCALE:
         {
-            return ToSeries2Df().Add(image.ToSeries2Df(), edge);
+            return ToSeries2Df().Add(image.ToSeries2Df(), addressMode);
         } break;
         case mmImagePixelFormat::R8G8B8:
         case mmImagePixelFormat::R8G8B8A8:
         {
             const mmImage rgb = ToR8G8B8();
 
-            const dSeries2Df r = rgb.ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(&Color::GetRu), edge);
-            const dSeries2Df g = rgb.ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(&Color::GetGu), edge);
-            const dSeries2Df b = rgb.ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(&Color::GetBu), edge);
+            const dSeries2Df r = rgb.ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(&Color::GetRu), addressMode);
+            const dSeries2Df g = rgb.ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(&Color::GetGu), addressMode);
+            const dSeries2Df b = rgb.ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(&Color::GetBu), addressMode);
 
             return FromSeries2Df_ToR8G8B8(r, g, b);
         } break;
@@ -462,18 +462,18 @@ mmImage mmImage::Add(const mmImage& image, dSeriesEdgeHandling edge) const
         {
         case mmImagePixelFormat::GRAYSCALE:
         {
-            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(), edge);
-            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(), edge);
-            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(), edge);
+            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(), addressMode);
+            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(), addressMode);
+            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(), addressMode);
 
             return FromSeries2Df_ToR8G8B8(r, g, b);
         } break;
         case mmImagePixelFormat::R8G8B8:
         case mmImagePixelFormat::R8G8B8A8:
         {
-            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(&Color::GetRu), edge);
-            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(&Color::GetGu), edge);
-            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(&Color::GetBu), edge);
+            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Add(image.ToSeries2Df(&Color::GetRu), addressMode);
+            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Add(image.ToSeries2Df(&Color::GetGu), addressMode);
+            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Add(image.ToSeries2Df(&Color::GetBu), addressMode);
 
             return FromSeries2Df_ToR8G8B8(r, g, b);
         } break;
@@ -517,7 +517,7 @@ mmImage mmImage::Mult(epiFloat scalarR, epiFloat scalarG, epiFloat scalarB) cons
     }
 }
 
-mmImage mmImage::Mult(const mmImage& image, dSeriesEdgeHandling edge) const
+mmImage mmImage::Mult(const mmImage& image, dSeriesAddressMode addressMode) const
 {
     switch (GetPixelFormat())
     {
@@ -527,16 +527,16 @@ mmImage mmImage::Mult(const mmImage& image, dSeriesEdgeHandling edge) const
         {
         case mmImagePixelFormat::GRAYSCALE:
         {
-            return ToSeries2Df().Mult(image.ToSeries2Df(), edge);
+            return ToSeries2Df().Mult(image.ToSeries2Df(), addressMode);
         } break;
         case mmImagePixelFormat::R8G8B8:
         case mmImagePixelFormat::R8G8B8A8:
         {
             const mmImage rgb = ToR8G8B8();
 
-            const dSeries2Df r = rgb.ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(&Color::GetRu), edge);
-            const dSeries2Df g = rgb.ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(&Color::GetGu), edge);
-            const dSeries2Df b = rgb.ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(&Color::GetBu), edge);
+            const dSeries2Df r = rgb.ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(&Color::GetRu), addressMode);
+            const dSeries2Df g = rgb.ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(&Color::GetGu), addressMode);
+            const dSeries2Df b = rgb.ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(&Color::GetBu), addressMode);
 
             return FromSeries2Df_ToR8G8B8(r, g, b);
         } break;
@@ -549,18 +549,18 @@ mmImage mmImage::Mult(const mmImage& image, dSeriesEdgeHandling edge) const
         {
         case mmImagePixelFormat::GRAYSCALE:
         {
-            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(), edge);
-            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(), edge);
-            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(), edge);
+            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(), addressMode);
+            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(), addressMode);
+            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(), addressMode);
 
             return FromSeries2Df_ToR8G8B8(r, g, b);
         } break;
         case mmImagePixelFormat::R8G8B8:
         case mmImagePixelFormat::R8G8B8A8:
         {
-            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(&Color::GetRu), edge);
-            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(&Color::GetGu), edge);
-            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(&Color::GetBu), edge);
+            const dSeries2Df r = ToSeries2Df(&Color::GetRu).Mult(image.ToSeries2Df(&Color::GetRu), addressMode);
+            const dSeries2Df g = ToSeries2Df(&Color::GetGu).Mult(image.ToSeries2Df(&Color::GetGu), addressMode);
+            const dSeries2Df b = ToSeries2Df(&Color::GetBu).Mult(image.ToSeries2Df(&Color::GetBu), addressMode);
 
             return FromSeries2Df_ToR8G8B8(r, g, b);
         } break;
@@ -1093,16 +1093,16 @@ void mmImage::ShiftRotate(epiS32 shiftR, epiS32 shiftG, epiS32 shiftB, epiS32 sh
 }
 
 mmImage mmImage::Convolve(const dSeries2Df& kernel,
-                          dSeriesEdgeHandling edge,
+                          dSeriesAddressMode addressMode,
                           dSeries2Df::KernelPPCallback callback) const
 {
-    return Convolve(kernel, kernel, kernel, edge, callback);
+    return Convolve(kernel, kernel, kernel, addressMode, callback);
 }
 
 mmImage mmImage::Convolve(const dSeries2Df& kernelR,
                           const dSeries2Df& kernelG,
                           const dSeries2Df& kernelB,
-                          dSeriesEdgeHandling edge,
+                          dSeriesAddressMode addressMode,
                           dSeries2Df::KernelPPCallback callback) const
 {
     switch (GetPixelFormat())
@@ -1111,22 +1111,22 @@ mmImage mmImage::Convolve(const dSeries2Df& kernelR,
     {
         if (kernelR == kernelG && kernelG == kernelB)
         {
-            return ToSeries2Df().Convolve(kernelR, edge, callback);
+            return ToSeries2Df().Convolve(kernelR, addressMode, callback);
         }
 
         const mmImage image = ToR8G8B8();
-        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Convolve(kernelR, edge, callback);
-        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Convolve(kernelG, edge, callback);
-        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Convolve(kernelB, edge, callback);
+        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Convolve(kernelR, addressMode, callback);
+        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Convolve(kernelG, addressMode, callback);
+        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Convolve(kernelB, addressMode, callback);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
     case mmImagePixelFormat::R8G8B8:
     case mmImagePixelFormat::R8G8B8A8:
     {
-        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Convolve(kernelR, edge, callback);
-        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Convolve(kernelG, edge, callback);
-        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Convolve(kernelB, edge, callback);
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Convolve(kernelR, addressMode, callback);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Convolve(kernelG, addressMode, callback);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Convolve(kernelB, addressMode, callback);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
@@ -1134,16 +1134,16 @@ mmImage mmImage::Convolve(const dSeries2Df& kernelR,
 }
 
 mmImage mmImage::Correlate(const dSeries2Df& kernel,
-                           dSeriesEdgeHandling edge,
+                           dSeriesAddressMode addressMode,
                            dSeries2Df::KernelPPCallback callback) const
 {
-    return Correlate(kernel, kernel, kernel, edge, callback);
+    return Correlate(kernel, kernel, kernel, addressMode, callback);
 }
 
 mmImage mmImage::Correlate(const dSeries2Df& kernelR,
                            const dSeries2Df& kernelG,
                            const dSeries2Df& kernelB,
-                           dSeriesEdgeHandling edge,
+                           dSeriesAddressMode addressMode,
                            dSeries2Df::KernelPPCallback callback) const
 {
     switch (GetPixelFormat())
@@ -1152,29 +1152,29 @@ mmImage mmImage::Correlate(const dSeries2Df& kernelR,
     {
         if (kernelR == kernelG && kernelG == kernelB)
         {
-            return ToSeries2Df().Correlate(kernelR, edge, callback);
+            return ToSeries2Df().Correlate(kernelR, addressMode, callback);
         }
 
         const mmImage image = ToR8G8B8();
-        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Correlate(kernelR, edge, callback);
-        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Correlate(kernelG, edge, callback);
-        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Correlate(kernelB, edge, callback);
+        const dSeries2Df r = image.ToSeries2Df(&Color::GetRu).Correlate(kernelR, addressMode, callback);
+        const dSeries2Df g = image.ToSeries2Df(&Color::GetGu).Correlate(kernelG, addressMode, callback);
+        const dSeries2Df b = image.ToSeries2Df(&Color::GetBu).Correlate(kernelB, addressMode, callback);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
     case mmImagePixelFormat::R8G8B8:
     case mmImagePixelFormat::R8G8B8A8:
     {
-        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Correlate(kernelR, edge, callback);
-        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Correlate(kernelG, edge, callback);
-        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Correlate(kernelB, edge, callback);
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Correlate(kernelR, addressMode, callback);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Correlate(kernelG, addressMode, callback);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Correlate(kernelB, addressMode, callback);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
     }
 }
 
-mmImage mmImage::Crop(const epiRect2u& crop, dSeriesEdgeHandling edge) const
+mmImage mmImage::Crop(const epiRect2u& crop, dSeriesAddressMode addressMode) const
 {
     const epiS32 cX1 = crop.Left;
     const epiS32 cY1 = std::min(static_cast<epiS32>(crop.Bottom + crop.GetHeight()), static_cast<epiS32>(GetHeight()));
@@ -1205,7 +1205,7 @@ mmImage mmImage::Crop(const epiRect2u& crop, dSeriesEdgeHandling edge) const
         {
             for (epiS32 ch = 0; ch < ChannelsOf(image.GetPixelFormat()); ++ch)
             {
-                image.At(rr, c, ch) = At(cRR, cC, ch, edge);
+                image.At(rr, c, ch) = At(cRR, cC, ch, addressMode);
             }
         }
     }
@@ -1213,20 +1213,20 @@ mmImage mmImage::Crop(const epiRect2u& crop, dSeriesEdgeHandling edge) const
     return image;
 }
 
-mmImage mmImage::Median(epiSize_t windowSize, dSeriesEdgeHandling edge)
+mmImage mmImage::Median(epiSize_t windowSize, dSeriesAddressMode addressMode)
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        return FromSeries2Df_ToGRAYSCALE(ToSeries2Df().Median(windowSize, edge));
+        return FromSeries2Df_ToGRAYSCALE(ToSeries2Df().Median(windowSize, addressMode));
     } break;
     case mmImagePixelFormat::R8G8B8:
     case mmImagePixelFormat::R8G8B8A8:
     {
-        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Median(windowSize, edge);
-        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Median(windowSize, edge);
-        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Median(windowSize, edge);
+        const dSeries2Df r = ToSeries2Df(&Color::GetRu).Median(windowSize, addressMode);
+        const dSeries2Df g = ToSeries2Df(&Color::GetGu).Median(windowSize, addressMode);
+        const dSeries2Df b = ToSeries2Df(&Color::GetBu).Median(windowSize, addressMode);
 
         return FromSeries2Df_ToR8G8B8(r, g, b);
     } break;
@@ -1277,7 +1277,7 @@ void mmImage::Overlap(const mmImage& image, const epiVec2s& shift, const Color& 
                 }
 
                 const Color colorSrc = image.At(r, c) * colorTint;
-                const Color colorDst = At(rr, cc, dSeriesEdgeHandling::Error);
+                const Color colorDst = At(rr, cc, dSeriesAddressMode::Error);
                 const Color color = colorDst.Blend(colorSrc);
 
                 At(rr, cc, 0) = color.GetRu();
@@ -1317,25 +1317,25 @@ epiU8& mmImage::At(epiS32 r, epiS32 c, epiU32 channel)
     return GetData()[x + y * GetPitch()];
 }
 
-epiU8 mmImage::At(epiS32 index, epiU32 channel, dSeriesEdgeHandling edge) const
+epiU8 mmImage::At(epiS32 index, epiU32 channel, dSeriesAddressMode addressMode) const
 {
     const epiSize_t w = GetWidth();
 
     epiAssert(w != 0);
 
-    return At(index / w, index % w, channel, edge);
+    return At(index / w, index % w, channel, addressMode);
 }
 
-epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) const
+epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesAddressMode addressMode) const
 {
     const epiS32 w = static_cast<epiS32>(GetWidth());
     const epiS32 h = static_cast<epiS32>(GetHeight());
 
     epiS32 x = 0;
     epiS32 y = 0;
-    switch (edge)
+    switch (addressMode)
     {
-    case dSeriesEdgeHandling::Error:
+    case dSeriesAddressMode::Error:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -1346,7 +1346,7 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::Zero:
+    case dSeriesAddressMode::Zero:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -1356,7 +1356,7 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::One:
+    case dSeriesAddressMode::One:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -1366,7 +1366,7 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::FF:
+    case dSeriesAddressMode::FF:
     {
         if (r != std::clamp(r, 0, h - 1) || c != std::clamp(c, 0, w - 1))
         {
@@ -1376,12 +1376,12 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::Nearest:
+    case dSeriesAddressMode::Nearest:
     {
         x = std::clamp(c, 0, w - 1);
         y = std::clamp(r, 0, h - 1);
     } break;
-    case dSeriesEdgeHandling::Wrap:
+    case dSeriesAddressMode::Wrap:
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {
@@ -1396,7 +1396,7 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::Reflect:
+    case dSeriesAddressMode::Reflect:
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {
@@ -1411,7 +1411,7 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
         x = c;
         y = r;
     } break;
-    case dSeriesEdgeHandling::Mirror:
+    case dSeriesAddressMode::Mirror:
     {
         if (const epiS32 cc = std::clamp(c, 0, w - 1); cc != c)
         {
@@ -1447,31 +1447,31 @@ epiU8 mmImage::At(epiS32 r, epiS32 c, epiU32 channel, dSeriesEdgeHandling edge) 
     return GetData()[ChannelsOf(GetPixelFormat()) * x + channel + y * GetPitch()];
 }
 
-Color mmImage::At(epiS32 index, dSeriesEdgeHandling edge) const
+Color mmImage::At(epiS32 index, dSeriesAddressMode addressMode) const
 {
     const epiSize_t w = GetWidth();
 
     epiAssert(w != 0);
 
-    return At(static_cast<epiS32>(index / w), static_cast<epiS32>(index % w), edge);
+    return At(static_cast<epiS32>(index / w), static_cast<epiS32>(index % w), addressMode);
 }
 
-Color mmImage::At(epiS32 r, epiS32 c, dSeriesEdgeHandling edge) const
+Color mmImage::At(epiS32 r, epiS32 c, dSeriesAddressMode addressMode) const
 {
     switch (GetPixelFormat())
     {
     case mmImagePixelFormat::GRAYSCALE:
     {
-        const epiU8 x = At(r, c, 0, edge);
+        const epiU8 x = At(r, c, 0, addressMode);
         return Color(x, x, x);
     } break;
     case mmImagePixelFormat::R8G8B8:
     {
-        return Color(At(r, c, 0, edge), At(r, c, 1, edge), At(r, c, 2, edge));
+        return Color(At(r, c, 0, addressMode), At(r, c, 1, addressMode), At(r, c, 2, addressMode));
     } break;
     case mmImagePixelFormat::R8G8B8A8:
     {
-        return Color(At(r, c, 0, edge), At(r, c, 1, edge), At(r, c, 2, edge), At(r, c, 3, edge));
+        return Color(At(r, c, 0, addressMode), At(r, c, 1, addressMode), At(r, c, 2, addressMode), At(r, c, 3, addressMode));
     } break;
     break;
     }

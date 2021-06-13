@@ -35,7 +35,7 @@ void mmVMImageSpatialDenoising::SetMeanKernelSize_Callback(epiU8 value)
                 {
                     for (epiS32 kC = 0; kC < kernelSize; ++kC)
                     {
-                        const epiFloat v = series.At(r - (kR - kernelSize / 2), c - (kC - kernelSize / 2), dSeriesEdgeHandling::Reflect);
+                        const epiFloat v = series.At(r - (kR - kernelSize / 2), c - (kC - kernelSize / 2), dSeriesAddressMode::Reflect);
                         imageVariance += (v - mean) * (v - mean);
                     }
                 }
@@ -44,7 +44,7 @@ void mmVMImageSpatialDenoising::SetMeanKernelSize_Callback(epiU8 value)
             };
 
             const dSeries2Df kernel = dSeries2Df::Full(value * value, value, 1.0f / (value * value));
-            SetImage(imageSrc->Convolve(kernel, dSeriesEdgeHandling::Reflect, spatiallyAdaptiveNoiseFilter));
+            SetImage(imageSrc->Convolve(kernel, dSeriesAddressMode::Reflect, spatiallyAdaptiveNoiseFilter));
 
             epiPropertyChangedCheckAndTrigger(MeanKernelSize, value);
         }
@@ -64,7 +64,7 @@ void mmVMImageSpatialDenoising::SetNoiseVariance_Callback(epiU8 value)
                 {
                     for (epiS32 kC = 0; kC < kernelSize; ++kC)
                     {
-                        const epiFloat v = series.At(r - (kR - kernelSize / 2), c - (kC - kernelSize / 2), dSeriesEdgeHandling::Reflect);
+                        const epiFloat v = series.At(r - (kR - kernelSize / 2), c - (kC - kernelSize / 2), dSeriesAddressMode::Reflect);
                         imageVariance += (v - mean) * (v - mean);
                     }
                 }
@@ -74,7 +74,7 @@ void mmVMImageSpatialDenoising::SetNoiseVariance_Callback(epiU8 value)
 
             const epiSize_t kernelSize = GetMeanKernelSize();
             const dSeries2Df kernel = dSeries2Df::Full(kernelSize * kernelSize, kernelSize, 1.0f / (kernelSize * kernelSize));
-            SetImage(imageSrc->Convolve(kernel, dSeriesEdgeHandling::Reflect, spatiallyAdaptiveNoiseFilter));
+            SetImage(imageSrc->Convolve(kernel, dSeriesAddressMode::Reflect, spatiallyAdaptiveNoiseFilter));
 
             epiPropertyChangedCheckAndTrigger(NoiseVariance, value);
         }

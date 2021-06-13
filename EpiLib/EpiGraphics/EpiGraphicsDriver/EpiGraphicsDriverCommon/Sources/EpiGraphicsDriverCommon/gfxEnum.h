@@ -20,10 +20,9 @@ EPI_GENREGION_END(gfxDriverBackend)
 enum class gfxTextureType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxTextureType)
-    None = 0,
-    Texture1D = 1,
-    Texture2D = 2,
-    Texture3D = 3
+    Texture1D = 0,
+    Texture2D = 1,
+    Texture3D = 2
 EPI_GENREGION_END(gfxTextureType)
 };
 
@@ -770,14 +769,13 @@ EPI_GENREGION_END(gfxLogicOp)
 enum class gfxTextureViewType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxTextureViewType)
-    None = 0,
-    TextureView1D = 1,
-    TextureView2D = 2,
-    TextureView3D = 3,
-    TextureViewCube = 4,
-    TextureView1DArray = 5,
-    TextureView2DArray = 6,
-    TextureViewCubeArray = 7
+    TextureView1D = 0,
+    TextureView2D = 1,
+    TextureView3D = 2,
+    TextureViewCube = 3,
+    TextureView1DArray = 4,
+    TextureView2DArray = 5,
+    TextureViewCubeArray = 6
 EPI_GENREGION_END(gfxTextureViewType)
 };
 
@@ -1070,6 +1068,83 @@ EPI_GENREGION_BEGIN(gfxImageAspect)
     gfxImageAspect_MemoryPlane2 = (1 << 9),
     gfxImageAspect_MemoryPlane3 = (1 << 10)
 EPI_GENREGION_END(gfxImageAspect)
+};
+
+enum class gfxCompareOp : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCompareOp)
+    Never = 0,
+    Less = 1,
+    Equal = 2,
+    LessOrEqual = 3,
+    Greater = 4,
+    NotEqual = 5,
+    GreaterOrEqual = 6,
+    Always = 7
+EPI_GENREGION_END(gfxCompareOp)
+};
+
+enum gfxSamplerCreateMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSamplerCreateMask)
+    gfxSamplerCreateMask_Subsampled = (1 << 0),
+    gfxSamplerCreateMask_SubsampledCoarseReconstruction = (1 << 1)
+EPI_GENREGION_END(gfxSamplerCreateMask)
+};
+
+enum class gfxSamplerFilterMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSamplerFilterMode)
+    Nearest = 0,
+    Linear = 1,
+    Cubic = 2
+EPI_GENREGION_END(gfxSamplerFilterMode)
+};
+
+enum class gfxSamplerMipmapMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSamplerMipmapMode)
+    Nearest = 0,
+    Linear = 1
+EPI_GENREGION_END(gfxSamplerMipmapMode)
+};
+
+enum class gfxSamplerAddressMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSamplerAddressMode)
+    Repeat = 0,
+    MirroredRepeat = 1,
+    ClampToEdge = 2,
+    ClampToBorder = 3,
+    MirroredClampToEdge = 4
+EPI_GENREGION_END(gfxSamplerAddressMode)
+};
+
+enum class gfxSamplerBorderColor : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSamplerBorderColor)
+    FloatTransparentBlack = 0,
+    IntTransparentBlack = 1,
+    FloatOpaqueBlack = 2,
+    IntOpaqueBlack = 3,
+    FloatOpaqueWhite = 4,
+    IntOpaqueWhite = 5,
+    FloatCustom = 6,
+    IntCustom = 7
+EPI_GENREGION_END(gfxSamplerBorderColor)
+};
+
+enum class gfxComponentSwizzle : epiS32
+{
+EPI_GENREGION_BEGIN(gfxComponentSwizzle)
+    Identity = 0,
+    Zero = 1,
+    One = 2,
+    R = 3,
+    G = 4,
+    B = 5,
+    A = 6
+EPI_GENREGION_END(gfxComponentSwizzle)
 };
 
 EPI_NAMESPACE_END()

@@ -1167,4 +1167,91 @@ VkImageAspectFlagBits gfxImageAspectTo(gfxImageAspect mask)
                    (mask & gfxImageAspect_MemoryPlane3) ? VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT : VkImageAspectFlagBits{});
 }
 
+VkCompareOp gfxCompareOpTo(gfxCompareOp op)
+{
+    switch (op)
+    {
+    case gfxCompareOp::Never: return VK_COMPARE_OP_NEVER;
+    case gfxCompareOp::Less: return VK_COMPARE_OP_LESS;
+    case gfxCompareOp::Equal: return VK_COMPARE_OP_EQUAL;
+    case gfxCompareOp::LessOrEqual: return VK_COMPARE_OP_LESS_OR_EQUAL;
+    case gfxCompareOp::Greater: return VK_COMPARE_OP_GREATER;
+    case gfxCompareOp::NotEqual: return VK_COMPARE_OP_NOT_EQUAL;
+    case gfxCompareOp::GreaterOrEqual: return VK_COMPARE_OP_GREATER_OR_EQUAL;
+    case gfxCompareOp::Always: return VK_COMPARE_OP_ALWAYS;
+    default: epiLogError("Unhandled gfxCompareOp=`{}`", op); return VK_COMPARE_OP_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkSamplerCreateFlagBits gfxSamplerCreateMaskTo(gfxSamplerCreateMask mask)
+{
+    return epiMask((mask & gfxSamplerCreateMask_Subsampled) ? VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT : VkSamplerCreateFlagBits{},
+                   (mask & gfxSamplerCreateMask_SubsampledCoarseReconstruction) ? VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT : VkSamplerCreateFlagBits{});
+}
+
+VkFilter gfxSamplerFilterModeTo(gfxSamplerFilterMode mode)
+{
+    switch (mode)
+    {
+    case gfxSamplerFilterMode::Nearest: return VK_FILTER_NEAREST;
+    case gfxSamplerFilterMode::Linear: return VK_FILTER_LINEAR;
+    case gfxSamplerFilterMode::Cubic: return VK_FILTER_CUBIC_IMG;
+    default: epiLogError("Unhandled gfxSamplerFilterMode=`{}`", mode); return VK_FILTER_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkSamplerMipmapMode gfxSamplerMipmapModeTo(gfxSamplerMipmapMode mode)
+{
+    switch (mode)
+    {
+    case gfxSamplerMipmapMode::Nearest: return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    case gfxSamplerMipmapMode::Linear: return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    default: epiLogError("Unhandled gfxSamplerMipmapMode=`{}`", mode); return VK_SAMPLER_MIPMAP_MODE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkSamplerAddressMode gfxSamplerAddressModeTo(gfxSamplerAddressMode mode)
+{
+    switch (mode)
+    {
+    case gfxSamplerAddressMode::Repeat: return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    case gfxSamplerAddressMode::MirroredRepeat: return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+    case gfxSamplerAddressMode::ClampToEdge: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    case gfxSamplerAddressMode::ClampToBorder: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+    case gfxSamplerAddressMode::MirroredClampToEdge: return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+    default: epiLogError("Unhandled gfxSamplerAddressMode=`{}`", mode); return VK_SAMPLER_ADDRESS_MODE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkBorderColor gfxSamplerBorderColorTo(gfxSamplerBorderColor borderColor)
+{
+    switch (borderColor)
+    {
+    case gfxSamplerBorderColor::FloatTransparentBlack: return VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+    case gfxSamplerBorderColor::IntTransparentBlack: return VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
+    case gfxSamplerBorderColor::FloatOpaqueBlack: return VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
+    case gfxSamplerBorderColor::IntOpaqueBlack: return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    case gfxSamplerBorderColor::FloatOpaqueWhite: return VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+    case gfxSamplerBorderColor::IntOpaqueWhite: return VK_BORDER_COLOR_INT_OPAQUE_WHITE;
+    case gfxSamplerBorderColor::FloatCustom: return VK_BORDER_COLOR_FLOAT_CUSTOM_EXT;
+    case gfxSamplerBorderColor::IntCustom: return VK_BORDER_COLOR_INT_CUSTOM_EXT;
+    default: epiLogError("Unhandled gfxSamplerBorderColor=`{}`", borderColor); return VK_BORDER_COLOR_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkComponentSwizzle gfxComponentSwizzleTo(gfxComponentSwizzle swizzle)
+{
+    switch (swizzle)
+    {
+    case gfxComponentSwizzle::Identity: return VK_COMPONENT_SWIZZLE_IDENTITY;
+    case gfxComponentSwizzle::Zero: return VK_COMPONENT_SWIZZLE_ZERO;
+    case gfxComponentSwizzle::One: return VK_COMPONENT_SWIZZLE_ONE;
+    case gfxComponentSwizzle::R: return VK_COMPONENT_SWIZZLE_R;
+    case gfxComponentSwizzle::G: return VK_COMPONENT_SWIZZLE_G;
+    case gfxComponentSwizzle::B: return VK_COMPONENT_SWIZZLE_B;
+    case gfxComponentSwizzle::A: return VK_COMPONENT_SWIZZLE_A;
+    default: epiLogError("Unhandled gfxComponentSwizzle=`{}`", swizzle); return VK_COMPONENT_SWIZZLE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
 EPI_NAMESPACE_END()

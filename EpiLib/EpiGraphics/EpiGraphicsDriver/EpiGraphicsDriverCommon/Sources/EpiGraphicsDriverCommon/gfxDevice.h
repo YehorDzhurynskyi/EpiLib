@@ -21,6 +21,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxDescriptorPool.h"
 #include "EpiGraphicsDriverCommon/gfxDescriptorSetLayout.h"
 #include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
+#include "EpiGraphicsDriverCommon/gfxSampler.h"
 #include "EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.h"
 #include "EpiGraphicsDriverCommon/Synchronization/gfxFence.h"
 
@@ -74,6 +75,7 @@ public:
     std::optional<gfxFrameBuffer> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const;
     std::optional<gfxTexture> CreateTexture(const gfxTextureCreateInfo& info) const;
     std::optional<gfxTextureView> CreateTextureView(const gfxTextureViewCreateInfo& info) const;
+    std::optional<gfxSampler> CreateSampler(const gfxSamplerCreateInfo& info) const;
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
     std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info) const;
     std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const;

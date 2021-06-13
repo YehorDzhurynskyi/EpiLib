@@ -582,6 +582,50 @@ public:
                 m_QueueFamily[0].Submit(submitInfo);
                 m_QueueFamily[0].Wait();
             }
+
+            {
+                gfxImageSubresourceRange subresourceRange{};
+                subresourceRange.SetAspectMask(gfxImageAspect_Color);
+                subresourceRange.SetBaseMipLevel(0);
+                subresourceRange.SetLevelCount(1);
+                subresourceRange.SetBaseArrayLayer(0);
+                subresourceRange.SetLayerCount(1);
+
+                gfxTextureViewCreateInfo imageViewCreateInfo{};
+                imageViewCreateInfo.SetImage(m_Image);
+                imageViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
+                imageViewCreateInfo.SetFormat(gfxFormat::R8G8B8A8_SRGB);
+                imageViewCreateInfo.SetSubresourceRange(subresourceRange);
+
+                std::optional<gfxTextureView> imageView = g_Device.CreateTextureView(imageViewCreateInfo);
+                epiAssert(imageView.has_value());
+
+                m_ImageView = *imageView;
+            }
+
+            {
+                gfxSamplerCreateInfo samplerCreateInfo{};
+                samplerCreateInfo.SetMagFilter(gfxSamplerFilterMode::Linear);
+                samplerCreateInfo.SetMinFilter(gfxSamplerFilterMode::Linear);
+                samplerCreateInfo.SetAddressModeU(gfxSamplerAddressMode::Repeat);
+                samplerCreateInfo.SetAddressModeV(gfxSamplerAddressMode::Repeat);
+                samplerCreateInfo.SetAddressModeW(gfxSamplerAddressMode::Repeat);
+                samplerCreateInfo.SetIsAnisotropyEnabled(true);
+                samplerCreateInfo.SetAnisotropyMax(g_PhysicalDevice.GetMaxSamplerAnisotropy());
+                samplerCreateInfo.SetBorderColor(gfxSamplerBorderColor::IntOpaqueBlack);
+                samplerCreateInfo.SetIsUnnormalizedCoordinates(false);
+                samplerCreateInfo.SetIsCompareEnabled(false);
+                samplerCreateInfo.SetCompareOp(gfxCompareOp::Always);
+                samplerCreateInfo.SetMipmapMode(gfxSamplerMipmapMode::Linear);
+                samplerCreateInfo.SetMipmapLODBias(0.0f);
+                samplerCreateInfo.SetMinLOD(0.0f);
+                samplerCreateInfo.SetMaxLOD(0.0f);
+
+                std::optional<gfxSampler> sampler = g_Device.CreateSampler(samplerCreateInfo);
+                epiAssert(sampler.has_value());
+
+                m_ImageSampler = *sampler;
+            }
         }
 
         m_Timer.SetOwner(this, -1);
@@ -623,8 +667,10 @@ protected:
     epiArray<gfxFence> m_FencesInFlight;
     epiArray<gfxFence> m_FencesImagesInFlight;
 
-    gfxTexture m_Image;
     gfxDeviceMemory m_ImageDeviceMemory;
+    gfxTexture m_Image;
+    gfxTextureView m_ImageView;
+    gfxSampler m_ImageSampler;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
@@ -936,6 +982,7 @@ int main(int argc, char* argv[])
     //deviceExtensionsRequired.push_back(gfxPhysicalDeviceExtension::ImageFormatList);
 
     epiArray<gfxPhysicalDeviceFeature> deviceFeaturesRequired;
+    deviceFeaturesRequired.push_back(gfxPhysicalDeviceFeature::SamplerAnisotropy);
     //deviceFeaturesRequired.push_back(gfxPhysicalDeviceFeature::ImagelessFramebuffer);
 
     const gfxWindow window(GetActiveWindow());

@@ -71,6 +71,9 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxDescriptorSetLayout.epi
     Sources/EpiGraphicsDriverCommon/gfxDescriptorSetLayout.h
     Sources/EpiGraphicsDriverCommon/gfxDescriptorSetLayout.cpp
+    Sources/EpiGraphicsDriverCommon/gfxSampler.epi
+    Sources/EpiGraphicsDriverCommon/gfxSampler.h
+    Sources/EpiGraphicsDriverCommon/gfxSampler.cpp
 
     Sources/EpiGraphicsDriverCommon/Synchronization/gfxFence.epi
     Sources/EpiGraphicsDriverCommon/Synchronization/gfxFence.h

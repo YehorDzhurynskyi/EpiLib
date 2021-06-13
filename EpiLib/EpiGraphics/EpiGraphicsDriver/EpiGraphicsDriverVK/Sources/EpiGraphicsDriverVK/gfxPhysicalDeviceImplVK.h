@@ -17,6 +17,7 @@ class gfxPhysicalDeviceImplVK : public gfxPhysicalDeviceImpl
 public:
     void Init(VkPhysicalDevice_T* device);
 
+    epiFloat GetMaxSamplerAnisotropy() const override;
     epiString GetName() const override;
     gfxPhysicalDeviceType GetType() const override;
 

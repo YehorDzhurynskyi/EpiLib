@@ -27,6 +27,11 @@ std::optional<gfxDevice> gfxPhysicalDevice::CreateDevice(gfxQueueDescriptorList&
     return device;
 }
 
+epiFloat gfxPhysicalDevice::GetMaxSamplerAnisotropy() const
+{
+    return m_Impl->GetMaxSamplerAnisotropy();
+}
+
 epiString gfxPhysicalDevice::GetName_Callback() const
 {
     return m_Impl->GetName();

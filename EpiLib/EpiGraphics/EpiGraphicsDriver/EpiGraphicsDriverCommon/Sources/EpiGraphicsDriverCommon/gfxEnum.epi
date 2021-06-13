@@ -9,7 +9,6 @@ enum gfxDriverBackend
 
 enum gfxTextureType
 {
-    None,
     Texture1D,
     Texture2D,
     Texture3D
@@ -17,7 +16,6 @@ enum gfxTextureType
 
 enum gfxTextureViewType
 {
-    None,
     TextureView1D,
     TextureView2D,
     TextureView3D,
@@ -740,6 +738,18 @@ enum gfxLogicOp
     Set
 };
 
+enum gfxCompareOp
+{
+    Never,
+    Less,
+    Equal,
+    LessOrEqual,
+    Greater,
+    NotEqual,
+    GreaterOrEqual,
+    Always
+};
+
 [FlagMask]
 enum gfxPipelineStage
 {
@@ -983,4 +993,56 @@ enum gfxSemaphoreCreateMask
 enum gfxSemaphoreWaitMask
 {
     WaitAny
+};
+
+[FlagMask]
+enum gfxSamplerCreateMask
+{
+    Subsampled,
+    SubsampledCoarseReconstruction
+};
+
+enum gfxSamplerFilterMode
+{
+    Nearest,
+    Linear,
+    Cubic
+};
+
+enum gfxSamplerMipmapMode
+{
+    Nearest,
+    Linear
+};
+
+enum gfxSamplerAddressMode
+{
+    Repeat,
+    MirroredRepeat,
+    ClampToEdge,
+    ClampToBorder,
+    MirroredClampToEdge
+};
+
+enum gfxSamplerBorderColor
+{
+    FloatTransparentBlack,
+    IntTransparentBlack,
+    FloatOpaqueBlack,
+    IntOpaqueBlack,
+    FloatOpaqueWhite,
+    IntOpaqueWhite,
+    FloatCustom,
+    IntCustom
+};
+
+enum gfxComponentSwizzle
+{
+    Identity,
+    Zero,
+    One,
+    R,
+    G,
+    B,
+    A
 };

@@ -1,4 +1,4 @@
-enum dSeriesEdgeHandling
+enum dSeriesAddressMode
 {
     Error,
     Zero,

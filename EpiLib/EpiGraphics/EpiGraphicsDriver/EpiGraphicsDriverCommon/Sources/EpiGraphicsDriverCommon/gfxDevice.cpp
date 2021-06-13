@@ -265,14 +265,7 @@ std::optional<gfxTextureView> gfxDevice::CreateTextureView(const gfxTextureViewC
 {
     std::optional<gfxTextureView> textureView;
 
-    const gfxTexture* texture = info.GetTexture();
-    if (texture == nullptr)
-    {
-        epiLogError("Failed to create TextureView! Provided Texture hasn't provided!");
-        return textureView;
-    }
-
-    const auto textureImpl = texture->m_Impl;
+    const auto textureImpl = info.GetImage().m_Impl;
     if (!textureImpl)
     {
         epiLogError("Failed to create TextureView! Provided Texture has no implementation!");
@@ -285,6 +278,18 @@ std::optional<gfxTextureView> gfxDevice::CreateTextureView(const gfxTextureViewC
     }
 
     return textureView;
+}
+
+std::optional<gfxSampler> gfxDevice::CreateSampler(const gfxSamplerCreateInfo& info) const
+{
+    std::optional<gfxSampler> sampler;
+
+    if (std::shared_ptr<internalgfx::gfxSamplerImpl> impl = m_Impl->CreateSampler(info))
+    {
+        sampler = gfxSampler(std::move(impl));
+    }
+
+    return sampler;
 }
 
 std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolCreateInfo& info) const
