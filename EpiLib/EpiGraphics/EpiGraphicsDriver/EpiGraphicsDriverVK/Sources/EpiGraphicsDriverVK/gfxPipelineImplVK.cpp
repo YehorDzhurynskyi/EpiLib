@@ -206,6 +206,19 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     dynamicState.dynamicStateCount = dynamicStates.size();
     dynamicState.pDynamicStates = dynamicStates.data();
 
+    VkPipelineDepthStencilStateCreateInfo depthStencilState{};
+    depthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    depthStencilState.depthTestEnable = info.GetDepthEnableTest();
+    depthStencilState.depthWriteEnable = info.GetDepthEnableWrite();
+    depthStencilState.depthCompareOp = gfxCompareOpTo(info.GetDepthCompareOp());
+    depthStencilState.depthBoundsTestEnable = info.GetDepthEnableBoundsTest();
+    depthStencilState.minDepthBounds = info.GetDepthMinBounds();
+    depthStencilState.maxDepthBounds = info.GetDepthMaxBounds();
+    // TODO: set
+    depthStencilState.stencilTestEnable = false;
+    depthStencilState.front = {};
+    depthStencilState.back = {};
+
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineInfo.stageCount = stages.size();
@@ -215,15 +228,14 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = nullptr; // TODO: set
+    pipelineInfo.pDepthStencilState = &depthStencilState;
     pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.pDynamicState = nullptr;
+    pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = pipelineLayoutVk->GetVkPipelineLayout();
     pipelineInfo.renderPass = renderPassImpl.GetVkRenderPass();
     pipelineInfo.subpass = info.GetRenderSubPassIndex();
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex = -1;
-    pipelineInfo.pDynamicState = &dynamicState;
 
     if (const VkResult result = vkCreateGraphicsPipelines(m_Device.GetVkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_VkPipeline); result != VK_SUCCESS)
     {

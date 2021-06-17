@@ -169,7 +169,13 @@ public:
         PID_ColorBlendLogicOp = 0x7caacb6d,
         PID_ColorBlendConstants = 0x739a4ae9,
         PID_DynamicStates = 0xa85e8c69,
-        PID_COUNT = 22
+        PID_DepthEnableTest = 0x73321fc6,
+        PID_DepthEnableWrite = 0x6711c90,
+        PID_DepthCompareOp = 0x31f83c87,
+        PID_DepthEnableBoundsTest = 0x5617d231,
+        PID_DepthMinBounds = 0x86c49743,
+        PID_DepthMaxBounds = 0x512f2502,
+        PID_COUNT = 28
     };
 
 protected:
@@ -195,6 +201,12 @@ protected:
     gfxLogicOp m_ColorBlendLogicOp{};
     epiVec4f m_ColorBlendConstants{};
     epiArray<gfxPipelineDynamicState> m_DynamicStates{};
+    epiBool m_DepthEnableTest{false};
+    epiBool m_DepthEnableWrite{false};
+    gfxCompareOp m_DepthCompareOp{};
+    epiBool m_DepthEnableBoundsTest{false};
+    epiFloat m_DepthMinBounds{0.0f};
+    epiFloat m_DepthMaxBounds{0.0f};
 
 EPI_GENREGION_END(gfxPipelineGraphicsCreateInfo)
 

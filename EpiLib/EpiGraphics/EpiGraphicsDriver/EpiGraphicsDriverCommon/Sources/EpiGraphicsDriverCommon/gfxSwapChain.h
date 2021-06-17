@@ -8,10 +8,6 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 #include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
-#include "EpiGraphicsDriverCommon/gfxRenderPass.h"
-#include "EpiGraphicsDriverCommon/gfxBuffer.h"
-#include "EpiGraphicsDriverCommon/gfxCommandPool.h"
-#include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -34,23 +30,35 @@ public:
     enum gfxSwapChainCreateInfo_PIDs
     {
         PID_Surface = 0x73fca7f2,
-        PID_RenderPass = 0x662aa9d7,
-        PID_QueueFamily = 0xfa954047,
-        PID_Capabilities = 0x50af605,
-        PID_Format = 0xd91677e9,
+        PID_SurfacePreTransformMask = 0xbbda978a,
+        PID_ImageMinCount = 0x2b760e66,
+        PID_ImageFormat = 0xc2f7900b,
+        PID_ImageColorSpace = 0x9ac7e266,
+        PID_ImageExtent = 0x3a43bb9c,
+        PID_ImageArrayLayers = 0x7d55291e,
+        PID_ImageUsageMask = 0x7bc0668,
+        PID_ImageSharingMode = 0xe4522abc,
+        PID_QueueFamilies = 0x459d6c2c,
+        PID_CompositeAlphaMask = 0xb9b092ec,
         PID_PresentMode = 0x2430171b,
-        PID_Extent = 0x21a25c7e,
-        PID_COUNT = 7
+        PID_Clipped = 0x6e0098e8,
+        PID_COUNT = 13
     };
 
 protected:
     gfxSurface m_Surface{};
-    gfxRenderPass m_RenderPass{};
-    gfxQueueFamily m_QueueFamily{};
-    gfxSurfaceCapabilities m_Capabilities{};
-    gfxSurfaceFormat m_Format{};
+    gfxSurfaceTransformMask m_SurfacePreTransformMask{};
+    epiU32 m_ImageMinCount{0};
+    gfxFormat m_ImageFormat{};
+    gfxSurfaceColorSpace m_ImageColorSpace{};
+    epiSize2u m_ImageExtent{};
+    epiU32 m_ImageArrayLayers{0};
+    gfxImageUsage m_ImageUsageMask{};
+    gfxSharingMode m_ImageSharingMode{};
+    epiArray<gfxQueueFamily> m_QueueFamilies{};
+    gfxCompositeAlphaMask m_CompositeAlphaMask{};
     gfxSurfacePresentMode m_PresentMode{};
-    epiSize2u m_Extent{};
+    epiBool m_Clipped{false};
 
 EPI_GENREGION_END(gfxSwapChainCreateInfo)
 };
@@ -66,14 +74,18 @@ public:
 
     enum gfxSwapChain_PIDs
     {
+        PID_ImageViews = 0x30732ad6,
         PID_BufferCount = 0xd1605dff,
         PID_Extent = 0x21a25c7e,
-        PID_COUNT = 2
+        PID_COUNT = 3
     };
 
 protected:
     epiU32 GetBufferCount_Callback() const;
     epiSize2u GetExtent_Callback() const;
+
+protected:
+    epiArray<gfxTextureView> m_ImageViews{};
 
 EPI_GENREGION_END(gfxSwapChain)
 
@@ -84,15 +96,16 @@ public:
     gfxSwapChain() = default;
     explicit gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl);
 
+    epiBool HasImpl() const;
+
     epiBool Recreate(const gfxSwapChainCreateInfo& info);
 
     epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore = nullptr,
                             const gfxFence* signalFence = nullptr,
                             epiU64 timeout = std::numeric_limits<epiU64>::max());
 
-    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0});
-    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex);
-    gfxQueueSubmitInfo ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex);
+protected:
+    void RebindImpl();
 
 protected:
     epiPimpl<internalgfx::gfxSwapChainImpl> m_Impl;

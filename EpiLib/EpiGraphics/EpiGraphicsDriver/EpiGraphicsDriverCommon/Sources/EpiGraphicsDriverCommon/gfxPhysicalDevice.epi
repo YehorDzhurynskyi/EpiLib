@@ -1,3 +1,10 @@
+class gfxFormatProperties
+{
+    gfxFormatFeatureMask LinearTilingFeaturesMask;
+    gfxFormatFeatureMask OptimalTilingFeaturesMask;
+    gfxFormatFeatureMask BufferFeaturesMask;
+};
+
 class gfxPhysicalDevice
 {
     [Virtual, ReadOnly]

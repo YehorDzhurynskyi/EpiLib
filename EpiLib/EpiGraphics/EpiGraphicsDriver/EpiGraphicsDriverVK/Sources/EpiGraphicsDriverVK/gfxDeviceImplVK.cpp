@@ -573,13 +573,10 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
     vkUpdateDescriptorSets(m_VkDevice, writesVk.size(), writesVk.data(), copiesVk.size(), copiesVk.data());
 }
 
-std::shared_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info,
-                                                                   const gfxSurfaceImpl& surfaceImpl,
-                                                                   const gfxQueueFamilyImpl& queueFamilyImpl,
-                                                                   const gfxRenderPassImpl& renderPassImpl) const
+std::shared_ptr<gfxSwapChainImpl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info) const
 {
     std::shared_ptr<gfxSwapChainImplVK> impl = std::make_shared<gfxSwapChainImplVK>(*this);
-    if (!impl->Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl))
+    if (!impl->Init(info))
     {
         impl.reset();
     }
@@ -591,17 +588,6 @@ std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRe
 {
     std::shared_ptr<gfxRenderPassImplVK> impl = std::make_shared<gfxRenderPassImplVK>(m_VkDevice);
     if (!impl->Init(info))
-    {
-        impl.reset();
-    }
-
-    return impl;
-}
-
-std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const
-{
-    std::shared_ptr<gfxRenderPassImplVK> impl = std::make_shared<gfxRenderPassImplVK>(m_VkDevice);
-    if (!impl->Init(schema))
     {
         impl.reset();
     }

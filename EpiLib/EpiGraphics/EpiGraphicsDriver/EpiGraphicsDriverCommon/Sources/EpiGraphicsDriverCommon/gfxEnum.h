@@ -506,31 +506,6 @@ EPI_GENREGION_BEGIN(gfxFormat)
 EPI_GENREGION_END(gfxFormat)
 };
 
-enum gfxSurfaceTransform : epiS32
-{
-EPI_GENREGION_BEGIN(gfxSurfaceTransform)
-    gfxSurfaceTransform_IDENTITY = (1 << 0),
-    gfxSurfaceTransform_ROTATE_90 = (1 << 1),
-    gfxSurfaceTransform_ROTATE_180 = (1 << 2),
-    gfxSurfaceTransform_ROTATE_270 = (1 << 3),
-    gfxSurfaceTransform_HORIZONTAL_MIRROR = (1 << 4),
-    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_90 = (1 << 5),
-    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_180 = (1 << 6),
-    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_270 = (1 << 7),
-    gfxSurfaceTransform_INHERIT = (1 << 8)
-EPI_GENREGION_END(gfxSurfaceTransform)
-};
-
-enum gfxCompositeAlpha : epiS32
-{
-EPI_GENREGION_BEGIN(gfxCompositeAlpha)
-    gfxCompositeAlpha_OPAQUE = (1 << 0),
-    gfxCompositeAlpha_PRE_MULTIPLIED = (1 << 1),
-    gfxCompositeAlpha_POST_MULTIPLIED = (1 << 2),
-    gfxCompositeAlpha_INHERIT = (1 << 3)
-EPI_GENREGION_END(gfxCompositeAlpha)
-};
-
 enum gfxImageUsage : epiS32
 {
 EPI_GENREGION_BEGIN(gfxImageUsage)
@@ -1145,6 +1120,72 @@ EPI_GENREGION_BEGIN(gfxComponentSwizzle)
     B = 5,
     A = 6
 EPI_GENREGION_END(gfxComponentSwizzle)
+};
+
+enum gfxFormatFeatureMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxFormatFeatureMask)
+    gfxFormatFeatureMask_SampledImage = (1 << 0),
+    gfxFormatFeatureMask_StorageImage = (1 << 1),
+    gfxFormatFeatureMask_StorageImageAtomic = (1 << 2),
+    gfxFormatFeatureMask_UniformTexelBuffer = (1 << 3),
+    gfxFormatFeatureMask_StorageTexelBuffer = (1 << 4),
+    gfxFormatFeatureMask_StorageTexelBufferAtomic = (1 << 5),
+    gfxFormatFeatureMask_VertexBuffer = (1 << 6),
+    gfxFormatFeatureMask_ColorAttachment = (1 << 7),
+    gfxFormatFeatureMask_ColorAttachmentBlend = (1 << 8),
+    gfxFormatFeatureMask_DepthStencilAttachment = (1 << 9),
+    gfxFormatFeatureMask_BlitSrc = (1 << 10),
+    gfxFormatFeatureMask_BlitDst = (1 << 11),
+    gfxFormatFeatureMask_SampledImageFilterLinear = (1 << 12),
+    gfxFormatFeatureMask_TransferSrc = (1 << 13),
+    gfxFormatFeatureMask_TransferDst = (1 << 14),
+    gfxFormatFeatureMask_MidpointChromaSamples = (1 << 15),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionLinearFilter = (1 << 16),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionSeparateReconstructionFilter = (1 << 17),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicit = (1 << 18),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicitForceable = (1 << 19),
+    gfxFormatFeatureMask_Disjoint = (1 << 20),
+    gfxFormatFeatureMask_CositedChroma_samples = (1 << 21),
+    gfxFormatFeatureMask_SampledImageFilterMinmax = (1 << 22),
+    gfxFormatFeatureMask_SampledImageFilterCubic = (1 << 23),
+    gfxFormatFeatureMask_AccelerationStructureVertexBuffer = (1 << 24),
+    gfxFormatFeatureMask_FragmentDensityMap = (1 << 25),
+    gfxFormatFeatureMask_FragmentShadingRateAttachment = (1 << 26)
+EPI_GENREGION_END(gfxFormatFeatureMask)
+};
+
+enum class gfxSharingMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSharingMode)
+    Exclusive = 0,
+    Concurrent = 1
+EPI_GENREGION_END(gfxSharingMode)
+};
+
+enum gfxSurfaceTransformMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSurfaceTransformMask)
+    gfxSurfaceTransformMask_Identity = (1 << 0),
+    gfxSurfaceTransformMask_Rotate90 = (1 << 1),
+    gfxSurfaceTransformMask_Rotate180 = (1 << 2),
+    gfxSurfaceTransformMask_Rotate270 = (1 << 3),
+    gfxSurfaceTransformMask_HorizontalMirror = (1 << 4),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate90 = (1 << 5),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate180 = (1 << 6),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate270 = (1 << 7),
+    gfxSurfaceTransformMask_Inherit = (1 << 8)
+EPI_GENREGION_END(gfxSurfaceTransformMask)
+};
+
+enum gfxCompositeAlphaMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCompositeAlphaMask)
+    gfxCompositeAlphaMask_Opaque = (1 << 0),
+    gfxCompositeAlphaMask_PreMultiplied = (1 << 1),
+    gfxCompositeAlphaMask_PostMultiplied = (1 << 2),
+    gfxCompositeAlphaMask_Inherit = (1 << 3)
+EPI_GENREGION_END(gfxCompositeAlphaMask)
 };
 
 EPI_NAMESPACE_END()

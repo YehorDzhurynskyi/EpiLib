@@ -454,6 +454,38 @@ enum gfxFormat
     A4B4G4R4_UNORM_PACK16_EXT
 };
 
+[FlagMask]
+enum gfxFormatFeatureMask
+{
+    SampledImage,
+    StorageImage,
+    StorageImageAtomic,
+    UniformTexelBuffer,
+    StorageTexelBuffer,
+    StorageTexelBufferAtomic,
+    VertexBuffer,
+    ColorAttachment,
+    ColorAttachmentBlend,
+    DepthStencilAttachment,
+    BlitSrc,
+    BlitDst,
+    SampledImageFilterLinear,
+    TransferSrc,
+    TransferDst,
+    MidpointChromaSamples,
+    SampledImageYCbCrConversionLinearFilter,
+    SampledImageYCbCrConversionSeparateReconstructionFilter,
+    SampledImageYCbCrConversionChromaReconstructionExplicit,
+    SampledImageYCbCrConversionChromaReconstructionExplicitForceable,
+    Disjoint,
+    CositedChroma_samples,
+    SampledImageFilterMinmax,
+    SampledImageFilterCubic,
+    AccelerationStructureVertexBuffer,
+    FragmentDensityMap,
+    FragmentShadingRateAttachment
+};
+
 enum gfxSurfaceColorSpace
 {
     SRGB_NONLINEAR,
@@ -482,29 +514,6 @@ enum gfxSurfacePresentMode
     FIFO_RELAXED,
     SHARED_DEMAND_REFRESH,
     SHARED_CONTINUOUS_REFRESH
-};
-
-[FlagMask]
-enum gfxSurfaceTransform
-{
-    IDENTITY,
-    ROTATE_90,
-    ROTATE_180,
-    ROTATE_270,
-    HORIZONTAL_MIRROR,
-    HORIZONTAL_MIRROR_ROTATE_90,
-    HORIZONTAL_MIRROR_ROTATE_180,
-    HORIZONTAL_MIRROR_ROTATE_270,
-    INHERIT
-};
-
-[FlagMask]
-enum gfxCompositeAlpha
-{
-    OPAQUE,
-    PRE_MULTIPLIED,
-    POST_MULTIPLIED,
-    INHERIT
 };
 
 [FlagMask]
@@ -1045,4 +1054,33 @@ enum gfxComponentSwizzle
     G,
     B,
     A
+};
+
+enum gfxSharingMode
+{
+    Exclusive,
+    Concurrent
+};
+
+[FlagMask]
+enum gfxSurfaceTransformMask
+{
+    Identity,
+    Rotate90,
+    Rotate180,
+    Rotate270,
+    HorizontalMirror,
+    HorizontalMirrorRotate90,
+    HorizontalMirrorRotate180,
+    HorizontalMirrorRotate270,
+    Inherit
+};
+
+[FlagMask]
+enum gfxCompositeAlphaMask
+{
+    Opaque,
+    PreMultiplied,
+    PostMultiplied,
+    Inherit
 };

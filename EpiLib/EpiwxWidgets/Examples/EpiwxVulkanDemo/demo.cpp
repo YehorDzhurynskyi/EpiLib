@@ -24,6 +24,7 @@ gfxPhysicalDevice g_PhysicalDevice;
 gfxDevice g_Device;
 
 constexpr gfxFormat kFormatRequired = gfxFormat::B8G8R8A8_SRGB;
+constexpr gfxFormat kDepthFormatRequired = gfxFormat::D32_SFLOAT;
 constexpr gfxSurfaceColorSpace kColorSpaceRequired = gfxSurfaceColorSpace::SRGB_NONLINEAR;
 constexpr gfxSurfacePresentMode kPresentModeRequired = gfxSurfacePresentMode::MAILBOX;
 
@@ -63,7 +64,7 @@ public:
 public:
     struct Vertex
     {
-        epiVec2f Position;
+        epiVec3f Position;
         epiVec3f Color;
         epiVec2f UV;
     };
@@ -94,17 +95,28 @@ public:
             attachment.SetInitialLayout(gfxImageLayout::Undefined);
             attachment.SetFinalLayout(gfxImageLayout::PresentSrc);
 
+            gfxAttachment attachmentDepth;
+            attachmentDepth.SetFormat(kDepthFormatRequired);
+            attachmentDepth.SetSampleCount(gfxSampleCount::Sample1);
+            attachmentDepth.SetLoadOp(gfxAttachmentLoadOp::Clear);
+            attachmentDepth.SetStoreOp(gfxAttachmentStoreOp::DontCare);
+            attachmentDepth.SetStencilLoadOp(gfxAttachmentLoadOp::DontCare);
+            attachmentDepth.SetStencilStoreOp(gfxAttachmentStoreOp::DontCare);
+            attachmentDepth.SetInitialLayout(gfxImageLayout::Undefined);
+            attachmentDepth.SetFinalLayout(gfxImageLayout::DepthStencilAttachmentOptimal);
+
             gfxRenderSubPass subpass;
             subpass.SetBindPoint(gfxPipelineBindPoint::Graphics);
             subpass.AddAttachment(attachment, 0, gfxImageLayout::ColorAttachmentOptimal, gfxAttachmentBindPoint::Color);
+            subpass.AddAttachment(attachmentDepth, 1, gfxImageLayout::DepthStencilAttachmentOptimal, gfxAttachmentBindPoint::DepthStencil);
 
             gfxRenderSubPassDependency subpassDependency;
             subpassDependency.SetIsSrcSubPassExternal(true);
             subpassDependency.SetDstSubPass(0);
-            subpassDependency.SetSrcStageMask(gfxPipelineStage_ColorAttachmentOutput);
+            subpassDependency.SetSrcStageMask(epiMask(gfxPipelineStage_ColorAttachmentOutput, gfxPipelineStage_EarlyFragmentTests));
             subpassDependency.SetSrcAccessMask(gfxAccess{0});
-            subpassDependency.SetDstStageMask(gfxPipelineStage_ColorAttachmentOutput);
-            subpassDependency.SetDstAccessMask(gfxAccess_ColorAttachmentWrite);
+            subpassDependency.SetDstStageMask(epiMask(gfxPipelineStage_ColorAttachmentOutput, gfxPipelineStage_EarlyFragmentTests));
+            subpassDependency.SetDstAccessMask(epiMask(gfxAccess_ColorAttachmentWrite, gfxAccess_DepthStencilAttachmentWrite));
 
             gfxRenderPassCreateInfo renderPassCreateInfo{};
             renderPassCreateInfo.AddSubPass(std::move(subpass));
@@ -136,7 +148,6 @@ public:
         epiWXVulkanCanvasCreateInfo canvasCreateInfo;
         canvasCreateInfo.PhysicalDevice = g_PhysicalDevice;
         canvasCreateInfo.Device = g_Device;
-        canvasCreateInfo.RenderPass = m_RenderPass;
         canvasCreateInfo.QueueFamily = m_QueueFamily;
         canvasCreateInfo.Format = surfaceFormat;
         canvasCreateInfo.PresentMode = kPresentModeRequired;
@@ -156,6 +167,11 @@ public:
 
             m_DescriptorSetLayout = *descriptorSetLayout;
         }
+
+        RecreateDepthImageView();
+        RecreateFrameBuffers();
+        RecreateCommandBuffers();
+        RecreateSynchronizationPrimitives();
 
         gfxPipelineColorBlendAttachment colorBlendAttachment;
         colorBlendAttachment.SetColorWriteMask(gfxColorComponent_RGBA);
@@ -177,7 +193,7 @@ public:
                 mat4 proj;
             } ubo;
 
-            layout(location = 0) in vec2 inPosition;
+            layout(location = 0) in vec3 inPosition;
             layout(location = 1) in vec3 inColor;
             layout(location = 2) in vec2 inUV;
 
@@ -185,7 +201,7 @@ public:
             layout(location = 1) out vec2 fragUV;
 
             void main() {
-                gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 0.0, 1.0);
+                gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
                 fragColor = inColor;
                 fragUV = inUV;
             }
@@ -229,7 +245,7 @@ public:
         vertexInputBindingDescription.SetStride(sizeof(Vertex));
         vertexInputBindingDescription.SetInputRate(gfxPipelineVertexInputRate::Vertex);
         vertexInputBindingDescription
-            .AddAttribute(0, gfxFormat::R32G32_SFLOAT, offsetof(Vertex, Position))
+            .AddAttribute(0, gfxFormat::R32G32B32_SFLOAT, offsetof(Vertex, Position))
             .AddAttribute(1, gfxFormat::R32G32B32_SFLOAT, offsetof(Vertex, Color))
             .AddAttribute(2, gfxFormat::R32G32_SFLOAT, offsetof(Vertex, UV));
 
@@ -263,6 +279,9 @@ public:
         pipelineCreateInfo.SetColorBlendLogicOp(gfxLogicOp::Copy);
         pipelineCreateInfo.SetColorBlendConstants(epiVec4f{0.0f, 0.0f, 0.0f, 0.0f});
         pipelineCreateInfo.SetRenderSubPassIndex(0);
+        pipelineCreateInfo.SetDepthEnableTest(true);
+        pipelineCreateInfo.SetDepthEnableWrite(true);
+        pipelineCreateInfo.SetDepthCompareOp(gfxCompareOp::Less);
         pipelineCreateInfo.SetShaderProgram(*shaderProgram);
         pipelineCreateInfo
             .AddDynamicState(gfxPipelineDynamicState::Viewport)
@@ -277,10 +296,15 @@ public:
         }
 
         m_Vertices = {
-            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+            {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+            {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+            {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+            {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+
+            {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+            {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+            {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+            {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
         };
         const epiSize_t vertexBufferCapacity = m_Vertices.Size() * sizeof(m_Vertices[0]);
 
@@ -350,7 +374,10 @@ public:
             m_QueueFamily[0].Wait();
         }
 
-        m_Indices = { 0, 1, 2, 2, 3, 0 };
+        m_Indices = {
+            0, 1, 2, 2, 3, 0,
+            4, 5, 6, 6, 7, 4
+        };
         const epiSize_t indexBufferCapacity = m_Indices.Size() * sizeof(m_Indices[0]);
 
         {
@@ -648,7 +675,10 @@ protected:
     void OnTimer(wxTimerEvent& event);
 
     void RecordCommandBuffers();
-    void RecreteSwapChain(const epiSize2u& size);
+    void RecreateSwapChain(const epiSize2u& size);
+    void RecreateFrameBuffers();
+    void RecreateCommandBuffers();
+    void RecreateDepthImageView();
     void RecreateSynchronizationPrimitives();
     void RecreateUniformBuffers();
 
@@ -670,6 +700,9 @@ protected:
     epiArray<Vertex> m_Vertices;
     epiArray<epiU16> m_Indices;
 
+    gfxCommandPool m_CommandPool;
+    epiArray<gfxFrameBuffer> m_FrameBuffers;
+
     epiU32 m_CurrentFrame{0};
     epiArray<gfxSemaphore> m_SemaphoreImageAvailable;
     epiArray<gfxSemaphore> m_SemaphoreRenderFinished;
@@ -680,6 +713,10 @@ protected:
     gfxTexture m_Image;
     gfxTextureView m_ImageView;
     gfxSampler m_ImageSampler;
+
+    gfxTexture m_DepthImage;
+    gfxDeviceMemory m_DepthImageMemory;
+    gfxTextureView m_DepthImageView;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
@@ -715,7 +752,7 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
         UniformBufferObject ubo{};
 
         gfxCameraPersp camera;
-        camera.SetPosition(epiVec3f{0.0f, 0.0f, 2.0f});
+        camera.SetPosition(epiVec3f{0.0f, 0.0f, 1.0f});
         camera.SetLookAtPosition(epiVec3f{0.0f, 0.0f, 0.0f});
         camera.SetUpDirection(epiVec3f{0.0f, 1.0f, 0.0f});
         camera.SetFOV(90.0f);
@@ -735,7 +772,8 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 
     m_FencesInFlight[frameIndex].Reset();
 
-    gfxQueueSubmitInfo queueSubmitInfo = m_SwapChain.ForBufferCreateQueueSubmitInfo(imageIndex);
+    gfxQueueSubmitInfo queueSubmitInfo{};
+    queueSubmitInfo.GetCommandBuffers().push_back(m_CommandPool.GetPrimaryCommandBuffers()[frameIndex]);
     queueSubmitInfo.GetWaitSemaphores().push_back(m_SemaphoreImageAvailable[frameIndex]);
     queueSubmitInfo.GetWaitDstStageMasks().push_back(gfxPipelineStage_ColorAttachmentOutput);
     queueSubmitInfo.GetSignalSemaphores().push_back(m_SemaphoreRenderFinished[frameIndex]);
@@ -757,20 +795,9 @@ void epiWXVulkanDemoTriangleCanvas::OnEraseBackground(wxEraseEvent&)
     // NOTE: should reduce flickering
 }
 
-void epiWXVulkanDemoTriangleCanvas::RecreteSwapChain(const epiSize2u& size)
+void epiWXVulkanDemoTriangleCanvas::RecreateSwapChain(const epiSize2u& size)
 {
     const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(g_PhysicalDevice);
-
-    epiSize2u extent{};
-    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
-    {
-        extent = surfaceCapabilities.GetCurrentExtent();
-    }
-    else
-    {
-        extent.x = std::clamp(static_cast<epiU32>(size.x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
-        extent.y = std::clamp(static_cast<epiU32>(size.y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
-    }
 
     gfxSurfaceFormat surfaceFormat;
     surfaceFormat.SetFormat(kFormatRequired);
@@ -778,21 +805,27 @@ void epiWXVulkanDemoTriangleCanvas::RecreteSwapChain(const epiSize2u& size)
 
     gfxSwapChainCreateInfo swapChainCreateInfo{};
     swapChainCreateInfo.SetSurface(m_Surface);
-    swapChainCreateInfo.SetRenderPass(m_RenderPass);
-    swapChainCreateInfo.SetQueueFamily(m_QueueFamily);
-    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
-    swapChainCreateInfo.SetFormat(surfaceFormat);
+    swapChainCreateInfo.SetSurfacePreTransformMask(surfaceCapabilities.GetCurrentTransform());
+    swapChainCreateInfo.SetImageMinCount(surfaceCapabilities.RecommendedImageCount());
+    swapChainCreateInfo.SetImageExtent(surfaceCapabilities.ClampExtent(epiSize2u{GetSize().x, GetSize().y}));
+    swapChainCreateInfo.SetImageFormat(kFormatRequired);
+    swapChainCreateInfo.SetImageColorSpace(kColorSpaceRequired);
+    swapChainCreateInfo.SetImageArrayLayers(1);
+    swapChainCreateInfo.SetImageUsageMask(gfxImageUsage_COLOR_ATTACHMENT);
+    swapChainCreateInfo.SetImageSharingMode(gfxSharingMode::Exclusive);
+    swapChainCreateInfo.SetCompositeAlphaMask(gfxCompositeAlphaMask_Opaque);
     swapChainCreateInfo.SetPresentMode(kPresentModeRequired);
-    swapChainCreateInfo.SetExtent(extent);
+    swapChainCreateInfo.SetClipped(true);
 
     // TODO: recreate descriptor pool
     m_CurrentFrame = 0;
 
     m_SwapChain.Recreate(swapChainCreateInfo);
 
+    RecreateDepthImageView();
+    RecreateFrameBuffers();
+    RecreateCommandBuffers();
     RecreateSynchronizationPrimitives();
-
-    // TODO: bind uniform buffers to the swapchain recreation in a proper way
     RecreateUniformBuffers();
 
     m_Pipeline.DynamicClearViewports();
@@ -937,14 +970,137 @@ void epiWXVulkanDemoTriangleCanvas::RecreateUniformBuffers()
     }
 }
 
+void epiWXVulkanDemoTriangleCanvas::RecreateFrameBuffers()
+{
+    m_FrameBuffers.Clear();
+
+    for (const gfxTextureView& imageView : m_SwapChain.GetImageViews())
+    {
+        gfxFrameBufferCreateInfo frameBufferCreateInfo;
+        frameBufferCreateInfo.SetRenderPass(m_RenderPass);
+        frameBufferCreateInfo.SetSize(m_SwapChain.GetExtent());
+        frameBufferCreateInfo.GetAttachments().push_back(imageView);
+        frameBufferCreateInfo.GetAttachments().push_back(m_DepthImageView);
+
+        std::optional<gfxFrameBuffer> frameBuffer = g_Device.CreateFrameBuffer(frameBufferCreateInfo);
+        epiAssert(frameBuffer.has_value());
+
+        m_FrameBuffers.push_back(*frameBuffer);
+    }
+}
+
+void epiWXVulkanDemoTriangleCanvas::RecreateCommandBuffers()
+{
+    gfxCommandPoolCreateInfo commandPoolCreateInfo;
+    commandPoolCreateInfo.SetQueueFamily(m_QueueFamily);
+    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChain.GetBufferCount());
+
+    std::optional<gfxCommandPool> commandPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
+    epiAssert(commandPool.has_value());
+
+    m_CommandPool = *commandPool;
+}
+
+void epiWXVulkanDemoTriangleCanvas::RecreateDepthImageView()
+{
+    const gfxFormatProperties formatProperties = g_PhysicalDevice.FormatPropertiesOf(kDepthFormatRequired);
+    epiAssert(formatProperties.GetOptimalTilingFeaturesMask() & gfxFormatFeatureMask::gfxFormatFeatureMask_DepthStencilAttachment);
+
+    gfxTextureCreateInfo textureCreateInfo{};
+    textureCreateInfo.SetFormat(kDepthFormatRequired);
+    textureCreateInfo.SetUsage(gfxImageUsage_DEPTH_STENCIL_ATTACHMENT);
+    textureCreateInfo.SetTiling(gfxImageTiling::Optimal);
+    textureCreateInfo.SetExtent(epiVec3u{m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y, 1});
+    textureCreateInfo.SetSampleCount(gfxSampleCount::Sample1);
+    textureCreateInfo.SetInitialLayout(gfxImageLayout::Undefined);
+    textureCreateInfo.SetArrayLayers(1);
+    textureCreateInfo.SetMipLevels(1);
+    textureCreateInfo.SetType(gfxTextureType::Texture2D);
+
+    std::optional<gfxTexture> image = g_Device.CreateTexture(textureCreateInfo);
+    epiAssert(image.has_value());
+
+    m_DepthImage = *image;
+
+    gfxDeviceMemoryImageCreateInfo deviceMemoryCreateInfo{};
+    deviceMemoryCreateInfo.SetImage(m_DepthImage);
+    deviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
+
+    std::optional<gfxDeviceMemory> depthImageMemory = g_Device.CreateDeviceMemory(deviceMemoryCreateInfo);
+    epiAssert(depthImageMemory.has_value());
+
+    m_DepthImageMemory = *depthImageMemory;
+
+    gfxImageSubresourceRange subresourceRange{};
+    subresourceRange.SetAspectMask(gfxImageAspect_Depth);
+    subresourceRange.SetBaseArrayLayer(0);
+    subresourceRange.SetLayerCount(1);
+    subresourceRange.SetBaseMipLevel(0);
+    subresourceRange.SetLevelCount(1);
+
+    gfxTextureViewCreateInfo imageViewCreateInfo{};
+    imageViewCreateInfo.SetImage(m_DepthImage);
+    imageViewCreateInfo.SetFormat(kDepthFormatRequired);
+    imageViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
+    imageViewCreateInfo.SetSubresourceRange(subresourceRange);
+
+    std::optional<gfxTextureView> depthImageView = g_Device.CreateTextureView(imageViewCreateInfo);
+    epiAssert(depthImageView.has_value());
+
+    m_DepthImageView = *depthImageView;
+
+    { // pipeline barrier
+        gfxCommandPoolCreateInfo commandPoolCreateInfo;
+        commandPoolCreateInfo.SetQueueFamily(m_QueueFamily);
+        commandPoolCreateInfo.SetUsage(gfxCommandPoolUsage_TRANSIENT);
+        commandPoolCreateInfo.SetPrimaryCommandBufferCount(1);
+
+        std::optional<gfxCommandPool> cmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
+        epiAssert(cmdPool.has_value());
+
+        if (gfxCommandBufferRecord record = cmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+        {
+            gfxImageSubresourceRange subresourceRange;
+            subresourceRange.SetAspectMask(gfxImageAspect_Depth);
+            subresourceRange.SetBaseMipLevel(0);
+            subresourceRange.SetLevelCount(1);
+            subresourceRange.SetBaseArrayLayer(0);
+            subresourceRange.SetLayerCount(1);
+
+            gfxImageMemoryBarrier imageBarrier;
+            imageBarrier.SetImage(m_DepthImage);
+            imageBarrier.SetOldLayout(gfxImageLayout::Undefined);
+            imageBarrier.SetNewLayout(gfxImageLayout::DepthStencilAttachmentOptimal);
+            imageBarrier.SetIsSrcQueueFamilyIndexIgnored(true);
+            imageBarrier.SetIsDstQueueFamilyIndexIgnored(true);
+            imageBarrier.SetSubresourceRange(subresourceRange);
+            imageBarrier.SetSrcAccessMask(gfxAccess{0});
+            imageBarrier.SetDstAccessMask(epiMask(gfxAccess_DepthStencilAttachmentRead, gfxAccess_DepthStencilAttachmentWrite));
+
+            gfxCommandBufferRecordPipelineBarier pipelineBarrier;
+            pipelineBarrier.SetSrcStageMask(gfxPipelineStage_TopOfPipe);
+            pipelineBarrier.SetDstStageMask(gfxPipelineStage_EarlyFragmentTests);
+            pipelineBarrier.GetImageMemoryBarriers().push_back(imageBarrier);
+
+            record.PipelineBarrier(pipelineBarrier);
+        }
+
+        gfxQueueSubmitInfo submitInfo;
+        submitInfo.GetCommandBuffers().push_back(cmdPool->GetPrimaryCommandBuffers()[0]);
+
+        m_QueueFamily[0].Submit(submitInfo);
+        m_QueueFamily[0].Wait();
+    }
+}
+
 void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
 {
-    if (!m_Surface)
+    if (!m_Surface.HasImpl())
     {
         return;
     }
 
-    RecreteSwapChain({event.GetSize().x, event.GetSize().y});
+    RecreateSwapChain({event.GetSize().x, event.GetSize().y});
 
     Refresh();
 }
@@ -959,16 +1115,25 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
     gfxRenderPassClearValue clearValue;
     clearValue.SetColor({0.0f, 0.0f, 0.0f, 1.0f});
 
+    gfxRenderPassClearValue clearValueDepth;
+    clearValueDepth.SetDepth(1.0f);
+    clearValueDepth.SetStencil(0);
+
     epiArray<gfxRenderPassClearValue> clearValues;
     clearValues.push_back(clearValue);
+    clearValues.push_back(clearValueDepth);
+
+    const epiRect2s renderArea(0, 0, static_cast<epiS32>(m_SwapChain.GetExtent().x), static_cast<epiS32>(m_SwapChain.GetExtent().y));
 
     for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
     {
-        if (gfxCommandBufferRecord record = m_SwapChain.ForBufferRecordCommands(i))
+        if (gfxCommandBufferRecord record = m_CommandPool.GetPrimaryCommandBuffers()[i].RecordCommands())
         {
             const gfxDescriptorSet& descriptorSet = m_DescriptorPool.GetDescriptorSets()[i];
 
-            gfxRenderPassBeginInfo renderPassBeginInfo = m_SwapChain.ForBufferCreateRenderPassBeginInfo(i);
+            gfxRenderPassBeginInfo renderPassBeginInfo{};
+            renderPassBeginInfo.SetFrameBuffer(m_FrameBuffers[i]);
+            renderPassBeginInfo.SetRenderArea(renderArea);
             renderPassBeginInfo.SetRenderPass(m_RenderPass);
             renderPassBeginInfo.SetClearValues(clearValues);
 

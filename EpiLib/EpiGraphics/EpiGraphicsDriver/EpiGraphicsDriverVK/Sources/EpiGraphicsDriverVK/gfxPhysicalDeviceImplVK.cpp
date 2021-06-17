@@ -1,5 +1,6 @@
 #include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 
+#include "EpiGraphicsDriverVK/gfxEnumVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
@@ -97,6 +98,19 @@ std::unique_ptr<gfxDeviceImpl> gfxPhysicalDeviceImplVK::CreateDevice(gfxQueueDes
     }
 
     return device;
+}
+
+gfxFormatProperties gfxPhysicalDeviceImplVK::FormatPropertiesOf(gfxFormat format) const
+{
+    VkFormatProperties propertiesVk;
+    vkGetPhysicalDeviceFormatProperties(m_VkDevice, gfxFormatTo(format), &propertiesVk);
+
+    gfxFormatProperties properties;
+    properties.SetLinearTilingFeaturesMask(gfxFormatFeatureMaskFrom(propertiesVk.linearTilingFeatures));
+    properties.SetOptimalTilingFeaturesMask(gfxFormatFeatureMaskFrom(propertiesVk.optimalTilingFeatures));
+    properties.SetBufferFeaturesMask(gfxFormatFeatureMaskFrom(propertiesVk.bufferFeatures));
+
+    return properties;
 }
 
 epiBool gfxPhysicalDeviceImplVK::IsExtensionSupported(gfxPhysicalDeviceExtension extension) const

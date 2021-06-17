@@ -59,6 +59,9 @@ public:
 class gfxQueueFamilyImpl
 {
 public:
+    static const gfxQueueFamilyImpl* ExtractImpl(const gfxQueueFamily& queueFamily) { return queueFamily.m_Impl.Ptr(); }
+
+public:
     explicit gfxQueueFamilyImpl(const gfxQueueFamilyDescriptorImpl& queueFamilyDesc)
         : m_QueueTypeMask{queueFamilyDesc.GetQueueTypeSupportedMask()}
     {
@@ -171,9 +174,8 @@ public:
 
     virtual epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const = 0;
 
-    virtual std::shared_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info, const gfxSurfaceImpl& surfaceImpl, const gfxQueueFamilyImpl& queueFamilyImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
+    virtual std::shared_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxRenderPassImpl> CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const = 0;
     virtual std::shared_ptr<gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
     virtual std::shared_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
@@ -216,6 +218,8 @@ public:
                                                         const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
                                                         const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const = 0;
 
+    virtual gfxFormatProperties FormatPropertiesOf(gfxFormat format) const = 0;
+
     virtual epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const = 0;
     virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
@@ -223,6 +227,9 @@ public:
 
 class gfxSurfaceImpl
 {
+public:
+    static const gfxSurfaceImpl* ExtractImpl(const gfxSurface& surface) { return surface.m_Impl.Ptr(); }
+
 public:
     gfxSurfaceImpl() = default;
     gfxSurfaceImpl(const gfxSurfaceImpl& rhs) = delete;
@@ -252,19 +259,18 @@ public:
     gfxSwapChainImpl& operator=(gfxSwapChainImpl&& rhs) = default;
     virtual ~gfxSwapChainImpl() = default;
 
-    virtual epiBool Recreate(const gfxSwapChainCreateInfo& info,
-                             const gfxSurfaceImpl& surfaceImpl,
-                             const gfxQueueFamilyImpl& queueFamilyImpl,
-                             const gfxRenderPassImpl& renderPassImpl) = 0;
+    virtual epiBool Recreate(const gfxSwapChainCreateInfo& info) = 0;
 
     virtual epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) = 0;
 
-    virtual gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) = 0;
-    virtual gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex) = 0;
-    virtual gfxQueueSubmitInfo ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex) = 0;
 
-    virtual epiU32 GetBufferCount() const = 0;
+    epiU32 GetBufferCount() const { return m_ImageViews.GetSize(); }
     virtual epiSize2u GetExtent() const = 0;
+
+    const epiArray<std::shared_ptr<gfxTextureViewImpl>>& GetImageViews() const { return m_ImageViews; }
+
+protected:
+    epiArray<std::shared_ptr<gfxTextureViewImpl>> m_ImageViews;
 };
 
 class gfxFenceImpl

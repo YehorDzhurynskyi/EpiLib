@@ -76,6 +76,13 @@ class gfxPipelineGraphicsCreateInfo
     {
         epiArray<gfxPipelineDynamicState> DynamicStates;
     }
+
+    epiBool DepthEnableTest;
+    epiBool DepthEnableWrite;
+    gfxCompareOp DepthCompareOp;
+    epiBool DepthEnableBoundsTest;
+    epiFloat DepthMinBounds;
+    epiFloat DepthMaxBounds;
 };
 
 class gfxPipelineGraphics

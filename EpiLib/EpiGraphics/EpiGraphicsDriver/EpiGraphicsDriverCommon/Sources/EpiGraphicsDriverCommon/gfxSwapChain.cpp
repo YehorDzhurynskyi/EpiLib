@@ -10,35 +10,22 @@ EPI_NAMESPACE_BEGIN()
 gfxSwapChain::gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl)
     : m_Impl{impl}
 {
+    RebindImpl();
+}
+
+epiBool gfxSwapChain::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
 {
-    const auto surfaceImpl = info.GetSurface().m_Impl;
-    if (!surfaceImpl)
+    if (!m_Impl->Recreate(info))
     {
-        epiLogError("Failed to recreate SwapChain! Provided Surface has no implementation!");
         return false;
     }
 
-    const auto queueFamilyImpl = info.GetQueueFamily().m_Impl;
-    if (!queueFamilyImpl)
-    {
-        epiLogError("Failed to recreate SwapChain! Provided QueueFamily has no implementation!");
-        return false;
-    }
-
-    const auto renderPassImpl = info.GetRenderPass().m_Impl;
-    if (!renderPassImpl)
-    {
-        epiLogError("Failed to recreate SwapChain! Provided RenderPass has no implementation!");
-        return false;
-    }
-
-    if (!m_Impl->Recreate(info, *surfaceImpl, *queueFamilyImpl, *renderPassImpl))
-    {
-        return false;
-    }
+    RebindImpl();
 
     return true;
 }
@@ -66,21 +53,6 @@ epiS32 gfxSwapChain::AcquireNextImage(const gfxSemaphore* signalSemaphore, const
     return m_Impl->AcquireNextImage(signalSemaphore, signalFence, timeout);
 }
 
-gfxCommandBufferRecord gfxSwapChain::ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask)
-{
-    return m_Impl->ForBufferRecordCommands(bufferIndex, usageMask);
-}
-
-gfxRenderPassBeginInfo gfxSwapChain::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex)
-{
-    return m_Impl->ForBufferCreateRenderPassBeginInfo(bufferIndex);
-}
-
-gfxQueueSubmitInfo gfxSwapChain::ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex)
-{
-    return m_Impl->ForBufferCreateQueueSubmitInfo(bufferIndex);
-}
-
 epiU32 gfxSwapChain::GetBufferCount_Callback() const
 {
     return m_Impl->GetBufferCount();
@@ -89,6 +61,22 @@ epiU32 gfxSwapChain::GetBufferCount_Callback() const
 epiSize2u gfxSwapChain::GetExtent_Callback() const
 {
     return m_Impl->GetExtent();
+}
+
+void gfxSwapChain::RebindImpl()
+{
+    epiArray<gfxTextureView>& imageViews = GetImageViews();
+    imageViews.Clear();
+    imageViews.Reserve(m_Impl->GetImageViews().Size());
+
+    // NOTE: filling gfxQueueFamily with their implementations (gfxDeviceImpl still owns these implementations)
+    std::transform(m_Impl->GetImageViews().begin(),
+                   m_Impl->GetImageViews().end(),
+                   std::back_inserter(imageViews),
+                   [](const std::shared_ptr<internalgfx::gfxTextureViewImpl>& imageViewImpl)
+    {
+        return gfxTextureView(imageViewImpl);
+    });
 }
 
 EPI_NAMESPACE_END()

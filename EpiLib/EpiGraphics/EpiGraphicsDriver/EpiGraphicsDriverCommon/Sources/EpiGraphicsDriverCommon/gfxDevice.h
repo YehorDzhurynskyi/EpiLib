@@ -66,7 +66,6 @@ public:
     // TODO: add From suffix
     std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
-    std::optional<gfxRenderPass> CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const;
     std::optional<gfxPipelineLayout> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const;
     std::optional<gfxPipelineGraphics> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxRenderPass& renderPass) const;
     std::optional<gfxShader> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const;

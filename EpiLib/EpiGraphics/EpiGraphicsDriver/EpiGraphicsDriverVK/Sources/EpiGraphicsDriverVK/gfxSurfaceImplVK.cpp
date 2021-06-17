@@ -27,7 +27,7 @@ gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance_T* instance, const gfxWindow& wind
     createInfo.hinstance = GetModuleHandle(nullptr);
 
     const VkResult result = vkCreateWin32SurfaceKHR(m_VkInstance, &createInfo, nullptr, &m_VkSurface);
-    gfxLogErrorIfNotSuccessEx(result, "Failed to call vkCreateWin32SurfaceKHR!");
+    gfxLogErrorIfNotSuccessEx(result, "Failed to call vkCreateWin32SurfaceKHR!"); // TODO: gfxLogErrorOnFailEx
 }
 
 gfxSurfaceImplVK::~gfxSurfaceImplVK()
@@ -91,11 +91,11 @@ gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDev
     capabilities.SetCurrentExtent(epiSize2u{capabilitiesVk.currentExtent.width, capabilitiesVk.currentExtent.height});
     capabilities.SetMinImageExtent(epiSize2u{capabilitiesVk.minImageExtent.width, capabilitiesVk.minImageExtent.height});
     capabilities.SetMaxImageExtent(epiSize2u{capabilitiesVk.maxImageExtent.width, capabilitiesVk.maxImageExtent.height});
-    capabilities.SetSupportedTransforms(gfxSurfaceTransformFrom(capabilitiesVk.supportedTransforms));
-    capabilities.SetSupportedCompositeAlpha(gfxCompositeAlphaFrom(capabilitiesVk.supportedCompositeAlpha));
+    capabilities.SetSupportedTransforms(gfxSurfaceTransformMaskFrom(capabilitiesVk.supportedTransforms));
+    capabilities.SetSupportedCompositeAlpha(gfxCompositeAlphaMaskFrom(capabilitiesVk.supportedCompositeAlpha));
     capabilities.SetSupportedUsage(gfxImageUsageFrom(capabilitiesVk.supportedUsageFlags));
 
-    const gfxSurfaceTransform currentTransform = gfxSurfaceTransformFrom(capabilitiesVk.currentTransform);
+    const gfxSurfaceTransformMask currentTransform = gfxSurfaceTransformMaskFrom(capabilitiesVk.currentTransform);
     epiAssert(epiBitCount(currentTransform) == 1);
 
     capabilities.SetCurrentTransform(currentTransform);

@@ -80,26 +80,20 @@ epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
 
     const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(info.PhysicalDevice);
 
-    epiSize2u extent{};
-    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
-    {
-        extent = surfaceCapabilities.GetCurrentExtent();
-    }
-    else
-    {
-        extent.x = std::clamp(static_cast<epiU32>(GetSize().x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
-        extent.y = std::clamp(static_cast<epiU32>(GetSize().y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
-    }
-
     // TODO: submit RenderPass info to ensure compatibility only
     gfxSwapChainCreateInfo swapChainCreateInfo{};
     swapChainCreateInfo.SetSurface(m_Surface);
-    swapChainCreateInfo.SetRenderPass(info.RenderPass);
-    swapChainCreateInfo.SetQueueFamily(info.QueueFamily);
-    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
-    swapChainCreateInfo.SetFormat(info.Format);
+    swapChainCreateInfo.SetSurfacePreTransformMask(surfaceCapabilities.GetCurrentTransform());
+    swapChainCreateInfo.SetImageMinCount(surfaceCapabilities.RecommendedImageCount());
+    swapChainCreateInfo.SetImageExtent(surfaceCapabilities.ClampExtent(epiSize2u{GetSize().x, GetSize().y}));
+    swapChainCreateInfo.SetImageFormat(info.Format.GetFormat());
+    swapChainCreateInfo.SetImageColorSpace(info.Format.GetColorSpace());
+    swapChainCreateInfo.SetImageArrayLayers(1);
+    swapChainCreateInfo.SetImageUsageMask(gfxImageUsage_COLOR_ATTACHMENT);
+    swapChainCreateInfo.SetImageSharingMode(gfxSharingMode::Exclusive);
+    swapChainCreateInfo.SetCompositeAlphaMask(gfxCompositeAlphaMask_Opaque);
     swapChainCreateInfo.SetPresentMode(info.PresentMode);
-    swapChainCreateInfo.SetExtent(extent);
+    swapChainCreateInfo.SetClipped(true);
 
     std::optional<gfxSwapChain> swapChain = info.Device.CreateSwapChain(swapChainCreateInfo);
     if (!swapChain.has_value())

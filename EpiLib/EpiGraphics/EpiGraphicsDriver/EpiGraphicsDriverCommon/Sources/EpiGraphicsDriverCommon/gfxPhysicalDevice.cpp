@@ -42,6 +42,11 @@ gfxPhysicalDeviceType gfxPhysicalDevice::GetType_Callback() const
     return m_Impl->GetType();
 }
 
+gfxFormatProperties gfxPhysicalDevice::FormatPropertiesOf(gfxFormat format) const
+{
+    return m_Impl->FormatPropertiesOf(format);
+}
+
 epiBool gfxPhysicalDevice::IsExtensionSupported(gfxPhysicalDeviceExtension extension) const
 {
     return m_Impl->IsExtensionSupported(extension);

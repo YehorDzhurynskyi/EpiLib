@@ -43,28 +43,7 @@ std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateI
 {
     std::optional<gfxSwapChain> swapChain;
 
-    const auto surfaceImpl = info.GetSurface().m_Impl;
-    if (!surfaceImpl)
-    {
-        epiLogError("Failed to create SwapChain! Provided Surface has no implementation!");
-        return swapChain;
-    }
-
-    const auto queueFamilyImpl = info.GetQueueFamily().m_Impl;
-    if (!queueFamilyImpl)
-    {
-        epiLogError("Failed to create SwapChain! Provided QueueFamily has no implementation!");
-        return swapChain;
-    }
-
-    const auto renderPassImpl = info.GetRenderPass().m_Impl;
-    if (!renderPassImpl)
-    {
-        epiLogError("Failed to create SwapChain! Provided RenderPass has no implementation!");
-        return swapChain;
-    }
-
-    if (std::shared_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(info, *surfaceImpl, *queueFamilyImpl, *renderPassImpl))
+    if (std::shared_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(info))
     {
         swapChain = gfxSwapChain(std::move(impl));
     }
@@ -77,18 +56,6 @@ std::optional<gfxRenderPass> gfxDevice::CreateRenderPass(const gfxRenderPassCrea
     std::optional<gfxRenderPass> renderPass;
 
     if (std::shared_ptr<internalgfx::gfxRenderPassImpl> impl = m_Impl->CreateRenderPass(info))
-    {
-        renderPass = gfxRenderPass(std::move(impl));
-    }
-
-    return renderPass;
-}
-
-std::optional<gfxRenderPass> gfxDevice::CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const
-{
-    std::optional<gfxRenderPass> renderPass;
-
-    if (std::shared_ptr<internalgfx::gfxRenderPassImpl> impl = m_Impl->CreateRenderPassFromSchema(schema))
     {
         renderPass = gfxRenderPass(std::move(impl));
     }

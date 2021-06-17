@@ -50,12 +50,16 @@ protected:
     epiSize2u m_CurrentExtent{};
     epiSize2u m_MinImageExtent{};
     epiSize2u m_MaxImageExtent{};
-    gfxSurfaceTransform m_SupportedTransforms{};
-    gfxCompositeAlpha m_SupportedCompositeAlpha{};
+    gfxSurfaceTransformMask m_SupportedTransforms{};
+    gfxCompositeAlphaMask m_SupportedCompositeAlpha{};
     gfxImageUsage m_SupportedUsage{};
-    gfxSurfaceTransform m_CurrentTransform{};
+    gfxSurfaceTransformMask m_CurrentTransform{};
 
 EPI_GENREGION_END(gfxSurfaceCapabilities)
+
+public:
+    epiSize2u ClampExtent(const epiSize2u& extent) const;
+    epiU32 RecommendedImageCount() const;
 };
 
 class gfxSurfaceFormat : public Object
@@ -106,13 +110,14 @@ public:
     friend class gfxDevice;
     friend class gfxQueueDescriptor;
     friend class gfxSwapChain;
+    friend class internalgfx::gfxSurfaceImpl;
 
 public:
     gfxSurface() = default;
     explicit gfxSurface(const std::shared_ptr<internalgfx::gfxSurfaceImpl>& impl);
 
 public:
-    operator epiBool() const;
+    epiBool HasImpl() const;
 
     epiBool IsCompatibleWith(const gfxPhysicalDevice& device,
                              const gfxSurfaceFormat& format,

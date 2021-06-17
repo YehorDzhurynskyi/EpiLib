@@ -4,7 +4,6 @@
 #include "EpiGraphicsDriverCommon/gfxSwapChain.h"
 #include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
 #include "EpiGraphicsDriverCommon/gfxDevice.h"
-#include "EpiGraphicsDriverCommon/gfxRenderPass.h"
 #include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 
 #include <wx/window.h>
@@ -13,7 +12,6 @@ struct epiWXVulkanCanvasCreateInfo
 {
     epi::gfxPhysicalDevice PhysicalDevice;
     epi::gfxDevice Device;
-    epi::gfxRenderPass RenderPass;
     epi::gfxQueueFamily QueueFamily;
     epi::gfxSurfaceFormat Format{};
     epi::gfxSurfacePresentMode PresentMode{};
