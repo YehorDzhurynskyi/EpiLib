@@ -7,6 +7,33 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+epiSize2u gfxSurfaceCapabilities::ClampExtent(const epiSize2u& extent) const
+{
+    epiSize2u extentClamped{};
+    if (GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
+    {
+        extentClamped = GetCurrentExtent();
+    }
+    else
+    {
+        extentClamped.x = std::clamp(extent.x, GetMinImageExtent().x, GetMaxImageExtent().x);
+        extentClamped.y = std::clamp(extent.y, GetMinImageExtent().y, GetMaxImageExtent().y);
+    }
+
+    return extentClamped;
+}
+
+epiU32 gfxSurfaceCapabilities::RecommendedImageMinCount() const
+{
+    epiU32 imageCount = GetMinImageCount() + 1;
+    if (const epiU32 maxImageCount = GetMaxImageCount(); maxImageCount > 0 && imageCount > maxImageCount)
+    {
+        imageCount = maxImageCount;
+    }
+
+    return imageCount;
+}
+
 epiBool operator==(const gfxSurfaceFormat& lhs, const gfxSurfaceFormat& rhs)
 {
     return lhs.GetFormat() == rhs.GetFormat() && lhs.GetColorSpace() == rhs.GetColorSpace();

@@ -22,21 +22,7 @@ epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
         return false;
     }
 
-    const auto queueFamilyImpl = info.GetQueueFamily().m_Impl;
-    if (!queueFamilyImpl)
-    {
-        epiLogError("Failed to recreate SwapChain! Provided QueueFamily has no implementation!");
-        return false;
-    }
-
-    const auto renderPassImpl = info.GetRenderPass().m_Impl;
-    if (!renderPassImpl)
-    {
-        epiLogError("Failed to recreate SwapChain! Provided RenderPass has no implementation!");
-        return false;
-    }
-
-    if (!m_Impl->Recreate(info, *surfaceImpl, *queueFamilyImpl, *renderPassImpl))
+    if (!m_Impl->Recreate(info))
     {
         return false;
     }

@@ -1,12 +1,24 @@
 class gfxSwapChainCreateInfo
 {
     gfxSurface Surface;
-    gfxRenderPass RenderPass;
-    gfxQueueFamily QueueFamily;
-    gfxSurfaceCapabilities Capabilities;
-    gfxSurfaceFormat Format;
+    gfxSurfaceTransformMask SurfacePreTransformMask;
+
+    epiU32 ImageMinCount;
+    gfxFormat ImageFormat;
+    gfxSurfaceColorSpace ImageColorSpace;
+    epiSize2u ImageExtent;
+    epiU32 ImageArrayLayers;
+    gfxImageUsage ImageUsageMask;
+    gfxSharingMode ImageSharingMode;
+
+    epiArray<gfxQueueFamily> QueueFamilies;
+
+    gfxCompositeAlphaMask CompositeAlphaMask;
     gfxSurfacePresentMode PresentMode;
-    epiSize2u Extent;
+    epiBool IsClipped;
+
+    # TODO: Introduce
+    # gfxSwapChain OldSwapChain;
 };
 
 class gfxSwapChain

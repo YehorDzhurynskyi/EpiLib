@@ -86,6 +86,7 @@ public:
     friend class gfxDevice;
     friend class gfxSurface;
     friend class gfxSwapChain;
+    friend class internalgfx::gfxQueueFamilyImpl;
 
 public:
     gfxQueueFamily() = default;

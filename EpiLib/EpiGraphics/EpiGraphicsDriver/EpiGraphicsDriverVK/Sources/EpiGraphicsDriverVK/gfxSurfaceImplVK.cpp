@@ -91,14 +91,14 @@ gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDev
     capabilities.SetCurrentExtent(epiSize2u{capabilitiesVk.currentExtent.width, capabilitiesVk.currentExtent.height});
     capabilities.SetMinImageExtent(epiSize2u{capabilitiesVk.minImageExtent.width, capabilitiesVk.minImageExtent.height});
     capabilities.SetMaxImageExtent(epiSize2u{capabilitiesVk.maxImageExtent.width, capabilitiesVk.maxImageExtent.height});
-    capabilities.SetSupportedTransforms(gfxSurfaceTransformFrom(capabilitiesVk.supportedTransforms));
-    capabilities.SetSupportedCompositeAlpha(gfxCompositeAlphaFrom(capabilitiesVk.supportedCompositeAlpha));
+    capabilities.SetSupportedSurfaceTransformMask(gfxSurfaceTransformMaskFrom(capabilitiesVk.supportedTransforms));
+    capabilities.SetSupportedCompositeAlphaMask(gfxCompositeAlphaMaskFrom(capabilitiesVk.supportedCompositeAlpha));
     capabilities.SetSupportedUsage(gfxImageUsageFrom(capabilitiesVk.supportedUsageFlags));
 
-    const gfxSurfaceTransform currentTransform = gfxSurfaceTransformFrom(capabilitiesVk.currentTransform);
+    const gfxSurfaceTransformMask currentTransform = gfxSurfaceTransformMaskFrom(capabilitiesVk.currentTransform);
     epiAssert(epiBitCount(currentTransform) == 1);
 
-    capabilities.SetCurrentTransform(currentTransform);
+    capabilities.SetCurrentSurfaceTransformMask(currentTransform);
 
     return capabilities;
 }

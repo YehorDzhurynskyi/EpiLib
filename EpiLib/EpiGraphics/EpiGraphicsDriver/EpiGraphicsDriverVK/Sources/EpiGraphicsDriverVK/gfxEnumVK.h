@@ -8,13 +8,14 @@ EPI_NAMESPACE_BEGIN()
 
 gfxFormat gfxFormatFrom(VkFormat formatVk);
 gfxSurfaceColorSpace gfxSurfaceColorSpaceFrom(VkColorSpaceKHR colorSpaceVk);
-gfxSurfaceTransform gfxSurfaceTransformFrom(VkSurfaceTransformFlagsKHR transform);
-gfxCompositeAlpha gfxCompositeAlphaFrom(VkCompositeAlphaFlagsKHR compositeAlpha);
+gfxSurfaceTransformMask gfxSurfaceTransformMaskFrom(VkSurfaceTransformFlagsKHR transform);
+gfxCompositeAlphaMask gfxCompositeAlphaMaskFrom(VkCompositeAlphaFlagsKHR compositeAlpha);
 gfxImageUsage gfxImageUsageFrom(VkImageUsageFlags usage);
 
 VkFormat gfxFormatTo(gfxFormat format);
 VkColorSpaceKHR gfxSurfaceColorSpaceTo(gfxSurfaceColorSpace colorSpace);
-VkSurfaceTransformFlagBitsKHR gfxSurfaceTransformTo(gfxSurfaceTransform transform);
+VkSurfaceTransformFlagBitsKHR gfxSurfaceTransformMaskTo(gfxSurfaceTransformMask mask);
+VkCompositeAlphaFlagBitsKHR gfxCompositeAlphaMaskTo(gfxCompositeAlphaMask mask);
 VkPresentModeKHR gfxSurfacePresentModeTo(gfxSurfacePresentMode presentMode);
 VkPrimitiveTopology gfxPipelineInputAssemblyTypeTo(gfxPipelineInputAssemblyType type);
 VkSampleCountFlagBits gfxSampleCountTo(gfxSampleCount sampleCount);
@@ -58,5 +59,6 @@ VkSamplerMipmapMode gfxSamplerMipmapModeTo(gfxSamplerMipmapMode mode);
 VkSamplerAddressMode gfxSamplerAddressModeTo(gfxSamplerAddressMode mode);
 VkBorderColor gfxSamplerBorderColorTo(gfxSamplerBorderColor borderColor);
 VkComponentSwizzle gfxComponentSwizzleTo(gfxComponentSwizzle swizzle);
+VkSharingMode gfxSharingModeTo(gfxSharingMode mode);
 
 EPI_NAMESPACE_END()

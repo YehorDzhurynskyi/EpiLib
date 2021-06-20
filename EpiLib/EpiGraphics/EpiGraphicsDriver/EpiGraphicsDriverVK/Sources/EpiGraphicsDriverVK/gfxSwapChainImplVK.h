@@ -26,15 +26,9 @@ public:
     gfxSwapChainImplVK& operator=(gfxSwapChainImplVK&& rhs) = default;
     ~gfxSwapChainImplVK() override;
 
-    epiBool Init(const gfxSwapChainCreateInfo& info,
-                 const gfxSurfaceImpl& surfaceImpl,
-                 const gfxQueueFamilyImpl& queueFamilyImpl,
-                 const gfxRenderPassImpl& renderPassImpl);
+    epiBool Init(const gfxSwapChainCreateInfo& info);
 
-    epiBool Recreate(const gfxSwapChainCreateInfo& info,
-                     const gfxSurfaceImpl& surfaceImpl,
-                     const gfxQueueFamilyImpl& queueFamilyImpl,
-                     const gfxRenderPassImpl& renderPassImpl) override;
+    epiBool Recreate(const gfxSwapChainCreateInfo& info) override;
 
     epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) override;
 

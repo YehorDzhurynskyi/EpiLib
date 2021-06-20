@@ -13,7 +13,6 @@ struct epiWXVulkanCanvasCreateInfo
 {
     epi::gfxPhysicalDevice PhysicalDevice;
     epi::gfxDevice Device;
-    epi::gfxRenderPass RenderPass;
     epi::gfxQueueFamily QueueFamily;
     epi::gfxSurfaceFormat Format{};
     epi::gfxSurfacePresentMode PresentMode{};

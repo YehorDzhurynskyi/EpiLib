@@ -33,37 +33,45 @@ gfxSwapChainImplVK::~gfxSwapChainImplVK()
     Reset();
 }
 
-epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
-                                 const gfxSurfaceImpl& surfaceImpl,
-                                 const gfxQueueFamilyImpl& queueFamilyImpl,
-                                 const gfxRenderPassImpl& renderPassImpl)
+epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 {
-    m_Extent = info.GetExtent();
+    const gfxSurfaceImplVK* surfaceImpl = static_cast<const gfxSurfaceImplVK*>(gfxSurfaceImpl::ExtractImpl(info.GetSurface()));
+    epiAssert(surfaceImpl != nullptr);
 
-    const gfxSurfaceCapabilities& capabilities = info.GetCapabilities();
+    std::vector<epiU32> queueFamilyIndices;
+    queueFamilyIndices.reserve(info.GetQueueFamilies().Size());
 
-    epiU32 imageCount = capabilities.GetMinImageCount() + 1;
-    if (const epiU32 maxImageCount = capabilities.GetMaxImageCount(); maxImageCount > 0 && imageCount > maxImageCount)
+    std::transform(info.GetQueueFamilies().begin(),
+                   info.GetQueueFamilies().end(),
+                   std::back_inserter(queueFamilyIndices),
+                   [](const gfxQueueFamily& queueFamily)
     {
-        imageCount = maxImageCount;
-    }
+        const gfxQueueFamilyImplVK* queueFamilyImpl = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamilyImpl::ExtractImpl(queueFamily));
+        epiAssert(queueFamilyImpl != nullptr);
+
+        return queueFamilyImpl->GetIndex();
+    });
+
+    epiAssert(info.GetImageSharingMode() == gfxSharingMode::Exclusive || !info.GetQueueFamilies().IsEmpty());
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = static_cast<const gfxSurfaceImplVK&>(surfaceImpl).GetVkSurface();
-    createInfo.minImageCount = imageCount;
-    createInfo.imageFormat = gfxFormatTo(info.GetFormat().GetFormat());
-    createInfo.imageColorSpace = gfxSurfaceColorSpaceTo(info.GetFormat().GetColorSpace());
-    createInfo.imageExtent = VkExtent2D{info.GetExtent().x, info.GetExtent().y};
-    createInfo.imageArrayLayers = 1;
-    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    createInfo.queueFamilyIndexCount = 0;
-    createInfo.pQueueFamilyIndices = nullptr;
-    createInfo.preTransform = gfxSurfaceTransformTo(capabilities.GetCurrentTransform());
-    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    createInfo.surface = surfaceImpl->GetVkSurface();
+    createInfo.minImageCount = info.GetImageMinCount();
+    createInfo.imageFormat = gfxFormatTo(info.GetImageFormat());
+    createInfo.imageColorSpace = gfxSurfaceColorSpaceTo(info.GetImageColorSpace());
+    createInfo.imageExtent = VkExtent2D{info.GetImageExtent().x, info.GetImageExtent().y};
+    createInfo.imageArrayLayers = info.GetImageArrayLayers();
+    createInfo.imageUsage = gfxImageUsageTo(info.GetImageUsageMask());
+    createInfo.imageSharingMode = gfxSharingModeTo(info.GetImageSharingMode());
+    createInfo.queueFamilyIndexCount = queueFamilyIndices.size();
+    createInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+    createInfo.preTransform = gfxSurfaceTransformMaskTo(info.GetSurfacePreTransformMask());
+    createInfo.compositeAlpha = gfxCompositeAlphaMaskTo(info.GetCompositeAlphaMask());
     createInfo.presentMode = gfxSurfacePresentModeTo(info.GetPresentMode());
-    createInfo.clipped = VK_TRUE;
+    createInfo.clipped = info.GetIsClipped();
+
+    // TODO: set
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
     if (const VkResult result = vkCreateSwapchainKHR(m_Device.GetVkDevice(), &createInfo, nullptr, &m_VkSwapChain); result != VK_SUCCESS)
@@ -72,10 +80,19 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
         return false;
     }
 
-    vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, nullptr);
+    epiU32 imageCount = 0;
+    if (const VkResult result = vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, nullptr); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkGetSwapchainImagesKHR!");
+        return false;
+    }
 
     std::vector<VkImage> swapChainImages(imageCount);
-    vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, swapChainImages.data());
+    if (const VkResult result = vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, swapChainImages.data()); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkGetSwapchainImagesKHR!");
+        return false;
+    }
 
     for (const VkImage& image : swapChainImages)
     {
@@ -92,12 +109,14 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
         gfxTextureViewCreateInfo textureViewCreateInfo;
         textureViewCreateInfo.SetImage(texture);
         textureViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
-        textureViewCreateInfo.SetFormat(info.GetFormat().GetFormat());
+        textureViewCreateInfo.SetFormat(info.GetImageFormat());
         textureViewCreateInfo.SetSubresourceRange(subresourceRange);
 
         std::shared_ptr<gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImpl);
         m_ImageViews.push_back(std::move(textureViewImpl));
     }
+
+    m_Extent = info.GetImageExtent();
 
     return true;
 }
@@ -118,10 +137,7 @@ epiBool gfxSwapChainImplVK::Reset()
     return true;
 }
 
-epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
-                                     const gfxSurfaceImpl& surfaceImpl,
-                                     const gfxQueueFamilyImpl& queueFamilyImpl,
-                                     const gfxRenderPassImpl& renderPassImpl)
+epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info)
 {
     if (!Reset())
     {
@@ -129,7 +145,7 @@ epiBool gfxSwapChainImplVK::Recreate(const gfxSwapChainCreateInfo& info,
         return false;
     }
 
-    return Init(info, surfaceImpl, queueFamilyImpl, renderPassImpl);
+    return Init(info);
 }
 
 epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout)

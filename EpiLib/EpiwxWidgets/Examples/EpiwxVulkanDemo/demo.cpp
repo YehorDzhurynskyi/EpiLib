@@ -136,7 +136,6 @@ public:
         epiWXVulkanCanvasCreateInfo canvasCreateInfo;
         canvasCreateInfo.PhysicalDevice = g_PhysicalDevice;
         canvasCreateInfo.Device = g_Device;
-        canvasCreateInfo.RenderPass = m_RenderPass;
         canvasCreateInfo.QueueFamily = m_QueueFamily;
         canvasCreateInfo.Format = surfaceFormat;
         canvasCreateInfo.PresentMode = kPresentModeRequired;
@@ -769,29 +768,23 @@ void epiWXVulkanDemoTriangleCanvas::RecreateSwapChain(const epiSize2u& size)
 {
     const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(g_PhysicalDevice);
 
-    epiSize2u extent{};
-    if (surfaceCapabilities.GetCurrentExtent().x != std::numeric_limits<epiU32>::max())
-    {
-        extent = surfaceCapabilities.GetCurrentExtent();
-    }
-    else
-    {
-        extent.x = std::clamp(static_cast<epiU32>(size.x), surfaceCapabilities.GetMinImageExtent().x, surfaceCapabilities.GetMaxImageExtent().x);
-        extent.y = std::clamp(static_cast<epiU32>(size.y), surfaceCapabilities.GetMinImageExtent().y, surfaceCapabilities.GetMaxImageExtent().y);
-    }
-
     gfxSurfaceFormat surfaceFormat;
     surfaceFormat.SetFormat(kFormatRequired);
     surfaceFormat.SetColorSpace(kColorSpaceRequired);
 
     gfxSwapChainCreateInfo swapChainCreateInfo{};
     swapChainCreateInfo.SetSurface(m_Surface);
-    swapChainCreateInfo.SetRenderPass(m_RenderPass);
-    swapChainCreateInfo.SetQueueFamily(m_QueueFamily);
-    swapChainCreateInfo.SetCapabilities(surfaceCapabilities);
-    swapChainCreateInfo.SetFormat(surfaceFormat);
+    swapChainCreateInfo.SetSurfacePreTransformMask(surfaceCapabilities.GetCurrentSurfaceTransformMask());
+    swapChainCreateInfo.SetImageMinCount(surfaceCapabilities.RecommendedImageMinCount());
+    swapChainCreateInfo.SetImageFormat(kFormatRequired);
+    swapChainCreateInfo.SetImageColorSpace(kColorSpaceRequired);
+    swapChainCreateInfo.SetImageExtent(surfaceCapabilities.ClampExtent(epiSize2u{size.x, size.y}));
+    swapChainCreateInfo.SetImageArrayLayers(1);
+    swapChainCreateInfo.SetImageUsageMask(gfxImageUsage_COLOR_ATTACHMENT);
+    swapChainCreateInfo.SetImageSharingMode(gfxSharingMode::Exclusive);
+    swapChainCreateInfo.SetCompositeAlphaMask(gfxCompositeAlphaMask_Opaque);
     swapChainCreateInfo.SetPresentMode(kPresentModeRequired);
-    swapChainCreateInfo.SetExtent(extent);
+    swapChainCreateInfo.SetIsClipped(true);
 
     // TODO: recreate descriptor pool
     m_CurrentFrame = 0;

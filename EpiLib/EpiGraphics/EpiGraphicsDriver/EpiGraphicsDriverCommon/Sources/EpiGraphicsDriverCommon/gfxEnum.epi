@@ -485,26 +485,26 @@ enum gfxSurfacePresentMode
 };
 
 [FlagMask]
-enum gfxSurfaceTransform
+enum gfxSurfaceTransformMask
 {
-    IDENTITY,
-    ROTATE_90,
-    ROTATE_180,
-    ROTATE_270,
-    HORIZONTAL_MIRROR,
-    HORIZONTAL_MIRROR_ROTATE_90,
-    HORIZONTAL_MIRROR_ROTATE_180,
-    HORIZONTAL_MIRROR_ROTATE_270,
-    INHERIT
+    Identity,
+    Rotate90,
+    Rotate180,
+    Rotate270,
+    HorizontalMirror,
+    HorizontalMirrorRotate90,
+    HorizontalMirrorRotate180,
+    HorizontalMirrorRotate270,
+    Inherit
 };
 
 [FlagMask]
-enum gfxCompositeAlpha
+enum gfxCompositeAlphaMask
 {
-    OPAQUE,
-    PRE_MULTIPLIED,
-    POST_MULTIPLIED,
-    INHERIT
+    Opaque,
+    PreMultiplied,
+    PostMultiplied,
+    Inherit
 };
 
 [FlagMask]
@@ -1045,4 +1045,10 @@ enum gfxComponentSwizzle
     G,
     B,
     A
+};
+
+enum gfxSharingMode
+{
+    Exclusive,
+    Concurrent
 };

@@ -281,25 +281,25 @@ gfxSurfaceColorSpace gfxSurfaceColorSpaceFrom(VkColorSpaceKHR colorSpaceVk)
     return colorSpace;
 }
 
-gfxSurfaceTransform gfxSurfaceTransformFrom(VkSurfaceTransformFlagsKHR transform)
+gfxSurfaceTransformMask gfxSurfaceTransformMaskFrom(VkSurfaceTransformFlagsKHR transform)
 {
-    return epiMask((transform & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) ? gfxSurfaceTransform_IDENTITY : gfxSurfaceTransform{0},
-                   (transform & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) ? gfxSurfaceTransform_ROTATE_90 : gfxSurfaceTransform{0},
-                   (transform & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) ? gfxSurfaceTransform_ROTATE_180 : gfxSurfaceTransform{0},
-                   (transform & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) ? gfxSurfaceTransform_ROTATE_270 : gfxSurfaceTransform{0},
-                   (transform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR) ? gfxSurfaceTransform_HORIZONTAL_MIRROR : gfxSurfaceTransform{0},
-                   (transform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR) ? gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_90 : gfxSurfaceTransform{0},
-                   (transform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR) ? gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_180 : gfxSurfaceTransform{0},
-                   (transform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR) ? gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_270 : gfxSurfaceTransform{0},
-                   (transform & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR) ? gfxSurfaceTransform_INHERIT : gfxSurfaceTransform{0});
+    return epiMask((transform & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) ? gfxSurfaceTransformMask_Identity : gfxSurfaceTransformMask{0},
+                   (transform & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) ? gfxSurfaceTransformMask_Rotate90 : gfxSurfaceTransformMask{0},
+                   (transform & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) ? gfxSurfaceTransformMask_Rotate180 : gfxSurfaceTransformMask{0},
+                   (transform & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) ? gfxSurfaceTransformMask_Rotate270 : gfxSurfaceTransformMask{0},
+                   (transform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR) ? gfxSurfaceTransformMask_HorizontalMirror : gfxSurfaceTransformMask{0},
+                   (transform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR) ? gfxSurfaceTransformMask_HorizontalMirrorRotate90 : gfxSurfaceTransformMask{0},
+                   (transform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR) ? gfxSurfaceTransformMask_HorizontalMirrorRotate180 : gfxSurfaceTransformMask{0},
+                   (transform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR) ? gfxSurfaceTransformMask_HorizontalMirrorRotate270 : gfxSurfaceTransformMask{0},
+                   (transform & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR) ? gfxSurfaceTransformMask_Inherit : gfxSurfaceTransformMask{0});
 }
 
-gfxCompositeAlpha gfxCompositeAlphaFrom(VkCompositeAlphaFlagsKHR compositeAlpha)
+gfxCompositeAlphaMask gfxCompositeAlphaMaskFrom(VkCompositeAlphaFlagsKHR compositeAlpha)
 {
-    return epiMask((compositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) ? gfxCompositeAlpha_OPAQUE : gfxCompositeAlpha{0},
-                   (compositeAlpha & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR) ? gfxCompositeAlpha_PRE_MULTIPLIED : gfxCompositeAlpha{0},
-                   (compositeAlpha & VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR) ? gfxCompositeAlpha_POST_MULTIPLIED : gfxCompositeAlpha{0},
-                   (compositeAlpha & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR) ? gfxCompositeAlpha_INHERIT : gfxCompositeAlpha{0});
+    return epiMask((compositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) ? gfxCompositeAlphaMask_Opaque : gfxCompositeAlphaMask{0},
+                   (compositeAlpha & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR) ? gfxCompositeAlphaMask_PreMultiplied : gfxCompositeAlphaMask{0},
+                   (compositeAlpha & VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR) ? gfxCompositeAlphaMask_PostMultiplied : gfxCompositeAlphaMask{0},
+                   (compositeAlpha & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR) ? gfxCompositeAlphaMask_Inherit : gfxCompositeAlphaMask{0});
 }
 
 gfxImageUsage gfxImageUsageFrom(VkImageUsageFlags usage)
@@ -589,22 +589,25 @@ VkColorSpaceKHR gfxSurfaceColorSpaceTo(gfxSurfaceColorSpace colorSpace)
     }
 }
 
-VkSurfaceTransformFlagBitsKHR gfxSurfaceTransformTo(gfxSurfaceTransform transform)
+VkSurfaceTransformFlagBitsKHR gfxSurfaceTransformMaskTo(gfxSurfaceTransformMask mask)
 {
-    epiAssert(epiBitCount(transform) == 1);
+    return epiMask((mask & gfxSurfaceTransformMask_Identity) ? VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR : VkSurfaceTransformFlagBitsKHR{},
+                   (mask & gfxSurfaceTransformMask_Rotate90) ? VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR : VkSurfaceTransformFlagBitsKHR{},
+                   (mask & gfxSurfaceTransformMask_Rotate180) ? VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR : VkSurfaceTransformFlagBitsKHR{},
+                   (mask & gfxSurfaceTransformMask_Rotate270) ? VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR : VkSurfaceTransformFlagBitsKHR{},
+                   (mask & gfxSurfaceTransformMask_HorizontalMirror) ? VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR : VkSurfaceTransformFlagBitsKHR{},
+                   (mask & gfxSurfaceTransformMask_HorizontalMirrorRotate90) ? VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR : VkSurfaceTransformFlagBitsKHR{},
+                   (mask & gfxSurfaceTransformMask_HorizontalMirrorRotate180) ? VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR : VkSurfaceTransformFlagBitsKHR{},
+                   (mask & gfxSurfaceTransformMask_HorizontalMirrorRotate270) ? VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR : VkSurfaceTransformFlagBitsKHR{},
+                   (mask & gfxSurfaceTransformMask_Inherit) ? VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR : VkSurfaceTransformFlagBitsKHR{});
+}
 
-    switch (transform)
-    {
-    case gfxSurfaceTransform_IDENTITY: return VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-    case gfxSurfaceTransform_ROTATE_90: return VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR;
-    case gfxSurfaceTransform_ROTATE_180: return VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR;
-    case gfxSurfaceTransform_ROTATE_270: return VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR;
-    case gfxSurfaceTransform_HORIZONTAL_MIRROR: return VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR;
-    case gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_90: return VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR;
-    case gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_180: return VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR;
-    case gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_270: return VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR;
-    case gfxSurfaceTransform_INHERIT: return VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR;
-    }
+VkCompositeAlphaFlagBitsKHR gfxCompositeAlphaMaskTo(gfxCompositeAlphaMask mask)
+{
+    return epiMask((mask & gfxCompositeAlphaMask_Opaque) ? VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR : VkCompositeAlphaFlagBitsKHR{},
+                   (mask & gfxCompositeAlphaMask_PreMultiplied) ? VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR : VkCompositeAlphaFlagBitsKHR{},
+                   (mask & gfxCompositeAlphaMask_PostMultiplied) ? VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR : VkCompositeAlphaFlagBitsKHR{},
+                   (mask & gfxCompositeAlphaMask_Inherit) ? VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR : VkCompositeAlphaFlagBitsKHR{});
 }
 
 VkPresentModeKHR gfxSurfacePresentModeTo(gfxSurfacePresentMode presentMode)
@@ -1251,6 +1254,16 @@ VkComponentSwizzle gfxComponentSwizzleTo(gfxComponentSwizzle swizzle)
     case gfxComponentSwizzle::B: return VK_COMPONENT_SWIZZLE_B;
     case gfxComponentSwizzle::A: return VK_COMPONENT_SWIZZLE_A;
     default: epiLogError("Unhandled gfxComponentSwizzle=`{}`", swizzle); return VK_COMPONENT_SWIZZLE_MAX_ENUM; // TODO: use str repr of enum
+    }
+}
+
+VkSharingMode gfxSharingModeTo(gfxSharingMode mode)
+{
+    switch (mode)
+    {
+    case gfxSharingMode::Exclusive: return VK_SHARING_MODE_EXCLUSIVE;
+    case gfxSharingMode::Concurrent: return VK_SHARING_MODE_CONCURRENT;
+    default: epiLogError("Unhandled gfxSharingMode=`{}`", mode); return VK_SHARING_MODE_MAX_ENUM; // TODO: use str repr of enum
     }
 }
 

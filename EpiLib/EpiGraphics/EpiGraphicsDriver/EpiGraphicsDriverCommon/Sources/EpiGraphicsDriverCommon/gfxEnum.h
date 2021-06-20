@@ -506,31 +506,6 @@ EPI_GENREGION_BEGIN(gfxFormat)
 EPI_GENREGION_END(gfxFormat)
 };
 
-enum gfxSurfaceTransform : epiS32
-{
-EPI_GENREGION_BEGIN(gfxSurfaceTransform)
-    gfxSurfaceTransform_IDENTITY = (1 << 0),
-    gfxSurfaceTransform_ROTATE_90 = (1 << 1),
-    gfxSurfaceTransform_ROTATE_180 = (1 << 2),
-    gfxSurfaceTransform_ROTATE_270 = (1 << 3),
-    gfxSurfaceTransform_HORIZONTAL_MIRROR = (1 << 4),
-    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_90 = (1 << 5),
-    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_180 = (1 << 6),
-    gfxSurfaceTransform_HORIZONTAL_MIRROR_ROTATE_270 = (1 << 7),
-    gfxSurfaceTransform_INHERIT = (1 << 8)
-EPI_GENREGION_END(gfxSurfaceTransform)
-};
-
-enum gfxCompositeAlpha : epiS32
-{
-EPI_GENREGION_BEGIN(gfxCompositeAlpha)
-    gfxCompositeAlpha_OPAQUE = (1 << 0),
-    gfxCompositeAlpha_PRE_MULTIPLIED = (1 << 1),
-    gfxCompositeAlpha_POST_MULTIPLIED = (1 << 2),
-    gfxCompositeAlpha_INHERIT = (1 << 3)
-EPI_GENREGION_END(gfxCompositeAlpha)
-};
-
 enum gfxImageUsage : epiS32
 {
 EPI_GENREGION_BEGIN(gfxImageUsage)
@@ -1145,6 +1120,39 @@ EPI_GENREGION_BEGIN(gfxComponentSwizzle)
     B = 5,
     A = 6
 EPI_GENREGION_END(gfxComponentSwizzle)
+};
+
+enum gfxSurfaceTransformMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSurfaceTransformMask)
+    gfxSurfaceTransformMask_Identity = (1 << 0),
+    gfxSurfaceTransformMask_Rotate90 = (1 << 1),
+    gfxSurfaceTransformMask_Rotate180 = (1 << 2),
+    gfxSurfaceTransformMask_Rotate270 = (1 << 3),
+    gfxSurfaceTransformMask_HorizontalMirror = (1 << 4),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate90 = (1 << 5),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate180 = (1 << 6),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate270 = (1 << 7),
+    gfxSurfaceTransformMask_Inherit = (1 << 8)
+EPI_GENREGION_END(gfxSurfaceTransformMask)
+};
+
+enum gfxCompositeAlphaMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCompositeAlphaMask)
+    gfxCompositeAlphaMask_Opaque = (1 << 0),
+    gfxCompositeAlphaMask_PreMultiplied = (1 << 1),
+    gfxCompositeAlphaMask_PostMultiplied = (1 << 2),
+    gfxCompositeAlphaMask_Inherit = (1 << 3)
+EPI_GENREGION_END(gfxCompositeAlphaMask)
+};
+
+enum class gfxSharingMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSharingMode)
+    Exclusive = 0,
+    Concurrent = 1
+EPI_GENREGION_END(gfxSharingMode)
 };
 
 EPI_NAMESPACE_END()

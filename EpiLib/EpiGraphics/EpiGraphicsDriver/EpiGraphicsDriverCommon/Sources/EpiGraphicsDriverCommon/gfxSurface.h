@@ -36,10 +36,10 @@ public:
         PID_CurrentExtent = 0xbcfa8c13,
         PID_MinImageExtent = 0x3e399bbd,
         PID_MaxImageExtent = 0x871f00cc,
-        PID_SupportedTransforms = 0x999bc07e,
-        PID_SupportedCompositeAlpha = 0xd2ebb762,
+        PID_SupportedSurfaceTransformMask = 0x9da9b0e4,
+        PID_SupportedCompositeAlphaMask = 0x5b3422cc,
         PID_SupportedUsage = 0xbc2208b2,
-        PID_CurrentTransform = 0x51c44739,
+        PID_CurrentSurfaceTransformMask = 0x797fb8fb,
         PID_COUNT = 10
     };
 
@@ -50,12 +50,16 @@ protected:
     epiSize2u m_CurrentExtent{};
     epiSize2u m_MinImageExtent{};
     epiSize2u m_MaxImageExtent{};
-    gfxSurfaceTransform m_SupportedTransforms{};
-    gfxCompositeAlpha m_SupportedCompositeAlpha{};
+    gfxSurfaceTransformMask m_SupportedSurfaceTransformMask{};
+    gfxCompositeAlphaMask m_SupportedCompositeAlphaMask{};
     gfxImageUsage m_SupportedUsage{};
-    gfxSurfaceTransform m_CurrentTransform{};
+    gfxSurfaceTransformMask m_CurrentSurfaceTransformMask{};
 
 EPI_GENREGION_END(gfxSurfaceCapabilities)
+
+public:
+    epiSize2u ClampExtent(const epiSize2u& extent) const;
+    epiU32 RecommendedImageMinCount() const;
 };
 
 class gfxSurfaceFormat : public Object
@@ -106,6 +110,7 @@ public:
     friend class gfxDevice;
     friend class gfxQueueDescriptor;
     friend class gfxSwapChain;
+    friend class internalgfx::gfxSurfaceImpl;
 
 public:
     gfxSurface() = default;

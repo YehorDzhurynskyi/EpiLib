@@ -31,23 +31,35 @@ public:
     enum gfxSwapChainCreateInfo_PIDs
     {
         PID_Surface = 0x73fca7f2,
-        PID_RenderPass = 0x662aa9d7,
-        PID_QueueFamily = 0xfa954047,
-        PID_Capabilities = 0x50af605,
-        PID_Format = 0xd91677e9,
+        PID_SurfacePreTransformMask = 0xbbda978a,
+        PID_ImageMinCount = 0x2b760e66,
+        PID_ImageFormat = 0xc2f7900b,
+        PID_ImageColorSpace = 0x9ac7e266,
+        PID_ImageExtent = 0x3a43bb9c,
+        PID_ImageArrayLayers = 0x7d55291e,
+        PID_ImageUsageMask = 0x7bc0668,
+        PID_ImageSharingMode = 0xe4522abc,
+        PID_QueueFamilies = 0x459d6c2c,
+        PID_CompositeAlphaMask = 0xb9b092ec,
         PID_PresentMode = 0x2430171b,
-        PID_Extent = 0x21a25c7e,
-        PID_COUNT = 7
+        PID_IsClipped = 0x458b7017,
+        PID_COUNT = 13
     };
 
 protected:
     gfxSurface m_Surface{};
-    gfxRenderPass m_RenderPass{};
-    gfxQueueFamily m_QueueFamily{};
-    gfxSurfaceCapabilities m_Capabilities{};
-    gfxSurfaceFormat m_Format{};
+    gfxSurfaceTransformMask m_SurfacePreTransformMask{};
+    epiU32 m_ImageMinCount{0};
+    gfxFormat m_ImageFormat{};
+    gfxSurfaceColorSpace m_ImageColorSpace{};
+    epiSize2u m_ImageExtent{};
+    epiU32 m_ImageArrayLayers{0};
+    gfxImageUsage m_ImageUsageMask{};
+    gfxSharingMode m_ImageSharingMode{};
+    epiArray<gfxQueueFamily> m_QueueFamilies{};
+    gfxCompositeAlphaMask m_CompositeAlphaMask{};
     gfxSurfacePresentMode m_PresentMode{};
-    epiSize2u m_Extent{};
+    epiBool m_IsClipped{false};
 
 EPI_GENREGION_END(gfxSwapChainCreateInfo)
 };
