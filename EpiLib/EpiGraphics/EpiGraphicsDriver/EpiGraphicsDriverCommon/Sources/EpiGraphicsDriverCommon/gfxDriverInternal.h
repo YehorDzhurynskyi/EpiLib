@@ -259,12 +259,13 @@ public:
 
     virtual epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) = 0;
 
-    virtual gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) = 0;
-    virtual gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex) = 0;
-    virtual gfxQueueSubmitInfo ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex) = 0;
-
-    virtual epiU32 GetBufferCount() const = 0;
+    epiU32 GetBufferCount() const { return m_ImageViews.Size(); }
     virtual epiSize2u GetExtent() const = 0;
+
+    const epiArray<std::shared_ptr<gfxTextureViewImpl>>& GetImageViews() const { return m_ImageViews; }
+
+protected:
+    epiArray<std::shared_ptr<gfxTextureViewImpl>> m_ImageViews;
 };
 
 class gfxFenceImpl

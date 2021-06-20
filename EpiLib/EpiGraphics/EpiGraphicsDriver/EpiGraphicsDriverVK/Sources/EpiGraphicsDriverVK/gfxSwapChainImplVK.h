@@ -38,11 +38,6 @@ public:
 
     epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) override;
 
-    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0}) override;
-    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex) override;
-    gfxQueueSubmitInfo ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex) override;
-
-    epiU32 GetBufferCount() const override;
     epiSize2u GetExtent() const override;
 
     VkSwapchainKHR_T* GetVkSwapChain() const;
@@ -53,10 +48,6 @@ protected:
 protected:
     const gfxDeviceImplVK& m_Device;
     VkSwapchainKHR_T* m_VkSwapChain{nullptr};
-
-    std::vector<std::shared_ptr<gfxTextureViewImpl>> m_SwapChainImageViews;
-    std::vector<std::shared_ptr<gfxFrameBufferImpl>> m_SwapChainFrameBuffers;
-    std::shared_ptr<gfxCommandPoolImpl> m_CommandPool;
 
     epiSize2u m_Extent{};
 };

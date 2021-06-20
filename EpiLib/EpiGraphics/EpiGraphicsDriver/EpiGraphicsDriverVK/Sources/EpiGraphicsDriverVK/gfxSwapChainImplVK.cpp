@@ -79,21 +79,6 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
 
     for (const VkImage& image : swapChainImages)
     {
-        VkImageViewCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        createInfo.image = image;
-        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        createInfo.format = gfxFormatTo(info.GetFormat().GetFormat());
-        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        createInfo.subresourceRange.baseMipLevel = 0;
-        createInfo.subresourceRange.levelCount = 1;
-        createInfo.subresourceRange.baseArrayLayer = 0;
-        createInfo.subresourceRange.layerCount = 1;
-
         std::shared_ptr<gfxTextureImplVK> textureImpl = std::make_shared<gfxTextureImplVK>(image);
         gfxTexture texture(textureImpl);
 
@@ -111,23 +96,8 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info,
         textureViewCreateInfo.SetSubresourceRange(subresourceRange);
 
         std::shared_ptr<gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImpl);
-        m_SwapChainImageViews.push_back(std::move(textureViewImpl));
+        m_ImageViews.push_back(std::move(textureViewImpl));
     }
-
-    for (const auto& textureViewImpl : m_SwapChainImageViews)
-    {
-        gfxFrameBufferCreateInfo frameBufferCreateInfo;
-        frameBufferCreateInfo.SetSize(info.GetExtent());
-        epiPtrArray<const gfxTextureViewImpl> textureViewImpls{textureViewImpl.get()};
-
-        std::shared_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, renderPassImpl, textureViewImpls);
-        m_SwapChainFrameBuffers.push_back(std::move(frameBufferImpl));
-    }
-
-    gfxCommandPoolCreateInfo commandPoolCreateInfo;
-    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChainFrameBuffers.size());
-
-    m_CommandPool = m_Device.CreateCommandPool(commandPoolCreateInfo, queueFamilyImpl);
 
     return true;
 }
@@ -141,9 +111,7 @@ epiBool gfxSwapChainImplVK::Reset()
         return false;
     }
 
-    m_CommandPool.reset();
-    m_SwapChainFrameBuffers.clear();
-    m_SwapChainImageViews.clear();
+    m_ImageViews.Clear();
 
     vkDestroySwapchainKHR(m_Device.GetVkDevice(), m_VkSwapChain, nullptr);
 
@@ -201,151 +169,6 @@ epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore,
     }
 
     return imageIndex;
-}
-
-gfxCommandBufferRecord gfxSwapChainImplVK::ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask)
-{
-    gfxCommandBufferRecord record;
-
-    if (bufferIndex >= GetBufferCount())
-    {
-        epiLogError("Failed to record command buffer! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
-        return record;
-    }
-
-    gfxCommandBufferImpl* cmdImpl = m_CommandPool->GetPrimaryCommandBuffers()[bufferIndex].get();
-    if (cmdImpl == nullptr)
-    {
-        epiLogError("Failed to record command buffer! Buffer at index=`{}` is nullptr!", bufferIndex);
-        return record;
-    }
-
-    record.RecordBegin(cmdImpl, usageMask);
-
-    return record;
-}
-
-gfxRenderPassBeginInfo gfxSwapChainImplVK::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex)
-{
-    gfxRenderPassBeginInfo beginInfo;
-
-    if (bufferIndex >= GetBufferCount())
-    {
-        epiLogError("Failed to create RenderPassBeginInfo! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
-        return beginInfo;
-    }
-
-    beginInfo.SetFrameBuffer(gfxFrameBuffer(m_SwapChainFrameBuffers[bufferIndex]));
-    beginInfo.SetRenderArea(epiRect2s{0, 0, static_cast<epiS32>(GetExtent().x), static_cast<epiS32>(GetExtent().y)});
-
-    return beginInfo;
-}
-
-gfxQueueSubmitInfo gfxSwapChainImplVK::ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex)
-{
-    gfxQueueSubmitInfo queueSubmitInfo;
-
-    if (bufferIndex >= GetBufferCount())
-    {
-        epiLogError("Failed to create QueueSubmitInfo! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
-        return queueSubmitInfo;
-    }
-
-    queueSubmitInfo.GetCommandBuffers().push_back(gfxCommandBuffer(m_CommandPool->GetPrimaryCommandBuffers()[bufferIndex]));
-
-    return queueSubmitInfo;
-}
-
-#if 0
-epiBool gfxSwapChainImplVK::Present(const gfxQueueImpl& queue, std::function<void(epiU32)> callback)
-{
-    const epiU32 frameIndex = m_CurrentFrame % kMaxFramesInFlight;
-
-    vkWaitForFences(m_Device.GetVkDevice(), 1, &m_VkFencesInFlight[frameIndex], VK_TRUE, UINT64_MAX);
-
-    epiU32 imageIndex;
-    if (const VkResult result = vkAcquireNextImageKHR(m_Device.GetVkDevice(),
-                                                      m_VkSwapChain,
-                                                      std::numeric_limits<epiU64>::max(),
-                                                      m_VkSemaphoreImageAvailable[frameIndex],
-                                                      VK_NULL_HANDLE,
-                                                      &imageIndex); result != VK_SUCCESS)
-    {
-        gfxLogErrorEx(result, "Failed to call vkAcquireNextImageKHR!");
-        if (result != VK_SUBOPTIMAL_KHR)
-        {
-            return false;
-        }
-    }
-
-    if (m_VkFencesImagesInFlight[imageIndex] != VK_NULL_HANDLE)
-    {
-        vkWaitForFences(m_Device.GetVkDevice(), 1, &m_VkFencesImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
-    }
-    // Mark the image as now being in use by this frame
-    m_VkFencesImagesInFlight[imageIndex] = m_VkFencesInFlight[frameIndex];
-
-    VkSemaphore waitSemaphores[] = {m_VkSemaphoreImageAvailable[frameIndex]};
-    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-    VkCommandBuffer commandBuffers[] = {static_cast<gfxCommandBufferImplVK*>(m_CommandPool->GetPrimaryCommandBuffers()[imageIndex].get())->GetVkCommandBuffer()};
-    VkSemaphore signalSemaphores[] = {m_VkSemaphoreRenderFinished[frameIndex]};
-
-    static_assert(epiArrLen(waitSemaphores) == epiArrLen(waitStages));
-
-    callback(frameIndex);
-
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.waitSemaphoreCount = epiArrLen(waitSemaphores);
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
-    submitInfo.commandBufferCount = epiArrLen(commandBuffers);
-    submitInfo.pCommandBuffers = commandBuffers;
-    submitInfo.signalSemaphoreCount = epiArrLen(signalSemaphores);
-    submitInfo.pSignalSemaphores = signalSemaphores;
-
-    vkResetFences(m_Device.GetVkDevice(), 1, &m_VkFencesInFlight[frameIndex]);
-
-    if (const VkResult result = vkQueueSubmit(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), 1, &submitInfo, m_VkFencesInFlight[frameIndex]); result != VK_SUCCESS)
-    {
-        gfxLogErrorEx(result, "Failed to call vkQueueSubmit!");
-        return false;
-    }
-
-    VkSwapchainKHR swapChains[] = {m_VkSwapChain};
-
-    VkPresentInfoKHR presentInfo{};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.waitSemaphoreCount = epiArrLen(signalSemaphores);
-    presentInfo.pWaitSemaphores = signalSemaphores;
-    presentInfo.swapchainCount = epiArrLen(swapChains);
-    presentInfo.pSwapchains = swapChains;
-    presentInfo.pImageIndices = &imageIndex;
-    presentInfo.pResults = nullptr;
-
-    if (const VkResult result = vkQueuePresentKHR(static_cast<const gfxQueueImplVK&>(queue).GetVkQueue(), &presentInfo); result != VK_SUCCESS)
-    {
-        gfxLogErrorEx(result, "Failed to call vkQueuePresentKHR!");
-        return false;
-    }
-
-#if 0 // TODO: figure out whether this sync point should be used
-    if (const VkResult result = vkQueueWaitIdle(static_cast<const gfxQueueImplVK&>(queueImpl).GetVkQueue()); result != VK_SUCCESS)
-    {
-        gfxLogErrorEx(result, "Failed to call vkQueueWaitIdle!");
-        return false;
-    }
-#endif
-
-    ++m_CurrentFrame;
-
-    return true;
-}
-#endif
-
-epiU32 gfxSwapChainImplVK::GetBufferCount() const
-{
-    return m_SwapChainImageViews.size();
 }
 
 epiSize2u gfxSwapChainImplVK::GetExtent() const

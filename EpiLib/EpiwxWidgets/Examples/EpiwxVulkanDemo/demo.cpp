@@ -633,6 +633,9 @@ public:
             }
         }
 
+        RecreateFrameBuffers();
+        RecreateCommandBuffers();
+        RecreateSynchronizationPrimitives();
         RecreateUniformBuffers();
 
         RecordCommandBuffers();
@@ -648,13 +651,17 @@ protected:
     void OnTimer(wxTimerEvent& event);
 
     void RecordCommandBuffers();
-    void RecreteSwapChain(const epiSize2u& size);
+    void RecreateSwapChain(const epiSize2u& size);
+    void RecreateFrameBuffers();
+    void RecreateCommandBuffers();
     void RecreateSynchronizationPrimitives();
     void RecreateUniformBuffers();
 
 protected:
     wxTimer m_Timer;
 
+    epiArray<gfxFrameBuffer> m_FrameBuffers;
+    gfxCommandPool m_CommandPool;
     gfxDescriptorSetLayout m_DescriptorSetLayout;
     gfxQueueFamily m_QueueFamily;
     gfxRenderPass m_RenderPass;
@@ -735,7 +742,8 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 
     m_FencesInFlight[frameIndex].Reset();
 
-    gfxQueueSubmitInfo queueSubmitInfo = m_SwapChain.ForBufferCreateQueueSubmitInfo(imageIndex);
+    gfxQueueSubmitInfo queueSubmitInfo{};
+    queueSubmitInfo.GetCommandBuffers().push_back(m_CommandPool.GetPrimaryCommandBuffers()[imageIndex]);
     queueSubmitInfo.GetWaitSemaphores().push_back(m_SemaphoreImageAvailable[frameIndex]);
     queueSubmitInfo.GetWaitDstStageMasks().push_back(gfxPipelineStage_ColorAttachmentOutput);
     queueSubmitInfo.GetSignalSemaphores().push_back(m_SemaphoreRenderFinished[frameIndex]);
@@ -757,7 +765,7 @@ void epiWXVulkanDemoTriangleCanvas::OnEraseBackground(wxEraseEvent&)
     // NOTE: should reduce flickering
 }
 
-void epiWXVulkanDemoTriangleCanvas::RecreteSwapChain(const epiSize2u& size)
+void epiWXVulkanDemoTriangleCanvas::RecreateSwapChain(const epiSize2u& size)
 {
     const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(g_PhysicalDevice);
 
@@ -790,9 +798,9 @@ void epiWXVulkanDemoTriangleCanvas::RecreteSwapChain(const epiSize2u& size)
 
     m_SwapChain.Recreate(swapChainCreateInfo);
 
+    RecreateFrameBuffers();
+    RecreateCommandBuffers();
     RecreateSynchronizationPrimitives();
-
-    // TODO: bind uniform buffers to the swapchain recreation in a proper way
     RecreateUniformBuffers();
 
     m_Pipeline.DynamicClearViewports();
@@ -807,6 +815,35 @@ void epiWXVulkanDemoTriangleCanvas::RecreteSwapChain(const epiSize2u& size)
     m_Pipeline.DynamicAddScissor(epiRect2s(0, 0, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
 
     RecordCommandBuffers();
+}
+
+void epiWXVulkanDemoTriangleCanvas::RecreateFrameBuffers()
+{
+    m_FrameBuffers.Clear();
+    for (const gfxTextureView& imageView : m_SwapChain.GetImageViews())
+    {
+        gfxFrameBufferCreateInfo frameBufferCreateInfo;
+        frameBufferCreateInfo.SetSize(m_SwapChain.GetExtent());
+        frameBufferCreateInfo.SetRenderPass(m_RenderPass);
+        frameBufferCreateInfo.GetAttachments().push_back(imageView);
+
+        std::optional<gfxFrameBuffer> frameBuffer = g_Device.CreateFrameBuffer(frameBufferCreateInfo);
+        epiAssert(frameBuffer.has_value());
+
+        m_FrameBuffers.push_back(std::move(*frameBuffer));
+    }
+}
+
+void epiWXVulkanDemoTriangleCanvas::RecreateCommandBuffers()
+{
+    gfxCommandPoolCreateInfo commandPoolCreateInfo;
+    commandPoolCreateInfo.SetQueueFamily(m_QueueFamily);
+    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChain.GetBufferCount());
+
+    std::optional<gfxCommandPool> commandPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
+    epiAssert(commandPool.has_value());
+
+    m_CommandPool = *commandPool;
 }
 
 void epiWXVulkanDemoTriangleCanvas::RecreateSynchronizationPrimitives()
@@ -944,7 +981,7 @@ void epiWXVulkanDemoTriangleCanvas::OnSize(wxSizeEvent& event)
         return;
     }
 
-    RecreteSwapChain({event.GetSize().x, event.GetSize().y});
+    RecreateSwapChain({event.GetSize().x, event.GetSize().y});
 
     Refresh();
 }
@@ -962,13 +999,16 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
     epiArray<gfxRenderPassClearValue> clearValues;
     clearValues.push_back(clearValue);
 
+    epiRect2s renderArea(0, 0, static_cast<epiS32>(m_SwapChain.GetExtent().x), static_cast<epiS32>(m_SwapChain.GetExtent().y));
     for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
     {
-        if (gfxCommandBufferRecord record = m_SwapChain.ForBufferRecordCommands(i))
+        if (gfxCommandBufferRecord record = m_CommandPool.GetPrimaryCommandBuffers()[i].RecordCommands())
         {
             const gfxDescriptorSet& descriptorSet = m_DescriptorPool.GetDescriptorSets()[i];
 
-            gfxRenderPassBeginInfo renderPassBeginInfo = m_SwapChain.ForBufferCreateRenderPassBeginInfo(i);
+            gfxRenderPassBeginInfo renderPassBeginInfo{};
+            renderPassBeginInfo.SetFrameBuffer(m_FrameBuffers[i]);
+            renderPassBeginInfo.SetRenderArea(renderArea);
             renderPassBeginInfo.SetRenderPass(m_RenderPass);
             renderPassBeginInfo.SetClearValues(clearValues);
 

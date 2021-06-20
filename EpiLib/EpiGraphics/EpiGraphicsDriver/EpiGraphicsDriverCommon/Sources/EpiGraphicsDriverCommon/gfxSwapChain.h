@@ -9,9 +9,6 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 #include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
-#include "EpiGraphicsDriverCommon/gfxBuffer.h"
-#include "EpiGraphicsDriverCommon/gfxCommandPool.h"
-#include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -68,12 +65,16 @@ public:
     {
         PID_BufferCount = 0xd1605dff,
         PID_Extent = 0x21a25c7e,
-        PID_COUNT = 2
+        PID_ImageViews = 0x30732ad6,
+        PID_COUNT = 3
     };
 
 protected:
     epiU32 GetBufferCount_Callback() const;
     epiSize2u GetExtent_Callback() const;
+
+protected:
+    epiArray<gfxTextureView> m_ImageViews{};
 
 EPI_GENREGION_END(gfxSwapChain)
 
@@ -90,9 +91,8 @@ public:
                             const gfxFence* signalFence = nullptr,
                             epiU64 timeout = std::numeric_limits<epiU64>::max());
 
-    gfxCommandBufferRecord ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask = gfxCommandBufferUsage{0});
-    gfxRenderPassBeginInfo ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex);
-    gfxQueueSubmitInfo ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex);
+protected:
+    void RebindImpl();
 
 protected:
     epiPimpl<internalgfx::gfxSwapChainImpl> m_Impl;

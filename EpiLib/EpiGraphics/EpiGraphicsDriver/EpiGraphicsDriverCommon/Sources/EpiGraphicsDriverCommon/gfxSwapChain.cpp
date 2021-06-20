@@ -10,6 +10,7 @@ EPI_NAMESPACE_BEGIN()
 gfxSwapChain::gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl)
     : m_Impl{impl}
 {
+    RebindImpl();
 }
 
 epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
@@ -40,6 +41,8 @@ epiBool gfxSwapChain::Recreate(const gfxSwapChainCreateInfo& info)
         return false;
     }
 
+    RebindImpl();
+
     return true;
 }
 
@@ -66,19 +69,19 @@ epiS32 gfxSwapChain::AcquireNextImage(const gfxSemaphore* signalSemaphore, const
     return m_Impl->AcquireNextImage(signalSemaphore, signalFence, timeout);
 }
 
-gfxCommandBufferRecord gfxSwapChain::ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask)
+void gfxSwapChain::RebindImpl()
 {
-    return m_Impl->ForBufferRecordCommands(bufferIndex, usageMask);
-}
+    epiArray<gfxTextureView>& imageViews = GetImageViews();
+    imageViews.Clear();
+    imageViews.Reserve(m_Impl->GetImageViews().Size());
 
-gfxRenderPassBeginInfo gfxSwapChain::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex)
-{
-    return m_Impl->ForBufferCreateRenderPassBeginInfo(bufferIndex);
-}
-
-gfxQueueSubmitInfo gfxSwapChain::ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex)
-{
-    return m_Impl->ForBufferCreateQueueSubmitInfo(bufferIndex);
+    std::transform(m_Impl->GetImageViews().begin(),
+                   m_Impl->GetImageViews().end(),
+                   std::back_inserter(imageViews),
+                   [](const std::shared_ptr<internalgfx::gfxTextureViewImpl>& imageViewImpl)
+    {
+        return gfxTextureView(imageViewImpl);
+    });
 }
 
 epiU32 gfxSwapChain::GetBufferCount_Callback() const
