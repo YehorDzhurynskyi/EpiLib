@@ -32,6 +32,11 @@ epiFloat gfxPhysicalDevice::GetMaxSamplerAnisotropy() const
     return m_Impl->GetMaxSamplerAnisotropy();
 }
 
+gfxFormatProperties gfxPhysicalDevice::FormatPropertiesFor(gfxFormat format) const
+{
+    return m_Impl->FormatPropertiesFor(format);
+}
+
 epiString gfxPhysicalDevice::GetName_Callback() const
 {
     return m_Impl->GetName();

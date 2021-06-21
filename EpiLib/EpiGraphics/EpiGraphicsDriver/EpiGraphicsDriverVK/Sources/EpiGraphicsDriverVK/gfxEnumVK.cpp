@@ -305,7 +305,7 @@ gfxCompositeAlphaMask gfxCompositeAlphaMaskFrom(VkCompositeAlphaFlagsKHR composi
 gfxImageUsage gfxImageUsageFrom(VkImageUsageFlags usage)
 {
     return epiMask((usage & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) ? gfxImageUsage_TRANSFER_SRC : gfxImageUsage{0},
-        (usage & VK_IMAGE_USAGE_TRANSFER_DST_BIT) ? gfxImageUsage_TRANSFER_DST : gfxImageUsage{0},
+                   (usage & VK_IMAGE_USAGE_TRANSFER_DST_BIT) ? gfxImageUsage_TRANSFER_DST : gfxImageUsage{0},
                    (usage & VK_IMAGE_USAGE_SAMPLED_BIT) ? gfxImageUsage_SAMPLED : gfxImageUsage{0},
                    (usage & VK_IMAGE_USAGE_STORAGE_BIT) ? gfxImageUsage_STORAGE : gfxImageUsage{0},
                    (usage & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) ? gfxImageUsage_COLOR_ATTACHMENT : gfxImageUsage{0},
@@ -314,6 +314,37 @@ gfxImageUsage gfxImageUsageFrom(VkImageUsageFlags usage)
                    (usage & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) ? gfxImageUsage_INPUT_ATTACHMENT : gfxImageUsage{0},
                    (usage & VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV) ? gfxImageUsage_SHADING_RATE_IMAGE : gfxImageUsage{0},
                    (usage & VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT) ? gfxImageUsage_FRAGMENT_DENSITY_MAP : gfxImageUsage{0});
+}
+
+gfxFormatFeatureMask gfxFormatFeatureMaskFrom(VkFormatFeatureFlags mask)
+{
+    return epiMask((mask & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) ? gfxFormatFeatureMask_SampledImage : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT) ? gfxFormatFeatureMask_StorageImage : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT) ? gfxFormatFeatureMask_StorageImageAtomic : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT) ? gfxFormatFeatureMask_UniformTexelBuffer : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT) ? gfxFormatFeatureMask_StorageTexelBuffer : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT) ? gfxFormatFeatureMask_StorageTexelBufferAtomic : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT) ? gfxFormatFeatureMask_VertexBuffer : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT) ? gfxFormatFeatureMask_ColorAttachment : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT) ? gfxFormatFeatureMask_ColorAttachmentBlend : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) ? gfxFormatFeatureMask_DepthStencilAttachment : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_BLIT_SRC_BIT) ? gfxFormatFeatureMask_BlitSrc : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_BLIT_DST_BIT) ? gfxFormatFeatureMask_BlitDst : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) ? gfxFormatFeatureMask_SampledImageFilterLinear : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_TRANSFER_SRC_BIT) ? gfxFormatFeatureMask_TransferSrc : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_TRANSFER_DST_BIT) ? gfxFormatFeatureMask_TransferDst : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT) ? gfxFormatFeatureMask_MidpointChromaSamples : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT) ? gfxFormatFeatureMask_SampledImageYCbCrConversionLinearFilter : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT) ? gfxFormatFeatureMask_SampledImageYCbCrConversionSeparateReconstructionFilter : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT) ? gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicit : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT) ? gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicitForceable : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_DISJOINT_BIT) ? gfxFormatFeatureMask_Disjoint : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT) ? gfxFormatFeatureMask_CositedChromaSamples : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT) ? gfxFormatFeatureMask_SampledImageFilterMinmax : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT) ? gfxFormatFeatureMask_SampledImageFilterCubic : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR) ? gfxFormatFeatureMask_AccelerationStructureVertexBuffer : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT) ? gfxFormatFeatureMask_FragmentDensityMap : gfxFormatFeatureMask{0},
+                   (mask & VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) ? gfxFormatFeatureMask_FragmentShadingRateAttachment : gfxFormatFeatureMask{0});
 }
 
 VkFormat gfxFormatTo(gfxFormat format)

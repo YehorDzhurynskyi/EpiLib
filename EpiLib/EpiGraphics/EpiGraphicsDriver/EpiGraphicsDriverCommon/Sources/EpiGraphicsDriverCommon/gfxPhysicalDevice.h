@@ -20,6 +20,31 @@ class gfxPhysicalDeviceImpl;
 
 } // namespace internalgfx
 
+class gfxFormatProperties : public Object
+{
+EPI_GENREGION_BEGIN(gfxFormatProperties)
+
+EPI_GENHIDDEN_gfxFormatProperties()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x6f36a2ff};
+
+    enum gfxFormatProperties_PIDs
+    {
+        PID_LinearTilingFeatureMask = 0x32751455,
+        PID_OptimalTilingFeatureMask = 0xbd20e6d6,
+        PID_BufferFeatureMask = 0x179c4755,
+        PID_COUNT = 3
+    };
+
+protected:
+    gfxFormatFeatureMask m_LinearTilingFeatureMask{};
+    gfxFormatFeatureMask m_OptimalTilingFeatureMask{};
+    gfxFormatFeatureMask m_BufferFeatureMask{};
+
+EPI_GENREGION_END(gfxFormatProperties)
+};
+
 class gfxPhysicalDevice : public Object
 {
 EPI_GENREGION_BEGIN(gfxPhysicalDevice)
@@ -56,6 +81,8 @@ public:
 
     // TODO: Introduce PhysicalDeviceLimits struct and move it there
     epiFloat GetMaxSamplerAnisotropy() const;
+
+    gfxFormatProperties FormatPropertiesFor(gfxFormat format) const;
 
     epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;

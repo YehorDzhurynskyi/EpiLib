@@ -25,6 +25,8 @@ public:
                                                 const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
                                                 const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const override;
 
+    gfxFormatProperties FormatPropertiesFor(gfxFormat format) const override;
+
     epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const override;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
     epiBool IsQueueTypeSupported(gfxQueueType mask) const override;

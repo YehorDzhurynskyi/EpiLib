@@ -11,6 +11,7 @@ gfxSurfaceColorSpace gfxSurfaceColorSpaceFrom(VkColorSpaceKHR colorSpaceVk);
 gfxSurfaceTransformMask gfxSurfaceTransformMaskFrom(VkSurfaceTransformFlagsKHR transform);
 gfxCompositeAlphaMask gfxCompositeAlphaMaskFrom(VkCompositeAlphaFlagsKHR compositeAlpha);
 gfxImageUsage gfxImageUsageFrom(VkImageUsageFlags usage);
+gfxFormatFeatureMask gfxFormatFeatureMaskFrom(VkFormatFeatureFlags mask);
 
 VkFormat gfxFormatTo(gfxFormat format);
 VkColorSpaceKHR gfxSurfaceColorSpaceTo(gfxSurfaceColorSpace colorSpace);

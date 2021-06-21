@@ -164,12 +164,18 @@ public:
         PID_DepthBiasConstantFactor = 0x18f11b49,
         PID_DepthBiasClamp = 0xaa48bad,
         PID_DepthBiasSlopeFactor = 0xf2d2e9cb,
+        PID_DepthEnableTest = 0x73321fc6,
+        PID_DepthEnableWrite = 0x6711c90,
+        PID_DepthCompareOp = 0x31f83c87,
+        PID_DepthEnableBoundsTest = 0x5617d231,
+        PID_DepthBoundsTestMin = 0xea5069eb,
+        PID_DepthBoundsTestMax = 0xd65d56b2,
         PID_ColorBlendAttachments = 0x64eca9dc,
         PID_ColorBlendLogicOpEnable = 0xa19e601f,
         PID_ColorBlendLogicOp = 0x7caacb6d,
         PID_ColorBlendConstants = 0x739a4ae9,
         PID_DynamicStates = 0xa85e8c69,
-        PID_COUNT = 22
+        PID_COUNT = 28
     };
 
 protected:
@@ -190,6 +196,12 @@ protected:
     epiFloat m_DepthBiasConstantFactor{0.0f};
     epiFloat m_DepthBiasClamp{0.0f};
     epiFloat m_DepthBiasSlopeFactor{0.0f};
+    epiBool m_DepthEnableTest{false};
+    epiBool m_DepthEnableWrite{false};
+    gfxCompareOp m_DepthCompareOp{};
+    epiBool m_DepthEnableBoundsTest{false};
+    epiFloat m_DepthBoundsTestMin{0.0f};
+    epiFloat m_DepthBoundsTestMax{0.0f};
     epiArray<gfxPipelineColorBlendAttachment> m_ColorBlendAttachments{};
     epiBool m_ColorBlendLogicOpEnable{false};
     gfxLogicOp m_ColorBlendLogicOp{};

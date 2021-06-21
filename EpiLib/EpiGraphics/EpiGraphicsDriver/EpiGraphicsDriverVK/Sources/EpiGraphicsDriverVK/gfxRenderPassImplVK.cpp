@@ -21,6 +21,7 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
     {
         VkSubpassDescription Subpass;
         std::vector<VkAttachmentReference> ColorAttachmentRefs;
+        std::vector<VkAttachmentReference> DepthStencilAttachmentRefs;
     };
 
     std::vector<RenderSubpassInfo> subpasses;
@@ -33,8 +34,9 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
 
         RenderSubpassInfo& subpassInfo = subpasses.emplace_back();
         subpassInfo = {};
-        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetAttachmentsColor().Size());
+        subpassInfo.Subpass.pipelineBindPoint = gfxPipelineBindPointTo(subpass.GetBindPoint());
 
+        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetAttachmentsColor().Size());
         for (const gfxAttachmentRef& ref : subpass.GetAttachmentsColor())
         {
             const gfxAttachment& attachment = ref.GetAttachment();
@@ -56,10 +58,32 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
             colorAttachmentRef.layout = gfxImageLayoutTo(ref.GetLayuot());
         }
 
-        subpassInfo.Subpass.pipelineBindPoint = gfxPipelineBindPointTo(subpass.GetBindPoint());
         subpassInfo.Subpass.colorAttachmentCount = subpassInfo.ColorAttachmentRefs.size();
         subpassInfo.Subpass.pColorAttachments = subpassInfo.ColorAttachmentRefs.data();
 
+        subpassInfo.DepthStencilAttachmentRefs.reserve(subpass.GetAttachmentsDepthStencil().Size());
+        for (const gfxAttachmentRef& ref : subpass.GetAttachmentsDepthStencil())
+        {
+            const gfxAttachment& attachment = ref.GetAttachment();
+
+            VkAttachmentDescription& colorAttachment = attachments.emplace_back();
+            colorAttachment = {};
+            colorAttachment.format = gfxFormatTo(attachment.GetFormat());
+            colorAttachment.samples = gfxSampleCountTo(attachment.GetSampleCount());
+            colorAttachment.loadOp = gfxAttachmentLoadOpTo(attachment.GetLoadOp());
+            colorAttachment.storeOp = gfxAttachmentStoreOpTo(attachment.GetStoreOp());
+            colorAttachment.stencilLoadOp = gfxAttachmentLoadOpTo(attachment.GetStencilLoadOp());
+            colorAttachment.stencilStoreOp = gfxAttachmentStoreOpTo(attachment.GetStencilStoreOp());
+            colorAttachment.initialLayout = gfxImageLayoutTo(attachment.GetInitialLayout());
+            colorAttachment.finalLayout = gfxImageLayoutTo(attachment.GetFinalLayout());
+
+            VkAttachmentReference& colorAttachmentRef = subpassInfo.DepthStencilAttachmentRefs.emplace_back();
+            colorAttachmentRef = {};
+            colorAttachmentRef.attachment = ref.GetAttachmentIndex();
+            colorAttachmentRef.layout = gfxImageLayoutTo(ref.GetLayuot());
+        }
+
+        subpassInfo.Subpass.pDepthStencilAttachment = subpassInfo.DepthStencilAttachmentRefs.data();
         // TODO: handle other attachment types
     }
 
@@ -96,74 +120,6 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
     renderPassInfo.pSubpasses = vkSubpasses.data();
     renderPassInfo.dependencyCount = dependencies.size();
     renderPassInfo.pDependencies = dependencies.data();
-
-    if (const VkResult result = vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass); result != VK_SUCCESS)
-    {
-        gfxLogErrorEx(result, "Failed to call vkCreateRenderPass!");
-        return false;
-    }
-
-    return true;
-}
-
-epiBool gfxRenderPassImplVK::Init(const gfxRenderPassSchema& schema)
-{
-    struct RenderSubpassInfo
-    {
-        VkSubpassDescription Subpass;
-        std::vector<VkAttachmentReference> ColorAttachmentRefs;
-    };
-
-    std::vector<RenderSubpassInfo> subpasses;
-    subpasses.reserve(schema.GetSubPasses().Size());
-
-    std::vector<VkAttachmentDescription> attachments;
-    for (const gfxRenderSubPassSchema& subpass : schema.GetSubPasses())
-    {
-        attachments.reserve(subpass.GetAttachmentsColor().Size());
-
-        RenderSubpassInfo& subpassInfo = subpasses.emplace_back();
-        subpassInfo = {};
-        subpassInfo.ColorAttachmentRefs.reserve(subpass.GetAttachmentsColor().Size());
-
-        for (const gfxAttachmentRefSchema& ref : subpass.GetAttachmentsColor())
-        {
-            const gfxAttachmentSchema& attachment = ref.GetAttachment();
-
-            VkAttachmentDescription& colorAttachment = attachments.emplace_back();
-            colorAttachment = {};
-            colorAttachment.format = gfxFormatTo(attachment.GetFormat());
-            colorAttachment.samples = gfxSampleCountTo(attachment.GetSampleCount());
-            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-
-            VkAttachmentReference& colorAttachmentRef = subpassInfo.ColorAttachmentRefs.emplace_back();
-            colorAttachmentRef = {};
-            colorAttachmentRef.attachment = ref.GetAttachmentIndex();
-            colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        }
-
-        subpassInfo.Subpass.colorAttachmentCount = subpassInfo.ColorAttachmentRefs.size();
-        subpassInfo.Subpass.pColorAttachments = subpassInfo.ColorAttachmentRefs.data();
-
-        // TODO: handle other attachment types
-    }
-
-    std::vector<VkSubpassDescription> vkSubpasses;
-    vkSubpasses.reserve(subpasses.size());
-
-    std::transform(subpasses.begin(), subpasses.end(), std::back_inserter(vkSubpasses), [](const RenderSubpassInfo& subpassInfo)
-    {
-        return subpassInfo.Subpass;
-    });
-
-    VkRenderPassCreateInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    renderPassInfo.attachmentCount = attachments.size();
-    renderPassInfo.pAttachments = attachments.data();
-    renderPassInfo.subpassCount = vkSubpasses.size();
-    renderPassInfo.pSubpasses = vkSubpasses.data();
 
     if (const VkResult result = vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass); result != VK_SUCCESS)
     {

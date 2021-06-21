@@ -1052,3 +1052,35 @@ enum gfxSharingMode
     Exclusive,
     Concurrent
 };
+
+[FlagMask]
+enum gfxFormatFeatureMask
+{
+    SampledImage,
+    StorageImage,
+    StorageImageAtomic,
+    UniformTexelBuffer,
+    StorageTexelBuffer,
+    StorageTexelBufferAtomic,
+    VertexBuffer,
+    ColorAttachment,
+    ColorAttachmentBlend,
+    DepthStencilAttachment,
+    BlitSrc,
+    BlitDst,
+    SampledImageFilterLinear,
+    TransferSrc,
+    TransferDst,
+    MidpointChromaSamples,
+    SampledImageYCbCrConversionLinearFilter,
+    SampledImageYCbCrConversionSeparateReconstructionFilter,
+    SampledImageYCbCrConversionChromaReconstructionExplicit,
+    SampledImageYCbCrConversionChromaReconstructionExplicitForceable,
+    Disjoint,
+    CositedChromaSamples,
+    SampledImageFilterMinmax,
+    SampledImageFilterCubic,
+    AccelerationStructureVertexBuffer,
+    FragmentDensityMap,
+    FragmentShadingRateAttachment
+};

@@ -595,17 +595,6 @@ std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRe
     return impl;
 }
 
-std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const
-{
-    std::shared_ptr<gfxRenderPassImplVK> impl = std::make_shared<gfxRenderPassImplVK>(m_VkDevice);
-    if (!impl->Init(schema))
-    {
-        impl.reset();
-    }
-
-    return impl;
-}
-
 std::shared_ptr<gfxPipelineLayoutImpl> gfxDeviceImplVK::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
 {
     std::shared_ptr<gfxPipelineLayoutImplVK> impl = std::make_shared<gfxPipelineLayoutImplVK>(m_VkDevice);

@@ -1,3 +1,11 @@
+# TODO: move to a separate file
+class gfxFormatProperties
+{
+    gfxFormatFeatureMask LinearTilingFeatureMask;
+    gfxFormatFeatureMask OptimalTilingFeatureMask;
+    gfxFormatFeatureMask BufferFeatureMask;
+};
+
 class gfxPhysicalDevice
 {
     [Virtual, ReadOnly]

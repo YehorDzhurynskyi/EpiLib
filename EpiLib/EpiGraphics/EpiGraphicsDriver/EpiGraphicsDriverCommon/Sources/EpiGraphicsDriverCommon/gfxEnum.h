@@ -1155,4 +1155,37 @@ EPI_GENREGION_BEGIN(gfxSharingMode)
 EPI_GENREGION_END(gfxSharingMode)
 };
 
+enum gfxFormatFeatureMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxFormatFeatureMask)
+    gfxFormatFeatureMask_SampledImage = (1 << 0),
+    gfxFormatFeatureMask_StorageImage = (1 << 1),
+    gfxFormatFeatureMask_StorageImageAtomic = (1 << 2),
+    gfxFormatFeatureMask_UniformTexelBuffer = (1 << 3),
+    gfxFormatFeatureMask_StorageTexelBuffer = (1 << 4),
+    gfxFormatFeatureMask_StorageTexelBufferAtomic = (1 << 5),
+    gfxFormatFeatureMask_VertexBuffer = (1 << 6),
+    gfxFormatFeatureMask_ColorAttachment = (1 << 7),
+    gfxFormatFeatureMask_ColorAttachmentBlend = (1 << 8),
+    gfxFormatFeatureMask_DepthStencilAttachment = (1 << 9),
+    gfxFormatFeatureMask_BlitSrc = (1 << 10),
+    gfxFormatFeatureMask_BlitDst = (1 << 11),
+    gfxFormatFeatureMask_SampledImageFilterLinear = (1 << 12),
+    gfxFormatFeatureMask_TransferSrc = (1 << 13),
+    gfxFormatFeatureMask_TransferDst = (1 << 14),
+    gfxFormatFeatureMask_MidpointChromaSamples = (1 << 15),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionLinearFilter = (1 << 16),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionSeparateReconstructionFilter = (1 << 17),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicit = (1 << 18),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicitForceable = (1 << 19),
+    gfxFormatFeatureMask_Disjoint = (1 << 20),
+    gfxFormatFeatureMask_CositedChromaSamples = (1 << 21),
+    gfxFormatFeatureMask_SampledImageFilterMinmax = (1 << 22),
+    gfxFormatFeatureMask_SampledImageFilterCubic = (1 << 23),
+    gfxFormatFeatureMask_AccelerationStructureVertexBuffer = (1 << 24),
+    gfxFormatFeatureMask_FragmentDensityMap = (1 << 25),
+    gfxFormatFeatureMask_FragmentShadingRateAttachment = (1 << 26)
+EPI_GENREGION_END(gfxFormatFeatureMask)
+};
+
 EPI_NAMESPACE_END()

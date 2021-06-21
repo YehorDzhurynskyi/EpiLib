@@ -70,18 +70,6 @@ std::optional<gfxRenderPass> gfxDevice::CreateRenderPass(const gfxRenderPassCrea
     return renderPass;
 }
 
-std::optional<gfxRenderPass> gfxDevice::CreateRenderPassFromSchema(const gfxRenderPassSchema& schema) const
-{
-    std::optional<gfxRenderPass> renderPass;
-
-    if (std::shared_ptr<internalgfx::gfxRenderPassImpl> impl = m_Impl->CreateRenderPassFromSchema(schema))
-    {
-        renderPass = gfxRenderPass(std::move(impl));
-    }
-
-    return renderPass;
-}
-
 std::optional<gfxPipelineLayout> gfxDevice::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
 {
     std::optional<gfxPipelineLayout> pipelineLayout;
