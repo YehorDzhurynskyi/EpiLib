@@ -478,7 +478,7 @@ enum gfxFormatFeatureMask
     SampledImageYCbCrConversionChromaReconstructionExplicit,
     SampledImageYCbCrConversionChromaReconstructionExplicitForceable,
     Disjoint,
-    CositedChroma_samples,
+    CositedChromaSamples,
     SampledImageFilterMinmax,
     SampledImageFilterCubic,
     AccelerationStructureVertexBuffer,
@@ -514,6 +514,29 @@ enum gfxSurfacePresentMode
     FIFO_RELAXED,
     SHARED_DEMAND_REFRESH,
     SHARED_CONTINUOUS_REFRESH
+};
+
+[FlagMask]
+enum gfxSurfaceTransformMask
+{
+    Identity,
+    Rotate90,
+    Rotate180,
+    Rotate270,
+    HorizontalMirror,
+    HorizontalMirrorRotate90,
+    HorizontalMirrorRotate180,
+    HorizontalMirrorRotate270,
+    Inherit
+};
+
+[FlagMask]
+enum gfxCompositeAlphaMask
+{
+    Opaque,
+    PreMultiplied,
+    PostMultiplied,
+    Inherit
 };
 
 [FlagMask]
@@ -1060,27 +1083,4 @@ enum gfxSharingMode
 {
     Exclusive,
     Concurrent
-};
-
-[FlagMask]
-enum gfxSurfaceTransformMask
-{
-    Identity,
-    Rotate90,
-    Rotate180,
-    Rotate270,
-    HorizontalMirror,
-    HorizontalMirrorRotate90,
-    HorizontalMirrorRotate180,
-    HorizontalMirrorRotate270,
-    Inherit
-};
-
-[FlagMask]
-enum gfxCompositeAlphaMask
-{
-    Opaque,
-    PreMultiplied,
-    PostMultiplied,
-    Inherit
 };

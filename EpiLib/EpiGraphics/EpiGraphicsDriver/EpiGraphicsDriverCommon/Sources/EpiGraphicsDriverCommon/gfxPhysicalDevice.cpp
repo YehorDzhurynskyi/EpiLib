@@ -32,6 +32,11 @@ epiFloat gfxPhysicalDevice::GetMaxSamplerAnisotropy() const
     return m_Impl->GetMaxSamplerAnisotropy();
 }
 
+gfxFormatProperties gfxPhysicalDevice::FormatPropertiesFor(gfxFormat format) const
+{
+    return m_Impl->FormatPropertiesFor(format);
+}
+
 epiString gfxPhysicalDevice::GetName_Callback() const
 {
     return m_Impl->GetName();
@@ -40,11 +45,6 @@ epiString gfxPhysicalDevice::GetName_Callback() const
 gfxPhysicalDeviceType gfxPhysicalDevice::GetType_Callback() const
 {
     return m_Impl->GetType();
-}
-
-gfxFormatProperties gfxPhysicalDevice::FormatPropertiesOf(gfxFormat format) const
-{
-    return m_Impl->FormatPropertiesOf(format);
 }
 
 epiBool gfxPhysicalDevice::IsExtensionSupported(gfxPhysicalDeviceExtension extension) const

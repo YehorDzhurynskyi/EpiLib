@@ -100,15 +100,15 @@ std::unique_ptr<gfxDeviceImpl> gfxPhysicalDeviceImplVK::CreateDevice(gfxQueueDes
     return device;
 }
 
-gfxFormatProperties gfxPhysicalDeviceImplVK::FormatPropertiesOf(gfxFormat format) const
+gfxFormatProperties gfxPhysicalDeviceImplVK::FormatPropertiesFor(gfxFormat format) const
 {
     VkFormatProperties propertiesVk;
     vkGetPhysicalDeviceFormatProperties(m_VkDevice, gfxFormatTo(format), &propertiesVk);
 
     gfxFormatProperties properties;
-    properties.SetLinearTilingFeaturesMask(gfxFormatFeatureMaskFrom(propertiesVk.linearTilingFeatures));
-    properties.SetOptimalTilingFeaturesMask(gfxFormatFeatureMaskFrom(propertiesVk.optimalTilingFeatures));
-    properties.SetBufferFeaturesMask(gfxFormatFeatureMaskFrom(propertiesVk.bufferFeatures));
+    properties.SetLinearTilingFeatureMask(gfxFormatFeatureMaskFrom(propertiesVk.linearTilingFeatures));
+    properties.SetOptimalTilingFeatureMask(gfxFormatFeatureMaskFrom(propertiesVk.optimalTilingFeatures));
+    properties.SetBufferFeatureMask(gfxFormatFeatureMaskFrom(propertiesVk.bufferFeatures));
 
     return properties;
 }

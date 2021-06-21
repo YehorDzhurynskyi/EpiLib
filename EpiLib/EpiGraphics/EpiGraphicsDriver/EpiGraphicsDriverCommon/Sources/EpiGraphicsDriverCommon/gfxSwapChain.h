@@ -41,7 +41,7 @@ public:
         PID_QueueFamilies = 0x459d6c2c,
         PID_CompositeAlphaMask = 0xb9b092ec,
         PID_PresentMode = 0x2430171b,
-        PID_Clipped = 0x6e0098e8,
+        PID_IsClipped = 0x458b7017,
         PID_COUNT = 13
     };
 
@@ -58,7 +58,7 @@ protected:
     epiArray<gfxQueueFamily> m_QueueFamilies{};
     gfxCompositeAlphaMask m_CompositeAlphaMask{};
     gfxSurfacePresentMode m_PresentMode{};
-    epiBool m_Clipped{false};
+    epiBool m_IsClipped{false};
 
 EPI_GENREGION_END(gfxSwapChainCreateInfo)
 };
@@ -74,9 +74,9 @@ public:
 
     enum gfxSwapChain_PIDs
     {
-        PID_ImageViews = 0x30732ad6,
         PID_BufferCount = 0xd1605dff,
         PID_Extent = 0x21a25c7e,
+        PID_ImageViews = 0x30732ad6,
         PID_COUNT = 3
     };
 

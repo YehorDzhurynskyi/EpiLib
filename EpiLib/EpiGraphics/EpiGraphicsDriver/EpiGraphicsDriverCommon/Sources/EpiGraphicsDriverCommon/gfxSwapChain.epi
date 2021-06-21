@@ -9,23 +9,20 @@ class gfxSwapChainCreateInfo
     epiSize2u ImageExtent;
     epiU32 ImageArrayLayers;
     gfxImageUsage ImageUsageMask;
-
     gfxSharingMode ImageSharingMode;
-    [ReadOnly] epiArray<gfxQueueFamily> QueueFamilies;
+
+    epiArray<gfxQueueFamily> QueueFamilies;
 
     gfxCompositeAlphaMask CompositeAlphaMask;
     gfxSurfacePresentMode PresentMode;
-    epiBool Clipped;
+    epiBool IsClipped;
 
-    # TODO: introduce
+    # TODO: Introduce
     # gfxSwapChain OldSwapChain;
 };
 
 class gfxSwapChain
 {
-    [ReadOnly] # TODO: const only
-    epiArray<gfxTextureView> ImageViews;
-
     [Virtual, ReadOnly]
     {
         epiU32 BufferCount;
@@ -33,4 +30,7 @@ class gfxSwapChain
         [ReadCallback(SuppressRef=true)]
         epiSize2u Extent;
     }
+
+    [ReadOnly] # TODO: const only
+    epiArray<gfxTextureView> ImageViews;
 };

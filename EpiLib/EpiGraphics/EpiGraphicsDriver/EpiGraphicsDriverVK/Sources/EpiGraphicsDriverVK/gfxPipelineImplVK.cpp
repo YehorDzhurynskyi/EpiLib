@@ -212,10 +212,11 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     depthStencilState.depthWriteEnable = info.GetDepthEnableWrite();
     depthStencilState.depthCompareOp = gfxCompareOpTo(info.GetDepthCompareOp());
     depthStencilState.depthBoundsTestEnable = info.GetDepthEnableBoundsTest();
-    depthStencilState.minDepthBounds = info.GetDepthMinBounds();
-    depthStencilState.maxDepthBounds = info.GetDepthMaxBounds();
+    depthStencilState.minDepthBounds = info.GetDepthBoundsTestMin();
+    depthStencilState.maxDepthBounds = info.GetDepthBoundsTestMax();
+
     // TODO: set
-    depthStencilState.stencilTestEnable = false;
+    depthStencilState.stencilTestEnable = {};
     depthStencilState.front = {};
     depthStencilState.back = {};
 

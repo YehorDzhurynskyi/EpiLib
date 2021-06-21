@@ -31,16 +31,16 @@ public:
 
     enum gfxFormatProperties_PIDs
     {
-        PID_LinearTilingFeaturesMask = 0x7a1d7e14,
-        PID_OptimalTilingFeaturesMask = 0xe23f97c,
-        PID_BufferFeaturesMask = 0x7a389747,
+        PID_LinearTilingFeatureMask = 0x32751455,
+        PID_OptimalTilingFeatureMask = 0xbd20e6d6,
+        PID_BufferFeatureMask = 0x179c4755,
         PID_COUNT = 3
     };
 
 protected:
-    gfxFormatFeatureMask m_LinearTilingFeaturesMask{};
-    gfxFormatFeatureMask m_OptimalTilingFeaturesMask{};
-    gfxFormatFeatureMask m_BufferFeaturesMask{};
+    gfxFormatFeatureMask m_LinearTilingFeatureMask{};
+    gfxFormatFeatureMask m_OptimalTilingFeatureMask{};
+    gfxFormatFeatureMask m_BufferFeatureMask{};
 
 EPI_GENREGION_END(gfxFormatProperties)
 };
@@ -82,7 +82,7 @@ public:
     // TODO: Introduce PhysicalDeviceLimits struct and move it there
     epiFloat GetMaxSamplerAnisotropy() const;
 
-    gfxFormatProperties FormatPropertiesOf(gfxFormat format) const;
+    gfxFormatProperties FormatPropertiesFor(gfxFormat format) const;
 
     epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const;

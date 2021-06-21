@@ -80,20 +80,19 @@ epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
 
     const gfxSurfaceCapabilities surfaceCapabilities = m_Surface.GetCapabilitiesFor(info.PhysicalDevice);
 
-    // TODO: submit RenderPass info to ensure compatibility only
     gfxSwapChainCreateInfo swapChainCreateInfo{};
     swapChainCreateInfo.SetSurface(m_Surface);
-    swapChainCreateInfo.SetSurfacePreTransformMask(surfaceCapabilities.GetCurrentTransform());
-    swapChainCreateInfo.SetImageMinCount(surfaceCapabilities.RecommendedImageCount());
-    swapChainCreateInfo.SetImageExtent(surfaceCapabilities.ClampExtent(epiSize2u{GetSize().x, GetSize().y}));
+    swapChainCreateInfo.SetSurfacePreTransformMask(surfaceCapabilities.GetCurrentSurfaceTransformMask());
+    swapChainCreateInfo.SetImageMinCount(surfaceCapabilities.RecommendedImageMinCount());
     swapChainCreateInfo.SetImageFormat(info.Format.GetFormat());
     swapChainCreateInfo.SetImageColorSpace(info.Format.GetColorSpace());
+    swapChainCreateInfo.SetImageExtent(surfaceCapabilities.ClampExtent(epiSize2u{GetSize().x, GetSize().y}));
     swapChainCreateInfo.SetImageArrayLayers(1);
     swapChainCreateInfo.SetImageUsageMask(gfxImageUsage_COLOR_ATTACHMENT);
     swapChainCreateInfo.SetImageSharingMode(gfxSharingMode::Exclusive);
     swapChainCreateInfo.SetCompositeAlphaMask(gfxCompositeAlphaMask_Opaque);
     swapChainCreateInfo.SetPresentMode(info.PresentMode);
-    swapChainCreateInfo.SetClipped(true);
+    swapChainCreateInfo.SetIsClipped(true);
 
     std::optional<gfxSwapChain> swapChain = info.Device.CreateSwapChain(swapChainCreateInfo);
     if (!swapChain.has_value())

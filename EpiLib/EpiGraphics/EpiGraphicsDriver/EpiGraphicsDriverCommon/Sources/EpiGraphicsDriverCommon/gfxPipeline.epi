@@ -63,6 +63,13 @@ class gfxPipelineGraphicsCreateInfo
     epiFloat DepthBiasClamp = 0.0f;
     epiFloat DepthBiasSlopeFactor = 0.0f;
 
+    epiBool DepthEnableTest;
+    epiBool DepthEnableWrite;
+    gfxCompareOp DepthCompareOp;
+    epiBool DepthEnableBoundsTest;
+    epiFloat DepthBoundsTestMin;
+    epiFloat DepthBoundsTestMax;
+
     [ReadOnly]
     {
         epiArray<gfxPipelineColorBlendAttachment> ColorBlendAttachments;
@@ -76,13 +83,6 @@ class gfxPipelineGraphicsCreateInfo
     {
         epiArray<gfxPipelineDynamicState> DynamicStates;
     }
-
-    epiBool DepthEnableTest;
-    epiBool DepthEnableWrite;
-    gfxCompareOp DepthCompareOp;
-    epiBool DepthEnableBoundsTest;
-    epiFloat DepthMinBounds;
-    epiFloat DepthMaxBounds;
 };
 
 class gfxPipelineGraphics

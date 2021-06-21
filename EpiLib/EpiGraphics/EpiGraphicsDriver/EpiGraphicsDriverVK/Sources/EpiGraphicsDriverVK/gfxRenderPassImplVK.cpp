@@ -84,7 +84,6 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
         }
 
         subpassInfo.Subpass.pDepthStencilAttachment = subpassInfo.DepthStencilAttachmentRefs.data();
-
         // TODO: handle other attachment types
     }
 

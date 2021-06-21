@@ -80,8 +80,8 @@ void gfxCommandBufferImplVK::RenderPassBegin(const gfxRenderPassBeginInfo& info,
         cv.color.float32[2] = clearValue.GetColor().b;
         cv.color.float32[3] = clearValue.GetColor().a;
 
-        cv.depthStencil.stencil = clearValue.GetStencil();
         cv.depthStencil.depth = clearValue.GetDepth();
+        cv.depthStencil.stencil = clearValue.GetStencil();
     }
 
     renderPassInfo.clearValueCount = clearValues.size();

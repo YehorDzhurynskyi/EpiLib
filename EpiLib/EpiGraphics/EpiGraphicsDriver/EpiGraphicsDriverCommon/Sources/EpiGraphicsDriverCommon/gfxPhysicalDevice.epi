@@ -1,8 +1,9 @@
+# TODO: move to a separate file
 class gfxFormatProperties
 {
-    gfxFormatFeatureMask LinearTilingFeaturesMask;
-    gfxFormatFeatureMask OptimalTilingFeaturesMask;
-    gfxFormatFeatureMask BufferFeaturesMask;
+    gfxFormatFeatureMask LinearTilingFeatureMask;
+    gfxFormatFeatureMask OptimalTilingFeatureMask;
+    gfxFormatFeatureMask BufferFeatureMask;
 };
 
 class gfxPhysicalDevice

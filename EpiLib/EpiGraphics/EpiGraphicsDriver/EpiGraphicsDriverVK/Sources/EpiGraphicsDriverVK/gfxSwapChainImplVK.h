@@ -36,7 +36,6 @@ protected:
 
 protected:
     const gfxDeviceImplVK& m_Device;
-
     VkSwapchainKHR_T* m_VkSwapChain{nullptr};
 
     epiSize2u m_Extent{};

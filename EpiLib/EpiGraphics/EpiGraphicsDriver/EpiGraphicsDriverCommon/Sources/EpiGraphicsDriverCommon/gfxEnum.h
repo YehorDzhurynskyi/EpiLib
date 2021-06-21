@@ -1122,6 +1122,39 @@ EPI_GENREGION_BEGIN(gfxComponentSwizzle)
 EPI_GENREGION_END(gfxComponentSwizzle)
 };
 
+enum gfxSurfaceTransformMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSurfaceTransformMask)
+    gfxSurfaceTransformMask_Identity = (1 << 0),
+    gfxSurfaceTransformMask_Rotate90 = (1 << 1),
+    gfxSurfaceTransformMask_Rotate180 = (1 << 2),
+    gfxSurfaceTransformMask_Rotate270 = (1 << 3),
+    gfxSurfaceTransformMask_HorizontalMirror = (1 << 4),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate90 = (1 << 5),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate180 = (1 << 6),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate270 = (1 << 7),
+    gfxSurfaceTransformMask_Inherit = (1 << 8)
+EPI_GENREGION_END(gfxSurfaceTransformMask)
+};
+
+enum gfxCompositeAlphaMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCompositeAlphaMask)
+    gfxCompositeAlphaMask_Opaque = (1 << 0),
+    gfxCompositeAlphaMask_PreMultiplied = (1 << 1),
+    gfxCompositeAlphaMask_PostMultiplied = (1 << 2),
+    gfxCompositeAlphaMask_Inherit = (1 << 3)
+EPI_GENREGION_END(gfxCompositeAlphaMask)
+};
+
+enum class gfxSharingMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSharingMode)
+    Exclusive = 0,
+    Concurrent = 1
+EPI_GENREGION_END(gfxSharingMode)
+};
+
 enum gfxFormatFeatureMask : epiS32
 {
 EPI_GENREGION_BEGIN(gfxFormatFeatureMask)
@@ -1146,46 +1179,13 @@ EPI_GENREGION_BEGIN(gfxFormatFeatureMask)
     gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicit = (1 << 18),
     gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicitForceable = (1 << 19),
     gfxFormatFeatureMask_Disjoint = (1 << 20),
-    gfxFormatFeatureMask_CositedChroma_samples = (1 << 21),
+    gfxFormatFeatureMask_CositedChromaSamples = (1 << 21),
     gfxFormatFeatureMask_SampledImageFilterMinmax = (1 << 22),
     gfxFormatFeatureMask_SampledImageFilterCubic = (1 << 23),
     gfxFormatFeatureMask_AccelerationStructureVertexBuffer = (1 << 24),
     gfxFormatFeatureMask_FragmentDensityMap = (1 << 25),
     gfxFormatFeatureMask_FragmentShadingRateAttachment = (1 << 26)
 EPI_GENREGION_END(gfxFormatFeatureMask)
-};
-
-enum class gfxSharingMode : epiS32
-{
-EPI_GENREGION_BEGIN(gfxSharingMode)
-    Exclusive = 0,
-    Concurrent = 1
-EPI_GENREGION_END(gfxSharingMode)
-};
-
-enum gfxSurfaceTransformMask : epiS32
-{
-EPI_GENREGION_BEGIN(gfxSurfaceTransformMask)
-    gfxSurfaceTransformMask_Identity = (1 << 0),
-    gfxSurfaceTransformMask_Rotate90 = (1 << 1),
-    gfxSurfaceTransformMask_Rotate180 = (1 << 2),
-    gfxSurfaceTransformMask_Rotate270 = (1 << 3),
-    gfxSurfaceTransformMask_HorizontalMirror = (1 << 4),
-    gfxSurfaceTransformMask_HorizontalMirrorRotate90 = (1 << 5),
-    gfxSurfaceTransformMask_HorizontalMirrorRotate180 = (1 << 6),
-    gfxSurfaceTransformMask_HorizontalMirrorRotate270 = (1 << 7),
-    gfxSurfaceTransformMask_Inherit = (1 << 8)
-EPI_GENREGION_END(gfxSurfaceTransformMask)
-};
-
-enum gfxCompositeAlphaMask : epiS32
-{
-EPI_GENREGION_BEGIN(gfxCompositeAlphaMask)
-    gfxCompositeAlphaMask_Opaque = (1 << 0),
-    gfxCompositeAlphaMask_PreMultiplied = (1 << 1),
-    gfxCompositeAlphaMask_PostMultiplied = (1 << 2),
-    gfxCompositeAlphaMask_Inherit = (1 << 3)
-EPI_GENREGION_END(gfxCompositeAlphaMask)
 };
 
 EPI_NAMESPACE_END()

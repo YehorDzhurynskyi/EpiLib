@@ -36,24 +36,24 @@ gfxSwapChainImplVK::~gfxSwapChainImplVK()
 
 epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 {
-    // NOTE: queue families should provided with a concurrent SharingMode only
-    epiAssert(info.GetImageSharingMode() == gfxSharingMode::Concurrent || info.GetQueueFamilies().IsEmpty());
+    const gfxSurfaceImplVK* surfaceImpl = static_cast<const gfxSurfaceImplVK*>(gfxSurfaceImpl::ExtractImpl(info.GetSurface()));
+    epiAssert(surfaceImpl != nullptr);
+
     std::vector<epiU32> queueFamilyIndices;
-    queueFamilyIndices.reserve(info.GetQueueFamilies().GetSize());
+    queueFamilyIndices.reserve(info.GetQueueFamilies().Size());
 
     std::transform(info.GetQueueFamilies().begin(),
                    info.GetQueueFamilies().end(),
                    std::back_inserter(queueFamilyIndices),
-                   [](const gfxQueueFamily& family)
+                   [](const gfxQueueFamily& queueFamily)
     {
-        const gfxQueueFamilyImplVK* familyImpl = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamilyImpl::ExtractImpl(family));
-        epiAssert(familyImpl != nullptr);
+        const gfxQueueFamilyImplVK* queueFamilyImpl = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamilyImpl::ExtractImpl(queueFamily));
+        epiAssert(queueFamilyImpl != nullptr);
 
-        return familyImpl->GetIndex();
+        return queueFamilyImpl->GetIndex();
     });
 
-    const gfxSurfaceImplVK* surfaceImpl = static_cast<const gfxSurfaceImplVK*>(gfxSurfaceImpl::ExtractImpl(info.GetSurface()));
-    epiAssert(surfaceImpl != nullptr);
+    epiAssert(info.GetImageSharingMode() == gfxSharingMode::Exclusive || !info.GetQueueFamilies().IsEmpty());
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -70,7 +70,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
     createInfo.preTransform = gfxSurfaceTransformMaskTo(info.GetSurfacePreTransformMask());
     createInfo.compositeAlpha = gfxCompositeAlphaMaskTo(info.GetCompositeAlphaMask());
     createInfo.presentMode = gfxSurfacePresentModeTo(info.GetPresentMode());
-    createInfo.clipped = info.GetClipped();
+    createInfo.clipped = info.GetIsClipped();
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
 #if 0 // TODO: set
@@ -89,11 +89,19 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
         return false;
     }
 
-    epiU32 imageCount;
-    vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, nullptr);
+    epiU32 imageCount = 0;
+    if (const VkResult result = vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, nullptr); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkGetSwapchainImagesKHR!");
+        return false;
+    }
 
-    std::vector<VkImage> swapChainImages(imageCount, VK_NULL_HANDLE);
-    vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, swapChainImages.data());
+    std::vector<VkImage> swapChainImages(imageCount);
+    if (const VkResult result = vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, swapChainImages.data()); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkGetSwapchainImagesKHR!");
+        return false;
+    }
 
     for (const VkImage& image : swapChainImages)
     {
@@ -118,34 +126,6 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
     }
 
     m_Extent = info.GetImageExtent();
-
-#if 0
-    for (const auto& textureViewImpl : m_SwapChainImageViews)
-    {
-        gfxFrameBufferCreateInfo frameBufferCreateInfo;
-        frameBufferCreateInfo.SetSize(info.GetExtent());
-        epiPtrArray<const gfxTextureViewImpl> imageViewImpls{textureViewImpl.get()};
-
-        std::transform(info.GetAdditionalFrameBufferAttachments().begin(),
-                       info.GetAdditionalFrameBufferAttachments().end(),
-                       std::back_inserter(imageViewImpls),
-                       [](const gfxTextureView& imageView)
-        {
-            const gfxTextureViewImpl* imageViewImpl = gfxTextureViewImpl::ExtractImpl(imageView);
-            epiAssert(imageViewImpl != nullptr);
-
-            return imageViewImpl;
-        });
-
-        std::shared_ptr<gfxFrameBufferImpl> frameBufferImpl = m_Device.CreateFrameBuffer(frameBufferCreateInfo, renderPassImpl, imageViewImpls);
-        m_SwapChainFrameBuffers.push_back(std::move(frameBufferImpl));
-    }
-
-    gfxCommandPoolCreateInfo commandPoolCreateInfo;
-    commandPoolCreateInfo.SetPrimaryCommandBufferCount(m_SwapChainFrameBuffers.size());
-
-    m_CommandPool = m_Device.CreateCommandPool(commandPoolCreateInfo, queueFamilyImpl);
-#endif
 
     return true;
 }
@@ -215,61 +195,6 @@ epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore,
 
     return imageIndex;
 }
-
-#if 0
-gfxCommandBufferRecord gfxSwapChainImplVK::ForBufferRecordCommands(epiU32 bufferIndex, gfxCommandBufferUsage usageMask)
-{
-    gfxCommandBufferRecord record;
-
-    if (bufferIndex >= GetBufferCount())
-    {
-        epiLogError("Failed to record command buffer! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
-        return record;
-    }
-
-    gfxCommandBufferImpl* cmdImpl = m_CommandPool->GetPrimaryCommandBuffers()[bufferIndex].get();
-    if (cmdImpl == nullptr)
-    {
-        epiLogError("Failed to record command buffer! Buffer at index=`{}` is nullptr!", bufferIndex);
-        return record;
-    }
-
-    record.RecordBegin(cmdImpl, usageMask);
-
-    return record;
-}
-
-gfxRenderPassBeginInfo gfxSwapChainImplVK::ForBufferCreateRenderPassBeginInfo(epiU32 bufferIndex)
-{
-    gfxRenderPassBeginInfo beginInfo;
-
-    if (bufferIndex >= GetBufferCount())
-    {
-        epiLogError("Failed to create RenderPassBeginInfo! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
-        return beginInfo;
-    }
-
-    beginInfo.SetFrameBuffer(gfxFrameBuffer(m_SwapChainFrameBuffers[bufferIndex]));
-    beginInfo.SetRenderArea(epiRect2s{0, 0, static_cast<epiS32>(GetExtent().x), static_cast<epiS32>(GetExtent().y)});
-
-    return beginInfo;
-}
-
-gfxQueueSubmitInfo gfxSwapChainImplVK::ForBufferCreateQueueSubmitInfo(epiU32 bufferIndex)
-{
-    gfxQueueSubmitInfo queueSubmitInfo;
-
-    if (bufferIndex >= GetBufferCount())
-    {
-        epiLogError("Failed to create QueueSubmitInfo! Provided buffer index=`{}` exceeds buffer count=`{}`", bufferIndex, GetBufferCount());
-        return queueSubmitInfo;
-    }
-
-    queueSubmitInfo.GetCommandBuffers().push_back(gfxCommandBuffer(m_CommandPool->GetPrimaryCommandBuffers()[bufferIndex]));
-
-    return queueSubmitInfo;
-}
-#endif
 
 epiSize2u gfxSwapChainImplVK::GetExtent() const
 {

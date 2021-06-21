@@ -23,7 +23,7 @@ epiSize2u gfxSurfaceCapabilities::ClampExtent(const epiSize2u& extent) const
     return extentClamped;
 }
 
-epiU32 gfxSurfaceCapabilities::RecommendedImageCount() const
+epiU32 gfxSurfaceCapabilities::RecommendedImageMinCount() const
 {
     epiU32 imageCount = GetMinImageCount() + 1;
     if (const epiU32 maxImageCount = GetMaxImageCount(); maxImageCount > 0 && imageCount > maxImageCount)

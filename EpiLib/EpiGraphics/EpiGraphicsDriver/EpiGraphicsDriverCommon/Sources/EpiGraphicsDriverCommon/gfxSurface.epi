@@ -6,10 +6,10 @@ class gfxSurfaceCapabilities
     epiSize2u CurrentExtent;
     epiSize2u MinImageExtent;
     epiSize2u MaxImageExtent;
-    gfxSurfaceTransformMask SupportedTransforms;
-    gfxCompositeAlphaMask SupportedCompositeAlpha;
+    gfxSurfaceTransformMask SupportedSurfaceTransformMask;
+    gfxCompositeAlphaMask SupportedCompositeAlphaMask;
     gfxImageUsage SupportedUsage;
-    gfxSurfaceTransformMask CurrentTransform;
+    gfxSurfaceTransformMask CurrentSurfaceTransformMask;
 };
 
 class gfxSurfaceFormat

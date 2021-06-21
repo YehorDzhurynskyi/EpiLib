@@ -218,7 +218,7 @@ public:
                                                         const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
                                                         const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const = 0;
 
-    virtual gfxFormatProperties FormatPropertiesOf(gfxFormat format) const = 0;
+    virtual gfxFormatProperties FormatPropertiesFor(gfxFormat format) const = 0;
 
     virtual epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const = 0;
     virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
@@ -263,8 +263,7 @@ public:
 
     virtual epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) = 0;
 
-
-    epiU32 GetBufferCount() const { return m_ImageViews.GetSize(); }
+    epiU32 GetBufferCount() const { return m_ImageViews.Size(); }
     virtual epiSize2u GetExtent() const = 0;
 
     const epiArray<std::shared_ptr<gfxTextureViewImpl>>& GetImageViews() const { return m_ImageViews; }
