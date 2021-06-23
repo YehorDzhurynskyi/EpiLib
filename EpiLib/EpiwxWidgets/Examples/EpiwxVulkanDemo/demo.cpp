@@ -270,9 +270,6 @@ public:
         pipelineCreateInfo.SetColorBlendLogicOp(gfxLogicOp::Copy);
         pipelineCreateInfo.SetColorBlendConstants(epiVec4f{0.0f, 0.0f, 0.0f, 0.0f});
         pipelineCreateInfo.SetRenderSubPassIndex(0);
-        pipelineCreateInfo.SetDepthEnableTest(true);
-        pipelineCreateInfo.SetDepthEnableWrite(true);
-        pipelineCreateInfo.SetDepthCompareOp(gfxCompareOp::Less);
         pipelineCreateInfo.SetShaderProgram(*shaderProgram);
         pipelineCreateInfo
             .AddDynamicState(gfxPipelineDynamicState::Viewport)
@@ -287,15 +284,15 @@ public:
         }
 
         m_Vertices = {
-            {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-            {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+            {{-0.5f, -0.5f, 0.1f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+            {{0.5f, -0.5f, 0.1f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+            {{0.5f, 0.5f, 0.1f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+            {{-0.5f, 0.5f, 0.1f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
 
-            {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-            {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
+            {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+            {{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+            {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+            {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
         };
         const epiSize_t vertexBufferCapacity = m_Vertices.Size() * sizeof(m_Vertices[0]);
 
@@ -753,7 +750,7 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
         camera.SetFOV(90.0f);
         camera.SetAspectRatio(static_cast<epiFloat>(m_SwapChain.GetExtent().x) / m_SwapChain.GetExtent().y);
         camera.SetPlaneNear(0.1f);
-        camera.SetPlaneNear(10.0f);
+        camera.SetPlaneFar(10.0f);
 
         ubo.Model = glm::rotate(epiMat4x4f{1.0f}, time, epiVec3f{0.0f, 1.0f, 0.0f}); // TODO: replace with epiMat4x4fRotate()
         ubo.View = camera.GetViewMatrix();

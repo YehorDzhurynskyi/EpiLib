@@ -216,7 +216,7 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     depthStencilState.maxDepthBounds = info.GetDepthBoundsTestMax();
 
     // TODO: set
-    depthStencilState.stencilTestEnable = {};
+    depthStencilState.stencilTestEnable = VK_FALSE;
     depthStencilState.front = {};
     depthStencilState.back = {};
 
