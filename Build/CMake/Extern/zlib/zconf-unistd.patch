@@ -1,0 +1,51 @@
+diff --git a/zconf.h b/zconf.h
+index 5e1d68a..70befee 100644
+--- a/zconf.h
++++ b/zconf.h
+@@ -472,7 +472,11 @@ typedef uLong FAR uLongf;
+ #endif
+ #ifndef Z_SOLO
+ #  if defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE)
+-#    include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
++#    if defined(_WIN32)
++#       include <io.h>
++#    else
++#       include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
++#    endif
+ #    ifdef VMS
+ #      include <unixio.h>       /* for off_t */
+ #    endif
+diff --git a/zconf.h.cmakein b/zconf.h.cmakein
+index a7f24cc..bbfe679 100644
+--- a/zconf.h.cmakein
++++ b/zconf.h.cmakein
+@@ -474,7 +474,11 @@ typedef uLong FAR uLongf;
+ #endif
+ #ifndef Z_SOLO
+ #  if defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE)
+-#    include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
++#    if defined(_WIN32)
++#       include <io.h>
++#    else
++#       include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
++#    endif
+ #    ifdef VMS
+ #      include <unixio.h>       /* for off_t */
+ #    endif
+diff --git a/zconf.h.in b/zconf.h.in
+index 5e1d68a..70befee 100644
+--- a/zconf.h.in
++++ b/zconf.h.in
+@@ -472,7 +472,11 @@ typedef uLong FAR uLongf;
+ #endif
+ #ifndef Z_SOLO
+ #  if defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE)
+-#    include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
++#    if defined(_WIN32)
++#       include <io.h>
++#    else
++#       include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
++#    endif
+ #    ifdef VMS
+ #      include <unixio.h>       /* for off_t */
+ #    endif

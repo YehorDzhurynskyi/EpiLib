@@ -437,7 +437,11 @@ void mmResourceManager::LoadResourceShallow(mmResource& resource)
 
                 const epiBool isImage = avFormatContext->nb_streams == 1 &&
                                         avFormatContext->streams[0]->codec->codec_type == AVMEDIA_TYPE_VIDEO &&
-                                        strncmp(avFormatContext->iformat->name, "image2", strlen("image2")) == 0;
+                                        (
+                                            strncmp(avFormatContext->iformat->name, "image2", strlen("image2")) == 0 ||
+                                            strncmp(avFormatContext->iformat->name, "png_pipe", strlen("png_pipe")) == 0
+                                        );
+
 
                 if (isImage)
                 {
@@ -518,7 +522,10 @@ void mmResourceManager::LoadResourceDeep(mmResource& resource)
                 auto& media = resource.GetMedia();
                 const epiBool isImage = avFormatContext->nb_streams == 1 &&
                                         avFormatContext->streams[0]->codec->codec_type == AVMEDIA_TYPE_VIDEO &&
-                                        strncmp(avFormatContext->iformat->name, "image2", strlen("image2")) == 0;
+                                        (
+                                            strncmp(avFormatContext->iformat->name, "image2", strlen("image2")) == 0 ||
+                                            strncmp(avFormatContext->iformat->name, "png_pipe", strlen("png_pipe")) == 0
+                                        );
 
                 if (isImage)
                 {

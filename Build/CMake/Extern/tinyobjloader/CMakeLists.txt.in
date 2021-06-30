@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 2.8.2)
+
+project(tinyobjloader-extern NONE)
+
+include(ExternalProject)
+ExternalProject_Add(tinyobjloader
+    GIT_REPOSITORY      https://github.com/tinyobjloader/tinyobjloader.git
+    GIT_TAG             v2.0.0rc8
+    SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/tinyobjloader/src"
+    BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/tinyobjloader/build"
+
+    GIT_SHALLOW         1
+    GIT_PROGRESS        1
+
+    CONFIGURE_COMMAND   ""
+    BUILD_COMMAND       ""
+    INSTALL_COMMAND     ""
+    TEST_COMMAND        ""
+)

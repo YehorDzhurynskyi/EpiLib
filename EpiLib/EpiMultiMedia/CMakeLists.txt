@@ -82,6 +82,7 @@ target_include_directories(EpiMultimedia
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
 )
 
+epi_extern_add(zlib IMPORTED)
 epi_extern_add(FFmpeg DONT_ADD_SUBDIRECTORY)
 epi_extern_add(opencv
     COMPONENTS
@@ -106,6 +107,7 @@ target_link_libraries(EpiMultimedia
     PUBLIC
         EpiCore
         EpiData
+        zlib
         FFmpeg
         opencv
 )

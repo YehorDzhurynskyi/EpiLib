@@ -435,7 +435,7 @@ public:
         }
 
         {
-            mmImage image = mmImage::LoadFromFile("texture.jpg").ToR8G8B8A8();
+            mmImage image = mmImage::LoadFromFile("viking_room.png").ToR8G8B8A8();
             epiAssert(!image.GetIsEmpty());
 
             gfxBufferCreateInfo stagingBufferCreateInfo;

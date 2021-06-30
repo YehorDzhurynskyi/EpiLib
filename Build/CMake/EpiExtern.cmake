@@ -1,5 +1,7 @@
 include(ExternalProject)
 
+epi_include_script(epi_apply_patch)
+
 function(epi_extern_add EXTERN)
 
     cmake_parse_arguments(EXTERN
@@ -19,6 +21,10 @@ function(epi_extern_add EXTERN)
 
     if (NOT EXISTS "${EXTERN_DIR}/CMakeLists.txt.in")
         message(FATAL_ERROR "No `CMakeLists.txt.in` file exists for `${EXTERN}` target! `${EXTERN_DIR}/CMakeLists.txt.in` path is expected!")
+    endif ()
+
+    if (EXISTS "${EXTERN_DIR}/configure.cmake")
+        include("${EXTERN_DIR}/configure.cmake")
     endif ()
 
     configure_file("${EXTERN_DIR}/CMakeLists.txt.in" "${EXTERN}/CMakeLists.txt" @ONLY)
@@ -41,9 +47,13 @@ function(epi_extern_add EXTERN)
         message(FATAL_ERROR "Build step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
     endif ()
 
-    if (EXISTS "${EXTERN_DIR}/configure.cmake")
-        include("${EXTERN_DIR}/configure.cmake")
-    endif ()
+    file(GLOB PATCHES "${EXTERN_DIR}/*.patch")
+    if (PATCHES)
+        epi_apply_patch(
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
+            PATCHES ${PATCHES}
+        )
+    endif()
 
     if (NOT EXTERN_IMPORTED)
         if (NOT EXTERN_DONT_ADD_SUBDIRECTORY)
@@ -84,7 +94,9 @@ function(epi_extern_add EXTERN)
             FOLDER "EpiLib/Extern"
         )
     else()
-        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
+        set(EXTERN_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install")
+
+        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -DCMAKE_INSTALL_PREFIX=${EXTERN_INSTALL_DIR} "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
             RESULT_VARIABLE COMMAND_STATUS
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
         )
@@ -93,7 +105,7 @@ function(epi_extern_add EXTERN)
             message(FATAL_ERROR "Configuration step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
         endif()
 
-        execute_process(COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build" --config Release
+        execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
             RESULT_VARIABLE COMMAND_STATUS
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
         )
@@ -102,7 +114,7 @@ function(epi_extern_add EXTERN)
             message(FATAL_ERROR "Build step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
         endif()
 
-        execute_process(COMMAND ${CMAKE_COMMAND} --install "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build" --config Release --prefix "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install"
+        execute_process(COMMAND ${CMAKE_COMMAND} --install . --config Release --prefix "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install"
             RESULT_VARIABLE COMMAND_STATUS
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/build"
         )
@@ -111,13 +123,15 @@ function(epi_extern_add EXTERN)
             message(FATAL_ERROR "Install step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
         endif()
 
-        find_library(EXTERN_LIBRARY ${EXTERN} PATHS "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install/lib" REQUIRED)
+        find_library(EXTERN_${EXTERN}_LIBRARY ${EXTERN} PATHS "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install/lib" REQUIRED)
 
         add_library(epiimported::${EXTERN} INTERFACE IMPORTED)
         set_target_properties(epiimported::${EXTERN}
             PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install/include"
-                INTERFACE_LINK_LIBRARIES ${EXTERN_LIBRARY}
+                INTERFACE_LINK_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install/lib"
+                INTERFACE_SHARE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/install/share"
+                INTERFACE_LINK_LIBRARIES ${EXTERN_${EXTERN}_LIBRARY}
         )
     endif()
 endfunction()
