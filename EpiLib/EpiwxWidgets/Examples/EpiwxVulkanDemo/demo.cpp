@@ -15,6 +15,7 @@
 #include <wx/timer.h>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <tiny_obj_loader.h>
 
 #include "EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h"
 
@@ -23,10 +24,29 @@ EPI_NAMESPACE_USING()
 gfxPhysicalDevice g_PhysicalDevice;
 gfxDevice g_Device;
 
+namespace
+{
+
 constexpr gfxFormat kFormatRequired = gfxFormat::B8G8R8A8_SRGB;
 constexpr gfxFormat kDepthFormatRequired = gfxFormat::D32_SFLOAT;
 constexpr gfxSurfaceColorSpace kColorSpaceRequired = gfxSurfaceColorSpace::SRGB_NONLINEAR;
 constexpr gfxSurfacePresentMode kPresentModeRequired = gfxSurfacePresentMode::MAILBOX;
+
+struct Vertex
+{
+    epiVec3f Position;
+    epiVec3f Color;
+    epiVec2f UV;
+};
+
+struct UniformBufferObject
+{
+    alignas(16) epiMat4x4f Model;
+    alignas(16) epiMat4x4f View;
+    alignas(16) epiMat4x4f Proj;
+};
+
+} // namespace
 
 class epiWXVulkanDemoFrame : public wxFrame
 {
@@ -53,21 +73,6 @@ class epiWXVulkanDemoTriangleCanvas : public epiWXVulkanCanvas
 {
 public:
     wxDECLARE_EVENT_TABLE();
-
-public:
-    struct Vertex
-    {
-        epiVec3f Position;
-        epiVec3f Color;
-        epiVec2f UV;
-    };
-
-    struct UniformBufferObject
-    {
-        alignas(16) epiMat4x4f Model;
-        alignas(16) epiMat4x4f View;
-        alignas(16) epiMat4x4f Proj;
-    };
 
 public:
     epiWXVulkanDemoTriangleCanvas(wxWindow* parent,
@@ -283,17 +288,100 @@ public:
             m_Pipeline = *pipeline;
         }
 
-        m_Vertices = {
-            {{-0.5f, -0.5f, 0.1f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, -0.5f, 0.1f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.5f, 0.5f, 0.1f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-            {{-0.5f, 0.5f, 0.1f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+#if 1
+        {
+            m_Vertices = {
+                {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+                {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+                {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
 
-            {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-            {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-        };
+                {{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+                {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+                {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
+
+                {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+                {{-0.5f, -0.5f, 0.5f}, {1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+                {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
+
+                {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+                {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+                {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+                {{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+
+                {{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+                {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+                {{-0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                {{-0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+
+                {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+                {{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+                {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+                {{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+            };
+
+            m_Indices = {
+                0, 1, 2, 2, 3, 0,
+                4, 5, 6, 6, 7, 4,
+
+                8, 9, 10, 10, 11, 8,
+                12, 13, 14, 14, 15, 12,
+
+                16, 17, 18, 18, 19, 16,
+                20, 21, 22, 22, 23, 20,
+
+                24, 25, 26, 26, 27, 24,
+                28, 29, 30, 30, 31, 28,
+
+                32, 33, 34, 34, 35, 32,
+                36, 37, 38, 38, 39, 36,
+
+                40, 41, 42, 42, 43, 40,
+                44, 45, 46, 46, 47, 44
+            };
+        }
+#else
+        {
+            tinyobj::attrib_t attrib;
+            std::vector<tinyobj::shape_t> shapes;
+            std::vector<tinyobj::material_t> materials;
+            std::string warn;
+            std::string err;
+
+            constexpr const epiChar* kObjFilepath = "viking_room.obj";
+            if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, kObjFilepath))
+            {
+                epiLogError("Failed to load `{}`! Error=`{}` Warn=`{}`", kObjFilepath, err, warn);
+                return;
+            }
+
+            for (const tinyobj::shape_t& shape : shapes)
+            {
+                for (const tinyobj::index_t& index : shape.mesh.indices)
+                {
+                    Vertex vertex{};
+                    vertex.Position = {
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]
+                    };
+
+                    vertex.UV = {
+                        attrib.texcoords[2 * index.texcoord_index + 0],
+                        1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                    };
+
+                    vertex.Color = {1.0f, 1.0f, 1.0f};
+
+                    m_Vertices.push_back(vertex);
+                    m_Indices.push_back(m_Indices.Size());
+                }
+            }
+        }
+#endif
+
         const epiSize_t vertexBufferCapacity = m_Vertices.Size() * sizeof(m_Vertices[0]);
 
         {
@@ -362,10 +450,6 @@ public:
             m_QueueFamily[0].Wait();
         }
 
-        m_Indices = {
-            0, 1, 2, 2, 3, 0,
-            4, 5, 6, 6, 7, 4
-        };
         const epiSize_t indexBufferCapacity = m_Indices.Size() * sizeof(m_Indices[0]);
 
         {
@@ -405,7 +489,7 @@ public:
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(indexBufferCapacity))
             {
-                for (const epiU16& v : m_Indices)
+                for (const epiU32& v : m_Indices)
                 {
                     mapping.PushBack(v);
                 }
@@ -435,7 +519,7 @@ public:
         }
 
         {
-            mmImage image = mmImage::LoadFromFile("viking_room.png").ToR8G8B8A8();
+            mmImage image = mmImage::LoadFromFile("texture.jpg").ToR8G8B8A8();
             epiAssert(!image.GetIsEmpty());
 
             gfxBufferCreateInfo stagingBufferCreateInfo;
@@ -693,7 +777,7 @@ protected:
     epiArray<gfxDeviceMemory> m_UniformDeviceMemories;
     gfxDescriptorPool m_DescriptorPool;
     epiArray<Vertex> m_Vertices;
-    epiArray<epiU16> m_Indices;
+    epiArray<epiU32> m_Indices;
 
     epiU32 m_CurrentFrame{0};
     epiArray<gfxSemaphore> m_SemaphoreImageAvailable;
@@ -741,10 +825,11 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
         auto currentTime = std::chrono::high_resolution_clock::now();
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-        UniformBufferObject ubo{};
+        const epiFloat s = std::sin(time);
+        const epiFloat c = std::cos(time);
 
         gfxCameraPersp camera;
-        camera.SetPosition(epiVec3f{0.0f, 0.0f, 1.0f});
+        camera.SetPosition(epiVec3f{2.0f * s, 0.0f, 2.0f * c});
         camera.SetLookAtPosition(epiVec3f{0.0f, 0.0f, 0.0f});
         camera.SetUpDirection(epiVec3f{0.0f, 1.0f, 0.0f});
         camera.SetFOV(90.0f);
@@ -752,7 +837,9 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
         camera.SetPlaneNear(0.1f);
         camera.SetPlaneFar(10.0f);
 
-        ubo.Model = glm::rotate(epiMat4x4f{1.0f}, time, epiVec3f{0.0f, 1.0f, 0.0f}); // TODO: replace with epiMat4x4fRotate()
+        UniformBufferObject ubo{};
+        // ubo.Model = glm::rotate(epiMat4x4f{1.0f}, 90.0f, epiVec3f{1.0f, 0.0f, 0.0f}); // TODO: replace with epiMat4x4fRotate()
+        ubo.Model = epiMat4x4f{1.0f};
         ubo.View = camera.GetViewMatrix();
         ubo.Proj = camera.GetProjectionMatrix();
 
@@ -1087,7 +1174,7 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
                 .RenderPassBegin(renderPassBeginInfo)
                 .PipelineBind(m_Pipeline)
                 .VertexBuffersBind({m_VertexBuffer})
-                .IndexBufferBind(m_IndexBuffer, gfxIndexBufferType::UInt16)
+                .IndexBufferBind(m_IndexBuffer, gfxIndexBufferType::UInt32)
                 .DescriptorSetsBind(gfxPipelineBindPoint::Graphics, m_PipelineLayout, {descriptorSet})
                 .DrawIndexed(m_Indices.Size(), 1, 0, 0, 0)
                 .RenderPassEnd();
