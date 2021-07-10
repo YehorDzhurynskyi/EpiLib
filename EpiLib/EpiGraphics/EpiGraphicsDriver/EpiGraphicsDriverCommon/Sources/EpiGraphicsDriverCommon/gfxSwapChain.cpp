@@ -34,7 +34,7 @@ epiS32 gfxSwapChain::AcquireNextImage(const gfxSemaphore* signalSemaphore, const
 {
     if (signalSemaphore != nullptr)
     {
-        if (!internalgfx::HasImpl<internalgfx::gfxSemaphoreImpl>(*signalSemaphore))
+        if (!internalgfx::HasImpl<gfxSemaphore::Impl>(*signalSemaphore))
         {
             epiLogError("Failed to AcquireNextImage! The provided signal Semaphore has no implementation!");
             return -1;

@@ -43,7 +43,7 @@ epiBool gfxSemaphoreImplVK::Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeou
                                                    info.GetSemaphores().end(),
                                                    [](const gfxSemaphore& semaphore)
     {
-        return gfxSemaphoreImpl::ExtractImpl(semaphore) != nullptr;
+        return gfxSemaphore::Impl::ExtractImpl(semaphore) != nullptr;
     });
 
     if (!semaphoresAreValid)
@@ -60,7 +60,7 @@ epiBool gfxSemaphoreImplVK::Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeou
                    std::back_inserter(semaphores),
                    [](const gfxSemaphore& semaphore)
     {
-        const gfxSemaphoreImplVK* semaphoreImpl =  static_cast<const gfxSemaphoreImplVK*>(gfxSemaphoreImpl::ExtractImpl(semaphore));
+        const gfxSemaphoreImplVK* semaphoreImpl =  static_cast<const gfxSemaphoreImplVK*>(gfxSemaphore::Impl::ExtractImpl(semaphore));
         epiAssert(semaphoreImpl != nullptr);
 
         return semaphoreImpl->GetVkSemaphore();

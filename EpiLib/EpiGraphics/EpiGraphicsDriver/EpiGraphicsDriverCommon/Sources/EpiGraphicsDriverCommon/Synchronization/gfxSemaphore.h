@@ -10,13 +10,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxSemaphoreImpl;
-
-} // namespace internalgfx
-
 class gfxSemaphoreCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxSemaphoreCreateInfo)
@@ -56,16 +49,16 @@ public:
 EPI_GENREGION_END(gfxSemaphore)
 
 public:
-    friend class internalgfx::gfxSemaphoreImpl;
+    class Impl;
 
 public:
     gfxSemaphore() = default;
-    explicit gfxSemaphore(const std::shared_ptr<internalgfx::gfxSemaphoreImpl>& impl);
+    explicit gfxSemaphore(const std::shared_ptr<gfxSemaphore::Impl>& impl);
 
     epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout = std::numeric_limits<epiU64>::max());
 
 protected:
-    epiPimpl<internalgfx::gfxSemaphoreImpl> m_Impl;
+    std::shared_ptr<gfxSemaphore::Impl> m_Impl;
 };
 
 class gfxSemaphoreWaitInfo : public Object

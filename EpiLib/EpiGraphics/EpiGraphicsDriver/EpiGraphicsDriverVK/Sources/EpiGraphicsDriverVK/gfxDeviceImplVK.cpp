@@ -772,7 +772,7 @@ std::shared_ptr<gfxDescriptorPoolImpl> gfxDeviceImplVK::CreateDescriptorPool(con
     return impl;
 }
 
-std::shared_ptr<gfxSemaphoreImpl> gfxDeviceImplVK::CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const
+std::shared_ptr<gfxSemaphore::Impl> gfxDeviceImplVK::CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const
 {
     std::shared_ptr<gfxSemaphoreImplVK> impl = std::make_shared<gfxSemaphoreImplVK>(m_VkDevice);
     if (!impl->Init(info))

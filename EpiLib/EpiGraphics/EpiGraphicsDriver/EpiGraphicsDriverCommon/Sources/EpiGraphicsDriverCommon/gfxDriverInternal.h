@@ -191,7 +191,7 @@ public:
     virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
-    virtual std::shared_ptr<gfxSemaphoreImpl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxSemaphore::Impl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxFenceImpl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
 
     const epiArray<std::shared_ptr<gfxQueueFamilyImpl>>& GetQueueFamilies() const { return m_QueueFamilies; }
@@ -287,22 +287,6 @@ public:
 
     virtual epiBool Reset() = 0;
     virtual epiBool Wait(epiU64 timeout) = 0;
-};
-
-class gfxSemaphoreImpl
-{
-public:
-    static const gfxSemaphoreImpl* ExtractImpl(const gfxSemaphore& semaphore) { return semaphore.m_Impl.Ptr(); }
-
-public:
-    gfxSemaphoreImpl() = default;
-    gfxSemaphoreImpl(const gfxSemaphoreImpl& rhs) = delete;
-    gfxSemaphoreImpl& operator=(const gfxSemaphoreImpl& rhs) = delete;
-    gfxSemaphoreImpl(gfxSemaphoreImpl&& rhs) = default;
-    gfxSemaphoreImpl& operator=(gfxSemaphoreImpl&& rhs) = default;
-    virtual ~gfxSemaphoreImpl() = default;
-
-    virtual epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout) = 0;
 };
 
 class gfxDriverImpl
@@ -598,5 +582,21 @@ epiBool HasImpl(It begin, It end, Callback callback)
 }
 
 } // namespace internalgfx
+
+class gfxSemaphore::Impl
+{
+public:
+    static const Impl* ExtractImpl(const gfxSemaphore& semaphore) { return semaphore.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout) = 0;
+};
 
 EPI_NAMESPACE_END()

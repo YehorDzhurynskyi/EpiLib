@@ -11,7 +11,7 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-class gfxSemaphoreImplVK : public gfxSemaphoreImpl
+class gfxSemaphoreImplVK : public gfxSemaphore::Impl
 {
 public:
     explicit gfxSemaphoreImplVK(VkDevice_T* device);

@@ -164,7 +164,7 @@ epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore,
 
     if (signalSemaphore != nullptr)
     {
-        const gfxSemaphoreImplVK* signalSemaphoreImpl = static_cast<const gfxSemaphoreImplVK*>(gfxSemaphoreImpl::ExtractImpl(*signalSemaphore));
+        const gfxSemaphoreImplVK* signalSemaphoreImpl = static_cast<const gfxSemaphoreImplVK*>(gfxSemaphore::Impl::ExtractImpl(*signalSemaphore));
         epiAssert(signalSemaphoreImpl != nullptr);
 
         signalSemaphoreVk = signalSemaphoreImpl->GetVkSemaphore();

@@ -18,13 +18,13 @@ epiBool QueueSubmitInfoIsValid(const gfxQueueSubmitInfo& info)
         return false;
     }
 
-    if (!internalgfx::HasImpl<internalgfx::gfxSemaphoreImpl>(info.GetSignalSemaphores().begin(), info.GetSignalSemaphores().end()))
+    if (!internalgfx::HasImpl<gfxSemaphore::Impl>(info.GetSignalSemaphores().begin(), info.GetSignalSemaphores().end()))
     {
         epiLogError("Failed to Submit QueueSubmitInfo! Some of the provided signal Semaphores has no implementation!");
         return false;
     }
 
-    if (!internalgfx::HasImpl<internalgfx::gfxSemaphoreImpl>(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end()))
+    if (!internalgfx::HasImpl<gfxSemaphore::Impl>(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end()))
     {
         epiLogError("Failed to Submit QueueSubmitInfo! Some of the provided wait Semaphores has no implementation!");
         return false;
@@ -96,7 +96,7 @@ epiBool gfxQueue::Present(const gfxQueuePresentInfo& info)
         return false;
     }
 
-    if (!internalgfx::HasImpl<internalgfx::gfxSemaphoreImpl>(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end()))
+    if (!internalgfx::HasImpl<gfxSemaphore::Impl>(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end()))
     {
         epiLogError("Failed to Present QueuePresentInfo! Some of the provided wait Semaphores has no implementation!");
         return false;

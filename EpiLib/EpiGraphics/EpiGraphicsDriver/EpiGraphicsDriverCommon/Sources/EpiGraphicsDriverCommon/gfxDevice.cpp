@@ -382,7 +382,7 @@ std::optional<gfxSemaphore> gfxDevice::CreateSemaphoreFrom(const gfxSemaphoreCre
 {
     std::optional<gfxSemaphore> semaphore;
 
-    if (std::shared_ptr<internalgfx::gfxSemaphoreImpl> impl = m_Impl->CreateSemaphoreFrom(info))
+    if (std::shared_ptr<gfxSemaphore::Impl> impl = m_Impl->CreateSemaphoreFrom(info))
     {
         semaphore = gfxSemaphore(std::move(impl));
     }
