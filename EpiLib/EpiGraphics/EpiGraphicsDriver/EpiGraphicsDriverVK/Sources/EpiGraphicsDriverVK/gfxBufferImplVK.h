@@ -3,15 +3,12 @@
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
 
-struct VkBuffer_T;
 struct VkDevice_T;
+struct VkBuffer_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxBufferImplVK : public gfxBufferImpl
+class gfxBufferImplVK : public gfxBuffer::Impl
 {
 public:
     explicit gfxBufferImplVK(VkDevice_T* device);
@@ -29,7 +26,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkBuffer_T* m_VkBuffer{nullptr};
 };
-
-} // internalgfx
 
 EPI_NAMESPACE_END()

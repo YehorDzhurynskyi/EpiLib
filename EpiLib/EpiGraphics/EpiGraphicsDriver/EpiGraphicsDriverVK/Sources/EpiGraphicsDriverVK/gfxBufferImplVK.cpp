@@ -7,9 +7,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxBufferImplVK::gfxBufferImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -41,7 +38,5 @@ VkBuffer gfxBufferImplVK::GetVkBuffer() const
 {
     return m_VkBuffer;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

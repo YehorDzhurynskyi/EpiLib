@@ -64,10 +64,13 @@ EPI_GENREGION_END(gfxFrameBuffer)
 
 public:
     friend class gfxCommandBufferRecord;
+    friend class internalgfx::gfxFrameBufferImpl;
 
 public:
     gfxFrameBuffer() = default;
     explicit gfxFrameBuffer(const std::shared_ptr<internalgfx::gfxFrameBufferImpl>& impl);
+
+    epiBool HasImpl() const;
 
 protected:
     epiPimpl<internalgfx::gfxFrameBufferImpl> m_Impl;

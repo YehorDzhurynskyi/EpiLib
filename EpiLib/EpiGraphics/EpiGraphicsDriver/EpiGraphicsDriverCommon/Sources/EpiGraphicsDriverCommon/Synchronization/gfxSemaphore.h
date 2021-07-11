@@ -55,6 +55,8 @@ public:
     gfxSemaphore() = default;
     explicit gfxSemaphore(const std::shared_ptr<gfxSemaphore::Impl>& impl);
 
+    epiBool HasImpl() const;
+
     epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout = std::numeric_limits<epiU64>::max());
 
 protected:

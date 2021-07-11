@@ -12,4 +12,9 @@ gfxTexture::gfxTexture(const std::shared_ptr<internalgfx::gfxTextureImpl>& impl)
 {
 }
 
+epiBool gfxTexture::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
+}
+
 EPI_NAMESPACE_END()

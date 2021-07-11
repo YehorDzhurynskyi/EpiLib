@@ -242,10 +242,13 @@ EPI_GENREGION_END(gfxPipelineGraphics)
 
 public:
     friend class gfxCommandBufferRecord;
+    friend class internalgfx::gfxPipelineGraphicsImpl;
 
 public:
     gfxPipelineGraphics() = default;
     explicit gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl>& impl);
+
+    epiBool HasImpl() const;
 
     epiBool IsDynamic(gfxPipelineDynamicState state) const;
     void DynamicClearViewports();

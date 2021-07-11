@@ -3,13 +3,10 @@
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 #include "EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.h"
 
-struct VkSemaphore_T;
 struct VkDevice_T;
+struct VkSemaphore_T;
 
 EPI_NAMESPACE_BEGIN()
-
-namespace internalgfx
-{
 
 class gfxSemaphoreImplVK : public gfxSemaphore::Impl
 {
@@ -31,7 +28,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkSemaphore_T* m_VkSemaphore{nullptr};
 };
-
-} // internalgfx
 
 EPI_NAMESPACE_END()

@@ -434,7 +434,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                        std::back_inserter(bufferInfos),
                        [](const gfxDescriptorBufferInfo& bufferInfo)
         {
-            const gfxBufferImplVK* buffer = static_cast<const gfxBufferImplVK*>(gfxBufferImpl::ExtractImpl(bufferInfo.GetBuffer()));
+            const gfxBufferImplVK* buffer = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(bufferInfo.GetBuffer()));
             epiAssert(buffer != nullptr);
 
             VkDescriptorBufferInfo bufferInfoVk{};
@@ -472,7 +472,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                                                                                            write.GetBufferInfos().end(),
                                                                                            [](const gfxDescriptorBufferInfo& bufferInfo)
         {
-            return gfxBufferImpl::ExtractImpl(bufferInfo.GetBuffer()) != nullptr;
+            return gfxBuffer::Impl::ExtractImpl(bufferInfo.GetBuffer()) != nullptr;
         });
 
         if (!isBufferInfosValid)
@@ -709,7 +709,7 @@ std::shared_ptr<gfxCommandPoolImpl> gfxDeviceImplVK::CreateCommandPool(const gfx
     return impl;
 }
 
-std::shared_ptr<gfxBufferImpl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCreateInfo& info) const
+std::shared_ptr<gfxBuffer::Impl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCreateInfo& info) const
 {
     std::shared_ptr<gfxBufferImplVK> impl = std::make_shared<gfxBufferImplVK>(m_VkDevice);
     if (!impl->Init(info))
@@ -720,10 +720,10 @@ std::shared_ptr<gfxBufferImpl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCrea
     return impl;
 }
 
-std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info, const gfxBufferImpl& bufferImpl) const
+std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const
 {
     std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
-    if (!impl->Init(info, m_PhysicalDevice, static_cast<const gfxBufferImplVK&>(bufferImpl)))
+    if (!impl->Init(info, m_PhysicalDevice))
     {
         impl.reset();
     }

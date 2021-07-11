@@ -54,21 +54,19 @@ gfxCommandBufferRecord::operator epiBool() const
 
 gfxCommandBufferRecord& gfxCommandBufferRecord::RenderPassBegin(const gfxRenderPassBeginInfo& info)
 {
-    const auto renderPassImpl = info.GetRenderPass().m_Impl;
-    if (!renderPassImpl)
+    if (!info.GetRenderPass().HasImpl())
     {
         epiLogError("Failed to begin RenderPass! Provided RenderPass has no implementation!");
         return *this;
     }
 
-    const auto frameBufferImpl = info.GetFrameBuffer().m_Impl;
-    if (!frameBufferImpl)
+    if (!info.GetFrameBuffer().HasImpl())
     {
         epiLogError("Failed to begin RenderPass! Provided FrameBuffer has no implementation!");
         return *this;
     }
 
-    m_Impl->RenderPassBegin(info, *renderPassImpl, *frameBufferImpl);
+    m_Impl->RenderPassBegin(info);
 
     return *this;
 }
@@ -82,38 +80,37 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::RenderPassEnd()
 
 gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBind(const gfxPipelineGraphics& pipeline)
 {
-    const auto pipelineImpl = pipeline.m_Impl;
-    if (!pipelineImpl)
+    if (!pipeline.HasImpl())
     {
-        epiLogError("Failed to bind Pipeline! Provided Pipeline has no implementation!");
+        epiLogError("Failed to bind Pipeline! The provided Pipeline has no implementation!");
         return *this;
     }
 
-    const epiBool hasInvalidViewport = std::any_of(pipeline.GetViewports().begin(),
-                                                   pipeline.GetViewports().end(),
-                                                   [](const gfxPipelineViewport& v)
+    const epiBool allViewportsAreValid = std::all_of(pipeline.GetViewports().begin(),
+                                                     pipeline.GetViewports().end(),
+                                                     [](const gfxPipelineViewport& v)
     {
-        return !v.IsValid();
+        return v.IsValid();
     });
 
-    if (hasInvalidViewport)
+    if (!allViewportsAreValid)
     {
-        epiLogError("Failed to bind Pipeline! Provided Pipeline has invalid viewports!");
+        epiLogError("Failed to bind Pipeline! The provided Pipeline has invalid viewport!");
         return *this;
     }
 
-    m_Impl->PipelineBind(*pipelineImpl);
+    m_Impl->PipelineBind(pipeline);
 
     return *this;
 }
 
 gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier)
 {
-    const epiBool bufferMemoryBarriersValid = internalgfx::HasImpl(pipelineBarrier.GetBufferMemoryBarriers().begin(),
-                                                                   pipelineBarrier.GetBufferMemoryBarriers().end(),
-                                                                   [](const gfxBufferMemoryBarrier& barrier)
+    const epiBool bufferMemoryBarriersValid = std::all_of(pipelineBarrier.GetBufferMemoryBarriers().begin(),
+                                                          pipelineBarrier.GetBufferMemoryBarriers().end(),
+                                                          [](const gfxBufferMemoryBarrier& barrier)
     {
-        return internalgfx::HasImpl<internalgfx::gfxBufferImpl>(barrier.GetBuffer());
+        return barrier.GetBuffer().HasImpl();
     });
 
     if (!bufferMemoryBarriersValid)
@@ -122,11 +119,11 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBarrier(const gfxCommand
         return *this;
     }
 
-    const epiBool imageMemoryBarriersValid = internalgfx::HasImpl(pipelineBarrier.GetImageMemoryBarriers().begin(),
-                                                                  pipelineBarrier.GetImageMemoryBarriers().end(),
-                                                                  [](const gfxImageMemoryBarrier& barrier)
+    const epiBool imageMemoryBarriersValid = std::all_of(pipelineBarrier.GetImageMemoryBarriers().begin(),
+                                                         pipelineBarrier.GetImageMemoryBarriers().end(),
+                                                         [](const gfxImageMemoryBarrier& barrier)
     {
-        return internalgfx::HasImpl<internalgfx::gfxTextureImpl>(barrier.GetImage());
+        return barrier.GetImage().HasImpl();
     });
 
     if (!imageMemoryBarriersValid)
@@ -142,35 +139,31 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBarrier(const gfxCommand
 
 gfxCommandBufferRecord& gfxCommandBufferRecord::VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets)
 {
-    epiPtrArray<const internalgfx::gfxBufferImpl> buffersImpl;
-    buffersImpl.Reserve(buffers.Size());
-
-    std::transform(buffers.begin(), buffers.end(), std::back_inserter(buffersImpl), [](const gfxBuffer& buffer)
+    const epiBool allBuffersAreValid = std::all_of(buffers.begin(), buffers.end(), [](const gfxBuffer& buffer)
     {
-        return buffer.m_Impl.Ptr();
+        return buffer.HasImpl();
     });
 
-    if (buffersImpl.Size() != buffers.Size())
+    if (!allBuffersAreValid)
     {
-        epiLogError("Failed to bind Vertex Buffers! Some of the provided Buffers has no implementation!");
+        epiLogError("Failed to bind vertex Buffers! Some of the provided Buffers have no implementation!");
         return *this;
     }
 
-    m_Impl->VertexBuffersBind(buffersImpl, offsets);
+    m_Impl->VertexBuffersBind(buffers, offsets);
 
     return *this;
 }
 
 gfxCommandBufferRecord& gfxCommandBufferRecord::IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset)
 {
-    const auto bufferImpl = buffer.m_Impl;
-    if (!bufferImpl)
+    if (!buffer.HasImpl())
     {
-        epiLogError("Failed to bind Index Buffer! Provided Buffer has no implementation!");
+        epiLogError("Failed to bind Index Buffer! The provided Buffer has no implementation!");
         return *this;
     }
 
-    m_Impl->IndexBufferBind(*bufferImpl, type, offset);
+    m_Impl->IndexBufferBind(buffer, type, offset);
 
     return *this;
 }
@@ -202,34 +195,32 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::DrawIndexed(epiU32 indexCount, e
 
 gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions)
 {
-    const auto srcImpl = src.m_Impl;
-    if (!srcImpl)
+    if (!src.HasImpl())
     {
-        epiLogError("Failed to Copy! Source Buffer has no implementation!");
+        epiLogError("Failed to Copy! The provided source Buffer has no implementation!");
         return *this;
     }
 
-    const auto dstImpl = dst.m_Impl;
-    if (!dstImpl)
+    if (!dst.HasImpl())
     {
-        epiLogError("Failed to Copy! Destination Buffer has no implementation!");
+        epiLogError("Failed to Copy! The provided destination Buffer has no implementation!");
         return *this;
     }
 
-    m_Impl->Copy(*srcImpl, *dstImpl, copyRegions);
+    m_Impl->Copy(src, dst, copyRegions);
 
     return *this;
 }
 
 gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
 {
-    if (!internalgfx::HasImpl<internalgfx::gfxBufferImpl>(src))
+    if (!src.HasImpl())
     {
         epiLogError("Failed to Copy! Source Buffer has no implementation!");
         return *this;
     }
 
-    if (!internalgfx::HasImpl<internalgfx::gfxTextureImpl>(dst))
+    if (!dst.HasImpl())
     {
         epiLogError("Failed to Copy! Destination Image has no implementation!");
         return *this;
@@ -245,9 +236,9 @@ gfxCommandBuffer::gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommand
 {
 }
 
-epiBool gfxCommandBuffer::GetIsPrimary_Callback() const
+epiBool gfxCommandBuffer::HasImpl() const
 {
-    return m_Impl->GetIsPrimary();
+    return static_cast<epiBool>(m_Impl);
 }
 
 gfxCommandBufferRecord gfxCommandBuffer::RecordCommands(gfxCommandBufferUsage usage)
@@ -256,6 +247,11 @@ gfxCommandBufferRecord gfxCommandBuffer::RecordCommands(gfxCommandBufferUsage us
     record.RecordBegin(m_Impl.Ptr(), usage);
 
     return record;
+}
+
+epiBool gfxCommandBuffer::GetIsPrimary_Callback() const
+{
+    return m_Impl->GetIsPrimary();
 }
 
 EPI_NAMESPACE_END()

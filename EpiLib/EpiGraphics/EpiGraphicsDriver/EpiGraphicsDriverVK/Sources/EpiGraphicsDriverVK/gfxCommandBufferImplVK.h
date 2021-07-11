@@ -24,14 +24,14 @@ public:
     epiBool RecordBegin(gfxCommandBufferUsage usage) override;
     epiBool RecordEnd() override;
 
-    void RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) override;
+    void RenderPassBegin(const gfxRenderPassBeginInfo& info) override;
     void RenderPassEnd() override;
 
-    void PipelineBind(const gfxPipelineGraphicsImpl& pipeline) override;
+    void PipelineBind(const gfxPipelineGraphics& pipeline) override;
     void PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier) override;
 
-    void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) override;
-    void IndexBufferBind(const gfxBufferImpl& bufferImpl, gfxIndexBufferType type, epiU32 offset = 0) override;
+    void VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {}) override;
+    void IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0) override;
     void DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
                             const gfxPipelineLayout& pipelineLayout,
                             const epiArray<gfxDescriptorSet>& sets,
@@ -40,7 +40,7 @@ public:
 
     void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) override;
     void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) override;
-    void Copy(const gfxBufferImpl& src, const gfxBufferImpl& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) override;
+    void Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) override;
     void Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) override;
 
     VkCommandBuffer_T* GetVkCommandBuffer() const;

@@ -192,6 +192,11 @@ gfxRenderPass::gfxRenderPass(const std::shared_ptr<internalgfx::gfxRenderPassImp
 {
 }
 
+epiBool gfxRenderPass::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
+}
+
 epiBool gfxRenderPass::IsCompatibleWith(const gfxRenderPass& rhs) const
 {
     // TODO: consider unused attachments

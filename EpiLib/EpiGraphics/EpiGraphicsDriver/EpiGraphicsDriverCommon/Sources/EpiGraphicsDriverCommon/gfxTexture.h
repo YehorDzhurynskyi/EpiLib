@@ -78,6 +78,8 @@ public:
     gfxTexture() = default;
     explicit gfxTexture(const std::shared_ptr<internalgfx::gfxTextureImpl>& impl);
 
+    epiBool HasImpl() const;
+
 protected:
     epiPimpl<internalgfx::gfxTextureImpl> m_Impl;
 };

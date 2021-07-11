@@ -88,6 +88,9 @@ protected:
 class gfxFrameBufferImpl
 {
 public:
+    static const gfxFrameBufferImpl* ExtractImpl(const gfxFrameBuffer& frameBuffer) { return frameBuffer.m_Impl.Ptr(); }
+
+public:
     gfxFrameBufferImpl() = default;
     gfxFrameBufferImpl(const gfxFrameBufferImpl& rhs) = delete;
     gfxFrameBufferImpl& operator=(const gfxFrameBufferImpl& rhs) = delete;
@@ -132,14 +135,14 @@ public:
     virtual epiBool RecordBegin(gfxCommandBufferUsage usage) = 0;
     virtual epiBool RecordEnd() = 0;
 
-    virtual void RenderPassBegin(const gfxRenderPassBeginInfo& info, const gfxRenderPassImpl& renderPassImpl, const gfxFrameBufferImpl& frameBufferImpl) = 0;
+    virtual void RenderPassBegin(const gfxRenderPassBeginInfo& info) = 0;
     virtual void RenderPassEnd() = 0;
 
-    virtual void PipelineBind(const gfxPipelineGraphicsImpl& pipeline) = 0;
+    virtual void PipelineBind(const gfxPipelineGraphics& pipeline) = 0;
     virtual void PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier) = 0;
 
-    virtual void VertexBuffersBind(const epiPtrArray<const gfxBufferImpl>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
-    virtual void IndexBufferBind(const gfxBufferImpl& bufferImpl, gfxIndexBufferType type, epiU32 offset = 0) = 0;
+    virtual void VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
+    virtual void IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0) = 0;
     virtual void DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
                                     const gfxPipelineLayout& pipelineLayout,
                                     const epiArray<gfxDescriptorSet>& sets,
@@ -148,7 +151,7 @@ public:
 
     virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
     virtual void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) = 0;
-    virtual void Copy(const gfxBufferImpl& src, const gfxBufferImpl& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
+    virtual void Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
     virtual void Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) = 0;
 };
 
@@ -186,8 +189,8 @@ public:
     virtual std::shared_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const = 0;
     virtual std::shared_ptr<gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
-    virtual std::shared_ptr<gfxBufferImpl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info, const gfxBufferImpl& bufferImpl) const = 0;
+    virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
@@ -328,20 +331,6 @@ public:
 
     virtual void Bind() = 0;
     virtual void UnBind() = 0;
-};
-
-class gfxBufferImpl
-{
-public:
-    static const gfxBufferImpl* ExtractImpl(const gfxBuffer& buffer) { return buffer.m_Impl.Ptr(); }
-
-public:
-    gfxBufferImpl() = default;
-    gfxBufferImpl(const gfxBufferImpl& rhs) = delete;
-    gfxBufferImpl& operator=(const gfxBufferImpl& rhs) = delete;
-    gfxBufferImpl(gfxBufferImpl&& rhs) = default;
-    gfxBufferImpl& operator=(gfxBufferImpl&& rhs) = default;
-    virtual ~gfxBufferImpl() = default;
 };
 
 class gfxDeviceMemoryImpl
@@ -513,6 +502,9 @@ public:
 class gfxPipelineGraphicsImpl
 {
 public:
+    static const gfxPipelineGraphicsImpl* ExtractImpl(const gfxPipelineGraphics& pipeline) { return pipeline.m_Impl.Ptr(); }
+
+public:
     gfxPipelineGraphicsImpl() = default;
     gfxPipelineGraphicsImpl(const gfxPipelineGraphicsImpl& rhs) = delete;
     gfxPipelineGraphicsImpl& operator=(const gfxPipelineGraphicsImpl& rhs) = delete;
@@ -558,29 +550,6 @@ public:
     virtual ~gfxAttachmentImpl() = default;
 };
 
-template<typename TImpl, typename T>
-epiBool HasImpl(const T& obj)
-{
-    return TImpl::ExtractImpl(obj) != nullptr;
-}
-
-template<typename TImpl, typename It>
-epiBool HasImpl(It begin, It end)
-{
-    using T = typename It::value_type;
-
-    return std::all_of(begin, end, [](const T& obj)
-    {
-        return HasImpl<TImpl>(obj);
-    });
-}
-
-template<typename It, typename Callback>
-epiBool HasImpl(It begin, It end, Callback callback)
-{
-    return std::all_of(begin, end, callback);
-}
-
 } // namespace internalgfx
 
 class gfxSemaphore::Impl
@@ -598,5 +567,20 @@ public:
 
     virtual epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout) = 0;
 };
+
+class gfxBuffer::Impl
+{
+public:
+    static const Impl* ExtractImpl(const gfxBuffer& buffer) { return buffer.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
+
 
 EPI_NAMESPACE_END()

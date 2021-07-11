@@ -7,9 +7,14 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxBuffer::gfxBuffer(const std::shared_ptr<internalgfx::gfxBufferImpl>& impl)
+gfxBuffer::gfxBuffer(const std::shared_ptr<gfxBuffer::Impl>& impl)
     : m_Impl{impl}
 {
+}
+
+epiBool gfxBuffer::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 EPI_NAMESPACE_END()

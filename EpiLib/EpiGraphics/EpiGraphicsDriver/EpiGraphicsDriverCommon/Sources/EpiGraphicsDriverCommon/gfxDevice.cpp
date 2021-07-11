@@ -284,7 +284,7 @@ std::optional<gfxBuffer> gfxDevice::CreateBuffer(const gfxBufferCreateInfo& info
 {
     std::optional<gfxBuffer> buffer;
 
-    if (std::shared_ptr<internalgfx::gfxBufferImpl> impl = m_Impl->CreateBuffer(info))
+    if (std::shared_ptr<gfxBuffer::Impl> impl = m_Impl->CreateBuffer(info))
     {
         buffer = gfxBuffer(std::move(impl));
     }
@@ -296,14 +296,13 @@ std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemo
 {
     std::optional<gfxDeviceMemory> deviceMemory;
 
-    const auto bufferImpl = info.GetBuffer().m_Impl;
-    if (!bufferImpl)
+    if (!info.GetBuffer().HasImpl())
     {
         epiLogError("Failed to create DeviceMemory! Provided Buffer has no implementation!");
         return deviceMemory;
     }
 
-    if (std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> impl = m_Impl->CreateDeviceMemory(info, *bufferImpl))
+    if (std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> impl = m_Impl->CreateDeviceMemory(info))
     {
         deviceMemory = gfxDeviceMemory(std::move(impl));
     }

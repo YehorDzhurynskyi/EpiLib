@@ -12,19 +12,40 @@ EPI_NAMESPACE_USING()
 
 epiBool QueueSubmitInfoIsValid(const gfxQueueSubmitInfo& info)
 {
-    if (!internalgfx::HasImpl<internalgfx::gfxCommandBufferImpl>(info.GetCommandBuffers().begin(), info.GetCommandBuffers().end()))
+    const epiBool allcommandBuffersAreValid = std::all_of(info.GetCommandBuffers().begin(),
+                                                          info.GetCommandBuffers().end(),
+                                                          [](const gfxCommandBuffer& commandBuffer)
+    {
+        return commandBuffer.HasImpl();
+    });
+
+    if (!allcommandBuffersAreValid)
     {
         epiLogError("Failed to Submit QueueSubmitInfo! Some of the provided CommandBuffers has no implementation!");
         return false;
     }
 
-    if (!internalgfx::HasImpl<gfxSemaphore::Impl>(info.GetSignalSemaphores().begin(), info.GetSignalSemaphores().end()))
+    const epiBool allSignalSemaphoresAreValid = std::all_of(info.GetSignalSemaphores().begin(),
+                                                            info.GetSignalSemaphores().end(),
+                                                            [](const gfxSemaphore& semaphore)
+    {
+        return semaphore.HasImpl();
+    });
+
+    if (!allSignalSemaphoresAreValid)
     {
         epiLogError("Failed to Submit QueueSubmitInfo! Some of the provided signal Semaphores has no implementation!");
         return false;
     }
 
-    if (!internalgfx::HasImpl<gfxSemaphore::Impl>(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end()))
+    const epiBool allWaitSemaphoresAreValid = std::all_of(info.GetWaitSemaphores().begin(),
+                                                          info.GetWaitSemaphores().end(),
+                                                          [](const gfxSemaphore& semaphore)
+    {
+        return semaphore.HasImpl();
+    });
+
+    if (!allWaitSemaphoresAreValid)
     {
         epiLogError("Failed to Submit QueueSubmitInfo! Some of the provided wait Semaphores has no implementation!");
         return false;
@@ -64,9 +85,9 @@ epiBool gfxQueue::Submit(const epiArray<gfxQueueSubmitInfo>& infos)
 
 epiBool gfxQueue::Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence)
 {
-    if (!internalgfx::HasImpl<internalgfx::gfxFenceImpl>(signalFence))
+    if (!signalFence.HasImpl())
     {
-        epiLogError("Failed to Submit QueueSubmitInfo! A provided signal Fence has no implementation!");
+        epiLogError("Failed to Submit QueueSubmitInfo! The provided signal Fence has no implementation!");
         return false;
     }
 
@@ -96,15 +117,29 @@ epiBool gfxQueue::Present(const gfxQueuePresentInfo& info)
         return false;
     }
 
-    if (!internalgfx::HasImpl<gfxSemaphore::Impl>(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end()))
+    const epiBool allSemaphoresAreValid = std::all_of(info.GetWaitSemaphores().begin(),
+                                                      info.GetWaitSemaphores().end(),
+                                                      [](const gfxSemaphore& semaphore)
     {
-        epiLogError("Failed to Present QueuePresentInfo! Some of the provided wait Semaphores has no implementation!");
+        return semaphore.HasImpl();
+    });
+
+    if (!allSemaphoresAreValid)
+    {
+        epiLogError("Failed to Present QueuePresentInfo! Some of the provided wait Semaphores have no implementation!");
         return false;
     }
 
-    if (!internalgfx::HasImpl<internalgfx::gfxSwapChainImpl>(info.GetSwapChains().begin(), info.GetSwapChains().end()))
+    const epiBool allSwapChainsAreValid = std::all_of(info.GetSwapChains().begin(),
+                                                      info.GetSwapChains().end(),
+                                                      [](const gfxSwapChain& swapChain)
     {
-        epiLogError("Failed to Present QueuePresentInfo! Some of the provided wait SwapChains has no implementation!");
+        return swapChain.HasImpl();
+    });
+
+    if (!allSwapChainsAreValid)
+    {
+        epiLogError("Failed to Present QueuePresentInfo! Some of the provided SwapChains have no implementation!");
         return false;
     }
 

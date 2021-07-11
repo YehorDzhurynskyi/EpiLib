@@ -64,6 +64,11 @@ gfxPipelineGraphics::gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxP
 {
 }
 
+epiBool gfxPipelineGraphics::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
+}
+
 epiBool gfxPipelineGraphics::IsDynamic(gfxPipelineDynamicState state) const
 {
     return m_Impl->IsDynamic(state);

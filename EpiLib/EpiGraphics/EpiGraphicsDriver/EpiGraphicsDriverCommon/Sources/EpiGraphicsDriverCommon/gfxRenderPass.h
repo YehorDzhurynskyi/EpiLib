@@ -337,6 +337,8 @@ public:
     gfxRenderPass() = default;
     explicit gfxRenderPass(const std::shared_ptr<internalgfx::gfxRenderPassImpl>& impl);
 
+    epiBool HasImpl() const;
+
     epiBool IsCompatibleWith(const gfxRenderPass& rhs) const;
     epiBool IsCompatibleWith(const gfxRenderPassSchema& rhs) const;
 

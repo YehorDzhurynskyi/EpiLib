@@ -22,11 +22,19 @@ gfxDeviceMemoryImplVK::~gfxDeviceMemoryImplVK()
 }
 
 epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
-                                    const gfxPhysicalDeviceImplVK& physicalDeviceImpl,
-                                    const gfxBufferImplVK& bufferImpl)
+                                    const gfxPhysicalDeviceImplVK& physicalDeviceImpl)
 {
+    if (!info.GetBuffer().HasImpl())
+    {
+        epiLogError("Failed to allocate memory for the Buffer! The provided Buffer has no implementation!");
+        return false;
+    }
+
+    const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(info.GetBuffer()));
+    epiAssert(bufferImpl != nullptr);
+
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(m_VkDevice, bufferImpl.GetVkBuffer(), &memRequirements);
+    vkGetBufferMemoryRequirements(m_VkDevice, bufferImpl->GetVkBuffer(), &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -65,7 +73,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
         return false;
     }
 
-    if (const VkResult result = vkBindBufferMemory(m_VkDevice, bufferImpl.GetVkBuffer(), m_VkDeviceMemory, kOffset); result != VK_SUCCESS)
+    if (const VkResult result = vkBindBufferMemory(m_VkDevice, bufferImpl->GetVkBuffer(), m_VkDeviceMemory, kOffset); result != VK_SUCCESS)
     {
         gfxLogErrorEx(result, "Failed to call vkBindBufferMemory!");
         return false;

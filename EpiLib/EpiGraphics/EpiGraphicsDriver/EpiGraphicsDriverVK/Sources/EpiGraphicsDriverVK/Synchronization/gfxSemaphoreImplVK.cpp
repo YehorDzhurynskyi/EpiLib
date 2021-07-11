@@ -7,9 +7,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxSemaphoreImplVK::gfxSemaphoreImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -86,7 +83,5 @@ VkSemaphore gfxSemaphoreImplVK::GetVkSemaphore() const
 {
     return m_VkSemaphore;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

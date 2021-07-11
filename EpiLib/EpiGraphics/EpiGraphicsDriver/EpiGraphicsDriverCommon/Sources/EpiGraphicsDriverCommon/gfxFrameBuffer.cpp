@@ -15,4 +15,9 @@ gfxFrameBuffer::gfxFrameBuffer(const std::shared_ptr<internalgfx::gfxFrameBuffer
 {
 }
 
+epiBool gfxFrameBuffer::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
+}
+
 EPI_NAMESPACE_END()

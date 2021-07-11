@@ -245,6 +245,8 @@ public:
     gfxCommandBuffer() = default;
     explicit gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& impl);
 
+    epiBool HasImpl() const;
+
     gfxCommandBufferRecord RecordCommands(gfxCommandBufferUsage usage = gfxCommandBufferUsage{0});
 
 protected:
