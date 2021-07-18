@@ -7,19 +7,12 @@ struct VkFence_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 class gfxDeviceImplVK;
-
-} // namespace internalgfx
-
-
 class gfxQueueFamilyImplVK;
 class gfxQueueImplVK : public gfxQueue::Impl
 {
 public:
-    gfxQueueImplVK(const internalgfx::gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority);
+    gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority);
     gfxQueueImplVK(const gfxQueueImplVK& rhs) = delete;
     gfxQueueImplVK& operator=(const gfxQueueImplVK& rhs) = delete;
     gfxQueueImplVK(gfxQueueImplVK&& rhs);

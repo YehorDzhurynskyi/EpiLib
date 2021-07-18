@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxPhysicalDevice::gfxPhysicalDevice(const std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl>& impl)
+gfxPhysicalDevice::gfxPhysicalDevice(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
     epiArray<gfxQueueFamilyDescriptor>& queueFamilyDescriptors = GetQueueFamilyDescriptors();

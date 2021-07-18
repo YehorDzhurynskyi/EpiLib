@@ -21,7 +21,7 @@
 
 EPI_NAMESPACE_BEGIN()
 
-gfxSwapChainImplVK::gfxSwapChainImplVK(const internalgfx::gfxDeviceImplVK& device)
+gfxSwapChainImplVK::gfxSwapChainImplVK(const gfxDeviceImplVK& device)
     : m_Device{device}
 {
 }

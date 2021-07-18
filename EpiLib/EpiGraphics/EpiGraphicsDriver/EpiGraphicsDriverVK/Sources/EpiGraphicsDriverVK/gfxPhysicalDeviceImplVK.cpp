@@ -23,9 +23,6 @@ static_assert(epiArrLen(kDeviceExtensionNames) == static_cast<epiU32>(gfxPhysica
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 void gfxPhysicalDeviceImplVK::Init(VkPhysicalDevice device)
 {
     m_VkDevice = device;
@@ -417,7 +414,5 @@ void gfxPhysicalDeviceImplVK::FillFeaturesSupported()
         m_FeatureSupported[i] = kFeatures[i];
     }
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

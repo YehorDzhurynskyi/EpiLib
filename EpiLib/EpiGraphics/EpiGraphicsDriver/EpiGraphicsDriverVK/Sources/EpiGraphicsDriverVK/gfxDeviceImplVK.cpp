@@ -53,9 +53,6 @@ const epiChar* ExtensionNameOf(gfxPhysicalDeviceExtension extension)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxDeviceImplVK::~gfxDeviceImplVK()
 {
     if (m_VkDevice != VK_NULL_HANDLE)
@@ -73,7 +70,7 @@ epiBool gfxDeviceImplVK::Init(const gfxDeviceCreateInfo& info)
     }
 
     {
-        const std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = std::static_pointer_cast<gfxPhysicalDeviceImplVK>(gfxPhysicalDeviceImpl::ExtractImpl(info.GetPhysicalDevice()));
+        const std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = std::static_pointer_cast<gfxPhysicalDeviceImplVK>(gfxPhysicalDevice::Impl::ExtractImpl(info.GetPhysicalDevice()));
         epiAssert(physicalDevice != nullptr);
 
         m_PhysicalDevice = physicalDevice;
@@ -429,10 +426,10 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                        std::back_inserter(imageInfos),
                        [](const gfxDescriptorImageInfo& imageInfo)
         {
-            const gfxSamplerImplVK* sampler = static_cast<const gfxSamplerImplVK*>(gfxSamplerImpl::ExtractImpl(imageInfo.GetSampler()));
+            const internalgfx::gfxSamplerImplVK* sampler = static_cast<const internalgfx::gfxSamplerImplVK*>(internalgfx::gfxSamplerImpl::ExtractImpl(imageInfo.GetSampler()));
             epiAssert(sampler != nullptr);
 
-            const gfxTextureViewImplVK* imageView = static_cast<const gfxTextureViewImplVK*>(gfxTextureViewImpl::ExtractImpl(imageInfo.GetImageView()));
+            const internalgfx::gfxTextureViewImplVK* imageView = static_cast<const internalgfx::gfxTextureViewImplVK*>(internalgfx::gfxTextureViewImpl::ExtractImpl(imageInfo.GetImageView()));
             epiAssert(imageView != nullptr);
 
             VkDescriptorImageInfo imageInfoVk{};
@@ -480,7 +477,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
     const epiBool writesAreValid = std::all_of(writes.begin(), writes.end(), [](const gfxDescriptorSetWrite& write)
     {
         // NOTE: should be provided either image infos or buffer infos or buffer view infos
-        const epiBool isValid = (gfxDescriptorSetImpl::ExtractImpl(write.GetDstSet()) != nullptr) &&
+        const epiBool isValid = (internalgfx::gfxDescriptorSetImpl::ExtractImpl(write.GetDstSet()) != nullptr) &&
                                 ((write.GetImageInfos().Size() ^ write.GetBufferInfos().Size()) /* TODO: ^ write.GetBufferViewInfos() */);
         if (!isValid)
         {
@@ -513,7 +510,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
 
     const epiBool copiesAreValid = std::all_of(copies.begin(), copies.end(), [](const gfxDescriptorSetCopy& copy)
     {
-        return gfxDescriptorSetImpl::ExtractImpl(copy.GetSrcSet()) != nullptr && gfxDescriptorSetImpl::ExtractImpl(copy.GetDstSet()) != nullptr;
+        return internalgfx::gfxDescriptorSetImpl::ExtractImpl(copy.GetSrcSet()) != nullptr && internalgfx::gfxDescriptorSetImpl::ExtractImpl(copy.GetDstSet()) != nullptr;
     });
 
     if (!copiesAreValid)
@@ -544,7 +541,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                     &transformBufferInfos,
                     &transformBufferViewInfos](const gfxDescriptorSetWrite& write)
     {
-        const gfxDescriptorSetImplVK* set = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSetImpl::ExtractImpl(write.GetDstSet()));
+        const internalgfx::gfxDescriptorSetImplVK* set = static_cast<const internalgfx::gfxDescriptorSetImplVK*>(internalgfx::gfxDescriptorSetImpl::ExtractImpl(write.GetDstSet()));
         epiAssert(set != nullptr);
 
         std::vector<VkDescriptorImageInfo>& imageInfos = writesImageInfosVk.emplace_back(std::move(transformImageInfos(write)));
@@ -573,10 +570,10 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                    std::back_inserter(copiesVk),
                    [](const gfxDescriptorSetCopy& copy)
     {
-        const gfxDescriptorSetImplVK* srcSet = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSetImpl::ExtractImpl(copy.GetSrcSet()));
+        const internalgfx::gfxDescriptorSetImplVK* srcSet = static_cast<const internalgfx::gfxDescriptorSetImplVK*>(internalgfx::gfxDescriptorSetImpl::ExtractImpl(copy.GetSrcSet()));
         epiAssert(srcSet != nullptr);
 
-        const gfxDescriptorSetImplVK* dstSet = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSetImpl::ExtractImpl(copy.GetDstSet()));
+        const internalgfx::gfxDescriptorSetImplVK* dstSet = static_cast<const internalgfx::gfxDescriptorSetImplVK*>(internalgfx::gfxDescriptorSetImpl::ExtractImpl(copy.GetDstSet()));
         epiAssert(dstSet != nullptr);
 
         VkCopyDescriptorSet copyVk{};
@@ -606,9 +603,9 @@ std::shared_ptr<gfxSwapChain::Impl> gfxDeviceImplVK::CreateSwapChain(const gfxSw
     return impl;
 }
 
-std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
 {
-    std::shared_ptr<gfxRenderPassImplVK> impl = std::make_shared<gfxRenderPassImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxRenderPassImplVK> impl = std::make_shared<internalgfx::gfxRenderPassImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -617,9 +614,9 @@ std::shared_ptr<gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRe
     return impl;
 }
 
-std::shared_ptr<gfxPipelineLayoutImpl> gfxDeviceImplVK::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> gfxDeviceImplVK::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
 {
-    std::shared_ptr<gfxPipelineLayoutImplVK> impl = std::make_shared<gfxPipelineLayoutImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxPipelineLayoutImplVK> impl = std::make_shared<internalgfx::gfxPipelineLayoutImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -628,14 +625,14 @@ std::shared_ptr<gfxPipelineLayoutImpl> gfxDeviceImplVK::CreatePipelineLayout(con
     return impl;
 }
 
-std::shared_ptr<gfxPipelineGraphicsImpl> gfxDeviceImplVK::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info,
-                                                                                 const gfxShaderProgramImpl& shaderProgramImpl,
-                                                                                 const gfxRenderPassImpl& renderPassImpl) const
+std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> gfxDeviceImplVK::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info,
+                                                                                 const internalgfx::gfxShaderProgramImpl& shaderProgramImpl,
+                                                                                 const internalgfx::gfxRenderPassImpl& renderPassImpl) const
 {
-    std::shared_ptr<gfxPipelineGraphicsImplVK> impl = std::make_shared<gfxPipelineGraphicsImplVK>(*this);
+    std::shared_ptr<internalgfx::gfxPipelineGraphicsImplVK> impl = std::make_shared<internalgfx::gfxPipelineGraphicsImplVK>(*this);
     if (!impl->Init(info,
-                    static_cast<const gfxShaderProgramImplVK&>(shaderProgramImpl),
-                    static_cast<const gfxRenderPassImplVK&>(renderPassImpl)))
+                    static_cast<const internalgfx::gfxShaderProgramImplVK&>(shaderProgramImpl),
+                    static_cast<const internalgfx::gfxRenderPassImplVK&>(renderPassImpl)))
     {
         impl.reset();
     }
@@ -643,9 +640,9 @@ std::shared_ptr<gfxPipelineGraphicsImpl> gfxDeviceImplVK::CreatePipelineGraphics
     return impl;
 }
 
-std::shared_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint) const
+std::shared_ptr<internalgfx::gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint) const
 {
-    std::shared_ptr<gfxShaderImplVK> impl = std::make_shared<gfxShaderImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxShaderImplVK> impl = std::make_shared<internalgfx::gfxShaderImplVK>(m_VkDevice);
     if (!impl->InitFromSource(source, type, entryPoint))
     {
         impl.reset();
@@ -654,9 +651,9 @@ std::shared_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epi
     return impl;
 }
 
-std::shared_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint) const
+std::shared_ptr<internalgfx::gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint) const
 {
-    std::shared_ptr<gfxShaderImplVK> impl = std::make_shared<gfxShaderImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxShaderImplVK> impl = std::make_shared<internalgfx::gfxShaderImplVK>(m_VkDevice);
     if (!impl->InitFromBinary(binary, size, type, entryPoint))
     {
         impl.reset();
@@ -665,9 +662,9 @@ std::shared_ptr<gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromBinary(const epi
     return impl;
 }
 
-std::shared_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const gfxShaderProgramCreateInfoImpl& info) const
+std::shared_ptr<internalgfx::gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const internalgfx::gfxShaderProgramCreateInfoImpl& info) const
 {
-    std::shared_ptr<gfxShaderProgramImplVK> impl = std::make_shared<gfxShaderProgramImplVK>();
+    std::shared_ptr<internalgfx::gfxShaderProgramImplVK> impl = std::make_shared<internalgfx::gfxShaderProgramImplVK>();
     if (!impl->Init(info))
     {
         impl.reset();
@@ -676,9 +673,9 @@ std::shared_ptr<gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const
     return impl;
 }
 
-std::shared_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const gfxTextureViewImpl>& textureViewImpls) const
+std::shared_ptr<internalgfx::gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const
 {
-    std::shared_ptr<gfxFrameBufferImplVK> impl = std::make_shared<gfxFrameBufferImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxFrameBufferImplVK> impl = std::make_shared<internalgfx::gfxFrameBufferImplVK>(m_VkDevice);
     if (!impl->Init(info, renderPassImpl, textureViewImpls))
     {
         impl.reset();
@@ -687,9 +684,9 @@ std::shared_ptr<gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfx
     return impl;
 }
 
-std::shared_ptr<gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
 {
-    std::shared_ptr<gfxTextureImplVKOwner> impl = std::make_shared<gfxTextureImplVKOwner>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxTextureImplVKOwner> impl = std::make_shared<internalgfx::gfxTextureImplVKOwner>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -698,9 +695,9 @@ std::shared_ptr<gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureC
     return impl;
 }
 
-std::shared_ptr<gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const
+std::shared_ptr<internalgfx::gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const
 {
-    std::shared_ptr<gfxTextureViewImplVK> impl = std::make_shared<gfxTextureViewImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxTextureViewImplVK> impl = std::make_shared<internalgfx::gfxTextureViewImplVK>(m_VkDevice);
     if (!impl->Init(info, textureImpl))
     {
         impl.reset();
@@ -709,9 +706,9 @@ std::shared_ptr<gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfx
     return impl;
 }
 
-std::shared_ptr<gfxSamplerImpl> gfxDeviceImplVK::CreateSampler(const gfxSamplerCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxSamplerImpl> gfxDeviceImplVK::CreateSampler(const gfxSamplerCreateInfo& info) const
 {
-    std::shared_ptr<gfxSamplerImplVK> impl = std::make_shared<gfxSamplerImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxSamplerImplVK> impl = std::make_shared<internalgfx::gfxSamplerImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -720,9 +717,9 @@ std::shared_ptr<gfxSamplerImpl> gfxDeviceImplVK::CreateSampler(const gfxSamplerC
     return impl;
 }
 
-std::shared_ptr<gfxCommandPoolImpl> gfxDeviceImplVK::CreateCommandPool(const gfxCommandPoolCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxCommandPoolImpl> gfxDeviceImplVK::CreateCommandPool(const gfxCommandPoolCreateInfo& info) const
 {
-    std::shared_ptr<gfxCommandPoolImplVK> impl = std::make_shared<gfxCommandPoolImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxCommandPoolImplVK> impl = std::make_shared<internalgfx::gfxCommandPoolImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -742,7 +739,7 @@ std::shared_ptr<gfxBuffer::Impl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCr
     return impl;
 }
 
-std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const
 {
     std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = m_PhysicalDevice.lock();
     if (!physicalDevice)
@@ -751,7 +748,7 @@ std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const g
         return nullptr;
     }
 
-    std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxDeviceMemoryImplVK> impl = std::make_shared<internalgfx::gfxDeviceMemoryImplVK>(m_VkDevice);
     if (!impl->Init(info, *physicalDevice.get()))
     {
         impl.reset();
@@ -760,7 +757,7 @@ std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const g
     return impl;
 }
 
-std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const
 {
     std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = m_PhysicalDevice.lock();
     if (!physicalDevice)
@@ -769,7 +766,7 @@ std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const g
         return nullptr;
     }
 
-    std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxDeviceMemoryImplVK> impl = std::make_shared<internalgfx::gfxDeviceMemoryImplVK>(m_VkDevice);
     if (!impl->Init(info, *physicalDevice.get()))
     {
         impl.reset();
@@ -778,9 +775,9 @@ std::shared_ptr<gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const g
     return impl;
 }
 
-std::shared_ptr<gfxDescriptorSetLayoutImpl> gfxDeviceImplVK::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl> gfxDeviceImplVK::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const
 {
-    std::shared_ptr<gfxDescriptorSetLayoutImplVK> impl = std::make_shared<gfxDescriptorSetLayoutImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImplVK> impl = std::make_shared<internalgfx::gfxDescriptorSetLayoutImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -789,17 +786,17 @@ std::shared_ptr<gfxDescriptorSetLayoutImpl> gfxDeviceImplVK::CreateDescriptorSet
     return impl;
 }
 
-std::shared_ptr<gfxDescriptorPoolImpl> gfxDeviceImplVK::CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const
+std::shared_ptr<internalgfx::gfxDescriptorPoolImpl> gfxDeviceImplVK::CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImpl>& layoutsImpls) const
 {
-    epiPtrArray<const gfxDescriptorSetLayoutImplVK> layoutsImplsVk;
+    epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImplVK> layoutsImplsVk;
     layoutsImplsVk.Reserve(layoutsImpls.Size());
 
-    std::transform(layoutsImpls.begin(), layoutsImpls.end(), std::back_inserter(layoutsImplsVk), [](const gfxDescriptorSetLayoutImpl* layoutImpl)
+    std::transform(layoutsImpls.begin(), layoutsImpls.end(), std::back_inserter(layoutsImplsVk), [](const internalgfx::gfxDescriptorSetLayoutImpl* layoutImpl)
     {
-        return static_cast<const gfxDescriptorSetLayoutImplVK*>(layoutImpl);
+        return static_cast<const internalgfx::gfxDescriptorSetLayoutImplVK*>(layoutImpl);
     });
 
-    std::shared_ptr<gfxDescriptorPoolImplVK> impl = std::make_shared<gfxDescriptorPoolImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxDescriptorPoolImplVK> impl = std::make_shared<internalgfx::gfxDescriptorPoolImplVK>(m_VkDevice);
     if (!impl->Init(info, layoutsImplsVk))
     {
         impl.reset();
@@ -819,9 +816,9 @@ std::shared_ptr<gfxSemaphore::Impl> gfxDeviceImplVK::CreateSemaphoreFrom(const g
     return impl;
 }
 
-std::shared_ptr<gfxFenceImpl> gfxDeviceImplVK::CreateFence(const gfxFenceCreateInfo& info) const
+std::shared_ptr<internalgfx::gfxFenceImpl> gfxDeviceImplVK::CreateFence(const gfxFenceCreateInfo& info) const
 {
-    std::shared_ptr<gfxFenceImplVK> impl = std::make_shared<gfxFenceImplVK>(m_VkDevice);
+    std::shared_ptr<internalgfx::gfxFenceImplVK> impl = std::make_shared<internalgfx::gfxFenceImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -835,7 +832,5 @@ VkDevice gfxDeviceImplVK::GetVkDevice() const
 {
     return m_VkDevice;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

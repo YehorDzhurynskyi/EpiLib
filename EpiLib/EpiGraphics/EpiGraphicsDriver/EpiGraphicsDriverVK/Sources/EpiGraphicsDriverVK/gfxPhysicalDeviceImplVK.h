@@ -8,10 +8,7 @@ struct VkPhysicalDevice_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxPhysicalDeviceImplVK : public gfxPhysicalDeviceImpl
+class gfxPhysicalDeviceImplVK : public gfxPhysicalDevice::Impl
 {
 public:
     void Init(VkPhysicalDevice_T* device);
@@ -37,7 +34,5 @@ protected:
     epiBool m_ExtensionSupported[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};
     epiBool m_FeatureSupported[static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT)]{};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

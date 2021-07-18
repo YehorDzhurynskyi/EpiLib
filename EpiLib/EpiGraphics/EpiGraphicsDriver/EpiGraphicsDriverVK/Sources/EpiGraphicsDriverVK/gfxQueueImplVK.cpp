@@ -13,7 +13,7 @@
 
 EPI_NAMESPACE_BEGIN()
 
-gfxQueueImplVK::gfxQueueImplVK(const internalgfx::gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority)
+gfxQueueImplVK::gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority)
     : m_Type{queueFamily.GetQueueTypeMask()}
     , m_Priority{priority}
 {

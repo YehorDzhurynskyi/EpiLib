@@ -38,9 +38,9 @@ gfxQueueFamilyImplVK::gfxQueueFamilyImplVK(const gfxQueueFamilyDescriptorImplVK&
 {
 }
 
-void gfxQueueFamilyImplVK::Init(const internalgfx::gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc)
+void gfxQueueFamilyImplVK::Init(const gfxDevice::Impl& device, const gfxQueueDescriptor& queueDesc)
 {
-    const internalgfx::gfxDeviceImplVK& deviceVk = static_cast<const internalgfx::gfxDeviceImplVK&>(device);
+    const gfxDeviceImplVK& deviceVk = static_cast<const gfxDeviceImplVK&>(device);
 
     for (epiU32 i = 0; i < queueDesc.GetQueueCount(); ++i)
     {

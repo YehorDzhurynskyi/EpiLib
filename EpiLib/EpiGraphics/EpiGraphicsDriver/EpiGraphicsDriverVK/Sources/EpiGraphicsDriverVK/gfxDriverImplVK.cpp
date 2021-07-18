@@ -231,7 +231,7 @@ std::shared_ptr<gfxSurface::Impl> gfxDriverImplVK::CreateSurface(const gfxWindow
     return std::make_shared<gfxSurfaceImplVK>(m_VkInstance, window);
 }
 
-std::shared_ptr<gfxDeviceImpl> gfxDriverImplVK::CreateDevice(const gfxDeviceCreateInfo& info) const
+std::shared_ptr<gfxDevice::Impl> gfxDriverImplVK::CreateDevice(const gfxDeviceCreateInfo& info) const
 {
     if (!info.GetPhysicalDevice().HasImpl())
     {

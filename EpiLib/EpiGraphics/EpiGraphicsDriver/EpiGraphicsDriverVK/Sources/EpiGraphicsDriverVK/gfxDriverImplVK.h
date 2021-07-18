@@ -36,7 +36,7 @@ public:
                  epiU32 engineVersionPatch = 0u);
 
     std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const override;
-    std::shared_ptr<gfxDeviceImpl> CreateDevice(const gfxDeviceCreateInfo& info) const override;
+    std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) const override;
 
     epiBool IsExtensionSupported(gfxDriverExtension extension) const override;
     epiBool IsExtensionEnabled(gfxDriverExtension extension) const override;

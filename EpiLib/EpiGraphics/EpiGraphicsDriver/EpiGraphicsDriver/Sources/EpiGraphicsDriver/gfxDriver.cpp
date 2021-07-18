@@ -30,7 +30,7 @@ void gfxDriver::Reset(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, g
     std::transform(impl->GetPhysicalDevices().begin(),
                    impl->GetPhysicalDevices().end(),
                    std::back_inserter(physicalDevices),
-                   [](const std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl>& physicalDeviceImpl)
+                   [](const std::shared_ptr<gfxPhysicalDevice::Impl>& physicalDeviceImpl)
     {
         return gfxPhysicalDevice(physicalDeviceImpl);
     });
@@ -74,7 +74,7 @@ std::optional<gfxDevice> gfxDriver::CreateDevice(const gfxDeviceCreateInfo& info
 {
     std::optional<gfxDevice> device;
 
-    if (std::shared_ptr<internalgfx::gfxDeviceImpl> impl = m_Impl->CreateDevice(info))
+    if (std::shared_ptr<gfxDevice::Impl> impl = m_Impl->CreateDevice(info))
     {
         device = gfxDevice(std::move(impl));
     }

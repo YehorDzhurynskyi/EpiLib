@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxDevice::gfxDevice(const std::shared_ptr<internalgfx::gfxDeviceImpl>& impl)
+gfxDevice::gfxDevice(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
     epiArray<gfxQueueFamily>& queueFamilies = GetQueueFamilies();
@@ -22,6 +22,11 @@ gfxDevice::gfxDevice(const std::shared_ptr<internalgfx::gfxDeviceImpl>& impl)
     {
         return gfxQueueFamily(queueFamilyImpl);
     });
+}
+
+epiBool gfxDevice::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 epiBool gfxDevice::IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const

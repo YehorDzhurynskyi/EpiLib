@@ -36,7 +36,7 @@ public:
     gfxQueueFamilyImplVK& operator=(gfxQueueFamilyImplVK&& rhs) = default;
     ~gfxQueueFamilyImplVK() override = default;
 
-    void Init(const internalgfx::gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc) override;
+    void Init(const gfxDevice::Impl& device, const gfxQueueDescriptor& queueDesc) override;
 
     epiU32 GetIndex() const;
 

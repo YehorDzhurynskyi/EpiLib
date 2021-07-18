@@ -97,76 +97,6 @@ struct gfxShaderProgramCreateInfoImpl
     gfxShaderImpl* Fragment{nullptr};
 };
 
-class gfxDeviceImpl
-{
-public:
-    gfxDeviceImpl() = default;
-    gfxDeviceImpl(const gfxDeviceImpl& rhs) = delete;
-    gfxDeviceImpl& operator=(const gfxDeviceImpl& rhs) = delete;
-    gfxDeviceImpl(gfxDeviceImpl&& rhs) = default;
-    gfxDeviceImpl& operator=(gfxDeviceImpl&& rhs) = default;
-    virtual ~gfxDeviceImpl() = default;
-
-    virtual epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const = 0;
-    virtual epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const = 0;
-
-    virtual epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const = 0;
-
-    virtual std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
-    virtual std::shared_ptr<gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
-    virtual std::shared_ptr<gfxShaderImpl> CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
-    virtual std::shared_ptr<gfxShaderProgramImpl> CreateShaderProgram(const gfxShaderProgramCreateInfoImpl& info) const = 0;
-    virtual std::shared_ptr<gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const gfxTextureViewImpl>& textureViewImpls) const = 0;
-    virtual std::shared_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const = 0;
-    virtual std::shared_ptr<gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
-    virtual std::shared_ptr<gfxSemaphore::Impl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxFenceImpl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
-
-    const epiArray<std::shared_ptr<gfxQueueFamily::Impl>>& GetQueueFamilies() const { return m_QueueFamilies; }
-
-protected:
-    epiArray<std::shared_ptr<gfxQueueFamily::Impl>> m_QueueFamilies;
-};
-
-class gfxPhysicalDeviceImpl
-{
-public:
-    static std::shared_ptr<gfxPhysicalDeviceImpl> ExtractImpl(const gfxPhysicalDevice& device) { return device.m_Impl; }
-
-public:
-    gfxPhysicalDeviceImpl() = default;
-    gfxPhysicalDeviceImpl(const gfxPhysicalDeviceImpl& rhs) = delete;
-    gfxPhysicalDeviceImpl& operator=(const gfxPhysicalDeviceImpl& rhs) = delete;
-    gfxPhysicalDeviceImpl(gfxPhysicalDeviceImpl&& rhs) = default;
-    gfxPhysicalDeviceImpl& operator=(gfxPhysicalDeviceImpl&& rhs) = default;
-    virtual ~gfxPhysicalDeviceImpl() = default;
-
-    virtual epiFloat GetMaxSamplerAnisotropy() const = 0;
-    virtual epiString GetName() const = 0;
-    virtual gfxPhysicalDeviceType GetType() const = 0;
-
-    virtual gfxFormatProperties FormatPropertiesFor(gfxFormat format) const = 0;
-
-    virtual epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const = 0;
-    virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
-    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
-
-    const epiArray<std::shared_ptr<gfxQueueFamilyDescriptor::Impl>>& GetQueueFamilyDescriptors() const { return m_QueueFamilyDescriptors; }
-
-protected:
-    epiArray<std::shared_ptr<gfxQueueFamilyDescriptor::Impl>> m_QueueFamilyDescriptors;
-};
-
 class gfxFenceImpl
 {
 public:
@@ -195,15 +125,15 @@ public:
     virtual ~gfxDriverImpl() = default;
 
     virtual std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const = 0;
-    virtual std::shared_ptr<gfxDeviceImpl> CreateDevice(const gfxDeviceCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) const = 0;
 
     virtual epiBool IsExtensionSupported(gfxDriverExtension extension) const = 0;
     virtual epiBool IsExtensionEnabled(gfxDriverExtension extension) const = 0;
 
-    const epiArray<std::shared_ptr<gfxPhysicalDeviceImpl>>& GetPhysicalDevices() const { return m_PhysicalDevices; }
+    const epiArray<std::shared_ptr<gfxPhysicalDevice::Impl>>& GetPhysicalDevices() const { return m_PhysicalDevices; }
 
 protected:
-    epiArray<std::shared_ptr<gfxPhysicalDeviceImpl>> m_PhysicalDevices;
+    epiArray<std::shared_ptr<gfxPhysicalDevice::Impl>> m_PhysicalDevices;
 };
 
 class gfxVertexArrayImpl
@@ -507,6 +437,79 @@ protected:
     epiArray<std::shared_ptr<internalgfx::gfxTextureViewImpl>> m_ImageViews;
 };
 
+class gfxPhysicalDevice::Impl
+{
+public:
+    static std::shared_ptr<gfxPhysicalDevice::Impl> ExtractImpl(const gfxPhysicalDevice& device) { return device.m_Impl; }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiFloat GetMaxSamplerAnisotropy() const = 0;
+    virtual epiString GetName() const = 0;
+    virtual gfxPhysicalDeviceType GetType() const = 0;
+
+    virtual gfxFormatProperties FormatPropertiesFor(gfxFormat format) const = 0;
+
+    virtual epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const = 0;
+    virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+
+    const epiArray<std::shared_ptr<gfxQueueFamilyDescriptor::Impl>>& GetQueueFamilyDescriptors() const { return m_QueueFamilyDescriptors; }
+
+protected:
+    epiArray<std::shared_ptr<gfxQueueFamilyDescriptor::Impl>> m_QueueFamilyDescriptors;
+};
+
+class gfxDevice::Impl
+{
+public:
+    static std::shared_ptr<gfxDevice::Impl> ExtractImpl(const gfxDevice& device) { return device.m_Impl; }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const = 0;
+    virtual epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const = 0;
+
+    virtual epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const = 0;
+
+    virtual std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const internalgfx::gfxShaderProgramImpl& shaderProgramImpl, const internalgfx::gfxRenderPassImpl& renderPassImpl) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
+    virtual std::shared_ptr<internalgfx::gfxShaderImpl> CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
+    virtual std::shared_ptr<internalgfx::gfxShaderProgramImpl> CreateShaderProgram(const internalgfx::gfxShaderProgramCreateInfoImpl& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
+    virtual std::shared_ptr<gfxSemaphore::Impl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxFenceImpl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
+
+    const epiArray<std::shared_ptr<gfxQueueFamily::Impl>>& GetQueueFamilies() const { return m_QueueFamilies; }
+
+protected:
+    epiArray<std::shared_ptr<gfxQueueFamily::Impl>> m_QueueFamilies;
+};
+
 class gfxQueue::Impl
 {
 public:
@@ -567,7 +570,7 @@ public:
     Impl& operator=(Impl&& rhs) = default;
     virtual ~Impl() = default;
 
-    virtual void Init(const internalgfx::gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc) = 0;
+    virtual void Init(const gfxDevice::Impl& device, const gfxQueueDescriptor& queueDesc) = 0;
 
     gfxQueueType GetQueueTypeMask() const { return m_QueueTypeMask; }
     epiU32 GetQueueCount() const { return m_Queues.Size(); }

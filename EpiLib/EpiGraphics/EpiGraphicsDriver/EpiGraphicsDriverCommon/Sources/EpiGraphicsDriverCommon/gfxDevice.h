@@ -28,13 +28,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDeviceImpl;
-
-} // namespace internalgfx
-
 class gfxDeviceCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxDeviceCreateInfo)
@@ -83,8 +76,13 @@ protected:
 EPI_GENREGION_END(gfxDevice)
 
 public:
+    class Impl;
+
+public:
     gfxDevice() = default;
-    explicit gfxDevice(const std::shared_ptr<internalgfx::gfxDeviceImpl>& impl);
+    explicit gfxDevice(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
     epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const;
     epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const;
@@ -113,7 +111,7 @@ public:
     std::optional<gfxFence> CreateFence(const gfxFenceCreateInfo& info) const;
 
 protected:
-    epiPimpl<internalgfx::gfxDeviceImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

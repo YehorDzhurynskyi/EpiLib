@@ -11,13 +11,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxPhysicalDeviceImpl;
-
-} // namespace internalgfx
-
 class gfxFormatProperties : public Object
 {
 EPI_GENREGION_BEGIN(gfxFormatProperties)
@@ -70,11 +63,11 @@ protected:
 EPI_GENREGION_END(gfxPhysicalDevice)
 
 public:
-    friend class internalgfx::gfxPhysicalDeviceImpl;
+    class Impl;
 
 public:
     gfxPhysicalDevice() = default;
-    explicit gfxPhysicalDevice(const std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl>& impl);
+    explicit gfxPhysicalDevice(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
@@ -88,7 +81,7 @@ public:
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
 
 protected:
-    std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()
