@@ -73,7 +73,7 @@ void gfxCommandBufferImplVK::RenderPassBegin(const gfxRenderPassBeginInfo& info)
     const gfxRenderPassImplVK* renderPassImpl = static_cast<const gfxRenderPassImplVK*>(gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
     epiAssert(renderPassImpl != nullptr);
 
-    const gfxFrameBufferImplVK* frameBufferImpl = static_cast<const gfxFrameBufferImplVK*>(gfxFrameBufferImpl::ExtractImpl(info.GetFrameBuffer()));
+    const gfxFrameBufferImplVK* frameBufferImpl = static_cast<const gfxFrameBufferImplVK*>(gfxFrameBuffer::Impl::ExtractImpl(info.GetFrameBuffer()));
     epiAssert(frameBufferImpl != nullptr);
 
     VkRenderPassBeginInfo renderPassInfo{};

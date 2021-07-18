@@ -7,10 +7,7 @@ struct VkFramebuffer_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxFrameBufferImplVK : public gfxFrameBufferImpl
+class gfxFrameBufferImplVK : public gfxFrameBuffer::Impl
 {
 public:
     explicit gfxFrameBufferImplVK(VkDevice_T* device);
@@ -20,7 +17,7 @@ public:
     gfxFrameBufferImplVK& operator=(gfxFrameBufferImplVK&& rhs) = default;
     ~gfxFrameBufferImplVK() override;
 
-    epiBool Init(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const gfxTextureViewImpl>& textureViewImpls);
+    epiBool Init(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls);
 
     VkFramebuffer_T* GetVkFrameBuffer() const;
 
@@ -28,7 +25,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkFramebuffer_T* m_VkFrameBuffer{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

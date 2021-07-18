@@ -10,7 +10,7 @@ void gfxFrameBufferCreateInfo::AddAttachment(const gfxTextureView& attachment)
     m_Attachments.push_back(attachment);
 }
 
-gfxFrameBuffer::gfxFrameBuffer(const std::shared_ptr<internalgfx::gfxFrameBufferImpl>& impl)
+gfxFrameBuffer::gfxFrameBuffer(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }

@@ -213,7 +213,7 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
         return &*view.m_Impl;
     });
 
-    if (std::shared_ptr<internalgfx::gfxFrameBufferImpl> impl = m_Impl->CreateFrameBuffer(info, *renderPassImpl, textureViewImpls))
+    if (std::shared_ptr<gfxFrameBuffer::Impl> impl = m_Impl->CreateFrameBuffer(info, *renderPassImpl, textureViewImpls))
     {
         frameBuffer = gfxFrameBuffer(std::move(impl));
     }

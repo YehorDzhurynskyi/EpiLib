@@ -673,9 +673,9 @@ std::shared_ptr<internalgfx::gfxShaderProgramImpl> gfxDeviceImplVK::CreateShader
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxFrameBufferImpl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const
+std::shared_ptr<gfxFrameBuffer::Impl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const
 {
-    std::shared_ptr<internalgfx::gfxFrameBufferImplVK> impl = std::make_shared<internalgfx::gfxFrameBufferImplVK>(m_VkDevice);
+    std::shared_ptr<gfxFrameBufferImplVK> impl = std::make_shared<gfxFrameBufferImplVK>(m_VkDevice);
     if (!impl->Init(info, renderPassImpl, textureViewImpls))
     {
         impl.reset();

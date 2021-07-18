@@ -20,20 +20,6 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-class gfxFrameBufferImpl
-{
-public:
-    static const gfxFrameBufferImpl* ExtractImpl(const gfxFrameBuffer& frameBuffer) { return frameBuffer.m_Impl.Ptr(); }
-
-public:
-    gfxFrameBufferImpl() = default;
-    gfxFrameBufferImpl(const gfxFrameBufferImpl& rhs) = delete;
-    gfxFrameBufferImpl& operator=(const gfxFrameBufferImpl& rhs) = delete;
-    gfxFrameBufferImpl(gfxFrameBufferImpl&& rhs) = default;
-    gfxFrameBufferImpl& operator=(gfxFrameBufferImpl&& rhs) = default;
-    virtual ~gfxFrameBufferImpl() = default;
-};
-
 class gfxCommandPoolImpl
 {
 public:
@@ -491,7 +477,7 @@ public:
     virtual std::shared_ptr<internalgfx::gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
     virtual std::shared_ptr<internalgfx::gfxShaderImpl> CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
     virtual std::shared_ptr<internalgfx::gfxShaderProgramImpl> CreateShaderProgram(const internalgfx::gfxShaderProgramCreateInfoImpl& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const = 0;
+    virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const = 0;
     virtual std::shared_ptr<internalgfx::gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const = 0;
     virtual std::shared_ptr<internalgfx::gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
@@ -596,5 +582,18 @@ public:
     virtual ~Impl() = default;
 };
 
+class gfxFrameBuffer::Impl
+{
+public:
+    static const gfxFrameBuffer::Impl* ExtractImpl(const gfxFrameBuffer& frameBuffer) { return frameBuffer.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
 
 EPI_NAMESPACE_END()

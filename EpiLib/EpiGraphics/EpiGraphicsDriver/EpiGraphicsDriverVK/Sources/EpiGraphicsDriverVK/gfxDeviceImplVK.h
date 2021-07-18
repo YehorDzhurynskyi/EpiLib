@@ -32,7 +32,7 @@ public:
     std::shared_ptr<internalgfx::gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const override;
     std::shared_ptr<internalgfx::gfxShaderImpl> CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") const override;
     std::shared_ptr<internalgfx::gfxShaderProgramImpl> CreateShaderProgram(const internalgfx::gfxShaderProgramCreateInfoImpl& info) const override;
-    std::shared_ptr<internalgfx::gfxFrameBufferImpl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const override;
+    std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const override;
     std::shared_ptr<internalgfx::gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const override;
     std::shared_ptr<internalgfx::gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const override;
     std::shared_ptr<internalgfx::gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const override;

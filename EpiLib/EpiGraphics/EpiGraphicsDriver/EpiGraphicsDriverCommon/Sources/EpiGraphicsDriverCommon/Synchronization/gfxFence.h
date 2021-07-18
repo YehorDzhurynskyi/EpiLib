@@ -10,13 +10,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxFenceImpl;
-
-} // namespace internalgfx
-
 class gfxFenceCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxFenceCreateInfo)

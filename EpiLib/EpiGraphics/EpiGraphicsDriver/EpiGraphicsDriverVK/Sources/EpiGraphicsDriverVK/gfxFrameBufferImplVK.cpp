@@ -9,28 +9,25 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxFrameBufferImplVK::gfxFrameBufferImplVK(VkDevice_T* device)
     : m_VkDevice{device}
 {
 }
 
-epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info, const gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const gfxTextureViewImpl>& textureViewImpls)
+epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls)
 {
     std::vector<VkImageView> attachments;
     attachments.reserve(textureViewImpls.Size());
 
-    std::transform(textureViewImpls.begin(), textureViewImpls.end(), std::back_inserter(attachments), [](const gfxTextureViewImpl* impl)
+    std::transform(textureViewImpls.begin(), textureViewImpls.end(), std::back_inserter(attachments), [](const internalgfx::gfxTextureViewImpl* impl)
     {
-        return static_cast<const gfxTextureViewImplVK*>(impl)->GetVkImageView();
+        return static_cast<const internalgfx::gfxTextureViewImplVK*>(impl)->GetVkImageView();
     });
 
     // TODO: add renderpass compatibility check
     VkFramebufferCreateInfo framebufferInfo{};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    framebufferInfo.renderPass = static_cast<const gfxRenderPassImplVK&>(renderPassImpl).GetVkRenderPass();
+    framebufferInfo.renderPass = static_cast<const internalgfx::gfxRenderPassImplVK&>(renderPassImpl).GetVkRenderPass();
     framebufferInfo.attachmentCount = attachments.size();
     framebufferInfo.pAttachments = attachments.data();
     framebufferInfo.width = info.GetSize().x;
@@ -55,7 +52,5 @@ VkFramebuffer gfxFrameBufferImplVK::GetVkFrameBuffer() const
 {
     return m_VkFrameBuffer;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

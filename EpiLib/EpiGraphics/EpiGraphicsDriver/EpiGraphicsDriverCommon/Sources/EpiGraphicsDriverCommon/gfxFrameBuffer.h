@@ -11,13 +11,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxFrameBufferImpl;
-
-} // internalgfx
-
 class gfxFrameBufferCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxFrameBufferCreateInfo)
@@ -63,17 +56,16 @@ public:
 EPI_GENREGION_END(gfxFrameBuffer)
 
 public:
-    friend class gfxCommandBufferRecord;
-    friend class internalgfx::gfxFrameBufferImpl;
+    class Impl;
 
 public:
     gfxFrameBuffer() = default;
-    explicit gfxFrameBuffer(const std::shared_ptr<internalgfx::gfxFrameBufferImpl>& impl);
+    explicit gfxFrameBuffer(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
 protected:
-    epiPimpl<internalgfx::gfxFrameBufferImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()
