@@ -816,9 +816,9 @@ std::shared_ptr<gfxSemaphore::Impl> gfxDeviceImplVK::CreateSemaphoreFrom(const g
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxFenceImpl> gfxDeviceImplVK::CreateFence(const gfxFenceCreateInfo& info) const
+std::shared_ptr<gfxFence::Impl> gfxDeviceImplVK::CreateFence(const gfxFenceCreateInfo& info) const
 {
-    std::shared_ptr<internalgfx::gfxFenceImplVK> impl = std::make_shared<internalgfx::gfxFenceImplVK>(m_VkDevice);
+    std::shared_ptr<gfxFenceImplVK> impl = std::make_shared<gfxFenceImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();

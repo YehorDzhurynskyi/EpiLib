@@ -395,7 +395,7 @@ std::optional<gfxFence> gfxDevice::CreateFence(const gfxFenceCreateInfo& info) c
 {
     std::optional<gfxFence> fence;
 
-    if (std::shared_ptr<internalgfx::gfxFenceImpl> impl = m_Impl->CreateFence(info))
+    if (std::shared_ptr<gfxFence::Impl> impl = m_Impl->CreateFence(info))
     {
         fence = gfxFence(std::move(impl));
     }

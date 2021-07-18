@@ -169,7 +169,7 @@ epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore,
 
     if (signalFence != nullptr)
     {
-        const internalgfx::gfxFenceImplVK* signalFenceImpl = static_cast<const internalgfx::gfxFenceImplVK*>(internalgfx::gfxFenceImpl::ExtractImpl(*signalFence));
+        const gfxFenceImplVK* signalFenceImpl = static_cast<const gfxFenceImplVK*>(gfxFence::Impl::ExtractImpl(*signalFence));
         epiAssert(signalFenceImpl != nullptr);
 
         signalFenceVk = signalFenceImpl->GetVkFence();

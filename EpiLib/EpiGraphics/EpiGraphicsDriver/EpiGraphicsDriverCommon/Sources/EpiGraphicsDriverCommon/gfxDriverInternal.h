@@ -97,23 +97,6 @@ struct gfxShaderProgramCreateInfoImpl
     gfxShaderImpl* Fragment{nullptr};
 };
 
-class gfxFenceImpl
-{
-public:
-    static const gfxFenceImpl* ExtractImpl(const gfxFence& fence) { return fence.m_Impl.Ptr(); }
-
-public:
-    gfxFenceImpl() = default;
-    gfxFenceImpl(const gfxFenceImpl& rhs) = delete;
-    gfxFenceImpl& operator=(const gfxFenceImpl& rhs) = delete;
-    gfxFenceImpl(gfxFenceImpl&& rhs) = default;
-    gfxFenceImpl& operator=(gfxFenceImpl&& rhs) = default;
-    virtual ~gfxFenceImpl() = default;
-
-    virtual epiBool Reset() = 0;
-    virtual epiBool Wait(epiU64 timeout) = 0;
-};
-
 class gfxDriverImpl
 {
 public:
@@ -391,6 +374,23 @@ public:
     virtual epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout) = 0;
 };
 
+class gfxFence::Impl
+{
+public:
+    static const gfxFence::Impl* ExtractImpl(const gfxFence& fence) { return fence.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiBool Reset() = 0;
+    virtual epiBool Wait(epiU64 timeout) = 0;
+};
+
 class gfxSurface::Impl
 {
 public:
@@ -502,7 +502,7 @@ public:
     virtual std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
     virtual std::shared_ptr<gfxSemaphore::Impl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxFenceImpl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxFence::Impl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
 
     const epiArray<std::shared_ptr<gfxQueueFamily::Impl>>& GetQueueFamilies() const { return m_QueueFamilies; }
 

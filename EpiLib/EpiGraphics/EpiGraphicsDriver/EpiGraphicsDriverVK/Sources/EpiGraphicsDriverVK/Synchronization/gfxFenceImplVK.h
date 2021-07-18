@@ -9,10 +9,7 @@ struct VkDevice_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxFenceImplVK : public gfxFenceImpl
+class gfxFenceImplVK : public gfxFence::Impl
 {
 public:
     explicit gfxFenceImplVK(VkDevice_T* device);
@@ -33,7 +30,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkFence_T* m_VkFence{nullptr};
 };
-
-} // internalgfx
 
 EPI_NAMESPACE_END()

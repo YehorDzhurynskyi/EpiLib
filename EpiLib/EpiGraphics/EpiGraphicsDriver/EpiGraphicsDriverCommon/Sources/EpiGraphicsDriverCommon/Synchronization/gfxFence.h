@@ -55,11 +55,11 @@ public:
 EPI_GENREGION_END(gfxFence)
 
 public:
-    friend class internalgfx::gfxFenceImpl;
+    class Impl;
 
 public:
     gfxFence() = default;
-    explicit gfxFence(const std::shared_ptr<internalgfx::gfxFenceImpl>& impl);
+    explicit gfxFence(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
@@ -67,7 +67,7 @@ public:
     epiBool Wait(epiU64 timeout = std::numeric_limits<epiU64>::max());
 
 protected:
-    epiPimpl<internalgfx::gfxFenceImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

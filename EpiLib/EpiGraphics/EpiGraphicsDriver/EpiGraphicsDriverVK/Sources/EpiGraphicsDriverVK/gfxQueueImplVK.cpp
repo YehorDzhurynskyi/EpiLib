@@ -47,7 +47,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos)
 
 epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence)
 {
-    const internalgfx::gfxFenceImplVK* signalFenceImpl = static_cast<const internalgfx::gfxFenceImplVK*>(internalgfx::gfxFenceImpl::ExtractImpl(signalFence));
+    const gfxFenceImplVK* signalFenceImpl = static_cast<const gfxFenceImplVK*>(gfxFence::Impl::ExtractImpl(signalFence));
     epiAssert(signalFenceImpl != nullptr);
 
     return Submit(infos, signalFenceImpl->GetVkFence());

@@ -7,9 +7,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxFenceImplVK::gfxFenceImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -61,7 +58,5 @@ VkFence gfxFenceImplVK::GetVkFence() const
 {
     return m_VkFence;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

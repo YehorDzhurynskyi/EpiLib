@@ -7,14 +7,14 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxFence::gfxFence(const std::shared_ptr<internalgfx::gfxFenceImpl>& impl)
+gfxFence::gfxFence(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }
 
 epiBool gfxFence::HasImpl() const
 {
-    return !!m_Impl;
+    return static_cast<epiBool>(m_Impl);
 }
 
 epiBool gfxFence::Reset()
