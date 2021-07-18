@@ -68,9 +68,14 @@ epiBool QueueSubmitInfoIsValid(const gfxQueueSubmitInfo& info)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxQueue::gfxQueue(const std::shared_ptr<internalgfx::gfxQueueImpl>& impl)
+gfxQueue::gfxQueue(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
+}
+
+epiBool gfxQueue::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 epiBool gfxQueue::Submit(const epiArray<gfxQueueSubmitInfo>& infos)

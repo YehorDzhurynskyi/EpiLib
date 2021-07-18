@@ -44,7 +44,7 @@ epiBool operator!=(const gfxSurfaceFormat& lhs, const gfxSurfaceFormat& rhs)
     return !(operator==(lhs, rhs));
 }
 
-gfxSurface::gfxSurface(const std::shared_ptr<internalgfx::gfxSurfaceImpl>& impl)
+gfxSurface::gfxSurface(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }
@@ -81,32 +81,85 @@ epiBool gfxSurface::IsCompatibleWith(const gfxPhysicalDevice& device, const gfxS
 
 epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device) const
 {
-    return m_Impl->IsPresentSupportedFor(*device.m_Impl);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query presentation support! The provided PhysicalDevice has no implementation!");
+        return false;
+    }
+
+    return std::any_of(device.GetQueueFamilyDescriptors().begin(),
+                       device.GetQueueFamilyDescriptors().end(),
+                       [this, &device](const gfxQueueFamilyDescriptor& queueFamilyDesc)
+    {
+        return IsPresentSupportedFor(device, queueFamilyDesc);
+    });
 }
 
 epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const
 {
-    return m_Impl->IsPresentSupportedFor(*device.m_Impl, *queueFamily.m_Impl);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query presentation support! The provided PhysicalDevice has no implementation!");
+        return false;
+    }
+
+    if (!queueFamily.HasImpl())
+    {
+        epiLogError("Failed to query presentation support! The provided QueueFamily has no implementation!");
+        return false;
+    }
+
+    return m_Impl->IsPresentSupportedFor(device, queueFamily);
 }
 
 epiBool gfxSurface::IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const
 {
-    return m_Impl->IsPresentSupportedFor(*device.m_Impl, *queueFamilyDesc.m_Impl);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query presentation support! The provided PhysicalDevice has no implementation!");
+        return false;
+    }
+
+    if (!queueFamilyDesc.HasImpl())
+    {
+        epiLogError("Failed to query presentation support! The provided QueueFamilyDescriptor has no implementation!");
+        return false;
+    }
+
+    return m_Impl->IsPresentSupportedFor(device, queueFamilyDesc);
 }
 
 gfxSurfaceCapabilities gfxSurface::GetCapabilitiesFor(const gfxPhysicalDevice& device) const
 {
-    return m_Impl->GetCapabilitiesFor(*device.m_Impl);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query SurfaceCapabilities! The provided PhysicalDevice has no implementation!");
+        return {};
+    }
+
+    return m_Impl->GetCapabilitiesFor(device);
 }
 
 epiArray<gfxSurfaceFormat> gfxSurface::GetSupportedFormatsFor(const gfxPhysicalDevice& device) const
 {
-    return m_Impl->GetSupportedFormatsFor(*device.m_Impl);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query supported SurfaceFormats! The provided PhysicalDevice has no implementation!");
+        return {};
+    }
+
+    return m_Impl->GetSupportedFormatsFor(device);
 }
 
 epiArray<gfxSurfacePresentMode> gfxSurface::GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const
 {
-    return m_Impl->GetSupportedPresentModesFor(*device.m_Impl);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query supported SurfacePresentModes! The provided PhysicalDevice has no implementation!");
+        return {};
+    }
+
+    return m_Impl->GetSupportedPresentModesFor(device);
 }
 
 EPI_NAMESPACE_END()

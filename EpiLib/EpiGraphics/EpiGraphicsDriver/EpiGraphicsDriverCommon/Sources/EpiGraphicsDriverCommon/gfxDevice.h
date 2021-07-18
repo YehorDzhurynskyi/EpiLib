@@ -6,6 +6,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
+#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
 #include "EpiGraphicsDriverCommon/gfxQueue.h"
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxSwapChain.h"
@@ -33,6 +34,33 @@ namespace internalgfx
 class gfxDeviceImpl;
 
 } // namespace internalgfx
+
+class gfxDeviceCreateInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceCreateInfo)
+
+EPI_GENHIDDEN_gfxDeviceCreateInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x6b578813};
+
+    enum gfxDeviceCreateInfo_PIDs
+    {
+        PID_PhysicalDevice = 0xdb69328a,
+        PID_QueueDescriptorList = 0xf5d1762d,
+        PID_ExtensionsRequired = 0x8d4676b0,
+        PID_FeaturesRequired = 0x13fa62aa,
+        PID_COUNT = 4
+    };
+
+protected:
+    gfxPhysicalDevice m_PhysicalDevice{};
+    gfxQueueDescriptorList m_QueueDescriptorList{};
+    epiArray<gfxPhysicalDeviceExtension> m_ExtensionsRequired{};
+    epiArray<gfxPhysicalDeviceFeature> m_FeaturesRequired{};
+
+EPI_GENREGION_END(gfxDeviceCreateInfo)
+};
 
 class gfxDevice : public Object
 {

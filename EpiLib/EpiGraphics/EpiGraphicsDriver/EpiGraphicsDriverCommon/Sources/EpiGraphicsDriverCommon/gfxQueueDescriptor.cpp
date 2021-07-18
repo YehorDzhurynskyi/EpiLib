@@ -8,28 +8,11 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxQueueDescriptor::gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiPtrArray<gfxSurface>& surfaceTargets)
+gfxQueueDescriptor::gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiArray<gfxSurface>& surfaceTargets)
     : m_TypeMask{typeMask}
     , m_Priorities{priorities.begin(), priorities.end()}
+    , m_SurfaceTargets{surfaceTargets.begin(), surfaceTargets.end()}
 {
-    m_SurfaceTargets.Reserve(surfaceTargets.Size());
-    std::transform(surfaceTargets.begin(),
-                   surfaceTargets.end(),
-                   std::back_inserter(m_SurfaceTargets),
-                   [](gfxSurface* surfaceTarget) -> internalgfx::gfxSurfaceImpl*
-    {
-        if (surfaceTarget == nullptr)
-        {
-            return nullptr;
-        }
-
-        return surfaceTarget->m_Impl.Ptr();
-    });
-}
-
-const epiPtrArray<internalgfx::gfxSurfaceImpl>& gfxQueueDescriptor::GetSurfaceTargets() const
-{
-    return m_SurfaceTargets;
 }
 
 epiU32 gfxQueueDescriptor::GetQueueCount_Callback() const
@@ -42,7 +25,7 @@ epiSize_t gfxQueueDescriptorList::GetSize_Callback() const
     return m_QueueDescriptors.size();
 }
 
-void gfxQueueDescriptorList::Push(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiPtrArray<gfxSurface>& surfaceTargets)
+void gfxQueueDescriptorList::Push(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiArray<gfxSurface>& surfaceTargets)
 {
     gfxQueueDescriptor desc(typeMask, priorities, surfaceTargets);
 

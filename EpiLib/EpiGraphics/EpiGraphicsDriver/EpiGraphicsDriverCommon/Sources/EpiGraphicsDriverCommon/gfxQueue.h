@@ -13,13 +13,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxQueueImpl;
-
-} // internalgfx
-
 class gfxQueueSubmitInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxQueueSubmitInfo)
@@ -95,12 +88,13 @@ protected:
 EPI_GENREGION_END(gfxQueue)
 
 public:
-    friend class gfxSwapChain;
-    friend class internalgfx::gfxQueueImpl;
+    class Impl;
 
 public:
     gfxQueue() = default;
-    explicit gfxQueue(const std::shared_ptr<internalgfx::gfxQueueImpl>& impl);
+    explicit gfxQueue(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
     epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos);
     epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence);
@@ -114,7 +108,7 @@ public:
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
 
 protected:
-    epiPimpl<internalgfx::gfxQueueImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

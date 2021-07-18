@@ -4,10 +4,7 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxQueueFamilyDescriptorImplVK : public gfxQueueFamilyDescriptorImpl
+class gfxQueueFamilyDescriptorImplVK : public gfxQueueFamilyDescriptor::Impl
 {
 public:
     gfxQueueFamilyDescriptorImplVK(epiU32 queueFamilyIndex, epiU32 queueCount, gfxQueueType supportedQueueTypes);
@@ -29,7 +26,7 @@ protected:
     gfxQueueType m_QueueTypeSupportedMask{0};
 };
 
-class gfxQueueFamilyImplVK : public gfxQueueFamilyImpl
+class gfxQueueFamilyImplVK : public gfxQueueFamily::Impl
 {
 public:
     explicit gfxQueueFamilyImplVK(const gfxQueueFamilyDescriptorImplVK& queueFamilyDesc);
@@ -39,14 +36,12 @@ public:
     gfxQueueFamilyImplVK& operator=(gfxQueueFamilyImplVK&& rhs) = default;
     ~gfxQueueFamilyImplVK() override = default;
 
-    void Init(const gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc) override;
+    void Init(const internalgfx::gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc) override;
 
     epiU32 GetIndex() const;
 
 protected:
     epiU32 m_Index{0};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

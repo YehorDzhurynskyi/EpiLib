@@ -2,6 +2,7 @@
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
+#include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -225,9 +226,26 @@ gfxDriverImplVK::~gfxDriverImplVK()
     }
 }
 
-std::shared_ptr<gfxSurfaceImpl> gfxDriverImplVK::CreateSurface(const gfxWindow& window)
+std::shared_ptr<gfxSurface::Impl> gfxDriverImplVK::CreateSurface(const gfxWindow& window) const
 {
     return std::make_shared<gfxSurfaceImplVK>(m_VkInstance, window);
+}
+
+std::shared_ptr<gfxDeviceImpl> gfxDriverImplVK::CreateDevice(const gfxDeviceCreateInfo& info) const
+{
+    if (!info.GetPhysicalDevice().HasImpl())
+    {
+        epiLogError("Failed to initialize Device! The provided PhysicalDevice has no implementation!");
+        return nullptr;
+    }
+
+    std::shared_ptr<gfxDeviceImplVK> impl = std::make_shared<gfxDeviceImplVK>();
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
 }
 
 epiBool gfxDriverImplVK::IsExtensionSupported(gfxDriverExtension extension) const

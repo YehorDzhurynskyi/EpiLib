@@ -11,13 +11,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxSwapChainImpl;
-
-} // internalgfx
-
 class gfxSwapChainCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxSwapChainCreateInfo)
@@ -90,11 +83,11 @@ protected:
 EPI_GENREGION_END(gfxSwapChain)
 
 public:
-    friend class internalgfx::gfxSwapChainImpl;
+    class Impl;
 
 public:
     gfxSwapChain() = default;
-    explicit gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl);
+    explicit gfxSwapChain(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
@@ -108,7 +101,7 @@ protected:
     void RebindImpl();
 
 protected:
-    epiPimpl<internalgfx::gfxSwapChainImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

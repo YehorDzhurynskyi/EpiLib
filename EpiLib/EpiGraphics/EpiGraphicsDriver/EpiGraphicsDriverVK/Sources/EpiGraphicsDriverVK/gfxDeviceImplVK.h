@@ -2,7 +2,7 @@
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
-#include "EpiGraphicsDriverVK/gfxQueueImplVK.h"
+#include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
 
 struct VkDevice_T;
 
@@ -11,27 +11,24 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-class gfxPhysicalDeviceImplVK;
 class gfxDeviceImplVK : public gfxDeviceImpl
 {
 public:
-    explicit gfxDeviceImplVK(const gfxPhysicalDeviceImplVK& physicalDevice);
+    gfxDeviceImplVK() = default;
     gfxDeviceImplVK(const gfxDeviceImplVK& rhs) = delete;
     gfxDeviceImplVK& operator=(const gfxDeviceImplVK& rhs) = delete;
     gfxDeviceImplVK(gfxDeviceImplVK&& rhs) = default;
     gfxDeviceImplVK& operator=(gfxDeviceImplVK&& rhs) = default;
     ~gfxDeviceImplVK() override;
 
-    epiBool Init(gfxQueueDescriptorList& queueDescriptorList,
-                 const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
-                 const epiArray<gfxPhysicalDeviceFeature>& featuresRequired);
+    epiBool Init(const gfxDeviceCreateInfo& info);
 
     epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const override;
     epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const override;
 
     epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const override;
 
-    std::shared_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const override;
+    std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const override;
     std::shared_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const override;
     std::shared_ptr<gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const override;
     std::shared_ptr<gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const override;
@@ -42,7 +39,7 @@ public:
     std::shared_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const override;
     std::shared_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const override;
     std::shared_ptr<gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const override;
-    std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const override;
+    std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const override;
     std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const override;
     std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const override;
     std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const override;
@@ -54,9 +51,9 @@ public:
     VkDevice_T* GetVkDevice() const;
 
 protected:
-    const gfxPhysicalDeviceImplVK& m_PhysicalDevice;
     VkDevice_T* m_VkDevice{nullptr};
 
+    std::weak_ptr<gfxPhysicalDeviceImplVK> m_PhysicalDevice;
     epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};
     epiBool m_FeatureEnabled[static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT)]{};
 };

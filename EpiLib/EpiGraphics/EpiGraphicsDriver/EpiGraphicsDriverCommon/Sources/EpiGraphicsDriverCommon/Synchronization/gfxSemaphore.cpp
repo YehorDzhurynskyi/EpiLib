@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxSemaphore::gfxSemaphore(const std::shared_ptr<gfxSemaphore::Impl>& impl)
+gfxSemaphore::gfxSemaphore(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }

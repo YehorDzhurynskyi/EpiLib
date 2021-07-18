@@ -2,9 +2,13 @@
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
+#include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 #include "EpiGraphicsDriverCommon/gfxWindow.h"
 #include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxDevice.h"
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
+#include "EpiGraphicsDriverCommon/gfxQueue.h"
+#include "EpiGraphicsDriverCommon/gfxSwapChain.h"
 #include "EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.h"
 
 #include "EpiCore/common.h"
@@ -15,75 +19,6 @@ EPI_NAMESPACE_BEGIN()
 
 namespace internalgfx
 {
-
-class gfxQueueImpl
-{
-public:
-    static const gfxQueueImpl* ExtractImpl(const gfxQueue& queue) { return queue.m_Impl.Ptr(); }
-
-public:
-    gfxQueueImpl() = default;
-    gfxQueueImpl(const gfxQueueImpl& rhs) = delete;
-    gfxQueueImpl& operator=(const gfxQueueImpl& rhs) = delete;
-    gfxQueueImpl(gfxQueueImpl&& rhs) = default;
-    gfxQueueImpl& operator=(gfxQueueImpl&& rhs) = default;
-    virtual ~gfxQueueImpl() = default;
-
-    virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos) = 0;
-    virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence) = 0;
-
-    virtual epiBool Present(const gfxQueuePresentInfo& info) = 0;
-
-    virtual epiBool Wait() = 0;
-
-    virtual gfxQueueType GetType() const = 0;
-    virtual epiFloat GetPriority() const = 0;
-    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
-};
-
-class gfxQueueFamilyDescriptorImpl
-{
-public:
-    gfxQueueFamilyDescriptorImpl() = default;
-    gfxQueueFamilyDescriptorImpl(const gfxQueueFamilyDescriptorImpl& rhs) = delete;
-    gfxQueueFamilyDescriptorImpl& operator=(const gfxQueueFamilyDescriptorImpl& rhs) = delete;
-    gfxQueueFamilyDescriptorImpl(gfxQueueFamilyDescriptorImpl&& rhs) = default;
-    gfxQueueFamilyDescriptorImpl& operator=(gfxQueueFamilyDescriptorImpl&& rhs) = default;
-    virtual ~gfxQueueFamilyDescriptorImpl() = default;
-
-    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
-    virtual gfxQueueType GetQueueTypeSupportedMask() const = 0;
-    virtual epiU32 GetQueueCount() const = 0;
-};
-
-class gfxQueueFamilyImpl
-{
-public:
-    static const gfxQueueFamilyImpl* ExtractImpl(const gfxQueueFamily& queueFamily) { return queueFamily.m_Impl.Ptr(); }
-
-public:
-    explicit gfxQueueFamilyImpl(const gfxQueueFamilyDescriptorImpl& queueFamilyDesc)
-        : m_QueueTypeMask{queueFamilyDesc.GetQueueTypeSupportedMask()}
-    {
-    }
-
-    gfxQueueFamilyImpl(const gfxQueueFamilyImpl& rhs) = delete;
-    gfxQueueFamilyImpl& operator=(const gfxQueueFamilyImpl& rhs) = delete;
-    gfxQueueFamilyImpl(gfxQueueFamilyImpl&& rhs) = default;
-    gfxQueueFamilyImpl& operator=(gfxQueueFamilyImpl&& rhs) = default;
-    virtual ~gfxQueueFamilyImpl() = default;
-
-    virtual void Init(const gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc) = 0;
-
-    gfxQueueType GetQueueTypeMask() const { return m_QueueTypeMask; }
-    epiU32 GetQueueCount() const { return m_Queues.Size(); }
-
-    const epiArray<std::shared_ptr<gfxQueueImpl>>& GetQueues() const { return m_Queues; }
-
-protected:
-    epiArray<std::shared_ptr<gfxQueueImpl>> m_Queues;
-    gfxQueueType m_QueueTypeMask{0};
-};
 
 class gfxFrameBufferImpl
 {
@@ -177,7 +112,7 @@ public:
 
     virtual epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const = 0;
 
-    virtual std::shared_ptr<gfxSwapChainImpl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxShaderProgramImpl& shaderProgramImpl, const gfxRenderPassImpl& renderPassImpl) const = 0;
@@ -188,7 +123,7 @@ public:
     virtual std::shared_ptr<gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl) const = 0;
     virtual std::shared_ptr<gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl) const = 0;
+    virtual std::shared_ptr<gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
@@ -197,14 +132,17 @@ public:
     virtual std::shared_ptr<gfxSemaphore::Impl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxFenceImpl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
 
-    const epiArray<std::shared_ptr<gfxQueueFamilyImpl>>& GetQueueFamilies() const { return m_QueueFamilies; }
+    const epiArray<std::shared_ptr<gfxQueueFamily::Impl>>& GetQueueFamilies() const { return m_QueueFamilies; }
 
 protected:
-    epiArray<std::shared_ptr<gfxQueueFamilyImpl>> m_QueueFamilies;
+    epiArray<std::shared_ptr<gfxQueueFamily::Impl>> m_QueueFamilies;
 };
 
 class gfxPhysicalDeviceImpl
 {
+public:
+    static std::shared_ptr<gfxPhysicalDeviceImpl> ExtractImpl(const gfxPhysicalDevice& device) { return device.m_Impl; }
+
 public:
     gfxPhysicalDeviceImpl() = default;
     gfxPhysicalDeviceImpl(const gfxPhysicalDeviceImpl& rhs) = delete;
@@ -217,62 +155,16 @@ public:
     virtual epiString GetName() const = 0;
     virtual gfxPhysicalDeviceType GetType() const = 0;
 
-    virtual std::unique_ptr<gfxDeviceImpl> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
-                                                        const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
-                                                        const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const = 0;
-
     virtual gfxFormatProperties FormatPropertiesFor(gfxFormat format) const = 0;
 
     virtual epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const = 0;
     virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
     virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
-};
 
-class gfxSurfaceImpl
-{
-public:
-    static const gfxSurfaceImpl* ExtractImpl(const gfxSurface& surface) { return surface.m_Impl.Ptr(); }
-
-public:
-    gfxSurfaceImpl() = default;
-    gfxSurfaceImpl(const gfxSurfaceImpl& rhs) = delete;
-    gfxSurfaceImpl& operator=(const gfxSurfaceImpl& rhs) = delete;
-    gfxSurfaceImpl(gfxSurfaceImpl&& rhs) = default;
-    gfxSurfaceImpl& operator=(gfxSurfaceImpl&& rhs) = default;
-    virtual ~gfxSurfaceImpl() = default;
-
-    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const = 0;
-    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const = 0;
-    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyDescriptorImpl& queueFamilyDesc) const = 0;
-    virtual gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const = 0;
-    virtual epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDeviceImpl& device) const = 0;
-    virtual epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDeviceImpl& device) const = 0;
-};
-
-class gfxSwapChainImpl
-{
-public:
-    static const gfxSwapChainImpl* ExtractImpl(const gfxSwapChain& swapChain) { return swapChain.m_Impl.Ptr(); }
-
-public:
-    gfxSwapChainImpl() = default;
-    gfxSwapChainImpl(const gfxSwapChainImpl& rhs) = delete;
-    gfxSwapChainImpl& operator=(const gfxSwapChainImpl& rhs) = delete;
-    gfxSwapChainImpl(gfxSwapChainImpl&& rhs) = default;
-    gfxSwapChainImpl& operator=(gfxSwapChainImpl&& rhs) = default;
-    virtual ~gfxSwapChainImpl() = default;
-
-    virtual epiBool Recreate(const gfxSwapChainCreateInfo& info) = 0;
-
-    virtual epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) = 0;
-
-    epiU32 GetBufferCount() const { return m_ImageViews.Size(); }
-    virtual epiSize2u GetExtent() const = 0;
-
-    const epiArray<std::shared_ptr<gfxTextureViewImpl>>& GetImageViews() const { return m_ImageViews; }
+    const epiArray<std::shared_ptr<gfxQueueFamilyDescriptor::Impl>>& GetQueueFamilyDescriptors() const { return m_QueueFamilyDescriptors; }
 
 protected:
-    epiArray<std::shared_ptr<gfxTextureViewImpl>> m_ImageViews;
+    epiArray<std::shared_ptr<gfxQueueFamilyDescriptor::Impl>> m_QueueFamilyDescriptors;
 };
 
 class gfxFenceImpl
@@ -302,7 +194,8 @@ public:
     gfxDriverImpl& operator=(gfxDriverImpl&& rhs) = default;
     virtual ~gfxDriverImpl() = default;
 
-    virtual std::shared_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) = 0;
+    virtual std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const = 0;
+    virtual std::shared_ptr<gfxDeviceImpl> CreateDevice(const gfxDeviceCreateInfo& info) const = 0;
 
     virtual epiBool IsExtensionSupported(gfxDriverExtension extension) const = 0;
     virtual epiBool IsExtensionEnabled(gfxDriverExtension extension) const = 0;
@@ -555,7 +448,7 @@ public:
 class gfxSemaphore::Impl
 {
 public:
-    static const Impl* ExtractImpl(const gfxSemaphore& semaphore) { return semaphore.m_Impl.get(); }
+    static const gfxSemaphore::Impl* ExtractImpl(const gfxSemaphore& semaphore) { return semaphore.m_Impl.get(); }
 
 public:
     Impl() = default;
@@ -568,10 +461,128 @@ public:
     virtual epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout) = 0;
 };
 
+class gfxSurface::Impl
+{
+public:
+    static const gfxSurface::Impl* ExtractImpl(const gfxSurface& surface) { return surface.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const = 0;
+    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const = 0;
+    virtual gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDevice& device) const = 0;
+    virtual epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDevice& device) const = 0;
+    virtual epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const = 0;
+};
+
+class gfxSwapChain::Impl
+{
+public:
+    static const gfxSwapChain::Impl* ExtractImpl(const gfxSwapChain& swapChain) { return swapChain.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiBool Recreate(const gfxSwapChainCreateInfo& info) = 0;
+
+    virtual epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) = 0;
+
+    epiU32 GetBufferCount() const { return m_ImageViews.Size(); }
+    virtual epiSize2u GetExtent() const = 0;
+
+    const epiArray<std::shared_ptr<internalgfx::gfxTextureViewImpl>>& GetImageViews() const { return m_ImageViews; }
+
+protected:
+    epiArray<std::shared_ptr<internalgfx::gfxTextureViewImpl>> m_ImageViews;
+};
+
+class gfxQueue::Impl
+{
+public:
+    static const gfxQueue::Impl* ExtractImpl(const gfxQueue& queue) { return queue.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos) = 0;
+    virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence) = 0;
+
+    virtual epiBool Present(const gfxQueuePresentInfo& info) = 0;
+
+    virtual epiBool Wait() = 0;
+
+    virtual gfxQueueType GetType() const = 0;
+    virtual epiFloat GetPriority() const = 0;
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+};
+
+class gfxQueueFamilyDescriptor::Impl
+{
+public:
+    static const gfxQueueFamilyDescriptor::Impl* ExtractImpl(const gfxQueueFamilyDescriptor& queueFamilyDescriptor) { return queueFamilyDescriptor.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+    virtual gfxQueueType GetQueueTypeSupportedMask() const = 0;
+    virtual epiU32 GetQueueCount() const = 0;
+};
+
+class gfxQueueFamily::Impl
+{
+public:
+    static const gfxQueueFamily::Impl* ExtractImpl(const gfxQueueFamily& queueFamily) { return queueFamily.m_Impl.get(); }
+
+public:
+    explicit Impl(const gfxQueueFamilyDescriptor::Impl& queueFamilyDesc)
+        : m_QueueTypeMask{queueFamilyDesc.GetQueueTypeSupportedMask()}
+    {
+    }
+
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual void Init(const internalgfx::gfxDeviceImpl& device, const gfxQueueDescriptor& queueDesc) = 0;
+
+    gfxQueueType GetQueueTypeMask() const { return m_QueueTypeMask; }
+    epiU32 GetQueueCount() const { return m_Queues.Size(); }
+
+    const epiArray<std::shared_ptr<gfxQueue::Impl>>& GetQueues() const { return m_Queues; }
+
+protected:
+    epiArray<std::shared_ptr<gfxQueue::Impl>> m_Queues;
+    gfxQueueType m_QueueTypeMask{0};
+};
+
 class gfxBuffer::Impl
 {
 public:
-    static const Impl* ExtractImpl(const gfxBuffer& buffer) { return buffer.m_Impl.get(); }
+    static const gfxBuffer::Impl* ExtractImpl(const gfxBuffer& buffer) { return buffer.m_Impl.get(); }
 
 public:
     Impl() = default;

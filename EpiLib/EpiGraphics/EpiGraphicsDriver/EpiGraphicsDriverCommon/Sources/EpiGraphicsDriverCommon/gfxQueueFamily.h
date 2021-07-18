@@ -11,14 +11,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxQueueFamilyDescriptorImpl;
-class gfxQueueFamilyImpl;
-
-} // internalgfx
-
 class gfxQueueFamilyDescriptor : public Object
 {
 EPI_GENREGION_BEGIN(gfxQueueFamilyDescriptor)
@@ -42,18 +34,18 @@ protected:
 EPI_GENREGION_END(gfxQueueFamilyDescriptor)
 
 public:
-    friend class gfxDevice;
-    friend class gfxSurface;
+    class Impl;
 
 public:
     gfxQueueFamilyDescriptor() = default;
-    explicit gfxQueueFamilyDescriptor(const std::shared_ptr<internalgfx::gfxQueueFamilyDescriptorImpl>& impl);
+    explicit gfxQueueFamilyDescriptor(const std::shared_ptr<Impl>& impl);
 
-public:
+    epiBool HasImpl() const;
+
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
 
 protected:
-    epiPimpl<internalgfx::gfxQueueFamilyDescriptorImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 class gfxQueueFamily : public Object
@@ -83,14 +75,13 @@ protected:
 EPI_GENREGION_END(gfxQueueFamily)
 
 public:
-    friend class gfxDevice;
-    friend class gfxSurface;
-    friend class gfxSwapChain;
-    friend class internalgfx::gfxQueueFamilyImpl;
+    class Impl;
 
 public:
     gfxQueueFamily() = default;
-    explicit gfxQueueFamily(const std::shared_ptr<internalgfx::gfxQueueFamilyImpl>& impl);
+    explicit gfxQueueFamily(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
     const gfxQueue& At(epiU32 index) const;
     gfxQueue& At(epiU32 index);
@@ -99,7 +90,7 @@ public:
     gfxQueue& operator[](epiU32 index);
 
 protected:
-    epiPimpl<internalgfx::gfxQueueFamilyImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

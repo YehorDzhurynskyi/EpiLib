@@ -13,10 +13,7 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-gfxQueueImplVK::gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority)
+gfxQueueImplVK::gfxQueueImplVK(const internalgfx::gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority)
     : m_Type{queueFamily.GetQueueTypeMask()}
     , m_Priority{priority}
 {
@@ -50,7 +47,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos)
 
 epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence)
 {
-    const gfxFenceImplVK* signalFenceImpl = static_cast<const gfxFenceImplVK*>(gfxFenceImpl::ExtractImpl(signalFence));
+    const internalgfx::gfxFenceImplVK* signalFenceImpl = static_cast<const internalgfx::gfxFenceImplVK*>(internalgfx::gfxFenceImpl::ExtractImpl(signalFence));
     epiAssert(signalFenceImpl != nullptr);
 
     return Submit(infos, signalFenceImpl->GetVkFence());
@@ -86,7 +83,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFenc
                        std::back_inserter(commandBuffersInfoVk),
                        [](const gfxCommandBuffer& commandBuffer)
         {
-            const gfxCommandBufferImplVK* commandBufferImpl = static_cast<const gfxCommandBufferImplVK*>(gfxCommandBufferImpl::ExtractImpl(commandBuffer));
+            const internalgfx::gfxCommandBufferImplVK* commandBufferImpl = static_cast<const internalgfx::gfxCommandBufferImplVK*>(internalgfx::gfxCommandBufferImpl::ExtractImpl(commandBuffer));
             epiAssert(commandBufferImpl != nullptr);
 
             return commandBufferImpl->GetVkCommandBuffer();
@@ -163,7 +160,7 @@ epiBool gfxQueueImplVK::Present(const gfxQueuePresentInfo& info)
 
     std::transform(info.GetSwapChains().begin(), info.GetSwapChains().end(), std::back_inserter(swapChainsVk), [](const gfxSwapChain& swapChain)
     {
-        const gfxSwapChainImplVK* swapChainImpl = static_cast<const gfxSwapChainImplVK*>(gfxSwapChainImpl::ExtractImpl(swapChain));
+        const gfxSwapChainImplVK* swapChainImpl = static_cast<const gfxSwapChainImplVK*>(gfxSwapChain::Impl::ExtractImpl(swapChain));
         epiAssert(swapChainImpl != nullptr);
 
         return swapChainImpl->GetVkSwapChain();
@@ -225,7 +222,5 @@ VkQueue gfxQueueImplVK::GetVkQueue() const
 {
     return m_VkQueue;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

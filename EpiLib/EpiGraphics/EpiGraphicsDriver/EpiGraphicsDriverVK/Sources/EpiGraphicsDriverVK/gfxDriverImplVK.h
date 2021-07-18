@@ -12,7 +12,6 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-class gfxSurfaceImplVK;
 class gfxDriverImplVK : public gfxDriverImpl
 {
 public:
@@ -36,7 +35,8 @@ public:
                  epiU32 engineVersionMinor = 0u,
                  epiU32 engineVersionPatch = 0u);
 
-    std::shared_ptr<gfxSurfaceImpl> CreateSurface(const gfxWindow& window) override;
+    std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const override;
+    std::shared_ptr<gfxDeviceImpl> CreateDevice(const gfxDeviceCreateInfo& info) const override;
 
     epiBool IsExtensionSupported(gfxDriverExtension extension) const override;
     epiBool IsExtensionEnabled(gfxDriverExtension extension) const override;

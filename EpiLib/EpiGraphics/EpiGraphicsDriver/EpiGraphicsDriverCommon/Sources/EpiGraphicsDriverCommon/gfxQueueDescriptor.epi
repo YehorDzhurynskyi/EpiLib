@@ -7,6 +7,8 @@ class gfxQueueDescriptor
 
         [Virtual]
         epiU32 QueueCount;
+
+        epiArray<gfxSurface> SurfaceTargets;
     }
 };
 

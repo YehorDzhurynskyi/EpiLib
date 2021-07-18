@@ -34,7 +34,8 @@ public:
         PID_TypeMask = 0x6957f143,
         PID_Priorities = 0x96844307,
         PID_QueueCount = 0xf330505b,
-        PID_COUNT = 3
+        PID_SurfaceTargets = 0x63489f07,
+        PID_COUNT = 4
     };
 
 protected:
@@ -43,16 +44,12 @@ protected:
 protected:
     gfxQueueType m_TypeMask{};
     epiArray<epiFloat> m_Priorities{};
+    epiArray<gfxSurface> m_SurfaceTargets{};
 
 EPI_GENREGION_END(gfxQueueDescriptor)
 
 public:
-    gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiPtrArray<gfxSurface>& surfaceTargets = {});
-
-    const epiPtrArray<internalgfx::gfxSurfaceImpl>& GetSurfaceTargets() const;
-
-protected:
-    epiPtrArray<internalgfx::gfxSurfaceImpl> m_SurfaceTargets{};
+    gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiArray<gfxSurface>& surfaceTargets = {});
 };
 
 class gfxQueueDescriptorList : public Object
@@ -80,7 +77,7 @@ public:
     using const_iterator = std::vector<gfxQueueDescriptor>::const_iterator;
 
 public:
-    void Push(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiPtrArray<gfxSurface>& surfaceTargets = {});
+    void Push(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiArray<gfxSurface>& surfaceTargets = {});
     void Push(gfxQueueDescriptor&& desc);
 
     gfxQueueDescriptor& At(epiU32 index);

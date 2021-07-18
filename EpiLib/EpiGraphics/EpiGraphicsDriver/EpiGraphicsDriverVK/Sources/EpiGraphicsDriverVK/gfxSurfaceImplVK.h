@@ -2,15 +2,12 @@
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
-struct VkSurfaceKHR_T;
 struct VkInstance_T;
+struct VkSurfaceKHR_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxSurfaceImplVK : public gfxSurfaceImpl
+class gfxSurfaceImplVK : public gfxSurface::Impl
 {
 public:
     gfxSurfaceImplVK(VkInstance_T* instance, const gfxWindow& window);
@@ -20,12 +17,11 @@ public:
     gfxSurfaceImplVK& operator=(gfxSurfaceImplVK&& rhs) = default;
     ~gfxSurfaceImplVK() override;
 
-    epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const override;
-    epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const override;
-    epiBool IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyDescriptorImpl& queueFamilyDesc) const override;
-    gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const override;
-    epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDeviceImpl& device) const override;
-    epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDeviceImpl& device) const override;
+    epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const override;
+    epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const override;
+    gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDevice& device) const override;
+    epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDevice& device) const override;
+    epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const override;
 
     VkSurfaceKHR_T* GetVkSurface() const;
 
@@ -33,7 +29,5 @@ protected:
     VkInstance_T* m_VkInstance{nullptr};
     VkSurfaceKHR_T* m_VkSurface{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

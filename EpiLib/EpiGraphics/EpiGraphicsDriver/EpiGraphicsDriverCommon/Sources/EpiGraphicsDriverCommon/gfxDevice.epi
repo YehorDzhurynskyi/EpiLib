@@ -1,3 +1,11 @@
+class gfxDeviceCreateInfo
+{
+    gfxPhysicalDevice PhysicalDevice;
+    gfxQueueDescriptorList QueueDescriptorList;
+    epiArray<gfxPhysicalDeviceExtension> ExtensionsRequired;
+    epiArray<gfxPhysicalDeviceFeature> FeaturesRequired;
+};
+
 class gfxDevice
 {
     [ReadOnly]

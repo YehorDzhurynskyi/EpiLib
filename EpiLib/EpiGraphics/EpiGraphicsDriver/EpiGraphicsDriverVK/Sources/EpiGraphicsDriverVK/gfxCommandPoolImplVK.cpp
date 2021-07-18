@@ -56,15 +56,23 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
     vkDestroyCommandPool(m_VkDevice, m_VkCommandPool, nullptr);
 }
 
-epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info, const gfxQueueFamilyImpl& queueFamilyImpl)
+epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info)
 {
     // TODO: free cmd buffer independently if pool is able to
     // TODO: allocate cmd buffers independently from cmd pool initialization
 
-    const gfxQueueFamilyImplVK& queueFamilyImplVk = static_cast<const gfxQueueFamilyImplVK&>(queueFamilyImpl);
+    if (!info.GetQueueFamily().HasImpl())
+    {
+        epiLogError("Failed to init CommandPool! The provided QueueFamily has no implementation!");
+        return false;
+    }
+
+    const gfxQueueFamilyImplVK* queueFamilyImplVk = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamily::Impl::ExtractImpl(info.GetQueueFamily()));
+    epiAssert(queueFamilyImplVk != nullptr);
+
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = queueFamilyImplVk.GetIndex();
+    poolInfo.queueFamilyIndex = queueFamilyImplVk->GetIndex();
     poolInfo.flags = gfxCommandPoolUsageTo(info.GetUsage());
 
     if (const VkResult result = vkCreateCommandPool(m_VkDevice, &poolInfo, nullptr, &m_VkCommandPool); result != VK_SUCCESS)

@@ -21,10 +21,7 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-gfxSwapChainImplVK::gfxSwapChainImplVK(const gfxDeviceImplVK& device)
+gfxSwapChainImplVK::gfxSwapChainImplVK(const internalgfx::gfxDeviceImplVK& device)
     : m_Device{device}
 {
 }
@@ -36,7 +33,7 @@ gfxSwapChainImplVK::~gfxSwapChainImplVK()
 
 epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 {
-    const gfxSurfaceImplVK* surfaceImpl = static_cast<const gfxSurfaceImplVK*>(gfxSurfaceImpl::ExtractImpl(info.GetSurface()));
+    const gfxSurfaceImplVK* surfaceImpl = static_cast<const gfxSurfaceImplVK*>(gfxSurface::Impl::ExtractImpl(info.GetSurface()));
     epiAssert(surfaceImpl != nullptr);
 
     std::vector<epiU32> queueFamilyIndices;
@@ -47,7 +44,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
                    std::back_inserter(queueFamilyIndices),
                    [](const gfxQueueFamily& queueFamily)
     {
-        const gfxQueueFamilyImplVK* queueFamilyImpl = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamilyImpl::ExtractImpl(queueFamily));
+        const gfxQueueFamilyImplVK* queueFamilyImpl = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamily::Impl::ExtractImpl(queueFamily));
         epiAssert(queueFamilyImpl != nullptr);
 
         return queueFamilyImpl->GetIndex();
@@ -105,7 +102,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 
     for (const VkImage& image : swapChainImages)
     {
-        std::shared_ptr<gfxTextureImplVK> textureImpl = std::make_shared<gfxTextureImplVK>(image);
+        std::shared_ptr<internalgfx::gfxTextureImplVK> textureImpl = std::make_shared<internalgfx::gfxTextureImplVK>(image);
         gfxTexture texture(textureImpl);
 
         gfxImageSubresourceRange subresourceRange{};
@@ -121,7 +118,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
         textureViewCreateInfo.SetFormat(info.GetImageFormat());
         textureViewCreateInfo.SetSubresourceRange(subresourceRange);
 
-        std::shared_ptr<gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImpl);
+        std::shared_ptr<internalgfx::gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImpl);
         m_ImageViews.push_back(std::move(textureViewImpl));
     }
 
@@ -172,7 +169,7 @@ epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore,
 
     if (signalFence != nullptr)
     {
-        const gfxFenceImplVK* signalFenceImpl = static_cast<const gfxFenceImplVK*>(gfxFenceImpl::ExtractImpl(*signalFence));
+        const internalgfx::gfxFenceImplVK* signalFenceImpl = static_cast<const internalgfx::gfxFenceImplVK*>(internalgfx::gfxFenceImpl::ExtractImpl(*signalFence));
         epiAssert(signalFenceImpl != nullptr);
 
         signalFenceVk = signalFenceImpl->GetVkFence();
@@ -205,7 +202,5 @@ VkSwapchainKHR gfxSwapChainImplVK::GetVkSwapChain() const
 {
     return m_VkSwapChain;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

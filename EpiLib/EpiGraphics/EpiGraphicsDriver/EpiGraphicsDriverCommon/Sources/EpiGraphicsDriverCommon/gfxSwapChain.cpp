@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxSwapChain::gfxSwapChain(const std::shared_ptr<internalgfx::gfxSwapChainImpl>& impl)
+gfxSwapChain::gfxSwapChain(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
     RebindImpl();

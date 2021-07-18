@@ -5,6 +5,7 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
+#include "EpiGraphicsDriverCommon/gfxDevice.h"
 #include "EpiGraphicsDriverCommon/gfxSurface.h"
 #include "EpiGraphicsDriverCommon/gfxWindow.h"
 
@@ -53,7 +54,8 @@ public:
     static void SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriverExtension>& extensionsRequired);
 
 public:
-    std::optional<gfxSurface> CreateSurface(const gfxWindow& window);
+    std::optional<gfxSurface> CreateSurface(const gfxWindow& window) const;
+    std::optional<gfxDevice> CreateDevice(const gfxDeviceCreateInfo& info) const;
 
     epiBool IsExtensionSupported(gfxDriverExtension extension) const;
     epiBool IsExtensionEnabled(gfxDriverExtension extension) const;

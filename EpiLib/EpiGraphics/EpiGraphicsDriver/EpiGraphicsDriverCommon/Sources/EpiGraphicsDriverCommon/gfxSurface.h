@@ -11,14 +11,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxSurfaceImpl;
-class gfxPhysicalDeviceImpl;
-
-} // internalgfx
-
 class gfxSurfaceCapabilities : public Object
 {
 EPI_GENREGION_BEGIN(gfxSurfaceCapabilities)
@@ -107,14 +99,11 @@ public:
 EPI_GENREGION_END(gfxSurface)
 
 public:
-    friend class gfxDevice;
-    friend class gfxQueueDescriptor;
-    friend class gfxSwapChain;
-    friend class internalgfx::gfxSurfaceImpl;
+    class Impl;
 
 public:
     gfxSurface() = default;
-    explicit gfxSurface(const std::shared_ptr<internalgfx::gfxSurfaceImpl>& impl);
+    explicit gfxSurface(const std::shared_ptr<Impl>& impl);
 
 public:
     epiBool HasImpl() const;
@@ -131,7 +120,7 @@ public:
     epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const;
 
 protected:
-    epiPimpl<internalgfx::gfxSurfaceImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

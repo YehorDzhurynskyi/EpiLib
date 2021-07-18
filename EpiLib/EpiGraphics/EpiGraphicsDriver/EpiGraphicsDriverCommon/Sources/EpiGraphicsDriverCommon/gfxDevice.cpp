@@ -18,7 +18,7 @@ gfxDevice::gfxDevice(const std::shared_ptr<internalgfx::gfxDeviceImpl>& impl)
     std::transform(impl->GetQueueFamilies().begin(),
                    impl->GetQueueFamilies().end(),
                    std::back_inserter(queueFamilies),
-                   [](const std::shared_ptr<internalgfx::gfxQueueFamilyImpl>& queueFamilyImpl)
+                   [](const std::shared_ptr<gfxQueueFamily::Impl>& queueFamilyImpl)
     {
         return gfxQueueFamily(queueFamilyImpl);
     });
@@ -43,7 +43,7 @@ std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateI
 {
     std::optional<gfxSwapChain> swapChain;
 
-    if (std::shared_ptr<internalgfx::gfxSwapChainImpl> impl = m_Impl->CreateSwapChain(info))
+    if (std::shared_ptr<gfxSwapChain::Impl> impl = m_Impl->CreateSwapChain(info))
     {
         swapChain = gfxSwapChain(std::move(impl));
     }
@@ -263,16 +263,13 @@ std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolC
 {
     std::optional<gfxCommandPool> commnadPool;
 
-    const gfxQueueFamily& queueFamily = info.GetQueueFamily();
-
-    const auto queueFamilyImpl = queueFamily.m_Impl;
-    if (!queueFamilyImpl)
+    if (!info.GetQueueFamily().HasImpl())
     {
-        epiLogError("Failed to create CommandPool! Provided QueueFamily has no implementation!");
+        epiLogError("Failed to create CommandPool! The provided QueueFamily has no implementation!");
         return commnadPool;
     }
 
-    if (std::shared_ptr<internalgfx::gfxCommandPoolImpl> impl = m_Impl->CreateCommandPool(info, *queueFamilyImpl))
+    if (std::shared_ptr<internalgfx::gfxCommandPoolImpl> impl = m_Impl->CreateCommandPool(info))
     {
         commnadPool = gfxCommandPool(std::move(impl));
     }

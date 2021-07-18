@@ -58,16 +58,28 @@ void gfxDriver::SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriver
     }
 }
 
-std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window)
+std::optional<gfxSurface> gfxDriver::CreateSurface(const gfxWindow& window) const
 {
     std::optional<gfxSurface> surface;
 
-    if (std::shared_ptr<internalgfx::gfxSurfaceImpl> surfaceImpl = m_Impl->CreateSurface(window))
+    if (std::shared_ptr<gfxSurface::Impl> surfaceImpl = m_Impl->CreateSurface(window))
     {
-        surface = gfxSurface(std::move(surfaceImpl));
+        surface = gfxSurface(surfaceImpl);
     }
 
     return surface;
+}
+
+std::optional<gfxDevice> gfxDriver::CreateDevice(const gfxDeviceCreateInfo& info) const
+{
+    std::optional<gfxDevice> device;
+
+    if (std::shared_ptr<internalgfx::gfxDeviceImpl> impl = m_Impl->CreateDevice(info))
+    {
+        device = gfxDevice(std::move(impl));
+    }
+
+    return device;
 }
 
 epiBool gfxDriver::IsExtensionSupported(gfxDriverExtension extension) const

@@ -11,11 +11,15 @@ namespace internalgfx
 {
 
 class gfxDeviceImplVK;
+
+} // namespace internalgfx
+
+
 class gfxQueueFamilyImplVK;
-class gfxQueueImplVK : public gfxQueueImpl
+class gfxQueueImplVK : public gfxQueue::Impl
 {
 public:
-    gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority);
+    gfxQueueImplVK(const internalgfx::gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority);
     gfxQueueImplVK(const gfxQueueImplVK& rhs) = delete;
     gfxQueueImplVK& operator=(const gfxQueueImplVK& rhs) = delete;
     gfxQueueImplVK(gfxQueueImplVK&& rhs);
@@ -43,7 +47,5 @@ protected:
     gfxQueueType m_Type{0};
     epiFloat m_Priority{0.0f};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

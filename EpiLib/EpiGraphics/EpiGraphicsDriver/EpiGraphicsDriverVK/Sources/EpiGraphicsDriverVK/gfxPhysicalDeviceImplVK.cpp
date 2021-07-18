@@ -3,7 +3,6 @@
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
-#include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -47,7 +46,9 @@ void gfxPhysicalDeviceImplVK::Init(VkPhysicalDevice device)
                                                          queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT ? gfxQueueType_Transfer : gfxQueueType{0},
                                                          queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT ? gfxQueueType_SparseBinding : gfxQueueType{0},
                                                          queueFamily.queueFlags & VK_QUEUE_PROTECTED_BIT ? gfxQueueType_Protected : gfxQueueType{0});
-        m_QueueFamilyDescriptors.push_back(gfxQueueFamilyDescriptorImplVK(queueFamilyIndex, queueFamily.queueCount, supportedQueueTypes));
+
+        std::shared_ptr<gfxQueueFamilyDescriptorImplVK> queueFamilyDescriptor = std::make_shared<gfxQueueFamilyDescriptorImplVK>(queueFamilyIndex, queueFamily.queueCount, supportedQueueTypes);
+        m_QueueFamilyDescriptors.push_back(queueFamilyDescriptor);
 
         ++queueFamilyIndex;
     }
@@ -87,19 +88,6 @@ gfxPhysicalDeviceType gfxPhysicalDeviceImplVK::GetType() const
     return gfxPhysicalDeviceType::None;
 }
 
-std::unique_ptr<gfxDeviceImpl> gfxPhysicalDeviceImplVK::CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
-                                                                     const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
-                                                                     const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const
-{
-    std::unique_ptr<gfxDeviceImplVK> device = std::make_unique<gfxDeviceImplVK>(*this);
-    if (!device->Init(queueDescriptorList, extensionsRequired, featuresRequired))
-    {
-        return nullptr;
-    }
-
-    return device;
-}
-
 gfxFormatProperties gfxPhysicalDeviceImplVK::FormatPropertiesFor(gfxFormat format) const
 {
     VkFormatProperties propertiesVk;
@@ -125,20 +113,15 @@ epiBool gfxPhysicalDeviceImplVK::IsFeatureSupported(gfxPhysicalDeviceFeature fea
 
 epiBool gfxPhysicalDeviceImplVK::IsQueueTypeSupported(gfxQueueType mask) const
 {
-    return std::any_of(m_QueueFamilyDescriptors.begin(), m_QueueFamilyDescriptors.end(), [mask](const gfxQueueFamilyDescriptorImplVK& family)
+    return std::any_of(m_QueueFamilyDescriptors.begin(), m_QueueFamilyDescriptors.end(), [mask](const std::shared_ptr<gfxQueueFamilyDescriptor::Impl>& family)
     {
-        return family.IsQueueTypeSupported(mask);
+        return family->IsQueueTypeSupported(mask);
     });
 }
 
 VkPhysicalDevice gfxPhysicalDeviceImplVK::GetVkPhysicalDevice() const
 {
     return m_VkDevice;
-}
-
-const epiArray<gfxQueueFamilyDescriptorImplVK>& gfxPhysicalDeviceImplVK::GetQueueFamilyDescriptors() const
-{
-    return m_QueueFamilyDescriptors;
 }
 
 void gfxPhysicalDeviceImplVK::FillExtensionsSupported()

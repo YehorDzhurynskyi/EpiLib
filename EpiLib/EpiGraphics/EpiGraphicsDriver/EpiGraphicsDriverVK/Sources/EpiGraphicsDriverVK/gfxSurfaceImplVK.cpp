@@ -15,9 +15,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance_T* instance, const gfxWindow& window)
     : m_VkInstance{instance}
 {
@@ -38,48 +35,73 @@ gfxSurfaceImplVK::~gfxSurfaceImplVK()
     }
 }
 
-epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device) const
+epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const
 {
-    const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
-
-    return std::any_of(deviceVk.GetQueueFamilyDescriptors().begin(),
-                       deviceVk.GetQueueFamilyDescriptors().end(),
-                       [this, &deviceVk](const gfxQueueFamilyDescriptorImpl& queueFamilyDesc)
+    if (!device.HasImpl())
     {
-        return IsPresentSupportedFor(deviceVk, queueFamilyDesc);
-    });
-}
+        epiLogError("Failed to query presentation support! The provided PhysicalDevice has no implementation!");
+        return false;
+    }
 
-epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyImpl& queueFamily) const
-{
-    const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
-    const gfxQueueFamilyImplVK& queueFamilyVk = static_cast<const gfxQueueFamilyImplVK&>(queueFamily);
+    if (!queueFamily.HasImpl())
+    {
+        epiLogError("Failed to query presentation support! The provided QueueFamily has no implementation!");
+        return false;
+    }
+
+    const std::shared_ptr<internalgfx::gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<internalgfx::gfxPhysicalDeviceImplVK>(internalgfx::gfxPhysicalDeviceImpl::ExtractImpl(device));
+    epiAssert(deviceVk != nullptr);
+
+    const gfxQueueFamilyImplVK* queueFamilyVk = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamily::Impl::ExtractImpl(queueFamily));
+    epiAssert(queueFamilyVk != nullptr);
 
     VkBool32 presentSupported = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(deviceVk.GetVkPhysicalDevice(), queueFamilyVk.GetIndex(), GetVkSurface(), &presentSupported);
+    vkGetPhysicalDeviceSurfaceSupportKHR(deviceVk->GetVkPhysicalDevice(), queueFamilyVk->GetIndex(), GetVkSurface(), &presentSupported);
 
     return presentSupported;
 }
 
-epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDeviceImpl& device, const gfxQueueFamilyDescriptorImpl& queueFamilyDesc) const
+epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const
 {
-    const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
-    const gfxQueueFamilyDescriptorImplVK& queueFamilyDescVk = static_cast<const gfxQueueFamilyDescriptorImplVK&>(queueFamilyDesc);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query presentation support! The provided PhysicalDevice has no implementation!");
+        return false;
+    }
+
+    if (!queueFamilyDesc.HasImpl())
+    {
+        epiLogError("Failed to query presentation support! The provided QueueFamilyDescriptor has no implementation!");
+        return false;
+    }
+
+    const std::shared_ptr<internalgfx::gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<internalgfx::gfxPhysicalDeviceImplVK>(internalgfx::gfxPhysicalDeviceImpl::ExtractImpl(device));
+    epiAssert(deviceVk != nullptr);
+
+    const gfxQueueFamilyDescriptorImplVK* queueFamilyDescriptorVk = static_cast<const gfxQueueFamilyDescriptorImplVK*>(gfxQueueFamilyDescriptor::Impl::ExtractImpl(queueFamilyDesc));
+    epiAssert(queueFamilyDescriptorVk != nullptr);
 
     VkBool32 presentSupported = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(deviceVk.GetVkPhysicalDevice(), queueFamilyDescVk.GetIndex(), GetVkSurface(), &presentSupported);
+    vkGetPhysicalDeviceSurfaceSupportKHR(deviceVk->GetVkPhysicalDevice(), queueFamilyDescriptorVk->GetIndex(), GetVkSurface(), &presentSupported);
 
     return presentSupported;
 }
 
-gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDeviceImpl& device) const
+gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDevice& device) const
 {
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query supported SurfaceCapabilities! The provided PhysicalDevice has no implementation!");
+        return {};
+    }
+
+    const std::shared_ptr<internalgfx::gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<internalgfx::gfxPhysicalDeviceImplVK>(internalgfx::gfxPhysicalDeviceImpl::ExtractImpl(device));
+    epiAssert(deviceVk != nullptr);
+
     gfxSurfaceCapabilities capabilities;
 
-    const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
-
     VkSurfaceCapabilitiesKHR capabilitiesVk;
-    if (const VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(deviceVk.GetVkPhysicalDevice(), GetVkSurface(), &capabilitiesVk); result != VK_SUCCESS)
+    if (const VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(deviceVk->GetVkPhysicalDevice(), GetVkSurface(), &capabilitiesVk); result != VK_SUCCESS)
     {
         gfxLogErrorEx(result, "Failed to call vkGetPhysicalDeviceSurfaceCapabilitiesKHR!");
         return capabilities;
@@ -103,16 +125,23 @@ gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDev
     return capabilities;
 }
 
-epiArray<gfxSurfaceFormat> gfxSurfaceImplVK::GetSupportedFormatsFor(const gfxPhysicalDeviceImpl& device) const
+epiArray<gfxSurfaceFormat> gfxSurfaceImplVK::GetSupportedFormatsFor(const gfxPhysicalDevice& device) const
 {
-    const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query supported SurfaceFormats! The provided PhysicalDevice has no implementation!");
+        return {};
+    }
+
+    const std::shared_ptr<internalgfx::gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<internalgfx::gfxPhysicalDeviceImplVK>(internalgfx::gfxPhysicalDeviceImpl::ExtractImpl(device));
+    epiAssert(deviceVk != nullptr);
 
     epiU32 formatCount;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(deviceVk.GetVkPhysicalDevice(), GetVkSurface(), &formatCount, nullptr);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(deviceVk->GetVkPhysicalDevice(), GetVkSurface(), &formatCount, nullptr);
 
     std::vector<VkSurfaceFormatKHR> formatsVk;
     formatsVk.resize(formatCount);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(deviceVk.GetVkPhysicalDevice(), GetVkSurface(), &formatCount, formatsVk.data());
+    vkGetPhysicalDeviceSurfaceFormatsKHR(deviceVk->GetVkPhysicalDevice(), GetVkSurface(), &formatCount, formatsVk.data());
 
     epiArray<gfxSurfaceFormat> formats;
     for (const VkSurfaceFormatKHR& format : formatsVk)
@@ -127,16 +156,23 @@ epiArray<gfxSurfaceFormat> gfxSurfaceImplVK::GetSupportedFormatsFor(const gfxPhy
     return formats;
 }
 
-epiArray<gfxSurfacePresentMode> gfxSurfaceImplVK::GetSupportedPresentModesFor(const gfxPhysicalDeviceImpl& device) const
+epiArray<gfxSurfacePresentMode> gfxSurfaceImplVK::GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const
 {
-    const gfxPhysicalDeviceImplVK& deviceVk = static_cast<const gfxPhysicalDeviceImplVK&>(device);
+    if (!device.HasImpl())
+    {
+        epiLogError("Failed to query supported SurfacePresentModes! The provided PhysicalDevice has no implementation!");
+        return {};
+    }
+
+    const std::shared_ptr<internalgfx::gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<internalgfx::gfxPhysicalDeviceImplVK>(internalgfx::gfxPhysicalDeviceImpl::ExtractImpl(device));
+    epiAssert(deviceVk != nullptr);
 
     epiU32 presentModeCount;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(deviceVk.GetVkPhysicalDevice(), GetVkSurface(), &presentModeCount, nullptr);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(deviceVk->GetVkPhysicalDevice(), GetVkSurface(), &presentModeCount, nullptr);
 
     std::vector<VkPresentModeKHR> presentModesVk;
     presentModesVk.resize(presentModeCount);
-    vkGetPhysicalDeviceSurfacePresentModesKHR(deviceVk.GetVkPhysicalDevice(), GetVkSurface(), &presentModeCount, presentModesVk.data());
+    vkGetPhysicalDeviceSurfacePresentModesKHR(deviceVk->GetVkPhysicalDevice(), GetVkSurface(), &presentModeCount, presentModesVk.data());
 
     epiArray<gfxSurfacePresentMode> presentModes;
     for (const VkPresentModeKHR& presentModeVk : presentModesVk)
@@ -162,7 +198,5 @@ VkSurfaceKHR gfxSurfaceImplVK::GetVkSurface() const
 {
     return m_VkSurface;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

@@ -11,10 +11,13 @@ namespace internalgfx
 {
 
 class gfxDeviceImplVK;
-class gfxSwapChainImplVK : public gfxSwapChainImpl
+
+} // namespace internalgfx
+
+class gfxSwapChainImplVK : public gfxSwapChain::Impl
 {
 public:
-    explicit gfxSwapChainImplVK(const gfxDeviceImplVK& device);
+    explicit gfxSwapChainImplVK(const internalgfx::gfxDeviceImplVK& device);
     gfxSwapChainImplVK(const gfxSwapChainImplVK& rhs) = delete;
     gfxSwapChainImplVK& operator=(const gfxSwapChainImplVK& rhs) = delete;
     gfxSwapChainImplVK(gfxSwapChainImplVK&& rhs) = default;
@@ -35,12 +38,10 @@ protected:
     epiBool Reset();
 
 protected:
-    const gfxDeviceImplVK& m_Device;
+    const internalgfx::gfxDeviceImplVK& m_Device;
     VkSwapchainKHR_T* m_VkSwapChain{nullptr};
 
     epiSize2u m_Extent{};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

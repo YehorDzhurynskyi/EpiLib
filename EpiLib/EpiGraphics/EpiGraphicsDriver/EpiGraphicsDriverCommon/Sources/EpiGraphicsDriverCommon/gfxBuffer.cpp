@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxBuffer::gfxBuffer(const std::shared_ptr<gfxBuffer::Impl>& impl)
+gfxBuffer::gfxBuffer(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }

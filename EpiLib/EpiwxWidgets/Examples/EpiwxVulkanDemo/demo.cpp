@@ -1266,11 +1266,15 @@ int main(int argc, char* argv[])
     }
 
     gfxQueueDescriptorList queueDescriptorList;
-    queueDescriptorList.Push(gfxQueueType_Graphics, {1.0f}, {&*surface});
+    queueDescriptorList.Push(gfxQueueType_Graphics, {1.0f}, {*surface});
 
-    std::optional<gfxDevice> device = physicalDevice->CreateDevice(queueDescriptorList,
-                                                                   deviceExtensionsRequired,
-                                                                   deviceFeaturesRequired);
+    gfxDeviceCreateInfo deviceCreateInfo;
+    deviceCreateInfo.SetPhysicalDevice(*physicalDevice);
+    deviceCreateInfo.SetQueueDescriptorList(queueDescriptorList);
+    deviceCreateInfo.SetExtensionsRequired(deviceExtensionsRequired);
+    deviceCreateInfo.SetFeaturesRequired(deviceFeaturesRequired);
+
+    std::optional<gfxDevice> device = gfxDriver::GetInstance().CreateDevice(deviceCreateInfo);
     if (!device.has_value())
     {
         epiLogError("Falied to create Device!");

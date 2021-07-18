@@ -15,4 +15,9 @@ class gfxPhysicalDevice
 
         gfxPhysicalDeviceType Type;
     }
+
+    [ReadOnly]
+    {
+        epiArray<gfxQueueFamilyDescriptor> QueueFamilyDescriptors;
+    }
 };

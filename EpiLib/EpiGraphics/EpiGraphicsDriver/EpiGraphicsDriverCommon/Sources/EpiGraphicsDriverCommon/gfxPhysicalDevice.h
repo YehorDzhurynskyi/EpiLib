@@ -6,8 +6,6 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphicsDriverCommon/gfxDevice.h"
-
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
 
@@ -58,26 +56,27 @@ public:
     {
         PID_Name = 0xfe11d138,
         PID_Type = 0x2cecf817,
-        PID_COUNT = 2
+        PID_QueueFamilyDescriptors = 0xfcffb7b9,
+        PID_COUNT = 3
     };
 
 protected:
     epiString GetName_Callback() const;
     gfxPhysicalDeviceType GetType_Callback() const;
 
+protected:
+    epiArray<gfxQueueFamilyDescriptor> m_QueueFamilyDescriptors{};
+
 EPI_GENREGION_END(gfxPhysicalDevice)
 
 public:
-    friend class gfxSurface;
+    friend class internalgfx::gfxPhysicalDeviceImpl;
 
 public:
     gfxPhysicalDevice() = default;
     explicit gfxPhysicalDevice(const std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl>& impl);
 
-public:
-    std::optional<gfxDevice> CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
-                                          const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
-                                          const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const;
+    epiBool HasImpl() const;
 
     // TODO: Introduce PhysicalDeviceLimits struct and move it there
     epiFloat GetMaxSamplerAnisotropy() const;
@@ -89,7 +88,7 @@ public:
     epiBool IsQueueTypeSupported(gfxQueueType mask) const;
 
 protected:
-    epiPimpl<internalgfx::gfxPhysicalDeviceImpl> m_Impl;
+    std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

@@ -54,12 +54,12 @@ public:
 
 public:
     gfxBuffer() = default;
-    explicit gfxBuffer(const std::shared_ptr<gfxBuffer::Impl>& impl);
+    explicit gfxBuffer(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
 protected:
-    std::shared_ptr<gfxBuffer::Impl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 class gfxBufferMemoryBarrier : public Object

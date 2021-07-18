@@ -11,20 +11,23 @@ EPI_NAMESPACE_BEGIN()
 gfxPhysicalDevice::gfxPhysicalDevice(const std::shared_ptr<internalgfx::gfxPhysicalDeviceImpl>& impl)
     : m_Impl{impl}
 {
+    epiArray<gfxQueueFamilyDescriptor>& queueFamilyDescriptors = GetQueueFamilyDescriptors();
+
+    queueFamilyDescriptors.Clear();
+    queueFamilyDescriptors.Reserve(m_Impl->GetQueueFamilyDescriptors().Size());
+
+    std::transform(m_Impl->GetQueueFamilyDescriptors().begin(),
+                   m_Impl->GetQueueFamilyDescriptors().end(),
+                   std::back_inserter(queueFamilyDescriptors),
+                   [](const std::shared_ptr<gfxQueueFamilyDescriptor::Impl>& queueFamilyDescriptorImpl)
+    {
+        return gfxQueueFamilyDescriptor(queueFamilyDescriptorImpl);
+    });
 }
 
-std::optional<gfxDevice> gfxPhysicalDevice::CreateDevice(gfxQueueDescriptorList& queueDescriptorList,
-                                                         const epiArray<gfxPhysicalDeviceExtension>& extensionsRequired,
-                                                         const epiArray<gfxPhysicalDeviceFeature>& featuresRequired) const
+epiBool gfxPhysicalDevice::HasImpl() const
 {
-    std::optional<gfxDevice> device;
-
-    if (std::shared_ptr<internalgfx::gfxDeviceImpl> impl = m_Impl->CreateDevice(queueDescriptorList, extensionsRequired, featuresRequired))
-    {
-        device = gfxDevice(std::move(impl));
-    }
-
-    return device;
+    return static_cast<epiBool>(m_Impl);
 }
 
 epiFloat gfxPhysicalDevice::GetMaxSamplerAnisotropy() const

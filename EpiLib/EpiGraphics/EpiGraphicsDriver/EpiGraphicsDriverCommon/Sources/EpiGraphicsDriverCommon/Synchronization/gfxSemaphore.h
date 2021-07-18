@@ -53,14 +53,14 @@ public:
 
 public:
     gfxSemaphore() = default;
-    explicit gfxSemaphore(const std::shared_ptr<gfxSemaphore::Impl>& impl);
+    explicit gfxSemaphore(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
     epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout = std::numeric_limits<epiU64>::max());
 
 protected:
-    std::shared_ptr<gfxSemaphore::Impl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 class gfxSemaphoreWaitInfo : public Object
