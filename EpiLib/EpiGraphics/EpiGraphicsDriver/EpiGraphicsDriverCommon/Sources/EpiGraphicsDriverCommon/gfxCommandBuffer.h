@@ -16,13 +16,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxCommandBufferImpl;
-
-} // namespace internalgfx
-
 class gfxRenderPassClearValue : public Object
 {
 EPI_GENREGION_BEGIN(gfxRenderPassClearValue)
@@ -162,61 +155,6 @@ protected:
 EPI_GENREGION_END(gfxCommandBufferRecordPipelineBarier)
 };
 
-class gfxCommandBufferRecord : public Object
-{
-EPI_GENREGION_BEGIN(gfxCommandBufferRecord)
-
-EPI_GENHIDDEN_gfxCommandBufferRecord()
-
-public:
-    constexpr static epiMetaTypeID TypeID{0xfa5418ce};
-
-    enum gfxCommandBufferRecord_PIDs
-    {
-        PID_IsInitialized = 0x101015d0,
-        PID_COUNT = 1
-    };
-
-protected:
-    epiBool m_IsInitialized{false};
-
-EPI_GENREGION_END(gfxCommandBufferRecord)
-
-public:
-    gfxCommandBufferRecord() = default;
-    gfxCommandBufferRecord(const gfxCommandBufferRecord& rhs) = delete;
-    gfxCommandBufferRecord& operator=(const gfxCommandBufferRecord& rhs) = delete;
-    gfxCommandBufferRecord(gfxCommandBufferRecord&& rhs);
-    gfxCommandBufferRecord& operator=(gfxCommandBufferRecord&& rhs);
-    ~gfxCommandBufferRecord();
-
-    void RecordBegin(internalgfx::gfxCommandBufferImpl* impl, gfxCommandBufferUsage usage);
-
-    operator epiBool() const;
-
-    gfxCommandBufferRecord& RenderPassBegin(const gfxRenderPassBeginInfo& info);
-    gfxCommandBufferRecord& RenderPassEnd();
-
-    gfxCommandBufferRecord& PipelineBind(const gfxPipelineGraphics& pipeline);
-    gfxCommandBufferRecord& PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier);
-
-    gfxCommandBufferRecord& VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {});
-    gfxCommandBufferRecord& IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0);
-    gfxCommandBufferRecord& DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
-                                               const gfxPipelineLayout& pipelineLayout,
-                                               const epiArray<gfxDescriptorSet>& sets,
-                                               const epiArray<epiU32>& offsets = {},
-                                               epiU32 firstSet = 0);
-
-    gfxCommandBufferRecord& Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance);
-    gfxCommandBufferRecord& DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance);
-    gfxCommandBufferRecord& Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions);
-    gfxCommandBufferRecord& Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions);
-
-protected:
-    internalgfx::gfxCommandBufferImpl* m_Impl{nullptr};
-};
-
 class gfxCommandBuffer : public Object
 {
 EPI_GENREGION_BEGIN(gfxCommandBuffer)
@@ -238,19 +176,56 @@ protected:
 EPI_GENREGION_END(gfxCommandBuffer)
 
 public:
-    friend class gfxQueue;
-    friend class internalgfx::gfxCommandBufferImpl;
+    class Impl;
+
+    class Record
+    {
+    public:
+        Record() = default;
+        Record(const Record& rhs) = delete;
+        Record& operator=(const Record& rhs) = delete;
+        Record(Record&& rhs);
+        Record& operator=(Record&& rhs);
+        ~Record();
+
+        void RecordBegin(gfxCommandBuffer::Impl* impl, gfxCommandBufferUsage usage);
+
+        operator epiBool() const;
+
+        Record& RenderPassBegin(const gfxRenderPassBeginInfo& info);
+        Record& RenderPassEnd();
+
+        Record& PipelineBind(const gfxPipelineGraphics& pipeline);
+        Record& PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier);
+
+        Record& VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {});
+        Record& IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0);
+        Record& DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                                                   const gfxPipelineLayout& pipelineLayout,
+                                                   const epiArray<gfxDescriptorSet>& sets,
+                                                   const epiArray<epiU32>& offsets = {},
+                                                   epiU32 firstSet = 0);
+
+        Record& Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance);
+        Record& DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance);
+        Record& Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions);
+        Record& Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions);
+
+    protected:
+        gfxCommandBuffer::Impl* m_Impl{nullptr};
+        epiBool m_IsInitialized{false};
+    };
 
 public:
     gfxCommandBuffer() = default;
-    explicit gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& impl);
+    explicit gfxCommandBuffer(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
-    gfxCommandBufferRecord RecordCommands(gfxCommandBufferUsage usage = gfxCommandBufferUsage{0});
+    Record RecordCommands(gfxCommandBufferUsage usage = gfxCommandBufferUsage{0});
 
 protected:
-    epiPimpl<internalgfx::gfxCommandBufferImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

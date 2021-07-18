@@ -20,62 +20,6 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-class gfxCommandPoolImpl
-{
-public:
-    gfxCommandPoolImpl() = default;
-    gfxCommandPoolImpl(const gfxCommandPoolImpl& rhs) = delete;
-    gfxCommandPoolImpl& operator=(const gfxCommandPoolImpl& rhs) = delete;
-    gfxCommandPoolImpl(gfxCommandPoolImpl&& rhs) = default;
-    gfxCommandPoolImpl& operator=(gfxCommandPoolImpl&& rhs) = default;
-    virtual ~gfxCommandPoolImpl() = default;
-
-    const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetPrimaryCommandBuffers() { return m_PrimaryCommandBuffers; }
-    const epiArray<std::shared_ptr<gfxCommandBufferImpl>>& GetSecondaryCommandBuffers() { return m_SecondaryCommandBuffers; }
-
-protected:
-    epiArray<std::shared_ptr<gfxCommandBufferImpl>> m_PrimaryCommandBuffers;
-    epiArray<std::shared_ptr<gfxCommandBufferImpl>> m_SecondaryCommandBuffers;
-};
-
-class gfxCommandBufferImpl
-{
-public:
-    static const gfxCommandBufferImpl* ExtractImpl(const gfxCommandBuffer& commandBuffer) { return commandBuffer.m_Impl.Ptr(); }
-
-public:
-    gfxCommandBufferImpl() = default;
-    gfxCommandBufferImpl(const gfxCommandBufferImpl& rhs) = delete;
-    gfxCommandBufferImpl& operator=(const gfxCommandBufferImpl& rhs) = delete;
-    gfxCommandBufferImpl(gfxCommandBufferImpl&& rhs) = default;
-    gfxCommandBufferImpl& operator=(gfxCommandBufferImpl&& rhs) = default;
-    virtual ~gfxCommandBufferImpl() = default;
-
-    virtual epiBool GetIsPrimary() const = 0;
-
-    virtual epiBool RecordBegin(gfxCommandBufferUsage usage) = 0;
-    virtual epiBool RecordEnd() = 0;
-
-    virtual void RenderPassBegin(const gfxRenderPassBeginInfo& info) = 0;
-    virtual void RenderPassEnd() = 0;
-
-    virtual void PipelineBind(const gfxPipelineGraphics& pipeline) = 0;
-    virtual void PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier) = 0;
-
-    virtual void VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
-    virtual void IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0) = 0;
-    virtual void DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
-                                    const gfxPipelineLayout& pipelineLayout,
-                                    const epiArray<gfxDescriptorSet>& sets,
-                                    const epiArray<epiU32>& offsets,
-                                    epiU32 firstSet) = 0;
-
-    virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
-    virtual void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) = 0;
-    virtual void Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
-    virtual void Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) = 0;
-};
-
 struct gfxShaderProgramCreateInfoImpl
 {
     gfxShaderImpl* Vertex{nullptr};
@@ -481,7 +425,7 @@ public:
     virtual std::shared_ptr<internalgfx::gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const = 0;
     virtual std::shared_ptr<internalgfx::gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxCommandPoolImpl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxCommandPool::Impl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
@@ -595,5 +539,62 @@ public:
     Impl& operator=(Impl&& rhs) = default;
     virtual ~Impl() = default;
 };
+
+class gfxCommandPool::Impl
+{
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    const epiArray<std::shared_ptr<gfxCommandBuffer::Impl>>& GetPrimaryCommandBuffers() { return m_PrimaryCommandBuffers; }
+    const epiArray<std::shared_ptr<gfxCommandBuffer::Impl>>& GetSecondaryCommandBuffers() { return m_SecondaryCommandBuffers; }
+
+protected:
+    epiArray<std::shared_ptr<gfxCommandBuffer::Impl>> m_PrimaryCommandBuffers;
+    epiArray<std::shared_ptr<gfxCommandBuffer::Impl>> m_SecondaryCommandBuffers;
+};
+
+class gfxCommandBuffer::Impl
+{
+public:
+    static const gfxCommandBuffer::Impl* ExtractImpl(const gfxCommandBuffer& commandBuffer) { return commandBuffer.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual epiBool GetIsPrimary() const = 0;
+
+    virtual epiBool RecordBegin(gfxCommandBufferUsage usage) = 0;
+    virtual epiBool RecordEnd() = 0;
+
+    virtual void RenderPassBegin(const gfxRenderPassBeginInfo& info) = 0;
+    virtual void RenderPassEnd() = 0;
+
+    virtual void PipelineBind(const gfxPipelineGraphics& pipeline) = 0;
+    virtual void PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier) = 0;
+
+    virtual void VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
+    virtual void IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0) = 0;
+    virtual void DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                                    const gfxPipelineLayout& pipelineLayout,
+                                    const epiArray<gfxDescriptorSet>& sets,
+                                    const epiArray<epiU32>& offsets,
+                                    epiU32 firstSet) = 0;
+
+    virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
+    virtual void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) = 0;
+    virtual void Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
+    virtual void Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) = 0;
+};
+
 
 EPI_NAMESPACE_END()

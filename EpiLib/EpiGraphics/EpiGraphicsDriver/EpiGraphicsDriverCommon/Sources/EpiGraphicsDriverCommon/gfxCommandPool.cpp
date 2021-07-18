@@ -9,7 +9,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxCommandPool::gfxCommandPool(const std::shared_ptr<internalgfx::gfxCommandPoolImpl>& impl)
+gfxCommandPool::gfxCommandPool(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
     {
@@ -20,7 +20,7 @@ gfxCommandPool::gfxCommandPool(const std::shared_ptr<internalgfx::gfxCommandPool
         std::transform(m_Impl->GetPrimaryCommandBuffers().begin(),
                        m_Impl->GetPrimaryCommandBuffers().end(),
                        std::back_inserter(commandBuffers),
-                       [](const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& commandBufferImpl)
+                       [](const std::shared_ptr<gfxCommandBuffer::Impl>& commandBufferImpl)
         {
             return gfxCommandBuffer(commandBufferImpl);
         });
@@ -34,11 +34,16 @@ gfxCommandPool::gfxCommandPool(const std::shared_ptr<internalgfx::gfxCommandPool
         std::transform(m_Impl->GetSecondaryCommandBuffers().begin(),
                        m_Impl->GetSecondaryCommandBuffers().end(),
                        std::back_inserter(commandBuffers),
-                       [](const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& commandBufferImpl)
+                       [](const std::shared_ptr<gfxCommandBuffer::Impl>& commandBufferImpl)
         {
             return gfxCommandBuffer(commandBufferImpl);
         });
     }
+}
+
+epiBool gfxCommandPool::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 EPI_NAMESPACE_END()

@@ -7,10 +7,7 @@ struct VkCommandPool_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxCommandPoolImplVK : public gfxCommandPoolImpl
+class gfxCommandPoolImplVK : public gfxCommandPool::Impl
 {
 public:
     explicit gfxCommandPoolImplVK(VkDevice_T* device);
@@ -26,7 +23,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkCommandPool_T* m_VkCommandPool{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

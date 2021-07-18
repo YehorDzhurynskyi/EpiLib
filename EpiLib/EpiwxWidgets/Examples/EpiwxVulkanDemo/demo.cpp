@@ -435,7 +435,7 @@ public:
             std::optional<gfxCommandPool> copyCmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
             epiAssert(copyCmdPool.has_value());
 
-            if (gfxCommandBufferRecord record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+            if (gfxCommandBuffer::Record record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
             {
                 gfxCommandBufferRecordCopyRegion copyRegion;
                 copyRegion.SetSize(vertexBufferCapacity);
@@ -503,7 +503,7 @@ public:
             std::optional<gfxCommandPool> copyCmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
             epiAssert(copyCmdPool.has_value());
 
-            if (gfxCommandBufferRecord record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+            if (gfxCommandBuffer::Record record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
             {
                 gfxCommandBufferRecordCopyRegion copyRegion;
                 copyRegion.SetSize(indexBufferCapacity);
@@ -575,7 +575,7 @@ public:
                 std::optional<gfxCommandPool> cmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
                 epiAssert(cmdPool.has_value());
 
-                if (gfxCommandBufferRecord record = cmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+                if (gfxCommandBuffer::Record record = cmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
                 {
                     gfxImageSubresourceRange subresourceRange;
                     subresourceRange.SetAspectMask(gfxImageAspect_Color);
@@ -618,7 +618,7 @@ public:
                 std::optional<gfxCommandPool> copyCmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
                 epiAssert(copyCmdPool.has_value());
 
-                if (gfxCommandBufferRecord record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+                if (gfxCommandBuffer::Record record = copyCmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
                 {
                     gfxImageSubresourceLayers subresource;
                     subresource.SetAspectMask(gfxImageAspect_Color);
@@ -653,7 +653,7 @@ public:
                 std::optional<gfxCommandPool> cmdPool = g_Device.CreateCommandPool(commandPoolCreateInfo);
                 epiAssert(cmdPool.has_value());
 
-                if (gfxCommandBufferRecord record = cmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
+                if (gfxCommandBuffer::Record record = cmdPool->GetPrimaryCommandBuffers()[0].RecordCommands(gfxCommandBufferUsage_OneTimeSubmit))
                 {
                     gfxImageSubresourceRange subresourceRange;
                     subresourceRange.SetAspectMask(gfxImageAspect_Color);
@@ -1160,7 +1160,7 @@ void epiWXVulkanDemoTriangleCanvas::RecordCommandBuffers()
     epiRect2s renderArea(0, 0, static_cast<epiS32>(m_SwapChain.GetExtent().x), static_cast<epiS32>(m_SwapChain.GetExtent().y));
     for (epiU32 i = 0; i < m_SwapChain.GetBufferCount(); ++i)
     {
-        if (gfxCommandBufferRecord record = m_CommandPool.GetPrimaryCommandBuffers()[i].RecordCommands())
+        if (gfxCommandBuffer::Record record = m_CommandPool.GetPrimaryCommandBuffers()[i].RecordCommands())
         {
             const gfxDescriptorSet& descriptorSet = m_DescriptorPool.GetDescriptorSets()[i];
 

@@ -9,9 +9,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxCommandPoolImplVK::gfxCommandPoolImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -27,7 +24,7 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
         std::transform(m_PrimaryCommandBuffers.begin(),
                        m_PrimaryCommandBuffers.end(),
                        std::back_inserter(primaryCommandBuffers),
-                       [](const std::shared_ptr<gfxCommandBufferImpl>& commandBuffer)
+                       [](const std::shared_ptr<gfxCommandBuffer::Impl>& commandBuffer)
         {
             const gfxCommandBufferImplVK* commandBufferVk = static_cast<const gfxCommandBufferImplVK*>(commandBuffer.get());
             return commandBufferVk->GetVkCommandBuffer();
@@ -44,7 +41,7 @@ gfxCommandPoolImplVK::~gfxCommandPoolImplVK()
         std::transform(m_SecondaryCommandBuffers.begin(),
                        m_SecondaryCommandBuffers.end(),
                        std::back_inserter(secondaryCommandBuffers),
-                       [](const std::shared_ptr<gfxCommandBufferImpl>& commandBuffer)
+                       [](const std::shared_ptr<gfxCommandBuffer::Impl>& commandBuffer)
         {
             const gfxCommandBufferImplVK* commandBufferVk = static_cast<const gfxCommandBufferImplVK*>(commandBuffer.get());
             return commandBufferVk->GetVkCommandBuffer();
@@ -129,7 +126,5 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info)
 
     return true;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

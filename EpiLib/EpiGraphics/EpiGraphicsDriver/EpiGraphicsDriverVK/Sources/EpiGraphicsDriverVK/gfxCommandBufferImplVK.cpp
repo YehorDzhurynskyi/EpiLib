@@ -15,9 +15,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxCommandBufferImplVK::gfxCommandBufferImplVK(VkCommandBuffer commandBuffer, epiBool isPrimary)
     : m_VkCommandBuffer{commandBuffer}
     , m_IsPrimary{isPrimary}
@@ -70,7 +67,7 @@ void gfxCommandBufferImplVK::RenderPassBegin(const gfxRenderPassBeginInfo& info)
         return;
     }
 
-    const gfxRenderPassImplVK* renderPassImpl = static_cast<const gfxRenderPassImplVK*>(gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
+    const internalgfx::gfxRenderPassImplVK* renderPassImpl = static_cast<const internalgfx::gfxRenderPassImplVK*>(internalgfx::gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
     epiAssert(renderPassImpl != nullptr);
 
     const gfxFrameBufferImplVK* frameBufferImpl = static_cast<const gfxFrameBufferImplVK*>(gfxFrameBuffer::Impl::ExtractImpl(info.GetFrameBuffer()));
@@ -121,7 +118,7 @@ void gfxCommandBufferImplVK::PipelineBind(const gfxPipelineGraphics& pipeline)
         return;
     }
 
-    const gfxPipelineGraphicsImplVK* pipelineImpl = static_cast<const gfxPipelineGraphicsImplVK*>(gfxPipelineGraphicsImpl::ExtractImpl(pipeline));
+    const internalgfx::gfxPipelineGraphicsImplVK* pipelineImpl = static_cast<const internalgfx::gfxPipelineGraphicsImplVK*>(internalgfx::gfxPipelineGraphicsImpl::ExtractImpl(pipeline));
     epiAssert(pipelineImpl != nullptr);
 
     vkCmdBindPipeline(m_VkCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineImpl->GetVkPipeline());
@@ -240,7 +237,7 @@ void gfxCommandBufferImplVK::PipelineBarrier(const gfxCommandBufferRecordPipelin
                    std::back_inserter(imageMemoryBarriers),
                    [](const gfxImageMemoryBarrier& barrier)
     {
-        const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTextureImpl::ExtractImpl(barrier.GetImage()));
+        const internalgfx::gfxTextureImplVK* imageImpl = static_cast<const internalgfx::gfxTextureImplVK*>(internalgfx::gfxTextureImpl::ExtractImpl(barrier.GetImage()));
         epiAssert(imageImpl != nullptr);
 
         VkImageMemoryBarrier barrierVk{};
@@ -326,7 +323,7 @@ void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
                                                 const epiArray<epiU32>& offsets,
                                                 epiU32 firstSet)
 {
-    const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayoutImpl::ExtractImpl(pipelineLayout));
+    const internalgfx::gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const internalgfx::gfxPipelineLayoutImplVK*>(internalgfx::gfxPipelineLayoutImpl::ExtractImpl(pipelineLayout));
     if (pipelineLayoutVk == nullptr)
     {
         epiLogError("Failed to Bind DescriptorSets! Provided PipelineLayout has no implementation!");
@@ -335,7 +332,7 @@ void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
 
     const epiBool setsAreValid = std::all_of(sets.begin(), sets.end(), [](const gfxDescriptorSet& set)
     {
-        return gfxDescriptorSetImpl::ExtractImpl(set) != nullptr;
+        return internalgfx::gfxDescriptorSetImpl::ExtractImpl(set) != nullptr;
     });
 
     if (!setsAreValid)
@@ -349,7 +346,7 @@ void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
 
     std::transform(sets.begin(), sets.end(), std::back_inserter(descriptorSets), [](const gfxDescriptorSet& set)
     {
-        return static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSetImpl::ExtractImpl(set))->GetVkDescriptorSet();
+        return static_cast<const internalgfx::gfxDescriptorSetImplVK*>(internalgfx::gfxDescriptorSetImpl::ExtractImpl(set))->GetVkDescriptorSet();
     });
 
     vkCmdBindDescriptorSets(m_VkCommandBuffer,
@@ -417,7 +414,7 @@ void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxTexture& dst, g
     const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(src));
     epiAssert(bufferImpl != nullptr);
 
-    const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTextureImpl::ExtractImpl(dst));
+    const internalgfx::gfxTextureImplVK* imageImpl = static_cast<const internalgfx::gfxTextureImplVK*>(internalgfx::gfxTextureImpl::ExtractImpl(dst));
     epiAssert(imageImpl != nullptr);
 
     std::vector<VkBufferImageCopy> regions;
@@ -449,7 +446,5 @@ VkCommandBuffer gfxCommandBufferImplVK::GetVkCommandBuffer() const
 {
     return m_VkCommandBuffer;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

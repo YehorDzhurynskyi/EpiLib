@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxCommandBufferRecord::gfxCommandBufferRecord(gfxCommandBufferRecord&& rhs)
+gfxCommandBuffer::Record::Record(Record&& rhs)
 {
     if (&rhs != this)
     {
@@ -19,7 +19,7 @@ gfxCommandBufferRecord::gfxCommandBufferRecord(gfxCommandBufferRecord&& rhs)
     }
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::operator=(gfxCommandBufferRecord&& rhs)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::operator=(Record&& rhs)
 {
     if (&rhs != this)
     {
@@ -33,26 +33,31 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::operator=(gfxCommandBufferRecord
     return *this;
 }
 
-gfxCommandBufferRecord::~gfxCommandBufferRecord()
+gfxCommandBuffer::Record::~Record()
 {
-    if (GetIsInitialized())
+    if (m_IsInitialized)
     {
         m_Impl->RecordEnd();
     }
 }
 
-void gfxCommandBufferRecord::RecordBegin(internalgfx::gfxCommandBufferImpl* impl, gfxCommandBufferUsage usage)
+void gfxCommandBuffer::Record::RecordBegin(gfxCommandBuffer::Impl* impl, gfxCommandBufferUsage usage)
 {
     m_Impl = impl;
-    m_IsInitialized = m_Impl != nullptr && m_Impl->RecordBegin(usage);
+    m_IsInitialized = false;
+
+    if (m_Impl != nullptr)
+    {
+        m_IsInitialized = m_Impl->RecordBegin(usage);
+    }
 }
 
-gfxCommandBufferRecord::operator epiBool() const
+gfxCommandBuffer::Record::operator epiBool() const
 {
-    return GetIsInitialized();
+    return m_IsInitialized;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::RenderPassBegin(const gfxRenderPassBeginInfo& info)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::RenderPassBegin(const gfxRenderPassBeginInfo& info)
 {
     if (!info.GetRenderPass().HasImpl())
     {
@@ -71,14 +76,14 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::RenderPassBegin(const gfxRenderP
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::RenderPassEnd()
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::RenderPassEnd()
 {
     m_Impl->RenderPassEnd();
 
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBind(const gfxPipelineGraphics& pipeline)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::PipelineBind(const gfxPipelineGraphics& pipeline)
 {
     if (!pipeline.HasImpl())
     {
@@ -104,7 +109,7 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBind(const gfxPipelineGr
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier)
 {
     const epiBool bufferMemoryBarriersValid = std::all_of(pipelineBarrier.GetBufferMemoryBarriers().begin(),
                                                           pipelineBarrier.GetBufferMemoryBarriers().end(),
@@ -137,7 +142,7 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::PipelineBarrier(const gfxCommand
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets)
 {
     const epiBool allBuffersAreValid = std::all_of(buffers.begin(), buffers.end(), [](const gfxBuffer& buffer)
     {
@@ -155,7 +160,7 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::VertexBuffersBind(const epiArray
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset)
 {
     if (!buffer.HasImpl())
     {
@@ -168,32 +173,32 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::IndexBufferBind(const gfxBuffer&
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
-                                                                   const gfxPipelineLayout& pipelineLayout,
-                                                                   const epiArray<gfxDescriptorSet>& sets,
-                                                                   const epiArray<epiU32>& offsets,
-                                                                   epiU32 firstSet)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                                                                                                       const gfxPipelineLayout& pipelineLayout,
+                                                                                                       const epiArray<gfxDescriptorSet>& sets,
+                                                                                                       const epiArray<epiU32>& offsets,
+                                                                                                       epiU32 firstSet)
 {
     m_Impl->DescriptorSetsBind(bindPoint, pipelineLayout, sets, offsets, firstSet);
 
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance)
 {
     m_Impl->Draw(vertexCount, instanceCount, firstVertex, firstInstance);
 
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance)
 {
     m_Impl->DrawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions)
 {
     if (!src.HasImpl())
     {
@@ -212,7 +217,7 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const
     return *this;
 }
 
-gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
 {
     if (!src.HasImpl())
     {
@@ -231,7 +236,7 @@ gfxCommandBufferRecord& gfxCommandBufferRecord::Copy(const gfxBuffer& src, const
     return *this;
 }
 
-gfxCommandBuffer::gfxCommandBuffer(const std::shared_ptr<internalgfx::gfxCommandBufferImpl>& impl)
+gfxCommandBuffer::gfxCommandBuffer(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }
@@ -241,10 +246,10 @@ epiBool gfxCommandBuffer::HasImpl() const
     return static_cast<epiBool>(m_Impl);
 }
 
-gfxCommandBufferRecord gfxCommandBuffer::RecordCommands(gfxCommandBufferUsage usage)
+gfxCommandBuffer::Record gfxCommandBuffer::RecordCommands(gfxCommandBufferUsage usage)
 {
-    gfxCommandBufferRecord record;
-    record.RecordBegin(m_Impl.Ptr(), usage);
+    Record record;
+    record.RecordBegin(m_Impl.get(), usage);
 
     return record;
 }

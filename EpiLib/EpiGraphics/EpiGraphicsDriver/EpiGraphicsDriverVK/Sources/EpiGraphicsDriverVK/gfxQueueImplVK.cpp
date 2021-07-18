@@ -83,7 +83,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFenc
                        std::back_inserter(commandBuffersInfoVk),
                        [](const gfxCommandBuffer& commandBuffer)
         {
-            const internalgfx::gfxCommandBufferImplVK* commandBufferImpl = static_cast<const internalgfx::gfxCommandBufferImplVK*>(internalgfx::gfxCommandBufferImpl::ExtractImpl(commandBuffer));
+            const gfxCommandBufferImplVK* commandBufferImpl = static_cast<const gfxCommandBufferImplVK*>(gfxCommandBuffer::Impl::ExtractImpl(commandBuffer));
             epiAssert(commandBufferImpl != nullptr);
 
             return commandBufferImpl->GetVkCommandBuffer();

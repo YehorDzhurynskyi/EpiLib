@@ -274,7 +274,7 @@ std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolC
         return commnadPool;
     }
 
-    if (std::shared_ptr<internalgfx::gfxCommandPoolImpl> impl = m_Impl->CreateCommandPool(info))
+    if (std::shared_ptr<gfxCommandPool::Impl> impl = m_Impl->CreateCommandPool(info))
     {
         commnadPool = gfxCommandPool(std::move(impl));
     }

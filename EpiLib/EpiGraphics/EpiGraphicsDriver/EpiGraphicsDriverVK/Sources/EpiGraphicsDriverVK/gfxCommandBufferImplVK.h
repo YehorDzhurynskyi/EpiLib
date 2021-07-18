@@ -6,10 +6,7 @@ struct VkCommandBuffer_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxCommandBufferImplVK : public gfxCommandBufferImpl
+class gfxCommandBufferImplVK : public gfxCommandBuffer::Impl
 {
 public:
     gfxCommandBufferImplVK(VkCommandBuffer_T* commandBuffer, epiBool isPrimary);
@@ -49,7 +46,5 @@ protected:
     VkCommandBuffer_T* m_VkCommandBuffer{nullptr};
     epiBool m_IsPrimary{false};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

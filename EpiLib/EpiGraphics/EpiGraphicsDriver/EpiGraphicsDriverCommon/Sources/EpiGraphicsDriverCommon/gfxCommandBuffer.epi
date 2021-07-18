@@ -40,12 +40,6 @@ class gfxCommandBufferRecordPipelineBarier
     epiArray<gfxImageMemoryBarrier> ImageMemoryBarriers;
 };
 
-class gfxCommandBufferRecord
-{
-    [ReadOnly]
-    epiBool IsInitialized;
-};
-
 class gfxCommandBuffer
 {
     [Virtual, ReadOnly]

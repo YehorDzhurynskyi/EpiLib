@@ -717,9 +717,9 @@ std::shared_ptr<internalgfx::gfxSamplerImpl> gfxDeviceImplVK::CreateSampler(cons
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxCommandPoolImpl> gfxDeviceImplVK::CreateCommandPool(const gfxCommandPoolCreateInfo& info) const
+std::shared_ptr<gfxCommandPool::Impl> gfxDeviceImplVK::CreateCommandPool(const gfxCommandPoolCreateInfo& info) const
 {
-    std::shared_ptr<internalgfx::gfxCommandPoolImplVK> impl = std::make_shared<internalgfx::gfxCommandPoolImplVK>(m_VkDevice);
+    std::shared_ptr<gfxCommandPoolImplVK> impl = std::make_shared<gfxCommandPoolImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();

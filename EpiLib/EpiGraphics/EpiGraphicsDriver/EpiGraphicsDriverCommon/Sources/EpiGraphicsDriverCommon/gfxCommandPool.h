@@ -11,13 +11,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxCommandPoolImpl;
-
-} // internalgfx
-
 class gfxCommandPoolCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxCommandPoolCreateInfo)
@@ -68,11 +61,16 @@ protected:
 EPI_GENREGION_END(gfxCommandPool)
 
 public:
+    class Impl;
+
+public:
     gfxCommandPool() = default;
-    explicit gfxCommandPool(const std::shared_ptr<internalgfx::gfxCommandPoolImpl>& impl);
+    explicit gfxCommandPool(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
 protected:
-    epiPimpl<internalgfx::gfxCommandPoolImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()
