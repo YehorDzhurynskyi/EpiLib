@@ -17,7 +17,7 @@ public:
     gfxFrameBufferImplVK& operator=(gfxFrameBufferImplVK&& rhs) = default;
     ~gfxFrameBufferImplVK() override;
 
-    epiBool Init(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls);
+    epiBool Init(const gfxFrameBufferCreateInfo& info);
 
     VkFramebuffer_T* GetVkFrameBuffer() const;
 

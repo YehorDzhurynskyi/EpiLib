@@ -8,19 +8,19 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxTextureViewImplVK::gfxTextureViewImplVK(VkDevice device)
     : m_VkDevice{device}
 {
 }
 
-epiBool gfxTextureViewImplVK::Init(const gfxTextureViewCreateInfo& info, const gfxTextureImpl& textureImpl)
+epiBool gfxTextureViewImplVK::Init(const gfxTextureViewCreateInfo& info)
 {
+    const gfxTextureImplVK* imageVk = static_cast<const gfxTextureImplVK*>(gfxTexture::Impl::ExtractImpl(info.GetImage()));
+    epiAssert(imageVk != nullptr);
+
     VkImageViewCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    createInfo.image = static_cast<const gfxTextureImplVK&>(textureImpl).GetVkImage();
+    createInfo.image = imageVk->GetVkImage();
     createInfo.viewType = gfxTextureViewTypeTo(info.GetViewType());
     createInfo.format = gfxFormatTo(info.GetFormat());
     createInfo.components.r = gfxComponentSwizzleTo(info.GetComponentSwizzleMappingR());
@@ -51,7 +51,5 @@ VkImageView gfxTextureViewImplVK::GetVkImageView() const
 {
     return m_VkImageView;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

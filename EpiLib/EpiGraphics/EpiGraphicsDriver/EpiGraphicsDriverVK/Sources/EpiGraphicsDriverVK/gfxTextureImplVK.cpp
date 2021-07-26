@@ -7,9 +7,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxTextureImplVK::gfxTextureImplVK(VkImage image)
     : m_VkImage{image}
 {
@@ -58,7 +55,5 @@ gfxTextureImplVKOwner::~gfxTextureImplVKOwner()
 {
     vkDestroyImage(m_VkDevice, m_VkImage, nullptr);
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

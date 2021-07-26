@@ -10,13 +10,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxTextureImpl;
-
-} // namespace internalgfx
-
 class gfxTextureCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxTextureCreateInfo)
@@ -71,17 +64,16 @@ public:
 EPI_GENREGION_END(gfxTexture)
 
 public:
-    friend class gfxDevice;
-    friend class internalgfx::gfxTextureImpl;
+    class Impl;
 
 public:
     gfxTexture() = default;
-    explicit gfxTexture(const std::shared_ptr<internalgfx::gfxTextureImpl>& impl);
+    explicit gfxTexture(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
 protected:
-    epiPimpl<internalgfx::gfxTextureImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 class gfxImageSubresourceLayers : public Object

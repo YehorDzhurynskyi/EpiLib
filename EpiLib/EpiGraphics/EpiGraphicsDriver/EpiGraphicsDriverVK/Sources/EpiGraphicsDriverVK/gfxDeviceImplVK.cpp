@@ -429,7 +429,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
             const internalgfx::gfxSamplerImplVK* sampler = static_cast<const internalgfx::gfxSamplerImplVK*>(internalgfx::gfxSamplerImpl::ExtractImpl(imageInfo.GetSampler()));
             epiAssert(sampler != nullptr);
 
-            const internalgfx::gfxTextureViewImplVK* imageView = static_cast<const internalgfx::gfxTextureViewImplVK*>(internalgfx::gfxTextureViewImpl::ExtractImpl(imageInfo.GetImageView()));
+            const gfxTextureViewImplVK* imageView = static_cast<const gfxTextureViewImplVK*>(gfxTextureView::Impl::ExtractImpl(imageInfo.GetImageView()));
             epiAssert(imageView != nullptr);
 
             VkDescriptorImageInfo imageInfoVk{};
@@ -647,20 +647,9 @@ std::shared_ptr<gfxShaderModule::Impl> gfxDeviceImplVK::CreateShaderModule(const
     return impl;
 }
 
-std::shared_ptr<gfxFrameBuffer::Impl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const
+std::shared_ptr<gfxFrameBuffer::Impl> gfxDeviceImplVK::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const
 {
     std::shared_ptr<gfxFrameBufferImplVK> impl = std::make_shared<gfxFrameBufferImplVK>(m_VkDevice);
-    if (!impl->Init(info, renderPassImpl, textureViewImpls))
-    {
-        impl.reset();
-    }
-
-    return impl;
-}
-
-std::shared_ptr<internalgfx::gfxTextureImpl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
-{
-    std::shared_ptr<internalgfx::gfxTextureImplVKOwner> impl = std::make_shared<internalgfx::gfxTextureImplVKOwner>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -669,10 +658,21 @@ std::shared_ptr<internalgfx::gfxTextureImpl> gfxDeviceImplVK::CreateTexture(cons
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxTextureViewImpl> gfxDeviceImplVK::CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const
+std::shared_ptr<gfxTexture::Impl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
 {
-    std::shared_ptr<internalgfx::gfxTextureViewImplVK> impl = std::make_shared<internalgfx::gfxTextureViewImplVK>(m_VkDevice);
-    if (!impl->Init(info, textureImpl))
+    std::shared_ptr<gfxTextureImplVKOwner> impl = std::make_shared<gfxTextureImplVKOwner>(m_VkDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxTextureView::Impl> gfxDeviceImplVK::CreateTextureView(const gfxTextureViewCreateInfo& info) const
+{
+    std::shared_ptr<gfxTextureViewImplVK> impl = std::make_shared<gfxTextureViewImplVK>(m_VkDevice);
+    if (!impl->Init(info))
     {
         impl.reset();
     }

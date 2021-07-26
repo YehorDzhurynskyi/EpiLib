@@ -30,9 +30,9 @@ public:
     std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const override;
     std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const override;
     std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const override;
-    std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const override;
-    std::shared_ptr<internalgfx::gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const override;
-    std::shared_ptr<internalgfx::gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const override;
+    std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const override;
+    std::shared_ptr<gfxTexture::Impl> CreateTexture(const gfxTextureCreateInfo& info) const override;
+    std::shared_ptr<gfxTextureView::Impl> CreateTextureView(const gfxTextureViewCreateInfo& info) const override;
     std::shared_ptr<internalgfx::gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const override;
     std::shared_ptr<gfxCommandPool::Impl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const override;
     std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const override;

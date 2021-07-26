@@ -147,14 +147,7 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
         return frameBuffer;
     }
 
-    epiPtrArray<const internalgfx::gfxTextureViewImpl> textureViewImpls;
-    textureViewImpls.Reserve(info.GetAttachments().Size());
-    std::transform(info.GetAttachments().begin(), info.GetAttachments().end(), std::back_inserter(textureViewImpls), [](const gfxTextureView& view)
-    {
-        return &*view.m_Impl;
-    });
-
-    if (std::shared_ptr<gfxFrameBuffer::Impl> impl = m_Impl->CreateFrameBuffer(info, *renderPassImpl, textureViewImpls))
+    if (std::shared_ptr<gfxFrameBuffer::Impl> impl = m_Impl->CreateFrameBuffer(info))
     {
         frameBuffer = gfxFrameBuffer(std::move(impl));
     }
@@ -166,7 +159,7 @@ std::optional<gfxTexture> gfxDevice::CreateTexture(const gfxTextureCreateInfo& i
 {
     std::optional<gfxTexture> texture;
 
-    if (std::shared_ptr<internalgfx::gfxTextureImpl> impl = m_Impl->CreateTexture(info))
+    if (std::shared_ptr<gfxTexture::Impl> impl = m_Impl->CreateTexture(info))
     {
         texture = gfxTexture(std::move(impl));
     }
@@ -178,14 +171,13 @@ std::optional<gfxTextureView> gfxDevice::CreateTextureView(const gfxTextureViewC
 {
     std::optional<gfxTextureView> textureView;
 
-    const auto textureImpl = info.GetImage().m_Impl;
-    if (!textureImpl)
+    if (!info.GetImage().HasImpl())
     {
         epiLogError("Failed to create TextureView! Provided Texture has no implementation!");
         return textureView;
     }
 
-    if (std::shared_ptr<internalgfx::gfxTextureViewImpl> impl = m_Impl->CreateTextureView(info, *textureImpl))
+    if (std::shared_ptr<gfxTextureView::Impl> impl = m_Impl->CreateTextureView(info))
     {
         textureView = gfxTextureView(std::move(impl));
     }
@@ -257,8 +249,7 @@ std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemo
 {
     std::optional<gfxDeviceMemory> deviceMemory;
 
-    const auto imageImpl = info.GetImage().m_Impl;
-    if (!imageImpl)
+    if (!info.GetImage().HasImpl())
     {
         epiLogError("Failed to create DeviceMemory! Provided Image has no implementation!");
         return deviceMemory;

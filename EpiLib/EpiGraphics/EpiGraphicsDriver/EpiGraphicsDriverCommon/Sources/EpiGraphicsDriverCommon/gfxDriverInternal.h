@@ -56,34 +56,6 @@ public:
     virtual void Unmap() = 0;
 };
 
-class gfxTextureImpl
-{
-public:
-    static const gfxTextureImpl* ExtractImpl(const gfxTexture& image) { return image.m_Impl.Ptr(); }
-
-public:
-    gfxTextureImpl() = default;
-    gfxTextureImpl(const gfxTextureImpl& rhs) = delete;
-    gfxTextureImpl& operator=(const gfxTextureImpl& rhs) = delete;
-    gfxTextureImpl(gfxTextureImpl&& rhs) = default;
-    gfxTextureImpl& operator=(gfxTextureImpl&& rhs) = default;
-    virtual ~gfxTextureImpl() = default;
-};
-
-class gfxTextureViewImpl
-{
-public:
-    static const gfxTextureViewImpl* ExtractImpl(const gfxTextureView& imageView) { return imageView.m_Impl.Ptr(); }
-
-public:
-    gfxTextureViewImpl() = default;
-    gfxTextureViewImpl(const gfxTextureViewImpl& rhs) = delete;
-    gfxTextureViewImpl& operator=(const gfxTextureViewImpl& rhs) = delete;
-    gfxTextureViewImpl(gfxTextureViewImpl&& rhs) = default;
-    gfxTextureViewImpl& operator=(gfxTextureViewImpl&& rhs) = default;
-    virtual ~gfxTextureViewImpl() = default;
-};
-
 class gfxSamplerImpl
 {
 public:
@@ -238,10 +210,10 @@ public:
     epiU32 GetBufferCount() const { return m_ImageViews.Size(); }
     virtual epiSize2u GetExtent() const = 0;
 
-    const epiArray<std::shared_ptr<internalgfx::gfxTextureViewImpl>>& GetImageViews() const { return m_ImageViews; }
+    const epiArray<std::shared_ptr<gfxTextureView::Impl>>& GetImageViews() const { return m_ImageViews; }
 
 protected:
-    epiArray<std::shared_ptr<internalgfx::gfxTextureViewImpl>> m_ImageViews;
+    epiArray<std::shared_ptr<gfxTextureView::Impl>> m_ImageViews;
 };
 
 class gfxPhysicalDevice::Impl
@@ -296,9 +268,9 @@ public:
     virtual std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const = 0;
+    virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxTexture::Impl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxTextureView::Impl> CreateTextureView(const gfxTextureViewCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxCommandPool::Impl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
@@ -391,6 +363,34 @@ class gfxBuffer::Impl
 {
 public:
     static const gfxBuffer::Impl* ExtractImpl(const gfxBuffer& buffer) { return buffer.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
+
+class gfxTexture::Impl
+{
+public:
+    static const gfxTexture::Impl* ExtractImpl(const gfxTexture& image) { return image.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
+
+class gfxTextureView::Impl
+{
+public:
+    static const gfxTextureView::Impl* ExtractImpl(const gfxTextureView& imageView) { return imageView.m_Impl.get(); }
 
 public:
     Impl() = default;

@@ -73,7 +73,7 @@ void gfxSwapChain::RebindImpl()
     std::transform(m_Impl->GetImageViews().begin(),
                    m_Impl->GetImageViews().end(),
                    std::back_inserter(imageViews),
-                   [](const std::shared_ptr<internalgfx::gfxTextureViewImpl>& imageViewImpl)
+                   [](const std::shared_ptr<gfxTextureView::Impl>& imageViewImpl)
     {
         return gfxTextureView(imageViewImpl);
     });

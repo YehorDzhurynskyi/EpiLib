@@ -14,20 +14,35 @@ gfxFrameBufferImplVK::gfxFrameBufferImplVK(VkDevice_T* device)
 {
 }
 
-epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls)
+epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info)
 {
-    std::vector<VkImageView> attachments;
-    attachments.reserve(textureViewImpls.Size());
-
-    std::transform(textureViewImpls.begin(), textureViewImpls.end(), std::back_inserter(attachments), [](const internalgfx::gfxTextureViewImpl* impl)
+    if (!info.GetRenderPass().HasImpl())
     {
-        return static_cast<const internalgfx::gfxTextureViewImplVK*>(impl)->GetVkImageView();
+        epiLogError("Failed to initialize FrameBuffer! The provided RenderPass has no implementation!");
+        return false;
+    }
+
+    std::vector<VkImageView> attachments;
+    attachments.reserve(info.GetAttachments().Size());
+
+    std::transform(info.GetAttachments().begin(),
+                   info.GetAttachments().end(),
+                   std::back_inserter(attachments),
+                   [](const gfxTextureView& attachment)
+    {
+        const gfxTextureViewImplVK* attachmentVk = static_cast<const gfxTextureViewImplVK*>(gfxTextureView::Impl::ExtractImpl(attachment));
+        epiAssert(attachmentVk != nullptr);
+
+        return attachmentVk->GetVkImageView();
     });
+
+    const internalgfx::gfxRenderPassImplVK* renderPassVk = static_cast<const internalgfx::gfxRenderPassImplVK*>(internalgfx::gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
+    epiAssert(renderPassVk != nullptr);
 
     // TODO: add renderpass compatibility check
     VkFramebufferCreateInfo framebufferInfo{};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    framebufferInfo.renderPass = static_cast<const internalgfx::gfxRenderPassImplVK&>(renderPassImpl).GetVkRenderPass();
+    framebufferInfo.renderPass = renderPassVk->GetVkRenderPass();
     framebufferInfo.attachmentCount = attachments.size();
     framebufferInfo.pAttachments = attachments.data();
     framebufferInfo.width = info.GetSize().x;

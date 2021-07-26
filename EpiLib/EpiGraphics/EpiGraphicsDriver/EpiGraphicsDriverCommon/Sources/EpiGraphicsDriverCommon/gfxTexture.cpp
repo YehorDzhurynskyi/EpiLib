@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxTexture::gfxTexture(const std::shared_ptr<internalgfx::gfxTextureImpl>& impl)
+gfxTexture::gfxTexture(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }

@@ -102,7 +102,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 
     for (const VkImage& image : swapChainImages)
     {
-        std::shared_ptr<internalgfx::gfxTextureImplVK> textureImpl = std::make_shared<internalgfx::gfxTextureImplVK>(image);
+        std::shared_ptr<gfxTextureImplVK> textureImpl = std::make_shared<gfxTextureImplVK>(image);
         gfxTexture texture(textureImpl);
 
         gfxImageSubresourceRange subresourceRange{};
@@ -118,7 +118,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
         textureViewCreateInfo.SetFormat(info.GetImageFormat());
         textureViewCreateInfo.SetSubresourceRange(subresourceRange);
 
-        std::shared_ptr<internalgfx::gfxTextureViewImpl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo, *textureImpl);
+        std::shared_ptr<gfxTextureView::Impl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo);
         m_ImageViews.push_back(std::move(textureViewImpl));
     }
 

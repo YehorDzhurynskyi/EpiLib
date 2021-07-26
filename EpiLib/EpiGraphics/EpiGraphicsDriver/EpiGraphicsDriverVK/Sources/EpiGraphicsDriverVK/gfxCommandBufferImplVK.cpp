@@ -237,7 +237,7 @@ void gfxCommandBufferImplVK::PipelineBarrier(const gfxCommandBufferRecordPipelin
                    std::back_inserter(imageMemoryBarriers),
                    [](const gfxImageMemoryBarrier& barrier)
     {
-        const internalgfx::gfxTextureImplVK* imageImpl = static_cast<const internalgfx::gfxTextureImplVK*>(internalgfx::gfxTextureImpl::ExtractImpl(barrier.GetImage()));
+        const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTexture::Impl::ExtractImpl(barrier.GetImage()));
         epiAssert(imageImpl != nullptr);
 
         VkImageMemoryBarrier barrierVk{};
@@ -414,7 +414,7 @@ void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxTexture& dst, g
     const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(src));
     epiAssert(bufferImpl != nullptr);
 
-    const internalgfx::gfxTextureImplVK* imageImpl = static_cast<const internalgfx::gfxTextureImplVK*>(internalgfx::gfxTextureImpl::ExtractImpl(dst));
+    const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTexture::Impl::ExtractImpl(dst));
     epiAssert(imageImpl != nullptr);
 
     std::vector<VkBufferImageCopy> regions;

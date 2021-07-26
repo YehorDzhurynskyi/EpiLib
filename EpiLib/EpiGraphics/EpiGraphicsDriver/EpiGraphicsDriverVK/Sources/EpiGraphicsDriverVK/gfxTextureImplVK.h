@@ -8,10 +8,7 @@ struct VkDevice_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxTextureImplVK : public gfxTextureImpl
+class gfxTextureImplVK : public gfxTexture::Impl
 {
 public:
     explicit gfxTextureImplVK(VkImage_T* image);
@@ -42,8 +39,5 @@ public:
 protected:
     VkDevice_T* m_VkDevice{nullptr};
 };
-
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()
