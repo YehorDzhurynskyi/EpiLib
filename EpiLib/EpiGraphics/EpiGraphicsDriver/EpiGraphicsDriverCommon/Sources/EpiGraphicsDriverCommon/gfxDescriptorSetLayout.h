@@ -10,13 +10,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDescriptorSetLayoutImpl;
-
-} // namespace internalgfx
-
 class gfxDescriptorSetLayoutBinding : public Object
 {
 EPI_GENREGION_BEGIN(gfxDescriptorSetLayoutBinding)
@@ -87,15 +80,16 @@ public:
 EPI_GENREGION_END(gfxDescriptorSetLayout)
 
 public:
-    friend class gfxDevice;
-    friend class internalgfx::gfxDescriptorSetLayoutImpl;
+    class Impl;
 
 public:
     gfxDescriptorSetLayout() = default;
-    explicit gfxDescriptorSetLayout(const std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl>& impl);
+    explicit gfxDescriptorSetLayout(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
 protected:
-    epiPimpl<internalgfx::gfxDescriptorSetLayoutImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

@@ -12,13 +12,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDescriptorSetImpl;
-
-} // namespace internalgfx
-
 class gfxDescriptorBufferInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxDescriptorBufferInfo)
@@ -86,14 +79,16 @@ public:
 EPI_GENREGION_END(gfxDescriptorSet)
 
 public:
-    friend class internalgfx::gfxDescriptorSetImpl;
+    class Impl;
 
 public:
     gfxDescriptorSet() = default;
-    explicit gfxDescriptorSet(const std::shared_ptr<internalgfx::gfxDescriptorSetImpl>& impl);
+    explicit gfxDescriptorSet(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
 protected:
-    epiPimpl<internalgfx::gfxDescriptorSetImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 class gfxDescriptorSetWrite : public Object

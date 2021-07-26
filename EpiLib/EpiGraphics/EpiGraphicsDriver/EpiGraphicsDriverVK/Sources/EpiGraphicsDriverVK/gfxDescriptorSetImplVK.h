@@ -6,10 +6,7 @@ struct VkDescriptorSet_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDescriptorSetImplVK : public gfxDescriptorSetImpl
+class gfxDescriptorSetImplVK : public gfxDescriptorSet::Impl
 {
 public:
     explicit gfxDescriptorSetImplVK(VkDescriptorSet_T* descriptorSet);
@@ -24,7 +21,5 @@ public:
 protected:
     VkDescriptorSet_T* m_VkDescriptorSet{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

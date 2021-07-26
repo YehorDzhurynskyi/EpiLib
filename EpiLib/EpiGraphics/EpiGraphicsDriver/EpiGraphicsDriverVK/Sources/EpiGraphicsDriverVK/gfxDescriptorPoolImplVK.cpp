@@ -8,9 +8,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxDescriptorPoolImplVK::gfxDescriptorPoolImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -43,7 +40,7 @@ gfxDescriptorPoolImplVK::~gfxDescriptorPoolImplVK()
     vkDestroyDescriptorPool(m_VkDevice, m_VkDescriptorPool, nullptr);
 }
 
-epiBool gfxDescriptorPoolImplVK::Init(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImplVK>& descriptorSetLayoutImpls)
+epiBool gfxDescriptorPoolImplVK::Init(const gfxDescriptorPoolCreateInfo& info)
 {
     std::vector<VkDescriptorPoolSize> poolSizes;
     poolSizes.reserve(info.GetPoolSizes().Size());
@@ -73,12 +70,15 @@ epiBool gfxDescriptorPoolImplVK::Init(const gfxDescriptorPoolCreateInfo& info, c
     std::vector<VkDescriptorSetLayout> layouts;
     layouts.reserve(info.GetDescriptorSetLayouts().Size());
 
-    std::transform(descriptorSetLayoutImpls.begin(),
-                   descriptorSetLayoutImpls.end(),
+    std::transform(info.GetDescriptorSetLayouts().begin(),
+                   info.GetDescriptorSetLayouts().end(),
                    std::back_inserter(layouts),
-                   [](const gfxDescriptorSetLayoutImplVK* layout)
+                   [](const gfxDescriptorSetLayout& layout)
     {
-        return layout->GetVkDescriptorSetLayout();
+        const gfxDescriptorSetLayoutImplVK* layoutVk = static_cast<const gfxDescriptorSetLayoutImplVK*>(gfxDescriptorSetLayout::Impl::ExtractImpl(layout));
+        epiAssert(layoutVk != nullptr);
+
+        return layoutVk->GetVkDescriptorSetLayout();
     });
 
     VkDescriptorSetAllocateInfo allocInfo{};
@@ -108,7 +108,5 @@ VkDescriptorPool gfxDescriptorPoolImplVK::GetVkDescriptorPool() const
 {
     return m_VkDescriptorPool;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

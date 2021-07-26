@@ -26,7 +26,7 @@ epiBool gfxPipelineLayoutImplVK::Init(const gfxPipelineLayoutCreateInfo& info)
                                                 info.GetDescriptorSetLayouts().end(),
                                                 [](const gfxDescriptorSetLayout& layout)
     {
-        return gfxDescriptorSetLayoutImpl::ExtractImpl(layout) != nullptr;
+        return layout.HasImpl();
     });
 
     if (!layoutsAreValid)
@@ -43,7 +43,7 @@ epiBool gfxPipelineLayoutImplVK::Init(const gfxPipelineLayoutCreateInfo& info)
                    std::back_inserter(layouts),
                    [](const gfxDescriptorSetLayout& layout)
     {
-        const gfxDescriptorSetLayoutImplVK* layoutVk = static_cast<const gfxDescriptorSetLayoutImplVK*>(gfxDescriptorSetLayoutImpl::ExtractImpl(layout));
+        const gfxDescriptorSetLayoutImplVK* layoutVk = static_cast<const gfxDescriptorSetLayoutImplVK*>(gfxDescriptorSetLayout::Impl::ExtractImpl(layout));
         epiAssert(layoutVk != nullptr);
 
         return layoutVk->GetVkDescriptorSetLayout();

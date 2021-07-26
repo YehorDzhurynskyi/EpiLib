@@ -7,9 +7,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxDescriptorSetLayoutImplVK::gfxDescriptorSetLayoutImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -59,7 +56,5 @@ VkDescriptorSetLayout gfxDescriptorSetLayoutImplVK::GetVkDescriptorSetLayout() c
 {
     return m_VkDescriptorSetLayout;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

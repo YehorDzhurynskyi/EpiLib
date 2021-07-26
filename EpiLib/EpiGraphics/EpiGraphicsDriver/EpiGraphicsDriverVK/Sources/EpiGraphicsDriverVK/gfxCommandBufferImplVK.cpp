@@ -332,7 +332,7 @@ void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
 
     const epiBool setsAreValid = std::all_of(sets.begin(), sets.end(), [](const gfxDescriptorSet& set)
     {
-        return internalgfx::gfxDescriptorSetImpl::ExtractImpl(set) != nullptr;
+        return set.HasImpl();
     });
 
     if (!setsAreValid)
@@ -346,7 +346,7 @@ void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
 
     std::transform(sets.begin(), sets.end(), std::back_inserter(descriptorSets), [](const gfxDescriptorSet& set)
     {
-        return static_cast<const internalgfx::gfxDescriptorSetImplVK*>(internalgfx::gfxDescriptorSetImpl::ExtractImpl(set))->GetVkDescriptorSet();
+        return static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSet::Impl::ExtractImpl(set))->GetVkDescriptorSet();
     });
 
     vkCmdBindDescriptorSets(m_VkCommandBuffer,

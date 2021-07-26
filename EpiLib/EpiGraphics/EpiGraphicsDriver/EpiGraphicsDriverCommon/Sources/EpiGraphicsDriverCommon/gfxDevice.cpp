@@ -276,7 +276,7 @@ std::optional<gfxDescriptorSetLayout> gfxDevice::CreateDescriptorSetLayout(const
 {
     std::optional<gfxDescriptorSetLayout> descriptorSetLayout;
 
-    if (std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl> impl = m_Impl->CreateDescriptorSetLayout(info))
+    if (std::shared_ptr<gfxDescriptorSetLayout::Impl> impl = m_Impl->CreateDescriptorSetLayout(info))
     {
         descriptorSetLayout = gfxDescriptorSetLayout(std::move(impl));
     }
@@ -288,31 +288,7 @@ std::optional<gfxDescriptorPool> gfxDevice::CreateDescriptorPool(const gfxDescri
 {
     std::optional<gfxDescriptorPool> descriptorPool;
 
-    epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImpl> layoutImpls;
-    layoutImpls.Reserve(info.GetDescriptorSetLayouts().Size());
-
-    std::transform(info.GetDescriptorSetLayouts().begin(),
-                   info.GetDescriptorSetLayouts().end(),
-                   std::back_inserter(layoutImpls),
-                   [](const gfxDescriptorSetLayout& layout)
-    {
-        return layout.m_Impl.Ptr();
-    });
-
-    const epiBool hasInvalidLayout = std::any_of(layoutImpls.begin(),
-                                                 layoutImpls.end(),
-                                                 [](const internalgfx::gfxDescriptorSetLayoutImpl* impl)
-    {
-        return impl == nullptr;
-    });
-
-    if (hasInvalidLayout)
-    {
-        epiLogError("Failed to create DescriptorPool! Some DescriptorSetLayout has no implementation!");
-        return descriptorPool;
-    }
-
-    if (std::shared_ptr<internalgfx::gfxDescriptorPoolImpl> impl = m_Impl->CreateDescriptorPool(info, layoutImpls))
+    if (std::shared_ptr<gfxDescriptorPool::Impl> impl = m_Impl->CreateDescriptorPool(info))
     {
         descriptorPool = gfxDescriptorPool(std::move(impl));
     }

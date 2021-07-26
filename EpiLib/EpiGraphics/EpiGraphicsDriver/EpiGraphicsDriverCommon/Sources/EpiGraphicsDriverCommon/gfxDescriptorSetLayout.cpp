@@ -20,9 +20,14 @@ gfxDescriptorSetLayoutCreateInfo& gfxDescriptorSetLayoutCreateInfo::AddBinding(e
     return *this;
 }
 
-gfxDescriptorSetLayout::gfxDescriptorSetLayout(const std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl>& impl)
+gfxDescriptorSetLayout::gfxDescriptorSetLayout(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
+}
+
+epiBool gfxDescriptorSetLayout::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 EPI_NAMESPACE_END()

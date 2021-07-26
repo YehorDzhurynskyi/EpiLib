@@ -7,10 +7,7 @@ struct VkDescriptorSetLayout_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDescriptorSetLayoutImplVK : public gfxDescriptorSetLayoutImpl
+class gfxDescriptorSetLayoutImplVK : public gfxDescriptorSetLayout::Impl
 {
 public:
     explicit gfxDescriptorSetLayoutImplVK(VkDevice_T* device);
@@ -28,7 +25,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkDescriptorSetLayout_T* m_VkDescriptorSetLayout{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

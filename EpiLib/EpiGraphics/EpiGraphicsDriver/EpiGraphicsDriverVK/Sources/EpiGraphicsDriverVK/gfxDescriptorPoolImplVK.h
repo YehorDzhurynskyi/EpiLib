@@ -9,10 +9,7 @@ struct VkDescriptorPool_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDescriptorPoolImplVK : public gfxDescriptorPoolImpl
+class gfxDescriptorPoolImplVK : public gfxDescriptorPool::Impl
 {
 public:
     explicit gfxDescriptorPoolImplVK(VkDevice_T* device);
@@ -22,7 +19,7 @@ public:
     gfxDescriptorPoolImplVK& operator=(gfxDescriptorPoolImplVK&& rhs) = default;
     ~gfxDescriptorPoolImplVK() override;
 
-    epiBool Init(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const gfxDescriptorSetLayoutImplVK>& descriptorSetLayoutImpls);
+    epiBool Init(const gfxDescriptorPoolCreateInfo& info);
 
     VkDescriptorPool_T* GetVkDescriptorPool() const;
 
@@ -30,7 +27,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkDescriptorPool_T* m_VkDescriptorPool{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

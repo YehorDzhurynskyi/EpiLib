@@ -7,9 +7,14 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-gfxDescriptorSet::gfxDescriptorSet(const std::shared_ptr<internalgfx::gfxDescriptorSetImpl>& impl)
+gfxDescriptorSet::gfxDescriptorSet(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
+}
+
+epiBool gfxDescriptorSet::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 gfxDescriptorSetWrite& gfxDescriptorSetWrite::AddBufferInfo(const gfxDescriptorBufferInfo& bufferInfo)

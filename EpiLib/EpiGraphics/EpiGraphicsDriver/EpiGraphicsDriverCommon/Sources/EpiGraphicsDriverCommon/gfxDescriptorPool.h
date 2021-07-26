@@ -12,13 +12,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDescriptorPoolImpl;
-
-} // namespace internalgfx
-
 class gfxDescriptorPoolSize : public Object
 {
 EPI_GENREGION_BEGIN(gfxDescriptorPoolSize)
@@ -94,11 +87,16 @@ protected:
 EPI_GENREGION_END(gfxDescriptorPool)
 
 public:
+    class Impl;
+
+public:
     gfxDescriptorPool() = default;
-    explicit gfxDescriptorPool(const std::shared_ptr<internalgfx::gfxDescriptorPoolImpl>& impl);
+    explicit gfxDescriptorPool(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
 protected:
-    epiPimpl<internalgfx::gfxDescriptorPoolImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

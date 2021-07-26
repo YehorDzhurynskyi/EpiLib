@@ -477,7 +477,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
     const epiBool writesAreValid = std::all_of(writes.begin(), writes.end(), [](const gfxDescriptorSetWrite& write)
     {
         // NOTE: should be provided either image infos or buffer infos or buffer view infos
-        const epiBool isValid = (internalgfx::gfxDescriptorSetImpl::ExtractImpl(write.GetDstSet()) != nullptr) &&
+        const epiBool isValid = (gfxDescriptorSet::Impl::ExtractImpl(write.GetDstSet()) != nullptr) &&
                                 ((write.GetImageInfos().Size() ^ write.GetBufferInfos().Size()) /* TODO: ^ write.GetBufferViewInfos() */);
         if (!isValid)
         {
@@ -510,7 +510,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
 
     const epiBool copiesAreValid = std::all_of(copies.begin(), copies.end(), [](const gfxDescriptorSetCopy& copy)
     {
-        return internalgfx::gfxDescriptorSetImpl::ExtractImpl(copy.GetSrcSet()) != nullptr && internalgfx::gfxDescriptorSetImpl::ExtractImpl(copy.GetDstSet()) != nullptr;
+        return copy.GetSrcSet().HasImpl() && copy.GetDstSet().HasImpl();
     });
 
     if (!copiesAreValid)
@@ -541,7 +541,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                     &transformBufferInfos,
                     &transformBufferViewInfos](const gfxDescriptorSetWrite& write)
     {
-        const internalgfx::gfxDescriptorSetImplVK* set = static_cast<const internalgfx::gfxDescriptorSetImplVK*>(internalgfx::gfxDescriptorSetImpl::ExtractImpl(write.GetDstSet()));
+        const gfxDescriptorSetImplVK* set = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSet::Impl::ExtractImpl(write.GetDstSet()));
         epiAssert(set != nullptr);
 
         std::vector<VkDescriptorImageInfo>& imageInfos = writesImageInfosVk.emplace_back(std::move(transformImageInfos(write)));
@@ -570,10 +570,10 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                    std::back_inserter(copiesVk),
                    [](const gfxDescriptorSetCopy& copy)
     {
-        const internalgfx::gfxDescriptorSetImplVK* srcSet = static_cast<const internalgfx::gfxDescriptorSetImplVK*>(internalgfx::gfxDescriptorSetImpl::ExtractImpl(copy.GetSrcSet()));
+        const gfxDescriptorSetImplVK* srcSet = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSet::Impl::ExtractImpl(copy.GetSrcSet()));
         epiAssert(srcSet != nullptr);
 
-        const internalgfx::gfxDescriptorSetImplVK* dstSet = static_cast<const internalgfx::gfxDescriptorSetImplVK*>(internalgfx::gfxDescriptorSetImpl::ExtractImpl(copy.GetDstSet()));
+        const gfxDescriptorSetImplVK* dstSet = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSet::Impl::ExtractImpl(copy.GetDstSet()));
         epiAssert(dstSet != nullptr);
 
         VkCopyDescriptorSet copyVk{};
@@ -749,9 +749,9 @@ std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceM
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl> gfxDeviceImplVK::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const
+std::shared_ptr<gfxDescriptorSetLayout::Impl> gfxDeviceImplVK::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const
 {
-    std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImplVK> impl = std::make_shared<internalgfx::gfxDescriptorSetLayoutImplVK>(m_VkDevice);
+    std::shared_ptr<gfxDescriptorSetLayoutImplVK> impl = std::make_shared<gfxDescriptorSetLayoutImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -760,18 +760,10 @@ std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl> gfxDeviceImplVK::Create
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxDescriptorPoolImpl> gfxDeviceImplVK::CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImpl>& layoutsImpls) const
+std::shared_ptr<gfxDescriptorPool::Impl> gfxDeviceImplVK::CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const
 {
-    epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImplVK> layoutsImplsVk;
-    layoutsImplsVk.Reserve(layoutsImpls.Size());
-
-    std::transform(layoutsImpls.begin(), layoutsImpls.end(), std::back_inserter(layoutsImplsVk), [](const internalgfx::gfxDescriptorSetLayoutImpl* layoutImpl)
-    {
-        return static_cast<const internalgfx::gfxDescriptorSetLayoutImplVK*>(layoutImpl);
-    });
-
-    std::shared_ptr<internalgfx::gfxDescriptorPoolImplVK> impl = std::make_shared<internalgfx::gfxDescriptorPoolImplVK>(m_VkDevice);
-    if (!impl->Init(info, layoutsImplsVk))
+    std::shared_ptr<gfxDescriptorPoolImplVK> impl = std::make_shared<gfxDescriptorPoolImplVK>(m_VkDevice);
+    if (!impl->Init(info))
     {
         impl.reset();
     }

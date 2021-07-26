@@ -42,26 +42,6 @@ protected:
     epiArray<std::shared_ptr<gfxPhysicalDevice::Impl>> m_PhysicalDevices;
 };
 
-class gfxVertexArrayImpl
-{
-public:
-    gfxVertexArrayImpl() = default;
-    gfxVertexArrayImpl(const gfxVertexArrayImpl& rhs) = delete;
-    gfxVertexArrayImpl& operator=(const gfxVertexArrayImpl& rhs) = delete;
-    gfxVertexArrayImpl(gfxVertexArrayImpl&& rhs) = default;
-    gfxVertexArrayImpl& operator=(gfxVertexArrayImpl&& rhs) = default;
-    virtual ~gfxVertexArrayImpl() = default;
-
-    virtual void Create() = 0;
-    virtual void Destroy() = 0;
-
-    virtual epiBool GetIsCreated() const = 0;
-    virtual epiU32 GetID() const = 0;
-
-    virtual void Bind() = 0;
-    virtual void UnBind() = 0;
-};
-
 class gfxDeviceMemoryImpl
 {
 public:
@@ -74,50 +54,6 @@ public:
 
     virtual epiByte* Map(epiSize_t size, epiSize_t offset) = 0;
     virtual void Unmap() = 0;
-};
-
-class gfxDescriptorSetLayoutImpl
-{
-public:
-    static const gfxDescriptorSetLayoutImpl* ExtractImpl(const gfxDescriptorSetLayout& layout) { return layout.m_Impl.Ptr(); }
-
-public:
-    gfxDescriptorSetLayoutImpl() = default;
-    gfxDescriptorSetLayoutImpl(const gfxDescriptorSetLayoutImpl& rhs) = delete;
-    gfxDescriptorSetLayoutImpl& operator=(const gfxDescriptorSetLayoutImpl& rhs) = delete;
-    gfxDescriptorSetLayoutImpl(gfxDescriptorSetLayoutImpl&& rhs) = default;
-    gfxDescriptorSetLayoutImpl& operator=(gfxDescriptorSetLayoutImpl&& rhs) = default;
-    virtual ~gfxDescriptorSetLayoutImpl() = default;
-};
-
-class gfxDescriptorSetImpl
-{
-public:
-    static const gfxDescriptorSetImpl* ExtractImpl(const gfxDescriptorSet& set) { return set.m_Impl.Ptr(); }
-
-public:
-    gfxDescriptorSetImpl() = default;
-    gfxDescriptorSetImpl(const gfxDescriptorSetImpl& rhs) = delete;
-    gfxDescriptorSetImpl& operator=(const gfxDescriptorSetImpl& rhs) = delete;
-    gfxDescriptorSetImpl(gfxDescriptorSetImpl&& rhs) = default;
-    gfxDescriptorSetImpl& operator=(gfxDescriptorSetImpl&& rhs) = default;
-    virtual ~gfxDescriptorSetImpl() = default;
-};
-
-class gfxDescriptorPoolImpl
-{
-public:
-    gfxDescriptorPoolImpl() = default;
-    gfxDescriptorPoolImpl(const gfxDescriptorPoolImpl& rhs) = delete;
-    gfxDescriptorPoolImpl& operator=(const gfxDescriptorPoolImpl& rhs) = delete;
-    gfxDescriptorPoolImpl(gfxDescriptorPoolImpl&& rhs) = default;
-    gfxDescriptorPoolImpl& operator=(gfxDescriptorPoolImpl&& rhs) = default;
-    virtual ~gfxDescriptorPoolImpl() = default;
-
-    const epiArray<std::shared_ptr<gfxDescriptorSetImpl>>& GetDescriptorSets() { return m_DescriptorSets; }
-
-protected:
-    epiArray<std::shared_ptr<gfxDescriptorSetImpl>> m_DescriptorSets;
 };
 
 class gfxTextureImpl
@@ -368,8 +304,8 @@ public:
     virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxDescriptorSetLayoutImpl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxDescriptorPoolImpl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info, const epiPtrArray<const internalgfx::gfxDescriptorSetLayoutImpl>& layoutsImpls) const = 0;
+    virtual std::shared_ptr<gfxDescriptorSetLayout::Impl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDescriptorPool::Impl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxSemaphore::Impl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxFence::Impl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
 
@@ -484,6 +420,50 @@ public:
     virtual const epiString& GetEntryPoint() const = 0;
 };
 
+class gfxDescriptorSetLayout::Impl
+{
+public:
+    static const gfxDescriptorSetLayout::Impl* ExtractImpl(const gfxDescriptorSetLayout& layout) { return layout.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
+
+class gfxDescriptorSet::Impl
+{
+public:
+    static const gfxDescriptorSet::Impl* ExtractImpl(const gfxDescriptorSet& set) { return set.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
+
+class gfxDescriptorPool::Impl
+{
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    const epiArray<std::shared_ptr<gfxDescriptorSet::Impl>>& GetDescriptorSets() { return m_DescriptorSets; }
+
+protected:
+    epiArray<std::shared_ptr<gfxDescriptorSet::Impl>> m_DescriptorSets;
+};
+
 class gfxFrameBuffer::Impl
 {
 public:
@@ -553,6 +533,5 @@ public:
     virtual void Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
     virtual void Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) = 0;
 };
-
 
 EPI_NAMESPACE_END()
