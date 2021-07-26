@@ -59,6 +59,13 @@ gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddVertexInputBind
     return *this;
 }
 
+gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddShaderStage(const gfxPipelineShaderStageCreateInfo& info)
+{
+    GetShaderStageCreateInfos().push_back(info);
+
+    return *this;
+}
+
 gfxPipelineGraphics::gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl>& impl)
     : m_Impl{impl}
 {

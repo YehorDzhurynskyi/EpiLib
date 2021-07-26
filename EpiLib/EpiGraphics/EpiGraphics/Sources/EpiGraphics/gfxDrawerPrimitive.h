@@ -48,11 +48,11 @@ private:
     // TODO: repair
     gfxVertexArray m_VertexArrayLines;
     //gfxVertexBuffer m_VertexBufferLines;
-    gfxShaderProgram m_ShaderProgramLines;
+    //gfxShaderProgram m_ShaderProgramLines;
 
     gfxVertexArray m_VertexArrayQuads;
     //gfxVertexBuffer m_VertexBufferQuads;
-    gfxShaderProgram m_ShaderProgramQuads;
+    //gfxShaderProgram m_ShaderProgramQuads;
 
 private:
     //gfxVertexBufferMapping m_VertexBufferMappingLines;

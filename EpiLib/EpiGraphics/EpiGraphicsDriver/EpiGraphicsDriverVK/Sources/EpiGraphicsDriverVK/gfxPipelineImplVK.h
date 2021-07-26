@@ -26,9 +26,7 @@ public:
     gfxPipelineGraphicsImplVK& operator=(gfxPipelineGraphicsImplVK&& rhs) = default;
     ~gfxPipelineGraphicsImplVK() override;
 
-    epiBool Init(const gfxPipelineGraphicsCreateInfo& info,
-                 const gfxShaderProgramImplVK& shaderProgramImpl,
-                 const gfxRenderPassImplVK& renderPassImpl);
+    epiBool Init(const gfxPipelineGraphicsCreateInfo& info);
 
     VkPipeline_T* GetVkPipeline() const;
 

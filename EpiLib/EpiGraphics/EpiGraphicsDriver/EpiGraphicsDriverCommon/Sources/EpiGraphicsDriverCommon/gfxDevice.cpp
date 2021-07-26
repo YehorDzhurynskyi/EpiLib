@@ -80,21 +80,13 @@ std::optional<gfxPipelineLayout> gfxDevice::CreatePipelineLayout(const gfxPipeli
     return pipelineLayout;
 }
 
-std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const gfxRenderPass& renderPass) const
+std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const
 {
     std::optional<gfxPipelineGraphics> pipeline;
 
-    const auto shaderProgramImpl = info.GetShaderProgram().m_Impl;
-    if (!shaderProgramImpl)
+    if (!info.GetRenderPass().HasImpl())
     {
-        epiLogError("Failed to create Pipeline! Provided ShaderProgram has no implementation!");
-        return pipeline;
-    }
-
-    const auto renderPassImpl = renderPass.m_Impl;
-    if (!renderPassImpl)
-    {
-        epiLogError("Failed to create Pipeline! Provided RenderPass has no implemetation!");
+        epiLogError("Failed to create Pipeline! The provided RenderPass has no implemetation!");
         return pipeline;
     }
 
@@ -122,7 +114,7 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
         return pipeline;
     }
 
-    if (std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> impl = m_Impl->CreatePipelineGraphics(info, *shaderProgramImpl, *renderPassImpl))
+    if (std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> impl = m_Impl->CreatePipelineGraphics(info))
     {
         pipeline = gfxPipelineGraphics(std::move(impl));
     }
@@ -130,67 +122,16 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
     return pipeline;
 }
 
-std::optional<gfxShader> gfxDevice::CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint) const
+std::optional<gfxShaderModule> gfxDevice::CreateShaderModule(const gfxShaderModuleCreateInfo& info) const
 {
-    std::optional<gfxShader> shader;
+    std::optional<gfxShaderModule> shaderModule;
 
-    if (std::shared_ptr<internalgfx::gfxShaderImpl> impl = m_Impl->CreateShaderFromSource(source, type, entryPoint))
+    if (std::shared_ptr<gfxShaderModule::Impl> impl = m_Impl->CreateShaderModule(info))
     {
-        shader = gfxShader(std::move(impl));
+        shaderModule = gfxShaderModule(std::move(impl));
     }
 
-    return shader;
-}
-
-std::optional<gfxShader> gfxDevice::CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint) const
-{
-    std::optional<gfxShader> shader;
-
-    if (std::shared_ptr<internalgfx::gfxShaderImpl> impl = m_Impl->CreateShaderFromBinary(binary, size, type, entryPoint))
-    {
-        shader = gfxShader(std::move(impl));
-    }
-
-    return shader;
-}
-
-std::optional<gfxShaderProgram> gfxDevice::CreateShaderProgram(const gfxShaderProgramCreateInfo& info) const
-{
-    // TODO: handle const_cast via epigen
-
-    std::optional<gfxShaderProgram> shaderProgram;
-
-    internalgfx::gfxShaderProgramCreateInfoImpl infoImpl;
-    if (const gfxShader* vertex = info.GetVertex(); vertex != nullptr)
-    {
-        if (infoImpl.Vertex = const_cast<internalgfx::gfxShaderImpl*>(vertex->m_Impl.Ptr()); infoImpl.Vertex == nullptr)
-        {
-            return shaderProgram;
-        }
-    }
-
-    if (const gfxShader* geometry = info.GetGeometry(); geometry != nullptr)
-    {
-        if (infoImpl.Geometry = const_cast<internalgfx::gfxShaderImpl*>(geometry->m_Impl.Ptr()); infoImpl.Geometry == nullptr)
-        {
-            return shaderProgram;
-        }
-    }
-
-    if (const gfxShader* fragment = info.GetFragment(); fragment != nullptr)
-    {
-        if (infoImpl.Fragment = const_cast<internalgfx::gfxShaderImpl*>(fragment->m_Impl.Ptr()); infoImpl.Fragment == nullptr)
-        {
-            return shaderProgram;
-        }
-    }
-
-    if (std::shared_ptr<internalgfx::gfxShaderProgramImpl> impl = m_Impl->CreateShaderProgram(infoImpl))
-    {
-        shaderProgram = gfxShaderProgram(std::move(impl));
-    }
-
-    return shaderProgram;
+    return shaderModule;
 }
 
 std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const

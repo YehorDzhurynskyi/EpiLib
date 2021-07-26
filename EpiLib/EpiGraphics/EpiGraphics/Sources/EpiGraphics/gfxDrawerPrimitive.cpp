@@ -38,6 +38,7 @@ void main(void)
 }
 )";
 
+#if 0
 gfxShaderProgram CreateProgramLines()
 {
     gfxShader vertex;
@@ -56,6 +57,7 @@ gfxShaderProgram CreateProgramLines()
 
     return program;
 }
+#endif
 
 const epiU32 kMaxLineCount = 6'000'000u; // TODO: =) reduce
 struct VertexLine
@@ -94,6 +96,7 @@ void main(void)
 }
 )";
 
+#if 0
 gfxShaderProgram CreateProgramQuad()
 {
     gfxShader vertex;
@@ -112,6 +115,7 @@ gfxShaderProgram CreateProgramQuad()
 
     return program;
 }
+#endif
 
 const epiU32 kMaxQuadCount = 1'000'000u; // TODO: =) reduce
 struct VertexQuad
@@ -139,7 +143,7 @@ gfxDrawerPrimitive::gfxDrawerPrimitive()
         // m_VertexBufferLines.Create(nullptr, sizeof(VertexLine) * 2 * kMaxLineCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
-    m_ShaderProgramLines = CreateProgramLines();
+    // m_ShaderProgramLines = CreateProgramLines();
 
     {
         // TODO: restore
@@ -152,7 +156,7 @@ gfxDrawerPrimitive::gfxDrawerPrimitive()
         // m_VertexBufferQuads.Create(nullptr, sizeof(VertexQuad) * 6 * kMaxQuadCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
-    m_ShaderProgramQuads = CreateProgramQuad();
+    // m_ShaderProgramQuads = CreateProgramQuad();
 }
 
 void gfxDrawerPrimitive::DrawLine(const epiVec2f& p1, const epiVec2f& p2, const Color& color, epiFloat z)

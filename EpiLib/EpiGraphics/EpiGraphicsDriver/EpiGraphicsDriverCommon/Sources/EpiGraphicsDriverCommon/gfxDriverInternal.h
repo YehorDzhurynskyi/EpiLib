@@ -20,13 +20,6 @@ EPI_NAMESPACE_BEGIN()
 namespace internalgfx
 {
 
-struct gfxShaderProgramCreateInfoImpl
-{
-    gfxShaderImpl* Vertex{nullptr};
-    gfxShaderImpl* Geometry{nullptr};
-    gfxShaderImpl* Fragment{nullptr};
-};
-
 class gfxDriverImpl
 {
 public:
@@ -167,58 +160,6 @@ public:
     gfxSamplerImpl(gfxSamplerImpl&& rhs) = default;
     gfxSamplerImpl& operator=(gfxSamplerImpl&& rhs) = default;
     virtual ~gfxSamplerImpl() = default;
-};
-
-class gfxShaderImpl
-{
-public:
-    gfxShaderImpl() = default;
-    gfxShaderImpl(const gfxShaderImpl& rhs) = delete;
-    gfxShaderImpl& operator=(const gfxShaderImpl& rhs) = delete;
-    gfxShaderImpl(gfxShaderImpl&& rhs) = default;
-    gfxShaderImpl& operator=(gfxShaderImpl&& rhs) = default;
-    virtual ~gfxShaderImpl() = default;
-
-    virtual epiBool GetIsCreated() const = 0;
-    virtual gfxShaderType GetType() const = 0;
-    virtual gfxShaderBackend GetBackend() const = 0;
-    virtual epiArray<epiU8> GetCode() const = 0;
-
-    virtual epiBool InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") = 0;
-    virtual epiBool InitFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") = 0;
-};
-
-class gfxShaderProgramImpl
-{
-public:
-    gfxShaderProgramImpl() = default;
-    gfxShaderProgramImpl(const gfxShaderProgramImpl& rhs) = delete;
-    gfxShaderProgramImpl& operator=(const gfxShaderProgramImpl& rhs) = delete;
-    gfxShaderProgramImpl(gfxShaderProgramImpl&& rhs) = default;
-    gfxShaderProgramImpl& operator=(gfxShaderProgramImpl&& rhs) = default;
-    virtual ~gfxShaderProgramImpl() = default;
-
-    virtual epiBool GetIsCreated() const = 0;
-
-#if 0 // TODO: handle
-    virtual void Texture(const epiChar* name, epiU32 value) = 0;
-
-    virtual void UniformFloat(const epiChar* name, epiFloat value) = 0;
-    virtual void UniformVec2f(const epiChar* name, const epiVec2f& value) = 0;
-    virtual void UniformVec3f(const epiChar* name, const epiVec3f& value) = 0;
-    virtual void UniformVec4f(const epiChar* name, const epiVec4f& value) = 0;
-    virtual void UniformMat4x4f(const epiChar* name, const epiMat4x4f& value, epiBool transpose) = 0;
-
-    virtual void UniformS32(const epiChar* name, epiS32 value) = 0;
-    virtual void UniformVec2s(const epiChar* name, const epiVec2s& value) = 0;
-    virtual void UniformVec3s(const epiChar* name, const epiVec3s& value) = 0;
-    virtual void UniformVec4s(const epiChar* name, const epiVec4s& value) = 0;
-
-    virtual void UniformU32(const epiChar* name, epiU32 value) = 0;
-    virtual void UniformVec2u(const epiChar* name, const epiVec2u& value) = 0;
-    virtual void UniformVec3u(const epiChar* name, const epiVec3u& value) = 0;
-    virtual void UniformVec4u(const epiChar* name, const epiVec4u& value) = 0;
-#endif
 };
 
 class gfxPipelineLayoutImpl
@@ -417,10 +358,8 @@ public:
     virtual std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info, const internalgfx::gfxShaderProgramImpl& shaderProgramImpl, const internalgfx::gfxRenderPassImpl& renderPassImpl) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxShaderImpl> CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
-    virtual std::shared_ptr<internalgfx::gfxShaderImpl> CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main") const = 0;
-    virtual std::shared_ptr<internalgfx::gfxShaderProgramImpl> CreateShaderProgram(const internalgfx::gfxShaderProgramCreateInfoImpl& info) const = 0;
+    virtual std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info, const internalgfx::gfxRenderPassImpl& renderPassImpl, const epiPtrArray<const internalgfx::gfxTextureViewImpl>& textureViewImpls) const = 0;
     virtual std::shared_ptr<internalgfx::gfxTextureImpl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxTextureViewImpl> CreateTextureView(const gfxTextureViewCreateInfo& info, const internalgfx::gfxTextureImpl& textureImpl) const = 0;
@@ -524,6 +463,25 @@ public:
     Impl(Impl&& rhs) = default;
     Impl& operator=(Impl&& rhs) = default;
     virtual ~Impl() = default;
+};
+
+class gfxShaderModule::Impl
+{
+public:
+    static const gfxShaderModule::Impl* ExtractImpl(const gfxShaderModule& shaderModule) { return shaderModule.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual gfxShaderStage GetStage() const = 0;
+    virtual const epiArray<epiU8>& GetCode() const = 0;
+    virtual gfxShaderModuleFrontend GetFrontend() const = 0;
+    virtual const epiString& GetEntryPoint() const = 0;
 };
 
 class gfxFrameBuffer::Impl

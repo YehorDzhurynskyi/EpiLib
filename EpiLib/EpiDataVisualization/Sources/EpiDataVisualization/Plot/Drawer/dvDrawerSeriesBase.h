@@ -44,7 +44,7 @@ private:
     // TODO: repair
     gfxVertexArray m_VertexArrayLineStrip;
     // gfxVertexBuffer m_VertexBufferLineStrip;
-    gfxShaderProgram m_ShaderProgramLineStrip;
+    // gfxShaderProgram m_ShaderProgramLineStrip;
 
 private:
     // gfxVertexBufferMapping m_VertexBufferMappingLineStrip;

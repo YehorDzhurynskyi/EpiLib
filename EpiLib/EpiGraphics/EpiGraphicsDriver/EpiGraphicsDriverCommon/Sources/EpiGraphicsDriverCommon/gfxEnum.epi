@@ -42,15 +42,6 @@ enum gfxVertexBufferMapAccess
     ReadWrite
 };
 
-enum gfxShaderType
-{
-    None,
-    Vertex,
-    Geometry,
-    Tesselation,
-    Fragment
-};
-
 enum gfxPhysicalDeviceType
 {
     None,

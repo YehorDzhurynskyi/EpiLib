@@ -54,7 +54,7 @@ private:
     // TODO: repair
     gfxVertexArray m_VertexArrayText;
     // gfxVertexBuffer m_VertexBufferText;
-    gfxShaderProgram m_ShaderProgramText;
+    //gfxShaderProgram m_ShaderProgramText;
 
 private:
     // gfxVertexBufferMapping m_VertexBufferMappingText;

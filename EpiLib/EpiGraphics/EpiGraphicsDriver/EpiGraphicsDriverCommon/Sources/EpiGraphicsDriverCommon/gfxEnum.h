@@ -47,17 +47,6 @@ EPI_GENREGION_BEGIN(gfxVertexBufferMapAccess)
 EPI_GENREGION_END(gfxVertexBufferMapAccess)
 };
 
-enum class gfxShaderType : epiS32
-{
-EPI_GENREGION_BEGIN(gfxShaderType)
-    None = 0,
-    Vertex = 1,
-    Geometry = 2,
-    Tesselation = 3,
-    Fragment = 4
-EPI_GENREGION_END(gfxShaderType)
-};
-
 enum class gfxPhysicalDeviceType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxPhysicalDeviceType)

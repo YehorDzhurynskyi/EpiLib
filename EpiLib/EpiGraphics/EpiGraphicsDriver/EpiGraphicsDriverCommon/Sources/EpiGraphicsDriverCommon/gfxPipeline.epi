@@ -35,10 +35,17 @@ class gfxPipelineVertexInputBindingDescription
     }
 };
 
+class gfxPipelineShaderStageCreateInfo
+{
+    gfxShaderModule ShaderModule;
+};
+
 class gfxPipelineGraphicsCreateInfo
 {
     gfxPipelineLayout PipelineLayout;
-    gfxShaderProgram ShaderProgram;
+    gfxRenderPass RenderPass;
+
+    epiArray<gfxPipelineShaderStageCreateInfo> ShaderStageCreateInfos;
 
     epiU32 RenderSubPassIndex;
 

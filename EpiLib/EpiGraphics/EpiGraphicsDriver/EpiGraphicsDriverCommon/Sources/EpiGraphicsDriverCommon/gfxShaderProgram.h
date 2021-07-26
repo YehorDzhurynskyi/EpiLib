@@ -10,121 +10,82 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
+enum class gfxShaderModuleFrontend : epiS32
 {
-
-class gfxShaderImpl;
-class gfxShaderProgramImpl;
-
-} // namespace internalgfx
-
-enum class gfxShaderBackend : epiS32
-{
-EPI_GENREGION_BEGIN(gfxShaderBackend)
-    None = 0,
+EPI_GENREGION_BEGIN(gfxShaderModuleFrontend)
+    Unknown = 0,
     SPIRV = 1
-EPI_GENREGION_END(gfxShaderBackend)
+EPI_GENREGION_END(gfxShaderModuleFrontend)
 };
 
-class gfxShader final : public Object
+class gfxShaderModuleCreateInfo : public Object
 {
-EPI_GENREGION_BEGIN(gfxShader)
+EPI_GENREGION_BEGIN(gfxShaderModuleCreateInfo)
 
-EPI_GENHIDDEN_gfxShader()
+EPI_GENHIDDEN_gfxShaderModuleCreateInfo()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x5e95f50e};
+    constexpr static epiMetaTypeID TypeID{0xbf14012a};
 
-    enum gfxShader_PIDs
+    enum gfxShaderModuleCreateInfo_PIDs
     {
-        PID_IsCreated = 0x560b66db,
-        PID_Type = 0x2cecf817,
-        PID_Backend = 0x4058f0ed,
+        PID_Stage = 0x3bdbc6d,
+        PID_CompileFromSource = 0xe6c5b2ff,
         PID_Code = 0xd7279fa6,
+        PID_EntryPoint = 0xc03ed7f8,
         PID_COUNT = 4
     };
 
 protected:
-    epiBool GetIsCreated_Callback() const;
-    gfxShaderType GetType_Callback() const;
-    gfxShaderBackend GetBackend_Callback() const;
-    epiArray<epiU8> GetCode_Callback() const;
+    gfxShaderStage m_Stage{};
+    epiBool m_CompileFromSource{false};
+    epiArray<epiU8> m_Code{};
+    epiString m_EntryPoint{"main"};
 
-EPI_GENREGION_END(gfxShader)
-
-public:
-    friend class gfxDevice;
+EPI_GENREGION_END(gfxShaderModuleCreateInfo)
 
 public:
-    gfxShader() = default;
-    explicit gfxShader(const std::shared_ptr<internalgfx::gfxShaderImpl>& impl);
-
-public:
-    epiBool InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint = "main");
-    epiBool InitFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint = "main");
-
-protected:
-    epiPimpl<internalgfx::gfxShaderImpl> m_Impl;
+    static gfxShaderModuleCreateInfo FromSource(const epiChar* source, epiSize_t size, gfxShaderStage stage);
+    static gfxShaderModuleCreateInfo FromSource(const epiString& source, gfxShaderStage stage);
 };
 
-class gfxShaderProgramCreateInfo : public Object
+class gfxShaderModule : public Object
 {
-EPI_GENREGION_BEGIN(gfxShaderProgramCreateInfo)
+EPI_GENREGION_BEGIN(gfxShaderModule)
 
-EPI_GENHIDDEN_gfxShaderProgramCreateInfo()
+EPI_GENHIDDEN_gfxShaderModule()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x2e1f76a0};
+    constexpr static epiMetaTypeID TypeID{0x5dea8f6f};
 
-    enum gfxShaderProgramCreateInfo_PIDs
+    enum gfxShaderModule_PIDs
     {
-        PID_IsEmpty = 0xae6d7566,
-        PID_Vertex = 0xee5d7c03,
-        PID_Geometry = 0x6c246cfd,
-        PID_Fragment = 0x32db77ba,
+        PID_Stage = 0x3bdbc6d,
+        PID_Code = 0xd7279fa6,
+        PID_Frontend = 0x35677cca,
+        PID_EntryPoint = 0xc03ed7f8,
         PID_COUNT = 4
     };
 
 protected:
-    epiBool GetIsEmpty_Callback() const;
+    gfxShaderStage GetStage_Callback() const;
+    const epiArray<epiU8>& GetCode_Callback() const;
+    gfxShaderModuleFrontend GetFrontend_Callback() const;
+    const epiString& GetEntryPoint_Callback() const;
 
-protected:
-    gfxShader* m_Vertex{nullptr};
-    gfxShader* m_Geometry{nullptr};
-    gfxShader* m_Fragment{nullptr};
-
-EPI_GENREGION_END(gfxShaderProgramCreateInfo)
-};
-
-class gfxShaderProgram final : public Object
-{
-EPI_GENREGION_BEGIN(gfxShaderProgram)
-
-EPI_GENHIDDEN_gfxShaderProgram()
+EPI_GENREGION_END(gfxShaderModule)
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x7a046d1e};
-
-    enum gfxShaderProgram_PIDs
-    {
-        PID_IsCreated = 0x560b66db,
-        PID_COUNT = 1
-    };
-
-protected:
-    epiBool GetIsCreated_Callback() const;
-
-EPI_GENREGION_END(gfxShaderProgram)
+    class Impl;
 
 public:
-    friend class gfxDevice;
+    gfxShaderModule() = default;
+    explicit gfxShaderModule(const std::shared_ptr<Impl>& impl);
 
-public:
-    gfxShaderProgram() = default;
-    explicit gfxShaderProgram(const std::shared_ptr<internalgfx::gfxShaderProgramImpl>& impl);
+    epiBool HasImpl() const;
 
 protected:
-    epiPimpl<internalgfx::gfxShaderProgramImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

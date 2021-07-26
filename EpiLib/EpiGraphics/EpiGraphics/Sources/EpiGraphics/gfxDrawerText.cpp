@@ -85,6 +85,7 @@ void main()
 }
 )";
 
+#if 0
 gfxShaderProgram CreateProgramText()
 {
     gfxShader vertex;
@@ -103,6 +104,7 @@ gfxShaderProgram CreateProgramText()
 
     return program;
 }
+#endif
 
 const epiU32 kMaxTextCount = 512;
 struct VertexText
@@ -131,7 +133,7 @@ gfxDrawerText::gfxDrawerText()
         // m_VertexBufferText.Create(nullptr, sizeof(VertexText) * 6 * kMaxTextCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
-    m_ShaderProgramText = CreateProgramText();
+    //m_ShaderProgramText = CreateProgramText();
 }
 
 void gfxDrawerText::CreateAtlas(const gfxTextFace& face, epiU32 fontSize)

@@ -7,99 +7,61 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-gfxShaderImplVK::gfxShaderImplVK(VkDevice device)
+gfxShaderModuleImplVK::gfxShaderModuleImplVK(VkDevice device)
     : m_VkDevice{device}
 {
 }
 
-gfxShaderImplVK::gfxShaderImplVK(gfxShaderImplVK&& rhs)
-{
-    m_VkShaderModule = rhs.m_VkShaderModule;
-    m_Type = rhs.m_Type;
-
-    rhs.m_VkShaderModule = nullptr;
-    rhs.m_Type = gfxShaderType::None;
-}
-
-gfxShaderImplVK& gfxShaderImplVK::operator=(gfxShaderImplVK&& rhs)
-{
-    m_VkShaderModule = rhs.m_VkShaderModule;
-    m_Type = rhs.m_Type;
-
-    rhs.m_VkShaderModule = nullptr;
-    rhs.m_Type = gfxShaderType::None;
-
-    return *this;
-}
-
-gfxShaderImplVK::~gfxShaderImplVK()
+gfxShaderModuleImplVK::~gfxShaderModuleImplVK()
 {
     vkDestroyShaderModule(m_VkDevice, m_VkShaderModule, nullptr);
 }
 
-epiBool gfxShaderImplVK::GetIsCreated() const
+epiBool gfxShaderModuleImplVK::Init(const gfxShaderModuleCreateInfo& info)
 {
-    return m_Type != gfxShaderType::None && m_VkShaderModule != nullptr;
-}
+    const epiU8* byteCode = nullptr;
+    epiSize_t byteCodeSize = 0;
 
-gfxShaderType gfxShaderImplVK::GetType() const
-{
-    return m_Type;
-}
-
-gfxShaderBackend gfxShaderImplVK::GetBackend() const
-{
-    return m_Backend;
-}
-
-epiArray<epiU8> gfxShaderImplVK::GetCode() const
-{
-    return m_Code;
-}
-
-const epiString& gfxShaderImplVK::GetEntryPoint() const
-{
-    return m_EntryPoint;
-}
-
-VkShaderModule_T* gfxShaderImplVK::GetVkShaderModule() const
-{
-    return m_VkShaderModule;
-}
-
-epiBool gfxShaderImplVK::InitFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint)
-{
-    shaderc_shader_kind shaderKind;
-    switch (type)
+    shaderc::SpvCompilationResult result;
+    if (info.GetCompileFromSource())
     {
-    case gfxShaderType::Vertex: shaderKind = shaderc_vertex_shader; break;
-    case gfxShaderType::Geometry: shaderKind = shaderc_geometry_shader; break;
-    case gfxShaderType::Fragment: shaderKind = shaderc_fragment_shader; break;
-    default: epiLogError("Unrecognized ShaderType value=`{}`", type); return false; // TODO: use str repr
+        shaderc_shader_kind shaderKind;
+        switch (info.GetStage())
+        {
+        case gfxShaderStage_Vertex: shaderKind = shaderc_vertex_shader; break;
+        case gfxShaderStage_Geometry: shaderKind = shaderc_geometry_shader; break;
+        case gfxShaderStage_Fragment: shaderKind = shaderc_fragment_shader; break;
+        default: epiLogError("Unrecognized ShaderStage value=`{}`", info.GetStage()); return false; // TODO: use str repr
+        }
+
+        const epiChar* sourceCode = reinterpret_cast<const epiChar*>(info.GetCode().data());
+
+        shaderc::CompileOptions options; // TODO: set compile options (optimization level etc)
+        shaderc::Compiler compiler;
+        result = compiler.CompileGlslToSpv(sourceCode,
+                                          shaderKind,
+                                          "filename" /* TODO: provide filename/shadername */,
+                                          info.GetEntryPoint().c_str(),
+                                          options);
+        if (result.GetCompilationStatus() != shaderc_compilation_status_success)
+        {
+            epiLogError("Vulkan shader compilation error: {}", result.GetErrorMessage());
+            return false;
+        }
+
+        byteCode = reinterpret_cast<const epiU8*>(result.begin());
+        byteCodeSize = std::distance(result.begin(), result.end()) * sizeof(*result.begin());
+    }
+    else
+    {
+        byteCode = info.GetCode().data();
+        byteCodeSize = info.GetCode().Size();
     }
 
-    shaderc::CompileOptions options; // TODO: set compile options (optimization level etc)
-    shaderc::Compiler compiler;
-    const shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, shaderKind, "filename" /* TODO: provide filename/shadername */, entryPoint, options);
-    if (result.GetCompilationStatus() != shaderc_compilation_status_success)
-    {
-        epiLogError("Vulkan shader compilation error: {}", result.GetErrorMessage());
-        return false;
-    }
-
-    const std::vector<epiU32> byteCode{result.cbegin(), result.cend()};
-    return InitFromBinary(reinterpret_cast<const epiU8*>(byteCode.data()), byteCode.size() * sizeof(epiU32), type, entryPoint);
-}
-
-epiBool gfxShaderImplVK::InitFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint)
-{
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.pCode = reinterpret_cast<const epiU32*>(binary);
-    createInfo.codeSize = size;
+    createInfo.pCode = reinterpret_cast<const epiU32*>(byteCode);
+    createInfo.codeSize = byteCodeSize;
 
     if (const VkResult result = vkCreateShaderModule(m_VkDevice, &createInfo, nullptr, &m_VkShaderModule); result != VK_SUCCESS)
     {
@@ -107,50 +69,37 @@ epiBool gfxShaderImplVK::InitFromBinary(const epiU8* binary, epiSize_t size, gfx
         return false;
     }
 
-    m_Type = type;
-    m_EntryPoint = entryPoint;
-    m_Backend = gfxShaderBackend::SPIRV;
-    m_Code = epiArray<epiU8>(binary, binary + size); // TODO: save path to file instead of code
+    m_Stage = info.GetStage();
+    m_Code = epiArray<epiU8>(byteCode, byteCode + byteCodeSize); // TODO: save path to file instead of code
+    m_Frontend = gfxShaderModuleFrontend::SPIRV; // TODO: set in a proper way
+    m_EntryPoint = info.GetEntryPoint();
 
     return true;
 }
 
-epiBool gfxShaderProgramImplVK::Init(const gfxShaderProgramCreateInfoImpl& info)
+gfxShaderStage gfxShaderModuleImplVK::GetStage() const
 {
-    m_ShaderProgramCreateInfo = info;
-    return true;
+    return m_Stage;
 }
 
-epiBool gfxShaderProgramImplVK::GetIsCreated() const
+const epiArray<epiU8>& gfxShaderModuleImplVK::GetCode() const
 {
-    static_assert(sizeof(m_ShaderProgramCreateInfo) == sizeof(void*) * 3, "Add shader type");
-    return m_ShaderProgramCreateInfo.Vertex != nullptr ||
-           m_ShaderProgramCreateInfo.Geometry != nullptr ||
-           m_ShaderProgramCreateInfo.Fragment != nullptr;
+    return m_Code;
 }
 
-epiArray<gfxShaderImplVK*> gfxShaderProgramImplVK::GetCompiledModules() const
+gfxShaderModuleFrontend gfxShaderModuleImplVK::GetFrontend() const
 {
-    epiArray<gfxShaderImplVK*> modules;
-
-    if (gfxShaderImpl* shader = m_ShaderProgramCreateInfo.Vertex; shader != nullptr)
-    {
-        modules.push_back(static_cast<gfxShaderImplVK*>(shader));
-    }
-
-    if (gfxShaderImpl* shader = m_ShaderProgramCreateInfo.Geometry; shader != nullptr)
-    {
-        modules.push_back(static_cast<gfxShaderImplVK*>(shader));
-    }
-
-    if (gfxShaderImpl* shader = m_ShaderProgramCreateInfo.Fragment; shader != nullptr)
-    {
-        modules.push_back(static_cast<gfxShaderImplVK*>(shader));
-    }
-
-    return modules;
+    return m_Frontend;
 }
 
-} // namespace internalgfx
+const epiString& gfxShaderModuleImplVK::GetEntryPoint() const
+{
+    return m_EntryPoint;
+}
+
+VkShaderModule_T* gfxShaderModuleImplVK::GetVkShaderModule() const
+{
+    return m_VkShaderModule;
+}
 
 EPI_NAMESPACE_END()

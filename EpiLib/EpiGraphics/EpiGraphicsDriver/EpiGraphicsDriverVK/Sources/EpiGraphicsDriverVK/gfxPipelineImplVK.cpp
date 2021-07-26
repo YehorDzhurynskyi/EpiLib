@@ -21,14 +21,19 @@ gfxPipelineGraphicsImplVK::~gfxPipelineGraphicsImplVK()
     vkDestroyPipeline(m_Device.GetVkDevice(), m_VkPipeline, nullptr);
 }
 
-epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& info,
-                                        const gfxShaderProgramImplVK& shaderProgramImpl,
-                                        const gfxRenderPassImplVK& renderPassImpl)
+epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& info)
 {
     const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayoutImpl::ExtractImpl(info.GetPipelineLayout()));
     if (pipelineLayoutVk == nullptr)
     {
-        epiLogError("Failed to Init PipelineGraphics! Provided PipelineLayout has no implementation!");
+        epiLogError("Failed to Init PipelineGraphics! The provided PipelineLayout has no implementation!");
+        return false;
+    }
+
+    const gfxRenderPassImplVK* renderPassVk = static_cast<const gfxRenderPassImplVK*>(gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
+    if (renderPassVk == nullptr)
+    {
+        epiLogError("Failed to Init PipelineGraphics! The provided RenderPass has no implementation!");
         return false;
     }
 
@@ -161,32 +166,24 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
 
     std::vector<VkPipelineShaderStageCreateInfo> stages;
+    stages.reserve(info.GetShaderStageCreateInfos().Size());
 
-    if (!shaderProgramImpl.GetIsCreated())
+    std::transform(info.GetShaderStageCreateInfos().begin(),
+                   info.GetShaderStageCreateInfos().end(),
+                   std::back_inserter(stages),
+                   [](const gfxPipelineShaderStageCreateInfo& stageInfo)
     {
-        epiLogError("Failed to initialize Pipeline! ShaderProgram isn't created!");
-        return false;
-    }
+        const gfxShaderModuleImplVK* module = static_cast<const gfxShaderModuleImplVK*>(gfxShaderModule::Impl::ExtractImpl(stageInfo.GetShaderModule()));
+        epiAssert(module != nullptr);
 
-    const epiArray<gfxShaderImplVK*> modules = shaderProgramImpl.GetCompiledModules();
-    stages.reserve(modules.Size());
+        VkPipelineShaderStageCreateInfo stage{};
+        stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        stage.module = module->GetVkShaderModule();
+        stage.pName = module->GetEntryPoint().c_str();
+        stage.stage = gfxShaderStageTo(module->GetStage());
 
-    for (const gfxShaderImplVK* module : modules)
-    {
-        VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = stages.emplace_back();
-        shaderStageCreateInfo = {};
-        shaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStageCreateInfo.module = module->GetVkShaderModule();
-        shaderStageCreateInfo.pName = module->GetEntryPoint().c_str();
-
-        switch (module->GetType())
-        {
-        case gfxShaderType::Vertex: shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; break;
-        case gfxShaderType::Geometry: shaderStageCreateInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT; break;
-        case gfxShaderType::Fragment: shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT; break;
-        default: epiLogError("Unhandled gfxShaderType=`{}`", module->GetType()); shaderStageCreateInfo.stage = VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM; break; // TODO: get str repr of enum value
-        }
-    }
+        return stage;
+    });
 
     for (gfxPipelineDynamicState state : info.GetDynamicStates())
     {
@@ -233,7 +230,7 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = pipelineLayoutVk->GetVkPipelineLayout();
-    pipelineInfo.renderPass = renderPassImpl.GetVkRenderPass();
+    pipelineInfo.renderPass = renderPassVk->GetVkRenderPass();
     pipelineInfo.subpass = info.GetRenderSubPassIndex();
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex = -1;

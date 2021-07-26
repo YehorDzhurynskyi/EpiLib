@@ -1137,13 +1137,13 @@ VkDescriptorType gfxDescriptorTypeTo(gfxDescriptorType type)
 
 VkShaderStageFlagBits gfxShaderStageTo(gfxShaderStage mask)
 {
-    return epiMask((mask & gfxShaderStage_Vertex) ? VK_SHADER_STAGE_VERTEX_BIT : VkShaderStageFlagBits{},
+    return epiMask((mask & gfxShaderStage_Vertex) == gfxShaderStage_Vertex ? VK_SHADER_STAGE_VERTEX_BIT : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_TessellationControl) ? VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT: VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_TessellationEvaluation) ? VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_Geometry) ? VK_SHADER_STAGE_GEOMETRY_BIT : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_Fragment) ? VK_SHADER_STAGE_FRAGMENT_BIT : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_Compute) ? VK_SHADER_STAGE_COMPUTE_BIT : VkShaderStageFlagBits{},
-                   (mask & gfxShaderStage_AllGraphics) ? VK_SHADER_STAGE_ALL_GRAPHICS : VkShaderStageFlagBits{},
+                   (mask & gfxShaderStage_AllGraphics) == gfxShaderStage_AllGraphics ? VK_SHADER_STAGE_ALL_GRAPHICS : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_Raygen) ? VK_SHADER_STAGE_RAYGEN_BIT_KHR : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_AnyHit) ? VK_SHADER_STAGE_ANY_HIT_BIT_KHR : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_ClosestHit) ? VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR : VkShaderStageFlagBits{},
@@ -1152,7 +1152,7 @@ VkShaderStageFlagBits gfxShaderStageTo(gfxShaderStage mask)
                    (mask & gfxShaderStage_Callable) ? VK_SHADER_STAGE_CALLABLE_BIT_KHR : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_Task) ? VK_SHADER_STAGE_TASK_BIT_NV : VkShaderStageFlagBits{},
                    (mask & gfxShaderStage_Mesh) ? VK_SHADER_STAGE_MESH_BIT_NV : VkShaderStageFlagBits{},
-                   (mask & gfxShaderStage_All) ? VK_SHADER_STAGE_ALL : VkShaderStageFlagBits{});
+                   (mask & gfxShaderStage_All) == gfxShaderStage_All ? VK_SHADER_STAGE_ALL : VkShaderStageFlagBits{});
 }
 
 VkDescriptorPoolCreateFlags gfxDescriptorPoolUsageTo(gfxDescriptorPoolUsage usage)

@@ -6,7 +6,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphicsDriverCommon/gfxPipeline.h"
+#include "EpiGraphicsDriverCommon/gfxEnum.h"
 
 EPI_NAMESPACE_BEGIN()
 

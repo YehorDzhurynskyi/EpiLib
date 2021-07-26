@@ -136,6 +136,27 @@ public:
     gfxPipelineVertexInputBindingDescription& AddAttribute(epiU32 location, gfxFormat format, epiU32 offset);
 };
 
+class gfxPipelineShaderStageCreateInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxPipelineShaderStageCreateInfo)
+
+EPI_GENHIDDEN_gfxPipelineShaderStageCreateInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xa448ef5};
+
+    enum gfxPipelineShaderStageCreateInfo_PIDs
+    {
+        PID_ShaderModule = 0xbc3b6b68,
+        PID_COUNT = 1
+    };
+
+protected:
+    gfxShaderModule m_ShaderModule{};
+
+EPI_GENREGION_END(gfxPipelineShaderStageCreateInfo)
+};
+
 class gfxPipelineGraphicsCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxPipelineGraphicsCreateInfo)
@@ -148,7 +169,8 @@ public:
     enum gfxPipelineGraphicsCreateInfo_PIDs
     {
         PID_PipelineLayout = 0xd1bf14df,
-        PID_ShaderProgram = 0xe4812959,
+        PID_RenderPass = 0x662aa9d7,
+        PID_ShaderStageCreateInfos = 0x6e8babc7,
         PID_RenderSubPassIndex = 0xdaca0981,
         PID_InputAssemblyType = 0xe816cd01,
         PID_Viewports = 0xa8f1ee29,
@@ -175,12 +197,13 @@ public:
         PID_ColorBlendLogicOp = 0x7caacb6d,
         PID_ColorBlendConstants = 0x739a4ae9,
         PID_DynamicStates = 0xa85e8c69,
-        PID_COUNT = 28
+        PID_COUNT = 29
     };
 
 protected:
     gfxPipelineLayout m_PipelineLayout{};
-    gfxShaderProgram m_ShaderProgram{};
+    gfxRenderPass m_RenderPass{};
+    epiArray<gfxPipelineShaderStageCreateInfo> m_ShaderStageCreateInfos{};
     epiU32 m_RenderSubPassIndex{0};
     gfxPipelineInputAssemblyType m_InputAssemblyType{gfxPipelineInputAssemblyType::None};
     epiArray<gfxPipelineViewport> m_Viewports{};
@@ -216,6 +239,7 @@ public:
     gfxPipelineGraphicsCreateInfo& AddColorBlendAttachment(const gfxPipelineColorBlendAttachment& attachment);
     gfxPipelineGraphicsCreateInfo& AddDynamicState(gfxPipelineDynamicState state);
     gfxPipelineGraphicsCreateInfo& AddVertexInputBinding(const gfxPipelineVertexInputBindingDescription& vertexInputBinding);
+    gfxPipelineGraphicsCreateInfo& AddShaderStage(const gfxPipelineShaderStageCreateInfo& info);
 };
 
 class gfxPipelineGraphics : public Object

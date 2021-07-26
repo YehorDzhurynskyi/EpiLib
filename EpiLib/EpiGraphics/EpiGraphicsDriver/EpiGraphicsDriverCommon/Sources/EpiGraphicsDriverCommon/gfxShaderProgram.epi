@@ -1,36 +1,28 @@
-enum gfxShaderBackend
+enum gfxShaderModuleFrontend
 {
-    None,
+    Unknown,
     SPIRV
 };
 
-class gfxShader
+class gfxShaderModuleCreateInfo
+{
+    gfxShaderStage Stage;
+
+    epiBool CompileFromSource;
+    epiArray<epiU8> Code;
+
+    epiString EntryPoint = "main";
+};
+
+class gfxShaderModule
 {
     [Virtual, ReadOnly]
     {
-        epiBool IsCreated;
-        gfxShaderType Type;
-        gfxShaderBackend Backend;
-
-        [ReadCallback(SuppressRef=true)]
+        gfxShaderStage Stage;
         epiArray<epiU8> Code;
-    }
-};
 
-class gfxShaderProgramCreateInfo
-{
-    [Virtual, ReadOnly]
-    epiBool IsEmpty;
+        gfxShaderModuleFrontend Frontend;
 
-    gfxShader* Vertex;
-    gfxShader* Geometry;
-    gfxShader* Fragment;
-};
-
-class gfxShaderProgram
-{
-    [Virtual, ReadOnly]
-    {
-        epiBool IsCreated;
+        epiString EntryPoint;
     }
 };

@@ -40,6 +40,7 @@ void main(void)
 }
 )";
 
+#if 0
 gfxShaderProgram CreateProgramLineStrip()
 {
     gfxShader vertex;
@@ -58,6 +59,7 @@ gfxShaderProgram CreateProgramLineStrip()
 
     return program;
 }
+#endif
 
 const epiU32 kMaxLineStripVerticesCount = 16 * 1024;
 struct VertexLineStip
@@ -84,7 +86,7 @@ dvDrawerSeriesBase::dvDrawerSeriesBase()
         // m_VertexBufferLineStrip.Create(nullptr, sizeof(VertexLineStip) * kMaxLineStripVerticesCount, gfxVertexBufferUsage::DynamicDraw, layout);
     }
 
-    m_ShaderProgramLineStrip = CreateProgramLineStrip();
+    // m_ShaderProgramLineStrip = CreateProgramLineStrip();
 }
 
 void dvDrawerSeriesBase::DrawLineStrip(const epiVec2f& p, const Color& color, epiFloat z)

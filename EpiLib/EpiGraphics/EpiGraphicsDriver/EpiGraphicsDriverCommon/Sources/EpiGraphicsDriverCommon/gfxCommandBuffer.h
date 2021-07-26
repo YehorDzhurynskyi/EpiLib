@@ -11,6 +11,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxPipelineLayout.h"
+#include "EpiGraphicsDriverCommon/gfxPipeline.h"
 #include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
 #include "EpiGraphicsDriverCommon/gfxDeviceMemory.h"
 

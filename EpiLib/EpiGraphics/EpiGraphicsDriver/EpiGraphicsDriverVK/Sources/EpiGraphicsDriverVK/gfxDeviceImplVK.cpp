@@ -625,14 +625,10 @@ std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> gfxDeviceImplVK::CreatePipel
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> gfxDeviceImplVK::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info,
-                                                                                 const internalgfx::gfxShaderProgramImpl& shaderProgramImpl,
-                                                                                 const internalgfx::gfxRenderPassImpl& renderPassImpl) const
+std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> gfxDeviceImplVK::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const
 {
     std::shared_ptr<internalgfx::gfxPipelineGraphicsImplVK> impl = std::make_shared<internalgfx::gfxPipelineGraphicsImplVK>(*this);
-    if (!impl->Init(info,
-                    static_cast<const internalgfx::gfxShaderProgramImplVK&>(shaderProgramImpl),
-                    static_cast<const internalgfx::gfxRenderPassImplVK&>(renderPassImpl)))
+    if (!impl->Init(info))
     {
         impl.reset();
     }
@@ -640,31 +636,9 @@ std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> gfxDeviceImplVK::CreatePip
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromSource(const epiChar* source, gfxShaderType type, const epiChar* entryPoint) const
+std::shared_ptr<gfxShaderModule::Impl> gfxDeviceImplVK::CreateShaderModule(const gfxShaderModuleCreateInfo& info) const
 {
-    std::shared_ptr<internalgfx::gfxShaderImplVK> impl = std::make_shared<internalgfx::gfxShaderImplVK>(m_VkDevice);
-    if (!impl->InitFromSource(source, type, entryPoint))
-    {
-        impl.reset();
-    }
-
-    return impl;
-}
-
-std::shared_ptr<internalgfx::gfxShaderImpl> gfxDeviceImplVK::CreateShaderFromBinary(const epiU8* binary, epiSize_t size, gfxShaderType type, const epiChar* entryPoint) const
-{
-    std::shared_ptr<internalgfx::gfxShaderImplVK> impl = std::make_shared<internalgfx::gfxShaderImplVK>(m_VkDevice);
-    if (!impl->InitFromBinary(binary, size, type, entryPoint))
-    {
-        impl.reset();
-    }
-
-    return impl;
-}
-
-std::shared_ptr<internalgfx::gfxShaderProgramImpl> gfxDeviceImplVK::CreateShaderProgram(const internalgfx::gfxShaderProgramCreateInfoImpl& info) const
-{
-    std::shared_ptr<internalgfx::gfxShaderProgramImplVK> impl = std::make_shared<internalgfx::gfxShaderProgramImplVK>();
+    std::shared_ptr<gfxShaderModuleImplVK> impl = std::make_shared<gfxShaderModuleImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();

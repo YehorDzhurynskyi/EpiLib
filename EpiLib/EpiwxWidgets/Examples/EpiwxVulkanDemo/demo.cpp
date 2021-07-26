@@ -216,18 +216,17 @@ public:
             }
         )";
 
-        std::optional<gfxShader> vertexShader = g_Device.CreateShaderFromSource(kVertexShaderModule.c_str(), gfxShaderType::Vertex);
-        std::optional<gfxShader> fragmentShader = g_Device.CreateShaderFromSource(kFragmentShaderModule.c_str(), gfxShaderType::Fragment);
+        std::optional<gfxShaderModule> vertexShader = g_Device.CreateShaderModule(gfxShaderModuleCreateInfo::FromSource(kVertexShaderModule, gfxShaderStage_Vertex));
+        std::optional<gfxShaderModule> fragmentShader = g_Device.CreateShaderModule(gfxShaderModuleCreateInfo::FromSource(kFragmentShaderModule, gfxShaderStage_Fragment));
 
         epiAssert(vertexShader.has_value());
         epiAssert(fragmentShader.has_value());
 
-        gfxShaderProgramCreateInfo shaderProgramCreateInfo;
-        shaderProgramCreateInfo.SetVertex(&*vertexShader);
-        shaderProgramCreateInfo.SetFragment(&*fragmentShader);
+        gfxPipelineShaderStageCreateInfo vertexShaderStageCreateInfo{};
+        vertexShaderStageCreateInfo.SetShaderModule(*vertexShader);
 
-        std::optional<gfxShaderProgram> shaderProgram = g_Device.CreateShaderProgram(shaderProgramCreateInfo);
-        epiAssert(shaderProgram.has_value());
+        gfxPipelineShaderStageCreateInfo fragmentShaderStageCreateInfo{};
+        fragmentShaderStageCreateInfo.SetShaderModule(*fragmentShader);
 
         gfxPipelineViewport viewport;
         viewport.SetRect(epiRect2f(0.0f, 0.0f, m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y));
@@ -253,6 +252,7 @@ public:
         }
 
         gfxPipelineGraphicsCreateInfo pipelineCreateInfo;
+        pipelineCreateInfo.SetRenderPass(m_RenderPass);
         pipelineCreateInfo.SetPipelineLayout(m_PipelineLayout);
         pipelineCreateInfo.SetInputAssemblyType(gfxPipelineInputAssemblyType::TriangleList);
         pipelineCreateInfo.AddViewport(viewport);
@@ -275,14 +275,15 @@ public:
         pipelineCreateInfo.SetColorBlendLogicOp(gfxLogicOp::Copy);
         pipelineCreateInfo.SetColorBlendConstants(epiVec4f{0.0f, 0.0f, 0.0f, 0.0f});
         pipelineCreateInfo.SetRenderSubPassIndex(0);
-        pipelineCreateInfo.SetShaderProgram(*shaderProgram);
+        pipelineCreateInfo.AddShaderStage(vertexShaderStageCreateInfo);
+        pipelineCreateInfo.AddShaderStage(fragmentShaderStageCreateInfo);
         pipelineCreateInfo
             .AddDynamicState(gfxPipelineDynamicState::Viewport)
             .AddDynamicState(gfxPipelineDynamicState::Scissor)
             .AddVertexInputBinding(vertexInputBindingDescription);
 
         {
-            std::optional<gfxPipelineGraphics> pipeline = g_Device.CreatePipelineGraphics(pipelineCreateInfo, m_RenderPass);
+            std::optional<gfxPipelineGraphics> pipeline = g_Device.CreatePipelineGraphics(pipelineCreateInfo);
             epiAssert(pipeline.has_value());
 
             m_Pipeline = *pipeline;

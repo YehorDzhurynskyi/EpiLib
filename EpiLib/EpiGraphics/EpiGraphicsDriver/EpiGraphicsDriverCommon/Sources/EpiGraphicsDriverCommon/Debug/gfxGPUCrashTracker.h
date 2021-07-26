@@ -64,7 +64,7 @@ inline epiBool operator<(const GFSDK_Aftermath_ShaderDebugName& lhs, const GFSDK
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxShader;
+class gfxShaderModule;
 class gfxGPUCrashTracker final : public Object
 {
 EPI_GENREGION_BEGIN(gfxGPUCrashTracker)
@@ -93,7 +93,7 @@ public:
     gfxGPUCrashTracker& operator=(gfxGPUCrashTracker&& rhs) = delete;
     ~gfxGPUCrashTracker();
 
-    epiBool RegisterShader(const gfxShader& shader);
+    epiBool RegisterShader(const gfxShaderModule& shaderModule);
 
     void Reset();
 

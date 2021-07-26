@@ -314,21 +314,21 @@ void gfxGPUCrashTracker::ShaderSourceDebugInfoLookupCallback_Internal(const GFSD
     setShaderBinary(shaderBinary.data(), epiU32(shaderBinary.Size()));
 }
 
-epiBool gfxGPUCrashTracker::RegisterShader(const gfxShader& shader)
+epiBool gfxGPUCrashTracker::RegisterShader(const gfxShaderModule& shaderModule)
 {
-    if (!shader.GetIsCreated())
+    if (!shaderModule.HasImpl())
     {
-        epiLogWarn("Failed to register a Shader! Shader isn't created!");
+        epiLogWarn("Failed to register a Shader! The provided Shader has no implementation!");
         return false;
     }
 
-    if (const gfxShaderBackend backend = shader.GetBackend(); backend != gfxShaderBackend::SPIRV)
+    if (const gfxShaderModuleFrontend frontend = shaderModule.GetFrontend(); frontend != gfxShaderModuleFrontend::SPIRV)
     {
-        epiLogWarn("Failed to register a Shader! Shader's backend should be SPIRV, but `{}` provided!", backend); // TODO: str repr
+        epiLogWarn("Failed to register a Shader! Shader's frontend should be SPIRV, but `{}` provided!", frontend); // TODO: str repr
         return false;
     }
 
-    epiArray<epiU8> code = shader.GetCode();
+    epiArray<epiU8> code = shaderModule.GetCode();
     const GFSDK_Aftermath_SpirvCode spirvCode{code.data(), epiU32(code.Size())};
 
     GFSDK_Aftermath_ShaderHash shaderHash;
