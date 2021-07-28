@@ -114,7 +114,7 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
         return pipeline;
     }
 
-    if (std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> impl = m_Impl->CreatePipelineGraphics(info))
+    if (std::shared_ptr<gfxPipelineGraphics::Impl> impl = m_Impl->CreatePipelineGraphics(info))
     {
         pipeline = gfxPipelineGraphics(std::move(impl));
     }

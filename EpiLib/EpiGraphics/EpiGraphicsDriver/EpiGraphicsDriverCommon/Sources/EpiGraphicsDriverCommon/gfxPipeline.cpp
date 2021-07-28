@@ -66,7 +66,7 @@ gfxPipelineGraphicsCreateInfo& gfxPipelineGraphicsCreateInfo::AddShaderStage(con
     return *this;
 }
 
-gfxPipelineGraphics::gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl>& impl)
+gfxPipelineGraphics::gfxPipelineGraphics(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }

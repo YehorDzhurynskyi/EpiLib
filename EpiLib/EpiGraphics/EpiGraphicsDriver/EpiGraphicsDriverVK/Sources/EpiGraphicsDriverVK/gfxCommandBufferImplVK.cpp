@@ -118,7 +118,7 @@ void gfxCommandBufferImplVK::PipelineBind(const gfxPipelineGraphics& pipeline)
         return;
     }
 
-    const internalgfx::gfxPipelineGraphicsImplVK* pipelineImpl = static_cast<const internalgfx::gfxPipelineGraphicsImplVK*>(internalgfx::gfxPipelineGraphicsImpl::ExtractImpl(pipeline));
+    const gfxPipelineGraphicsImplVK* pipelineImpl = static_cast<const gfxPipelineGraphicsImplVK*>(gfxPipelineGraphics::Impl::ExtractImpl(pipeline));
     epiAssert(pipelineImpl != nullptr);
 
     vkCmdBindPipeline(m_VkCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineImpl->GetVkPipeline());

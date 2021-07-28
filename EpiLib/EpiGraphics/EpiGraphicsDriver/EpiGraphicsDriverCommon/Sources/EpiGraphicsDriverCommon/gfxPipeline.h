@@ -13,13 +13,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxPipelineGraphicsImpl;
-
-} // internalgfx
-
 class gfxPipelineViewport : public Object
 {
 EPI_GENREGION_BEGIN(gfxPipelineViewport)
@@ -265,12 +258,11 @@ protected:
 EPI_GENREGION_END(gfxPipelineGraphics)
 
 public:
-    friend class gfxCommandBufferRecord;
-    friend class internalgfx::gfxPipelineGraphicsImpl;
+    class Impl;
 
 public:
     gfxPipelineGraphics() = default;
-    explicit gfxPipelineGraphics(const std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl>& impl);
+    explicit gfxPipelineGraphics(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
@@ -281,7 +273,7 @@ public:
     void DynamicAddScissor(const epiRect2s& scissor);
 
 protected:
-    epiPimpl<internalgfx::gfxPipelineGraphicsImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

@@ -56,32 +56,6 @@ public:
     virtual void Unmap() = 0;
 };
 
-class gfxPipelineGraphicsImpl
-{
-public:
-    static const gfxPipelineGraphicsImpl* ExtractImpl(const gfxPipelineGraphics& pipeline) { return pipeline.m_Impl.Ptr(); }
-
-public:
-    gfxPipelineGraphicsImpl() = default;
-    gfxPipelineGraphicsImpl(const gfxPipelineGraphicsImpl& rhs) = delete;
-    gfxPipelineGraphicsImpl& operator=(const gfxPipelineGraphicsImpl& rhs) = delete;
-    gfxPipelineGraphicsImpl(gfxPipelineGraphicsImpl&& rhs) = default;
-    gfxPipelineGraphicsImpl& operator=(gfxPipelineGraphicsImpl&& rhs) = default;
-    virtual ~gfxPipelineGraphicsImpl() = default;
-
-    epiBool IsDynamic(gfxPipelineDynamicState state) const { return m_DynamicStates[static_cast<epiU32>(state)]; }
-
-    const epiArray<gfxPipelineViewport>& GetViewports() const { return m_Viewports; }
-    epiArray<gfxPipelineViewport>& GetViewports() { return m_Viewports; }
-    const epiArray<epiRect2s>& GetScissors() const { return m_Scissors; }
-    epiArray<epiRect2s>& GetScissors() { return m_Scissors; }
-
-protected:
-    epiBool m_DynamicStates[static_cast<epiU32>(gfxPipelineDynamicState::COUNT)]{};
-    epiArray<gfxPipelineViewport> m_Viewports{};
-    epiArray<epiRect2s> m_Scissors{};
-};
-
 class gfxRenderPassImpl
 {
 public:
@@ -238,7 +212,7 @@ public:
     virtual std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxPipelineLayout::Impl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxPipelineGraphics::Impl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxTexture::Impl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
@@ -476,6 +450,32 @@ public:
     Impl(Impl&& rhs) = default;
     Impl& operator=(Impl&& rhs) = default;
     virtual ~Impl() = default;
+};
+
+class gfxPipelineGraphics::Impl
+{
+public:
+    static const gfxPipelineGraphics::Impl* ExtractImpl(const gfxPipelineGraphics& pipeline) { return pipeline.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    epiBool IsDynamic(gfxPipelineDynamicState state) const { return m_DynamicStates[static_cast<epiU32>(state)]; }
+
+    const epiArray<gfxPipelineViewport>& GetViewports() const { return m_Viewports; }
+    epiArray<gfxPipelineViewport>& GetViewports() { return m_Viewports; }
+    const epiArray<epiRect2s>& GetScissors() const { return m_Scissors; }
+    epiArray<epiRect2s>& GetScissors() { return m_Scissors; }
+
+protected:
+    epiBool m_DynamicStates[static_cast<epiU32>(gfxPipelineDynamicState::COUNT)]{};
+    epiArray<gfxPipelineViewport> m_Viewports{};
+    epiArray<epiRect2s> m_Scissors{};
 };
 
 class gfxCommandPool::Impl

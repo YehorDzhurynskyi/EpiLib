@@ -13,10 +13,7 @@ struct VkDescriptorSetLayout_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxPipelineGraphicsImplVK : public gfxPipelineGraphicsImpl
+class gfxPipelineGraphicsImplVK : public gfxPipelineGraphics::Impl
 {
 public:
     explicit gfxPipelineGraphicsImplVK(const gfxDeviceImplVK& device);
@@ -34,7 +31,5 @@ protected:
     const gfxDeviceImplVK& m_Device;
     VkPipeline_T* m_VkPipeline{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

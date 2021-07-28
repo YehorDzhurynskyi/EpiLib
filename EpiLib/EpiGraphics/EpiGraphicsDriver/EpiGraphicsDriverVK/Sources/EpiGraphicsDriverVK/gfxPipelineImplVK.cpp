@@ -8,9 +8,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxPipelineGraphicsImplVK::gfxPipelineGraphicsImplVK(const gfxDeviceImplVK& device)
     : m_Device{device}
 {
@@ -30,7 +27,7 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
         return false;
     }
 
-    const gfxRenderPassImplVK* renderPassVk = static_cast<const gfxRenderPassImplVK*>(gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
+    const internalgfx::gfxRenderPassImplVK* renderPassVk = static_cast<const internalgfx::gfxRenderPassImplVK*>(internalgfx::gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
     if (renderPassVk == nullptr)
     {
         epiLogError("Failed to Init PipelineGraphics! The provided RenderPass has no implementation!");
@@ -248,7 +245,5 @@ VkPipeline gfxPipelineGraphicsImplVK::GetVkPipeline() const
 {
     return m_VkPipeline;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()
