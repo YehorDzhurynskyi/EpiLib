@@ -10,13 +10,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxRenderPassImpl;
-
-} // internalgfx
-
 enum class gfxAttachmentBindPoint : epiS32
 {
 EPI_GENREGION_BEGIN(gfxAttachmentBindPoint)
@@ -328,14 +321,11 @@ protected:
 EPI_GENREGION_END(gfxRenderPass)
 
 public:
-    friend class gfxDevice;
-    friend class gfxSwapChain;
-    friend class gfxCommandBufferRecord;
-    friend class internalgfx::gfxRenderPassImpl;
+    class Impl;
 
 public:
     gfxRenderPass() = default;
-    explicit gfxRenderPass(const std::shared_ptr<internalgfx::gfxRenderPassImpl>& impl);
+    explicit gfxRenderPass(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
@@ -343,7 +333,7 @@ public:
     epiBool IsCompatibleWith(const gfxRenderPassSchema& rhs) const;
 
 protected:
-    epiPimpl<internalgfx::gfxRenderPassImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

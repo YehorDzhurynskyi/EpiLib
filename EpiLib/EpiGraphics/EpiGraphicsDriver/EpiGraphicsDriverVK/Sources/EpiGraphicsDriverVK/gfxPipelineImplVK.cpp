@@ -27,7 +27,7 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
         return false;
     }
 
-    const internalgfx::gfxRenderPassImplVK* renderPassVk = static_cast<const internalgfx::gfxRenderPassImplVK*>(internalgfx::gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
+    const gfxRenderPassImplVK* renderPassVk = static_cast<const gfxRenderPassImplVK*>(gfxRenderPass::Impl::ExtractImpl(info.GetRenderPass()));
     if (renderPassVk == nullptr)
     {
         epiLogError("Failed to Init PipelineGraphics! The provided RenderPass has no implementation!");

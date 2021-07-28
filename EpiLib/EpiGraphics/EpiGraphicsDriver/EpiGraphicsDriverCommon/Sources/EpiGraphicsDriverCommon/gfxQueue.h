@@ -40,6 +40,7 @@ protected:
 EPI_GENREGION_END(gfxQueueSubmitInfo)
 };
 
+class gfxSwapChain;
 class gfxQueuePresentInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxQueuePresentInfo)

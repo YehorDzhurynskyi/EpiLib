@@ -7,10 +7,7 @@ struct VkDevice_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxRenderPassImplVK : public gfxRenderPassImpl
+class gfxRenderPassImplVK : public gfxRenderPass::Impl
 {
 public:
     gfxRenderPassImplVK(VkDevice_T* device);
@@ -28,7 +25,5 @@ protected:
     VkRenderPass_T* m_VkRenderPass{nullptr};
     VkDevice_T* m_VkDevice{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

@@ -60,7 +60,7 @@ std::optional<gfxRenderPass> gfxDevice::CreateRenderPass(const gfxRenderPassCrea
 {
     std::optional<gfxRenderPass> renderPass;
 
-    if (std::shared_ptr<internalgfx::gfxRenderPassImpl> impl = m_Impl->CreateRenderPass(info))
+    if (std::shared_ptr<gfxRenderPass::Impl> impl = m_Impl->CreateRenderPass(info))
     {
         renderPass = gfxRenderPass(std::move(impl));
     }
@@ -138,10 +138,7 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
 {
     std::optional<gfxFrameBuffer> frameBuffer;
 
-    const gfxRenderPass& renderPass = info.GetRenderPass();
-
-    const auto renderPassImpl = renderPass.m_Impl;
-    if (!renderPassImpl)
+    if (!info.GetRenderPass().HasImpl())
     {
         epiLogError("Failed to create FrameBuffer! Provided RenderPass has no implementation!");
         return frameBuffer;

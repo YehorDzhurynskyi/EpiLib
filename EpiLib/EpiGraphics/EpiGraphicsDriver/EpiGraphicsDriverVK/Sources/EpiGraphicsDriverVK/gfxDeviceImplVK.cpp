@@ -603,9 +603,9 @@ std::shared_ptr<gfxSwapChain::Impl> gfxDeviceImplVK::CreateSwapChain(const gfxSw
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
+std::shared_ptr<gfxRenderPass::Impl> gfxDeviceImplVK::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
 {
-    std::shared_ptr<internalgfx::gfxRenderPassImplVK> impl = std::make_shared<internalgfx::gfxRenderPassImplVK>(m_VkDevice);
+    std::shared_ptr<gfxRenderPassImplVK> impl = std::make_shared<gfxRenderPassImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();

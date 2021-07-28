@@ -187,7 +187,7 @@ epiArray<gfxAttachment> gfxRenderPassCreateInfo::GetAttachments_Callback() const
     return attachments;
 }
 
-gfxRenderPass::gfxRenderPass(const std::shared_ptr<internalgfx::gfxRenderPassImpl>& impl)
+gfxRenderPass::gfxRenderPass(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }

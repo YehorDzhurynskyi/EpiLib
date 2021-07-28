@@ -7,9 +7,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxRenderPassImplVK::gfxRenderPassImplVK(VkDevice_T* device)
     : m_VkDevice{device}
 {
@@ -139,7 +136,5 @@ VkRenderPass gfxRenderPassImplVK::GetVkRenderPass() const
 {
     return m_VkRenderPass;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

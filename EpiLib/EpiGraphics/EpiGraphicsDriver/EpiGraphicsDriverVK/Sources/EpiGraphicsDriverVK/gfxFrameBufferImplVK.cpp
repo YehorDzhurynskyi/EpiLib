@@ -36,7 +36,7 @@ epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info)
         return attachmentVk->GetVkImageView();
     });
 
-    const internalgfx::gfxRenderPassImplVK* renderPassVk = static_cast<const internalgfx::gfxRenderPassImplVK*>(internalgfx::gfxRenderPassImpl::ExtractImpl(info.GetRenderPass()));
+    const gfxRenderPassImplVK* renderPassVk = static_cast<const gfxRenderPassImplVK*>(gfxRenderPass::Impl::ExtractImpl(info.GetRenderPass()));
     epiAssert(renderPassVk != nullptr);
 
     // TODO: add renderpass compatibility check
