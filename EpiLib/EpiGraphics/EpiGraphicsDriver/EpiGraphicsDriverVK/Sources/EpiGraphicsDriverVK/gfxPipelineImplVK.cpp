@@ -23,7 +23,7 @@ gfxPipelineGraphicsImplVK::~gfxPipelineGraphicsImplVK()
 
 epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& info)
 {
-    const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayoutImpl::ExtractImpl(info.GetPipelineLayout()));
+    const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayout::Impl::ExtractImpl(info.GetPipelineLayout()));
     if (pipelineLayoutVk == nullptr)
     {
         epiLogError("Failed to Init PipelineGraphics! The provided PipelineLayout has no implementation!");

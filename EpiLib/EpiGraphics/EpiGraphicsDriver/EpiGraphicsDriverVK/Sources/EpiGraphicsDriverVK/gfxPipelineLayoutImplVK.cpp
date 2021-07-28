@@ -7,9 +7,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxPipelineLayoutImplVK::gfxPipelineLayoutImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -70,7 +67,5 @@ VkPipelineLayout gfxPipelineLayoutImplVK::GetVkPipelineLayout() const
 {
     return m_VkPipelineLayout;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

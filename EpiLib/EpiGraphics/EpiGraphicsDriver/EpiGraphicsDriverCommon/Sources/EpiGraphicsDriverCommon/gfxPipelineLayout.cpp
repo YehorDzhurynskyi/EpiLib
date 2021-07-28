@@ -14,9 +14,14 @@ gfxPipelineLayoutCreateInfo& gfxPipelineLayoutCreateInfo::AddDescriptorSetLayout
     return *this;
 }
 
-gfxPipelineLayout::gfxPipelineLayout(const std::shared_ptr<internalgfx::gfxPipelineLayoutImpl>& impl)
+gfxPipelineLayout::gfxPipelineLayout(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
+}
+
+epiBool gfxPipelineLayout::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 EPI_NAMESPACE_END()

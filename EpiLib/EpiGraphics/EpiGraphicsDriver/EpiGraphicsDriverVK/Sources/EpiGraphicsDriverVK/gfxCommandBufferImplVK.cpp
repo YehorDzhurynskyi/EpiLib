@@ -323,7 +323,7 @@ void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
                                                 const epiArray<epiU32>& offsets,
                                                 epiU32 firstSet)
 {
-    const internalgfx::gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const internalgfx::gfxPipelineLayoutImplVK*>(internalgfx::gfxPipelineLayoutImpl::ExtractImpl(pipelineLayout));
+    const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayout::Impl::ExtractImpl(pipelineLayout));
     if (pipelineLayoutVk == nullptr)
     {
         epiLogError("Failed to Bind DescriptorSets! Provided PipelineLayout has no implementation!");

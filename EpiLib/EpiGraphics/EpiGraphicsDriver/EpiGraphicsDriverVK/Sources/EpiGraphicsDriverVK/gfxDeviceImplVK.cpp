@@ -614,9 +614,9 @@ std::shared_ptr<internalgfx::gfxRenderPassImpl> gfxDeviceImplVK::CreateRenderPas
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> gfxDeviceImplVK::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
+std::shared_ptr<gfxPipelineLayout::Impl> gfxDeviceImplVK::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
 {
-    std::shared_ptr<internalgfx::gfxPipelineLayoutImplVK> impl = std::make_shared<internalgfx::gfxPipelineLayoutImplVK>(m_VkDevice);
+    std::shared_ptr<gfxPipelineLayoutImplVK> impl = std::make_shared<gfxPipelineLayoutImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();

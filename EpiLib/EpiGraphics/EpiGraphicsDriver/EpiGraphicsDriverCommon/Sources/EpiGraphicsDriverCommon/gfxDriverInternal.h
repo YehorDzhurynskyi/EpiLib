@@ -56,20 +56,6 @@ public:
     virtual void Unmap() = 0;
 };
 
-class gfxPipelineLayoutImpl
-{
-public:
-    static const gfxPipelineLayoutImpl* ExtractImpl(const gfxPipelineLayout& layout) { return layout.m_Impl.Ptr(); }
-
-public:
-    gfxPipelineLayoutImpl() = default;
-    gfxPipelineLayoutImpl(const gfxPipelineLayoutImpl& rhs) = delete;
-    gfxPipelineLayoutImpl& operator=(const gfxPipelineLayoutImpl& rhs) = delete;
-    gfxPipelineLayoutImpl(gfxPipelineLayoutImpl&& rhs) = default;
-    gfxPipelineLayoutImpl& operator=(gfxPipelineLayoutImpl&& rhs) = default;
-    virtual ~gfxPipelineLayoutImpl() = default;
-};
-
 class gfxPipelineGraphicsImpl
 {
 public:
@@ -251,7 +237,7 @@ public:
 
     virtual std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxRenderPassImpl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxPipelineLayout::Impl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxPipelineGraphicsImpl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const = 0;
@@ -468,6 +454,20 @@ class gfxFrameBuffer::Impl
 {
 public:
     static const gfxFrameBuffer::Impl* ExtractImpl(const gfxFrameBuffer& frameBuffer) { return frameBuffer.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
+
+class gfxPipelineLayout::Impl
+{
+public:
+    static const gfxPipelineLayout::Impl* ExtractImpl(const gfxPipelineLayout& layout) { return layout.m_Impl.get(); }
 
 public:
     Impl() = default;

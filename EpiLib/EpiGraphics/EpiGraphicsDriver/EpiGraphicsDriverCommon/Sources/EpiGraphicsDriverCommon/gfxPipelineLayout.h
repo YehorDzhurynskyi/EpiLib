@@ -10,13 +10,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxPipelineLayoutImpl;
-
-} // namespace internalgfx
-
 class gfxPipelineLayoutCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxPipelineLayoutCreateInfo)
@@ -58,14 +51,16 @@ public:
 EPI_GENREGION_END(gfxPipelineLayout)
 
 public:
-    friend class internalgfx::gfxPipelineLayoutImpl;
+    class Impl;
 
 public:
     gfxPipelineLayout() = default;
-    explicit gfxPipelineLayout(const std::shared_ptr<internalgfx::gfxPipelineLayoutImpl>& impl);
+    explicit gfxPipelineLayout(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
 protected:
-    epiPimpl<internalgfx::gfxPipelineLayoutImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

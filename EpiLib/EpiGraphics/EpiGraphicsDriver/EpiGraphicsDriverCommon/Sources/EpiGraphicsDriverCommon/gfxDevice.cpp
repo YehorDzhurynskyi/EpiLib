@@ -72,7 +72,7 @@ std::optional<gfxPipelineLayout> gfxDevice::CreatePipelineLayout(const gfxPipeli
 {
     std::optional<gfxPipelineLayout> pipelineLayout;
 
-    if (std::shared_ptr<internalgfx::gfxPipelineLayoutImpl> impl = m_Impl->CreatePipelineLayout(info))
+    if (std::shared_ptr<gfxPipelineLayout::Impl> impl = m_Impl->CreatePipelineLayout(info))
     {
         pipelineLayout = gfxPipelineLayout(std::move(impl));
     }
