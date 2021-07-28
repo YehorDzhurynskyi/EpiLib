@@ -189,7 +189,7 @@ std::optional<gfxSampler> gfxDevice::CreateSampler(const gfxSamplerCreateInfo& i
 {
     std::optional<gfxSampler> sampler;
 
-    if (std::shared_ptr<internalgfx::gfxSamplerImpl> impl = m_Impl->CreateSampler(info))
+    if (std::shared_ptr<gfxSampler::Impl> impl = m_Impl->CreateSampler(info))
     {
         sampler = gfxSampler(std::move(impl));
     }

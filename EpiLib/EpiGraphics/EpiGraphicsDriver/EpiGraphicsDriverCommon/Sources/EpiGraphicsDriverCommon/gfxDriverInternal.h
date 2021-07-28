@@ -56,20 +56,6 @@ public:
     virtual void Unmap() = 0;
 };
 
-class gfxSamplerImpl
-{
-public:
-    static const gfxSamplerImpl* ExtractImpl(const gfxSampler& sampler) { return sampler.m_Impl.Ptr(); }
-
-public:
-    gfxSamplerImpl() = default;
-    gfxSamplerImpl(const gfxSamplerImpl& rhs) = delete;
-    gfxSamplerImpl& operator=(const gfxSamplerImpl& rhs) = delete;
-    gfxSamplerImpl(gfxSamplerImpl&& rhs) = default;
-    gfxSamplerImpl& operator=(gfxSamplerImpl&& rhs) = default;
-    virtual ~gfxSamplerImpl() = default;
-};
-
 class gfxPipelineLayoutImpl
 {
 public:
@@ -271,7 +257,7 @@ public:
     virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxTexture::Impl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxTextureView::Impl> CreateTextureView(const gfxTextureViewCreateInfo& info) const = 0;
-    virtual std::shared_ptr<internalgfx::gfxSamplerImpl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxSampler::Impl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxCommandPool::Impl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
     virtual std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const = 0;
@@ -391,6 +377,20 @@ class gfxTextureView::Impl
 {
 public:
     static const gfxTextureView::Impl* ExtractImpl(const gfxTextureView& imageView) { return imageView.m_Impl.get(); }
+
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
+
+class gfxSampler::Impl
+{
+public:
+    static const gfxSampler::Impl* ExtractImpl(const gfxSampler& sampler) { return sampler.m_Impl.get(); }
 
 public:
     Impl() = default;

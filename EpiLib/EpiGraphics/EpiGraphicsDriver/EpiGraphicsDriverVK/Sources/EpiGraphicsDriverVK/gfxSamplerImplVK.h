@@ -7,10 +7,7 @@ struct VkSampler_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxSamplerImplVK : public gfxSamplerImpl
+class gfxSamplerImplVK : public gfxSampler::Impl
 {
 public:
     explicit gfxSamplerImplVK(VkDevice_T* device);
@@ -28,7 +25,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkSampler_T* m_VkSampler{nullptr};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

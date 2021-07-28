@@ -426,7 +426,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                        std::back_inserter(imageInfos),
                        [](const gfxDescriptorImageInfo& imageInfo)
         {
-            const internalgfx::gfxSamplerImplVK* sampler = static_cast<const internalgfx::gfxSamplerImplVK*>(internalgfx::gfxSamplerImpl::ExtractImpl(imageInfo.GetSampler()));
+            const gfxSamplerImplVK* sampler = static_cast<const gfxSamplerImplVK*>(gfxSampler::Impl::ExtractImpl(imageInfo.GetSampler()));
             epiAssert(sampler != nullptr);
 
             const gfxTextureViewImplVK* imageView = static_cast<const gfxTextureViewImplVK*>(gfxTextureView::Impl::ExtractImpl(imageInfo.GetImageView()));
@@ -680,9 +680,9 @@ std::shared_ptr<gfxTextureView::Impl> gfxDeviceImplVK::CreateTextureView(const g
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxSamplerImpl> gfxDeviceImplVK::CreateSampler(const gfxSamplerCreateInfo& info) const
+std::shared_ptr<gfxSampler::Impl> gfxDeviceImplVK::CreateSampler(const gfxSamplerCreateInfo& info) const
 {
-    std::shared_ptr<internalgfx::gfxSamplerImplVK> impl = std::make_shared<internalgfx::gfxSamplerImplVK>(m_VkDevice);
+    std::shared_ptr<gfxSamplerImplVK> impl = std::make_shared<gfxSamplerImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();

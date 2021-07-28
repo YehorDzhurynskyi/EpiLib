@@ -7,9 +7,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxSamplerImplVK::gfxSamplerImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -54,7 +51,5 @@ VkSampler gfxSamplerImplVK::GetVkSampler() const
 {
     return m_VkSampler;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()
