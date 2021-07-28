@@ -1,7 +1,5 @@
 include(ExternalProject)
 
-epi_include_script(epi_apply_patch)
-
 function(epi_extern_add EXTERN)
 
     cmake_parse_arguments(EXTERN
@@ -11,6 +9,7 @@ function(epi_extern_add EXTERN)
         ${ARGN}
     )
 
+    # TODO: introduce OUTPUT_NAME argument: either alias for already installed libraries or a name for compiled from scratch libraries
     # TODO: check whether the dependency is already installed before compiling it from scratch
 
     set(EXTERN_DIR "${EPI_DIR}/Build/CMake/Extern/${EXTERN}")
@@ -46,14 +45,6 @@ function(epi_extern_add EXTERN)
     if (COMMAND_STATUS)
         message(FATAL_ERROR "Build step for `${EXTERN}` has failed: ${COMMAND_STATUS}")
     endif ()
-
-    file(GLOB PATCHES "${EXTERN_DIR}/*.patch")
-    if (PATCHES)
-        epi_apply_patch(
-            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${EXTERN}/${EXTERN}/src"
-            PATCHES ${PATCHES}
-        )
-    endif()
 
     if (NOT EXTERN_IMPORTED)
         if (NOT EXTERN_DONT_ADD_SUBDIRECTORY)

@@ -2,6 +2,18 @@ cmake_minimum_required(VERSION 2.8.2)
 
 project(zlib-extern NONE)
 
+file(GLOB PATCHES "@EXTERN_DIR@/*.patch")
+string(JOIN " " PATCHES ${PATCHES})
+
+find_package(Git REQUIRED)
+if(DEFINED ENV{GIT_CONFIG_NOSYSTEM})
+    set(GIT_CONFIG_NOSYSTEM_BACKUP "$ENV{GIT_CONFIG_NOSYSTEM}")
+else()
+    unset(GIT_CONFIG_NOSYSTEM_BACKUP)
+endif()
+
+set(ENV{GIT_CONFIG_NOSYSTEM} 1)
+
 include(ExternalProject)
 ExternalProject_Add(zlib
     GIT_REPOSITORY      https://github.com/madler/zlib.git
@@ -16,4 +28,11 @@ ExternalProject_Add(zlib
     BUILD_COMMAND       ""
     INSTALL_COMMAND     ""
     TEST_COMMAND        ""
+    PATCH_COMMAND       "${GIT_EXECUTABLE}" -c core.longpaths=true -c core.autocrlf=false --work-tree=. --git-dir=.git apply "${PATCHES}" --ignore-whitespace --whitespace=nowarn --verbose
 )
+
+if(DEFINED GIT_CONFIG_NOSYSTEM_BACKUP)
+    set(ENV{GIT_CONFIG_NOSYSTEM} "${GIT_CONFIG_NOSYSTEM_BACKUP}")
+else()
+    unset(ENV{GIT_CONFIG_NOSYSTEM})
+endif()
