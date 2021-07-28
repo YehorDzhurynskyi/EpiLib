@@ -7,8 +7,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-
-gfxDeviceMemory::Mapping::Mapping(internalgfx::gfxDeviceMemoryImpl* impl, epiSize_t size, epiSize_t offset)
+gfxDeviceMemory::Mapping::Mapping(const std::shared_ptr<Impl>& impl, epiSize_t size, epiSize_t offset)
     : m_Impl{impl}
 {
     if (m_Impl)
@@ -40,9 +39,14 @@ epiByte* gfxDeviceMemory::Mapping::Data()
     return m_Data;
 }
 
-gfxDeviceMemory::gfxDeviceMemory(const std::shared_ptr<internalgfx::gfxDeviceMemoryImpl>& impl)
+gfxDeviceMemory::gfxDeviceMemory(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
+}
+
+epiBool gfxDeviceMemory::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
 }
 
 gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
@@ -55,7 +59,7 @@ gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
     // call vkFlushMappedMemoryRanges if memory isn't coherent
     //
     // check whether memory is host-local
-    return Mapping(m_Impl.Ptr(), size, offset);
+    return Mapping(m_Impl, size, offset);
 }
 
 EPI_NAMESPACE_END()

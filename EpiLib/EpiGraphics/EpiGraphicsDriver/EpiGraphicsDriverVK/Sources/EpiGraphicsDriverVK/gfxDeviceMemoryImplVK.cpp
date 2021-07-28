@@ -8,9 +8,6 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
 gfxDeviceMemoryImplVK::gfxDeviceMemoryImplVK(VkDevice device)
     : m_VkDevice{device}
 {
@@ -158,7 +155,5 @@ VkDeviceMemory gfxDeviceMemoryImplVK::GetVkDeviceMemory() const
 {
     return m_VkDeviceMemory;
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

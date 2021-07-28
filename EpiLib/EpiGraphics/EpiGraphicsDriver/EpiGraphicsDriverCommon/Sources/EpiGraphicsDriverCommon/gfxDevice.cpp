@@ -234,7 +234,7 @@ std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemo
         return deviceMemory;
     }
 
-    if (std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> impl = m_Impl->CreateDeviceMemory(info))
+    if (std::shared_ptr<gfxDeviceMemory::Impl> impl = m_Impl->CreateDeviceMemory(info))
     {
         deviceMemory = gfxDeviceMemory(std::move(impl));
     }
@@ -252,7 +252,7 @@ std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemo
         return deviceMemory;
     }
 
-    if (std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> impl = m_Impl->CreateDeviceMemory(info))
+    if (std::shared_ptr<gfxDeviceMemory::Impl> impl = m_Impl->CreateDeviceMemory(info))
     {
         deviceMemory = gfxDeviceMemory(std::move(impl));
     }

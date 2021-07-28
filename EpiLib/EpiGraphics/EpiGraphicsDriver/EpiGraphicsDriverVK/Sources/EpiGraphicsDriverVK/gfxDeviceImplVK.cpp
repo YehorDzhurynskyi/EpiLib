@@ -713,7 +713,7 @@ std::shared_ptr<gfxBuffer::Impl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCr
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const
+std::shared_ptr<gfxDeviceMemory::Impl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const
 {
     std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = m_PhysicalDevice.lock();
     if (!physicalDevice)
@@ -722,7 +722,7 @@ std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceM
         return nullptr;
     }
 
-    std::shared_ptr<internalgfx::gfxDeviceMemoryImplVK> impl = std::make_shared<internalgfx::gfxDeviceMemoryImplVK>(m_VkDevice);
+    std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
     if (!impl->Init(info, *physicalDevice.get()))
     {
         impl.reset();
@@ -731,7 +731,7 @@ std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceM
     return impl;
 }
 
-std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const
+std::shared_ptr<gfxDeviceMemory::Impl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const
 {
     std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = m_PhysicalDevice.lock();
     if (!physicalDevice)
@@ -740,7 +740,7 @@ std::shared_ptr<internalgfx::gfxDeviceMemoryImpl> gfxDeviceImplVK::CreateDeviceM
         return nullptr;
     }
 
-    std::shared_ptr<internalgfx::gfxDeviceMemoryImplVK> impl = std::make_shared<internalgfx::gfxDeviceMemoryImplVK>(m_VkDevice);
+    std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
     if (!impl->Init(info, *physicalDevice.get()))
     {
         impl.reset();

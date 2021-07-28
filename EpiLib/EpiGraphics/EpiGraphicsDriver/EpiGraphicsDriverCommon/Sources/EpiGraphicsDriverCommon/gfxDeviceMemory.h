@@ -12,13 +12,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDeviceMemoryImpl;
-
-} // namespace internalgfx
-
 class gfxMemoryBarrier : public Object
 {
 EPI_GENREGION_BEGIN(gfxMemoryBarrier)
@@ -105,10 +98,13 @@ public:
 EPI_GENREGION_END(gfxDeviceMemory)
 
 public:
+    class Impl;
+
+public:
     class Mapping final
     {
     public:
-        Mapping(internalgfx::gfxDeviceMemoryImpl* impl, epiSize_t size, epiSize_t offset);
+        Mapping(const std::shared_ptr<Impl>& impl, epiSize_t size, epiSize_t offset);
         ~Mapping();
 
         epiBool IsMapped() const;
@@ -120,19 +116,21 @@ public:
         void PushBack(const T& value, epiSize_t stride = sizeof(T));
 
     protected:
-        internalgfx::gfxDeviceMemoryImpl* m_Impl{nullptr};
+        std::shared_ptr<Impl> m_Impl{nullptr}; // TODO: weak_ptr ?
         epiByte* m_Data{nullptr};
         epiSize_t m_Cursor{0};
     };
 
 public:
     gfxDeviceMemory() = default;
-    explicit gfxDeviceMemory(const std::shared_ptr<internalgfx::gfxDeviceMemoryImpl>& impl);
+    explicit gfxDeviceMemory(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
 
     Mapping Map(epiSize_t size, epiSize_t offset = 0);
 
 protected:
-    epiPimpl<internalgfx::gfxDeviceMemoryImpl> m_Impl;
+    std::shared_ptr<Impl> m_Impl;
 };
 
 template<typename T>

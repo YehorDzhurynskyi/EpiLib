@@ -10,10 +10,7 @@ struct VkDeviceMemory_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDeviceMemoryImplVK : public gfxDeviceMemoryImpl
+class gfxDeviceMemoryImplVK : public gfxDeviceMemory::Impl
 {
 public:
     explicit gfxDeviceMemoryImplVK(VkDevice_T* device);
@@ -35,7 +32,5 @@ protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkDeviceMemory_T* m_VkDeviceMemory{nullptr};
 };
-
-} // internalgfx
 
 EPI_NAMESPACE_END()
