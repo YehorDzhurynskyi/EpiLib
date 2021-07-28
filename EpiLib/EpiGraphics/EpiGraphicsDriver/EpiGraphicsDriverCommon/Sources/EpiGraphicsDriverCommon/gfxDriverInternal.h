@@ -42,17 +42,6 @@ protected:
     epiArray<std::shared_ptr<gfxPhysicalDevice::Impl>> m_PhysicalDevices;
 };
 
-class gfxAttachmentImpl
-{
-public:
-    gfxAttachmentImpl() = default;
-    gfxAttachmentImpl(const gfxAttachmentImpl& rhs) = delete;
-    gfxAttachmentImpl& operator=(const gfxAttachmentImpl& rhs) = delete;
-    gfxAttachmentImpl(gfxAttachmentImpl&& rhs) = default;
-    gfxAttachmentImpl& operator=(gfxAttachmentImpl&& rhs) = default;
-    virtual ~gfxAttachmentImpl() = default;
-};
-
 } // namespace internalgfx
 
 class gfxSemaphore::Impl

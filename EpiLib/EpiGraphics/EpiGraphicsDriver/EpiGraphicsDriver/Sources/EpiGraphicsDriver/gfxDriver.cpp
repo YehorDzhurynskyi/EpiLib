@@ -16,6 +16,11 @@ gfxDriver& gfxDriver::GetInstance()
     return instance;
 }
 
+epiBool gfxDriver::HasImpl() const
+{
+    return static_cast<epiBool>(m_Impl);
+}
+
 void gfxDriver::Reset(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend)
 {
     m_Backend = backend;

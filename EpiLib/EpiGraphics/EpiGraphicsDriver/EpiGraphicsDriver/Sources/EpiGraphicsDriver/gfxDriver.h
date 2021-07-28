@@ -67,10 +67,12 @@ protected:
     gfxDriver(gfxDriver&& rhs) = delete;
     gfxDriver& operator=(gfxDriver&& rhs) = delete;
 
+    epiBool HasImpl() const;
+
     void Reset(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend);
 
 protected:
-    epiPimpl<internalgfx::gfxDriverImpl> m_Impl;
+    std::shared_ptr<internalgfx::gfxDriverImpl> m_Impl;
 };
 
 EPI_NAMESPACE_END()

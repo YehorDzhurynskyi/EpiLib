@@ -12,13 +12,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxSurfaceImpl;
-
-} // internalgfx
-
 class gfxSurface;
 class gfxQueueDescriptor : public Object
 {
