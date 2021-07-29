@@ -6,13 +6,14 @@ EPI_GENREGION_END(include)
 
 #include "EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.h"
 
-#include "EpiGraphics/gfxContext.h"
-#include "EpiGraphics/gfxDrawer.h"
+#include "EpiDrawer/drwContext.h"
+#include "EpiDrawer/drwDrawer.h"
+#include "EpiDrawer/Camera/drwCamera.h"
 #include "EpiGraphicsDriverCommon/gfxShaderModule.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class dvDrawerSeriesBase : public gfxDrawer
+class dvDrawerSeriesBase : public drwDrawer
 {
 EPI_GENREGION_BEGIN(dvDrawerSeriesBase)
 
@@ -33,7 +34,7 @@ public:
 
 public:
     void SceneBegin();
-    void SceneEnd(const gfxCamera& camera);
+    void SceneEnd(const drwCamera& camera);
 
 protected:
     void DrawLineStrip(const epiVec2f& p, const Color& color, epiFloat z);

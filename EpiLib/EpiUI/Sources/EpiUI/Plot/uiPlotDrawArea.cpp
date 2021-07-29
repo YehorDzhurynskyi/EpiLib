@@ -32,9 +32,9 @@ void uiPlotDrawArea::Draw(uiContext& uiContext)
     {
         m_DrawerDrawArea.Draw(uiContext.GetGFXContext(), *vm, GetBBox());
 
-        gfxContext& gfxContext = uiContext.GetGFXContext();
+        drwContext& gfxContext = uiContext.GetGFXContext();
 
-        if (gfxCamera* camera = gfxContext.GetCamera())
+        if (drwCamera* camera = gfxContext.GetCamera())
         {
             for (const auto& seriesBase : vm->GetSeries())
             {

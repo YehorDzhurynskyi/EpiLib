@@ -1,0 +1,5 @@
+class drwTextManager
+{
+    [ReadOnly]
+    drwTextFace DefaultFace;
+};

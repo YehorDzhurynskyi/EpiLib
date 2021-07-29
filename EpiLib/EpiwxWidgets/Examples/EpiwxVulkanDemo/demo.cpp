@@ -4,7 +4,7 @@
 
 #include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
 
-#include "EpiGraphics/Camera/gfxCameraPersp.h"
+#include "EpiDrawer/Camera/drwCameraPersp.h"
 
 #include "EpiMultimedia/Image/mmImage.h"
 
@@ -829,7 +829,7 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
         const epiFloat s = std::sin(time);
         const epiFloat c = std::cos(time);
 
-        gfxCameraPersp camera;
+        drwCameraPersp camera;
         camera.SetPosition(epiVec3f{2.0f * s, 0.0f, 2.0f * c});
         camera.SetLookAtPosition(epiVec3f{0.0f, 0.0f, 0.0f});
         camera.SetUpDirection(epiVec3f{0.0f, 1.0f, 0.0f});

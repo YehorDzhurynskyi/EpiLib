@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerSeries1Df::Draw(gfxContext& ctx, const dvVMSeries1Df& seriesVM, const epiRect2f& worldFrame, const epiRect2f& uiFrame)
+void dvDrawerSeries1Df::Draw(drwContext& ctx, const dvVMSeries1Df& seriesVM, const epiRect2f& worldFrame, const epiRect2f& uiFrame)
 {
     switch (seriesVM.GetRepr())
     {

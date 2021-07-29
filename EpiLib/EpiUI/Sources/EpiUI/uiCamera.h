@@ -4,11 +4,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiUI/uiCamera.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/Camera/gfxCamera.h"
+#include "EpiDrawer/Camera/drwCamera.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class uiCamera : public gfxCamera
+class uiCamera : public drwCamera
 {
 EPI_GENREGION_BEGIN(uiCamera)
 

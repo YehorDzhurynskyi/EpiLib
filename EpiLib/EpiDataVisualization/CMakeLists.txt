@@ -34,7 +34,7 @@ target_link_libraries(EpiDataVisualization
     PUBLIC
         EpiCore
         EpiData
-        EpiGraphics
+        EpiDrawer
 )
 
 epi_module_register(EpiDataVisualization

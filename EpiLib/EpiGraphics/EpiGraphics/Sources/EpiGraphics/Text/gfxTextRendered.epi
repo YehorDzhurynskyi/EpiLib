@@ -1,5 +1,0 @@
-class gfxTextRendered
-{
-    [ReadOnly]
-    gfxImage Image;
-};

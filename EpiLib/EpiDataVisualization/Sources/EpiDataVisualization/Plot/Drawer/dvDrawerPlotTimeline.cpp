@@ -9,7 +9,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void dvDrawerPlotTimeline::Draw(gfxContext& ctx, const dvVMPlot& plot, const epiRect2f& frame)
+void dvDrawerPlotTimeline::Draw(drwContext& ctx, const dvVMPlot& plot, const epiRect2f& frame)
 {
     const epiRect2f& box = plot.GetBBox();
     const epiFloat domainX = box.GetWidth();

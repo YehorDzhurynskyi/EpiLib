@@ -1,0 +1,5 @@
+class drwTextRendered
+{
+    [ReadOnly]
+    gfxImage Image;
+};

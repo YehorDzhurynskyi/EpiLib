@@ -1,7 +1,7 @@
 #include "EpiwxWidgets/epiWXPlot.h"
 
-#include "EpiGraphics/gfxDrawerPrimitive.h"
-#include "EpiGraphics/gfxDrawerText.h"
+#include "EpiDrawer/drwDrawerPrimitive.h"
+#include "EpiDrawer/drwDrawerText.h"
 
 #include "EpiDataVisualization/Plot/ViewModel/dvVMSeriesBase.h"
 
@@ -46,7 +46,7 @@ epiWXPlot::epiWXPlot(wxWindow* parent,
 
     m_UIContext = new uiContext();
     m_UIContext->GetGFXContext().SetCamera(new uiCamera());
-    if (gfxCamera* camera = m_UIContext->GetGFXContext().GetCamera())
+    if (drwCamera* camera = m_UIContext->GetGFXContext().GetCamera())
     {
         camera->SetPosition({ 0.0f, 0.0f, 1.0f });
         camera->SetLookAtPosition({ 0.0f, 0.0f, 0.0f });

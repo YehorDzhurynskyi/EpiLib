@@ -47,7 +47,7 @@ void uiContext::OnResize(const epiRect2f& frame)
 
 epiVec2f uiContext::CalcMouseUICoordFromMouseNDCCoord(const epiVec2f& mouseNDCCoord) const
 {
-    if (const gfxCamera* camera = GetGFXContext().GetCamera())
+    if (const drwCamera* camera = GetGFXContext().GetCamera())
     {
         const epiMat4x4f& projInverse = camera->GetProjectionMatrixInverse();
         const epiMat4x4f& viewInverse = camera->GetViewMatrixInverse();

@@ -2,7 +2,7 @@ class uiContext
 {
     [ReadOnly]
     {
-        gfxContext GFXContext;
+        drwContext GFXContext;
 
         uiPage Page;
 

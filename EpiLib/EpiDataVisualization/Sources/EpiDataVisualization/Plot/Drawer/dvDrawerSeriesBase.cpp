@@ -105,7 +105,7 @@ void dvDrawerSeriesBase::SceneBegin()
     //m_VertexBufferMappingLineStrip.Map(gfxVertexBufferMapAccess::Write);
 }
 
-void dvDrawerSeriesBase::SceneEnd(const gfxCamera& camera)
+void dvDrawerSeriesBase::SceneEnd(const drwCamera& camera)
 {
     //const epiSize_t lineStripVerticesCount = m_VertexBufferMappingLineStrip.UnMap() / sizeof(VertexLineStip);
 

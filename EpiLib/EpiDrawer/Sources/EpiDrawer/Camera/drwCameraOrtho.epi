@@ -1,0 +1,4 @@
+class drwCameraOrtho : drwCamera
+{
+    epiRect2f FrameDimension;
+};

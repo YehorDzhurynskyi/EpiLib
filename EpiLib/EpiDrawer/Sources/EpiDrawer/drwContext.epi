@@ -1,0 +1,10 @@
+class drwContext
+{
+    [ReadOnly]
+    {
+        drwDrawerText DrawerText;
+        drwDrawerPrimitive DrawerPrimitive;
+    }
+
+    drwCamera* Camera;
+};

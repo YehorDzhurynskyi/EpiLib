@@ -63,7 +63,7 @@ target_include_directories(EpiUI
 target_link_libraries(EpiUI
     PUBLIC
         EpiCore
-        EpiGraphics
+        EpiDrawer
         EpiDataVisualization
 )
 

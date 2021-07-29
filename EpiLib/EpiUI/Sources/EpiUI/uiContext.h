@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 #include "EpiUI/uiCamera.h"
 #include "EpiUI/uiPage.h"
 
-#include "EpiGraphics/gfxContext.h"
+#include "EpiDrawer/drwContext.h"
 
 #include "EpiCore/ObjectModel/Object.h"
 
@@ -34,7 +34,7 @@ protected:
     epiVec2f GetMouseUICoord_Callback() const;
 
 protected:
-    gfxContext m_GFXContext{};
+    drwContext m_GFXContext{};
     uiPage m_Page{};
 
 EPI_GENREGION_END(uiContext)
