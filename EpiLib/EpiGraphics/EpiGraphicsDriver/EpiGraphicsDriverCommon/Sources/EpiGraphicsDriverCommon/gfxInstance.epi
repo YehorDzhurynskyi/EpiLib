@@ -1,0 +1,7 @@
+class gfxInstance
+{
+    [ReadOnly]
+    {
+        epiArray<gfxPhysicalDevice> PhysicalDevices;
+    }
+};

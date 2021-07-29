@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
+#include "EpiGraphicsDriverCommon/gfxInstance.h"
 #include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
 #include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
 #include "EpiGraphicsDriverCommon/gfxWindow.h"
@@ -17,32 +18,27 @@
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDriverImpl
+class gfxInstance::Impl
 {
 public:
-    gfxDriverImpl() = default;
-    gfxDriverImpl(const gfxDriverImpl& rhs) = delete;
-    gfxDriverImpl& operator=(const gfxDriverImpl& rhs) = delete;
-    gfxDriverImpl(gfxDriverImpl&& rhs) = default;
-    gfxDriverImpl& operator=(gfxDriverImpl&& rhs) = default;
-    virtual ~gfxDriverImpl() = default;
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
     virtual std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const = 0;
     virtual std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) const = 0;
 
-    virtual epiBool IsExtensionSupported(gfxDriverExtension extension) const = 0;
-    virtual epiBool IsExtensionEnabled(gfxDriverExtension extension) const = 0;
+    virtual epiBool IsExtensionSupported(gfxInstanceExtension extension) const = 0;
+    virtual epiBool IsExtensionEnabled(gfxInstanceExtension extension) const = 0;
 
     const epiArray<std::shared_ptr<gfxPhysicalDevice::Impl>>& GetPhysicalDevices() const { return m_PhysicalDevices; }
 
 protected:
     epiArray<std::shared_ptr<gfxPhysicalDevice::Impl>> m_PhysicalDevices;
 };
-
-} // namespace internalgfx
 
 class gfxSemaphore::Impl
 {

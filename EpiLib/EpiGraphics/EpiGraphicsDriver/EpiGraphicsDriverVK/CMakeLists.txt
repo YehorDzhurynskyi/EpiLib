@@ -1,8 +1,8 @@
 project(EpiGraphicsDriverVK)
 
 add_library(EpiGraphicsDriverVK
-    Sources/EpiGraphicsDriverVK/gfxDriverImplVK.h
-    Sources/EpiGraphicsDriverVK/gfxDriverImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxInstanceImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxInstanceImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxDeviceMemoryImplVK.h
     Sources/EpiGraphicsDriverVK/gfxDeviceMemoryImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxBufferImplVK.h

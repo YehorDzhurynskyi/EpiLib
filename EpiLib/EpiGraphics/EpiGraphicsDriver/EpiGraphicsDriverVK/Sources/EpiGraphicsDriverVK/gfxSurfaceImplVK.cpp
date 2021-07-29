@@ -1,6 +1,5 @@
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 
-#include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSwapChainImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"

@@ -1193,11 +1193,11 @@ int main(int argc, char* argv[])
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("%^[%l][%H:%M:%S:%e][%s:%#] %v%$");
 
-    epiArray<gfxDriverExtension> driverExtensionsRequired;
-    driverExtensionsRequired.push_back(gfxDriverExtension::Surface);
+    epiArray<gfxInstanceExtension> driverExtensionsRequired;
+    driverExtensionsRequired.push_back(gfxInstanceExtension::Surface);
 
 #ifdef EPI_PLATFORM_WINDOWS
-    driverExtensionsRequired.push_back(gfxDriverExtension::SurfaceWin32);
+    driverExtensionsRequired.push_back(gfxInstanceExtension::SurfaceWin32);
 #endif // EPI_PLATFORM_WINDOWS
 
     gfxDriver::SwitchBackend(gfxDriverBackend::Vulkan, driverExtensionsRequired);
@@ -1212,9 +1212,9 @@ int main(int argc, char* argv[])
     //deviceFeaturesRequired.push_back(gfxPhysicalDeviceFeature::ImagelessFramebuffer);
 
     const gfxWindow window(GetActiveWindow());
-    std::optional<gfxSurface> surface = gfxDriver::GetInstance().CreateSurface(window);
+    std::optional<gfxSurface> surface = gfxDriver::Get().GetInstance().CreateSurface(window);
 
-    const epiArray<gfxPhysicalDevice>& physicalDevices = gfxDriver::GetInstance().GetPhysicalDevices();
+    const epiArray<gfxPhysicalDevice>& physicalDevices = gfxDriver::Get().GetInstance().GetPhysicalDevices();
     auto physicalDevice = std::find_if(physicalDevices.begin(),
                                        physicalDevices.end(),
                                        [&surface,
@@ -1275,7 +1275,7 @@ int main(int argc, char* argv[])
     deviceCreateInfo.SetExtensionsRequired(deviceExtensionsRequired);
     deviceCreateInfo.SetFeaturesRequired(deviceFeaturesRequired);
 
-    std::optional<gfxDevice> device = gfxDriver::GetInstance().CreateDevice(deviceCreateInfo);
+    std::optional<gfxDevice> device = gfxDriver::Get().GetInstance().CreateDevice(deviceCreateInfo);
     if (!device.has_value())
     {
         epiLogError("Falied to create Device!");

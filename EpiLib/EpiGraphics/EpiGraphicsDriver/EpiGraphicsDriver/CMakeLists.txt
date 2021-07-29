@@ -4,6 +4,10 @@ add_library(EpiGraphicsDriver
     Sources/EpiGraphicsDriver/gfxDriver.epi
     Sources/EpiGraphicsDriver/gfxDriver.h
     Sources/EpiGraphicsDriver/gfxDriver.cpp
+
+    Sources/EpiGraphicsDriver/gfxGPUCrashTracker.epi
+    Sources/EpiGraphicsDriver/gfxGPUCrashTracker.h
+    Sources/EpiGraphicsDriver/gfxGPUCrashTracker.cpp
 )
 get_target_property(EpiGraphicsDriver_SOURCES EpiGraphicsDriver SOURCES)
 epi_pack_sources(${EpiGraphicsDriver_SOURCES})

@@ -1,9 +1,19 @@
+enum gfxDriverBackend
+{
+    None = -1,
+    Null,
+    OpenGL,
+    Vulkan,
+    Software,
+    COUNT
+};
+
 class gfxDriver
 {
     [ReadOnly]
     {
         gfxDriverBackend Backend = gfxDriverBackend::None;
-        epiArray<gfxPhysicalDevice> PhysicalDevices;
         gfxGPUCrashTracker GPUCrashTracker;
+        gfxInstance Instance;
     }
 };

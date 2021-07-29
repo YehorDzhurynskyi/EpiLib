@@ -2,7 +2,6 @@
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
-#include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"

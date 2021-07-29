@@ -9,24 +9,21 @@ struct VkInstance_T;
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-class gfxDriverImplVK : public gfxDriverImpl
+class gfxInstanceImplVK : public gfxInstance::Impl
 {
 public:
-    gfxDriverImplVK() = default;
-    gfxDriverImplVK(const gfxDriverImplVK& rhs) = delete;
-    gfxDriverImplVK& operator=(const gfxDriverImplVK& rhs) = delete;
-    gfxDriverImplVK(gfxDriverImplVK&& rhs) = delete;
-    gfxDriverImplVK& operator=(gfxDriverImplVK&& rhs) = delete;
-    ~gfxDriverImplVK() override;
+    gfxInstanceImplVK() = default;
+    gfxInstanceImplVK(const gfxInstanceImplVK& rhs) = delete;
+    gfxInstanceImplVK& operator=(const gfxInstanceImplVK& rhs) = delete;
+    gfxInstanceImplVK(gfxInstanceImplVK&& rhs) = delete;
+    gfxInstanceImplVK& operator=(gfxInstanceImplVK&& rhs) = delete;
+    ~gfxInstanceImplVK() override;
 
     epiBool Init(epiU32 apiVersionMajor,
                  epiU32 apiVersionMinor,
                  epiU32 apiVersionPatch,
                  const epiChar* appName,
-                 const epiArray<gfxDriverExtension>& extensionRequired,
+                 const epiArray<gfxInstanceExtension>& extensionRequired,
                  epiU32 appVersionMajor = 1u,
                  epiU32 appVersionMinor = 0u,
                  epiU32 appVersionPatch = 0u,
@@ -38,8 +35,8 @@ public:
     std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const override;
     std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) const override;
 
-    epiBool IsExtensionSupported(gfxDriverExtension extension) const override;
-    epiBool IsExtensionEnabled(gfxDriverExtension extension) const override;
+    epiBool IsExtensionSupported(gfxInstanceExtension extension) const override;
+    epiBool IsExtensionEnabled(gfxInstanceExtension extension) const override;
 
     VkInstance_T* GetVkInstance() const;
 
@@ -49,10 +46,8 @@ protected:
 protected:
     VkInstance_T* m_VkInstance{nullptr};
     EPI_BUILD_DEBUG_ONLY(VkDebugUtilsMessengerEXT_T* m_VKDebugMessenger{nullptr});
-    epiBool m_ExtensionSupported[static_cast<epiU32>(gfxDriverExtension::COUNT)]{};
-    epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxDriverExtension::COUNT)]{};
+    epiBool m_ExtensionSupported[static_cast<epiU32>(gfxInstanceExtension::COUNT)]{};
+    epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxInstanceExtension::COUNT)]{};
 };
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()

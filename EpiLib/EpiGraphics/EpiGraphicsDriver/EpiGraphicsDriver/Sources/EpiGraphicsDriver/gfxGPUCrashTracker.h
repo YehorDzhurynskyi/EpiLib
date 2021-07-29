@@ -25,7 +25,7 @@
 //*********************************************************
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.hxx"
+#include "EpiGraphicsDriver/gfxGPUCrashTracker.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"

@@ -6,17 +6,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class gfxDriverBackend : epiS32
-{
-EPI_GENREGION_BEGIN(gfxDriverBackend)
-    None = -1,
-    OpenGL = 0,
-    Vulkan = 1,
-    Software = 2,
-    COUNT = 3
-EPI_GENREGION_END(gfxDriverBackend)
-};
-
 enum class gfxTextureType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxTextureType)
@@ -24,6 +13,19 @@ EPI_GENREGION_BEGIN(gfxTextureType)
     Texture2D = 1,
     Texture3D = 2
 EPI_GENREGION_END(gfxTextureType)
+};
+
+enum class gfxTextureViewType : epiS32
+{
+EPI_GENREGION_BEGIN(gfxTextureViewType)
+    TextureView1D = 0,
+    TextureView2D = 1,
+    TextureView3D = 2,
+    TextureViewCube = 3,
+    TextureView1DArray = 4,
+    TextureView2DArray = 5,
+    TextureViewCubeArray = 6
+EPI_GENREGION_END(gfxTextureViewType)
 };
 
 enum class gfxVertexBufferUsage : epiS32
@@ -180,26 +182,13 @@ EPI_GENREGION_BEGIN(gfxPhysicalDeviceFeature)
 EPI_GENREGION_END(gfxPhysicalDeviceFeature)
 };
 
-enum gfxQueueType : epiS32
+enum class gfxInstanceExtension : epiS32
 {
-EPI_GENREGION_BEGIN(gfxQueueType)
-    gfxQueueType_Graphics = (1 << 0),
-    gfxQueueType_Compute = (1 << 1),
-    gfxQueueType_Transfer = (1 << 2),
-    gfxQueueType_SparseBinding = (1 << 3),
-    gfxQueueType_Protected = (1 << 4),
-    gfxQueueType_MAX = (1 << 5),
-    gfxQueueType_ALL = gfxQueueType_Graphics | gfxQueueType_Compute | gfxQueueType_Transfer | gfxQueueType_SparseBinding | gfxQueueType_Protected
-EPI_GENREGION_END(gfxQueueType)
-};
-
-enum class gfxDriverExtension : epiS32
-{
-EPI_GENREGION_BEGIN(gfxDriverExtension)
+EPI_GENREGION_BEGIN(gfxInstanceExtension)
     Surface = 0,
     SurfaceWin32 = 1,
     COUNT = 2
-EPI_GENREGION_END(gfxDriverExtension)
+EPI_GENREGION_END(gfxInstanceExtension)
 };
 
 enum class gfxPhysicalDeviceExtension : epiS32
@@ -212,38 +201,17 @@ EPI_GENREGION_BEGIN(gfxPhysicalDeviceExtension)
 EPI_GENREGION_END(gfxPhysicalDeviceExtension)
 };
 
-enum class gfxSurfaceColorSpace : epiS32
+enum gfxQueueType : epiS32
 {
-EPI_GENREGION_BEGIN(gfxSurfaceColorSpace)
-    SRGB_NONLINEAR = 0,
-    DISPLAY_P3_NONLINEAR_EXT = 1,
-    EXTENDED_SRGB_LINEAR_EXT = 2,
-    DISPLAY_P3_LINEAR_EXT = 3,
-    DCI_P3_NONLINEAR_EXT = 4,
-    BT709_LINEAR_EXT = 5,
-    BT709_NONLINEAR_EXT = 6,
-    BT2020_LINEAR_EXT = 7,
-    HDR10_ST2084_EXT = 8,
-    DOLBYVISION_EXT = 9,
-    HDR10_HLG_EXT = 10,
-    ADOBERGB_LINEAR_EXT = 11,
-    ADOBERGB_NONLINEAR_EXT = 12,
-    PASS_THROUGH_EXT = 13,
-    EXTENDED_SRGB_NONLINEAR_EXT = 14,
-    DISPLAY_NATIVE_AMD = 15
-EPI_GENREGION_END(gfxSurfaceColorSpace)
-};
-
-enum class gfxSurfacePresentMode : epiS32
-{
-EPI_GENREGION_BEGIN(gfxSurfacePresentMode)
-    IMMEDIATE = 0,
-    MAILBOX = 1,
-    FIFO = 2,
-    FIFO_RELAXED = 3,
-    SHARED_DEMAND_REFRESH = 4,
-    SHARED_CONTINUOUS_REFRESH = 5
-EPI_GENREGION_END(gfxSurfacePresentMode)
+EPI_GENREGION_BEGIN(gfxQueueType)
+    gfxQueueType_Graphics = (1 << 0),
+    gfxQueueType_Compute = (1 << 1),
+    gfxQueueType_Transfer = (1 << 2),
+    gfxQueueType_SparseBinding = (1 << 3),
+    gfxQueueType_Protected = (1 << 4),
+    gfxQueueType_MAX = (1 << 5),
+    gfxQueueType_ALL = gfxQueueType_Graphics | gfxQueueType_Compute | gfxQueueType_Transfer | gfxQueueType_SparseBinding | gfxQueueType_Protected
+EPI_GENREGION_END(gfxQueueType)
 };
 
 enum class gfxFormat : epiS32
@@ -495,6 +463,98 @@ EPI_GENREGION_BEGIN(gfxFormat)
 EPI_GENREGION_END(gfxFormat)
 };
 
+enum gfxFormatFeatureMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxFormatFeatureMask)
+    gfxFormatFeatureMask_SampledImage = (1 << 0),
+    gfxFormatFeatureMask_StorageImage = (1 << 1),
+    gfxFormatFeatureMask_StorageImageAtomic = (1 << 2),
+    gfxFormatFeatureMask_UniformTexelBuffer = (1 << 3),
+    gfxFormatFeatureMask_StorageTexelBuffer = (1 << 4),
+    gfxFormatFeatureMask_StorageTexelBufferAtomic = (1 << 5),
+    gfxFormatFeatureMask_VertexBuffer = (1 << 6),
+    gfxFormatFeatureMask_ColorAttachment = (1 << 7),
+    gfxFormatFeatureMask_ColorAttachmentBlend = (1 << 8),
+    gfxFormatFeatureMask_DepthStencilAttachment = (1 << 9),
+    gfxFormatFeatureMask_BlitSrc = (1 << 10),
+    gfxFormatFeatureMask_BlitDst = (1 << 11),
+    gfxFormatFeatureMask_SampledImageFilterLinear = (1 << 12),
+    gfxFormatFeatureMask_TransferSrc = (1 << 13),
+    gfxFormatFeatureMask_TransferDst = (1 << 14),
+    gfxFormatFeatureMask_MidpointChromaSamples = (1 << 15),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionLinearFilter = (1 << 16),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionSeparateReconstructionFilter = (1 << 17),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicit = (1 << 18),
+    gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicitForceable = (1 << 19),
+    gfxFormatFeatureMask_Disjoint = (1 << 20),
+    gfxFormatFeatureMask_CositedChromaSamples = (1 << 21),
+    gfxFormatFeatureMask_SampledImageFilterMinmax = (1 << 22),
+    gfxFormatFeatureMask_SampledImageFilterCubic = (1 << 23),
+    gfxFormatFeatureMask_AccelerationStructureVertexBuffer = (1 << 24),
+    gfxFormatFeatureMask_FragmentDensityMap = (1 << 25),
+    gfxFormatFeatureMask_FragmentShadingRateAttachment = (1 << 26)
+EPI_GENREGION_END(gfxFormatFeatureMask)
+};
+
+enum class gfxSurfaceColorSpace : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSurfaceColorSpace)
+    SRGB_NONLINEAR = 0,
+    DISPLAY_P3_NONLINEAR_EXT = 1,
+    EXTENDED_SRGB_LINEAR_EXT = 2,
+    DISPLAY_P3_LINEAR_EXT = 3,
+    DCI_P3_NONLINEAR_EXT = 4,
+    BT709_LINEAR_EXT = 5,
+    BT709_NONLINEAR_EXT = 6,
+    BT2020_LINEAR_EXT = 7,
+    HDR10_ST2084_EXT = 8,
+    DOLBYVISION_EXT = 9,
+    HDR10_HLG_EXT = 10,
+    ADOBERGB_LINEAR_EXT = 11,
+    ADOBERGB_NONLINEAR_EXT = 12,
+    PASS_THROUGH_EXT = 13,
+    EXTENDED_SRGB_NONLINEAR_EXT = 14,
+    DISPLAY_NATIVE_AMD = 15
+EPI_GENREGION_END(gfxSurfaceColorSpace)
+};
+
+enum class gfxSurfacePresentMode : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSurfacePresentMode)
+    IMMEDIATE = 0,
+    MAILBOX = 1,
+    FIFO = 2,
+    FIFO_RELAXED = 3,
+    SHARED_DEMAND_REFRESH = 4,
+    SHARED_CONTINUOUS_REFRESH = 5
+EPI_GENREGION_END(gfxSurfacePresentMode)
+};
+
+enum gfxSurfaceTransformMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSurfaceTransformMask)
+    gfxSurfaceTransformMask_Identity = (1 << 0),
+    gfxSurfaceTransformMask_Rotate90 = (1 << 1),
+    gfxSurfaceTransformMask_Rotate180 = (1 << 2),
+    gfxSurfaceTransformMask_Rotate270 = (1 << 3),
+    gfxSurfaceTransformMask_HorizontalMirror = (1 << 4),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate90 = (1 << 5),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate180 = (1 << 6),
+    gfxSurfaceTransformMask_HorizontalMirrorRotate270 = (1 << 7),
+    gfxSurfaceTransformMask_Inherit = (1 << 8)
+EPI_GENREGION_END(gfxSurfaceTransformMask)
+};
+
+enum gfxCompositeAlphaMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxCompositeAlphaMask)
+    gfxCompositeAlphaMask_Opaque = (1 << 0),
+    gfxCompositeAlphaMask_PreMultiplied = (1 << 1),
+    gfxCompositeAlphaMask_PostMultiplied = (1 << 2),
+    gfxCompositeAlphaMask_Inherit = (1 << 3)
+EPI_GENREGION_END(gfxCompositeAlphaMask)
+};
+
 enum gfxImageUsage : epiS32
 {
 EPI_GENREGION_BEGIN(gfxImageUsage)
@@ -509,6 +569,23 @@ EPI_GENREGION_BEGIN(gfxImageUsage)
     gfxImageUsage_SHADING_RATE_IMAGE = (1 << 8),
     gfxImageUsage_FRAGMENT_DENSITY_MAP = (1 << 9)
 EPI_GENREGION_END(gfxImageUsage)
+};
+
+enum gfxImageAspect : epiS32
+{
+EPI_GENREGION_BEGIN(gfxImageAspect)
+    gfxImageAspect_Color = (1 << 0),
+    gfxImageAspect_Depth = (1 << 1),
+    gfxImageAspect_Stencil = (1 << 2),
+    gfxImageAspect_Metadata = (1 << 3),
+    gfxImageAspect_Plane0 = (1 << 4),
+    gfxImageAspect_Plane1 = (1 << 5),
+    gfxImageAspect_Plane2 = (1 << 6),
+    gfxImageAspect_MemoryPlane0 = (1 << 7),
+    gfxImageAspect_MemoryPlane1 = (1 << 8),
+    gfxImageAspect_MemoryPlane2 = (1 << 9),
+    gfxImageAspect_MemoryPlane3 = (1 << 10)
+EPI_GENREGION_END(gfxImageAspect)
 };
 
 enum class gfxPipelineInputAssemblyType : epiS32
@@ -576,6 +653,14 @@ EPI_GENREGION_BEGIN(gfxImageLayout)
     ShadingRateOptimal = 17,
     FragmentDensityMapOptimal = 18
 EPI_GENREGION_END(gfxImageLayout)
+};
+
+enum class gfxImageTiling : epiS32
+{
+EPI_GENREGION_BEGIN(gfxImageTiling)
+    Optimal = 0,
+    Linear = 1
+EPI_GENREGION_END(gfxImageTiling)
 };
 
 enum class gfxPipelineBindPoint : epiS32
@@ -730,17 +815,18 @@ EPI_GENREGION_BEGIN(gfxLogicOp)
 EPI_GENREGION_END(gfxLogicOp)
 };
 
-enum class gfxTextureViewType : epiS32
+enum class gfxCompareOp : epiS32
 {
-EPI_GENREGION_BEGIN(gfxTextureViewType)
-    TextureView1D = 0,
-    TextureView2D = 1,
-    TextureView3D = 2,
-    TextureViewCube = 3,
-    TextureView1DArray = 4,
-    TextureView2DArray = 5,
-    TextureViewCubeArray = 6
-EPI_GENREGION_END(gfxTextureViewType)
+EPI_GENREGION_BEGIN(gfxCompareOp)
+    Never = 0,
+    Less = 1,
+    Equal = 2,
+    LessOrEqual = 3,
+    Greater = 4,
+    NotEqual = 5,
+    GreaterOrEqual = 6,
+    Always = 7
+EPI_GENREGION_END(gfxCompareOp)
 };
 
 enum gfxPipelineStage : epiS32
@@ -927,37 +1013,6 @@ EPI_GENREGION_BEGIN(gfxIndexBufferType)
 EPI_GENREGION_END(gfxIndexBufferType)
 };
 
-enum gfxShaderStage : epiS32
-{
-EPI_GENREGION_BEGIN(gfxShaderStage)
-    gfxShaderStage_Vertex = (1 << 0),
-    gfxShaderStage_TessellationControl = (1 << 1),
-    gfxShaderStage_TessellationEvaluation = (1 << 2),
-    gfxShaderStage_Geometry = (1 << 3),
-    gfxShaderStage_Fragment = (1 << 4),
-    gfxShaderStage_Compute = (1 << 5),
-    gfxShaderStage_AllGraphics = gfxShaderStage_Vertex | gfxShaderStage_TessellationControl | gfxShaderStage_TessellationEvaluation | gfxShaderStage_Geometry | gfxShaderStage_Fragment,
-    gfxShaderStage_Raygen = (1 << 6),
-    gfxShaderStage_AnyHit = (1 << 7),
-    gfxShaderStage_ClosestHit = (1 << 8),
-    gfxShaderStage_Miss = (1 << 9),
-    gfxShaderStage_Intersection = (1 << 10),
-    gfxShaderStage_Callable = (1 << 11),
-    gfxShaderStage_Task = (1 << 12),
-    gfxShaderStage_Mesh = (1 << 13),
-    gfxShaderStage_All = gfxShaderStage_Vertex | gfxShaderStage_TessellationControl | gfxShaderStage_TessellationEvaluation | gfxShaderStage_Geometry | gfxShaderStage_Fragment | gfxShaderStage_Compute | gfxShaderStage_Raygen | gfxShaderStage_AnyHit | gfxShaderStage_ClosestHit | gfxShaderStage_Miss | gfxShaderStage_Intersection | gfxShaderStage_Callable | gfxShaderStage_Task | gfxShaderStage_Mesh
-EPI_GENREGION_END(gfxShaderStage)
-};
-
-enum gfxDescriptorPoolUsage : epiS32
-{
-EPI_GENREGION_BEGIN(gfxDescriptorPoolUsage)
-    gfxDescriptorPoolUsage_FreeDescriptorSet = (1 << 0),
-    gfxDescriptorPoolUsage_UpdateAfterBind = (1 << 1),
-    gfxDescriptorPoolUsage_HostOnly = (1 << 2)
-EPI_GENREGION_END(gfxDescriptorPoolUsage)
-};
-
 enum class gfxDescriptorType : epiS32
 {
 EPI_GENREGION_BEGIN(gfxDescriptorType)
@@ -980,6 +1035,28 @@ EPI_GENREGION_BEGIN(gfxDescriptorType)
 EPI_GENREGION_END(gfxDescriptorType)
 };
 
+enum gfxShaderStage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxShaderStage)
+    gfxShaderStage_Vertex = (1 << 0),
+    gfxShaderStage_TessellationControl = (1 << 1),
+    gfxShaderStage_TessellationEvaluation = (1 << 2),
+    gfxShaderStage_Geometry = (1 << 3),
+    gfxShaderStage_Fragment = (1 << 4),
+    gfxShaderStage_Compute = (1 << 5),
+    gfxShaderStage_AllGraphics = gfxShaderStage_Vertex | gfxShaderStage_TessellationControl | gfxShaderStage_TessellationEvaluation | gfxShaderStage_Geometry | gfxShaderStage_Fragment,
+    gfxShaderStage_Raygen = (1 << 6),
+    gfxShaderStage_AnyHit = (1 << 7),
+    gfxShaderStage_ClosestHit = (1 << 8),
+    gfxShaderStage_Miss = (1 << 9),
+    gfxShaderStage_Intersection = (1 << 10),
+    gfxShaderStage_Callable = (1 << 11),
+    gfxShaderStage_Task = (1 << 12),
+    gfxShaderStage_Mesh = (1 << 13),
+    gfxShaderStage_All = gfxShaderStage_Vertex | gfxShaderStage_TessellationControl | gfxShaderStage_TessellationEvaluation | gfxShaderStage_Geometry | gfxShaderStage_Fragment | gfxShaderStage_Compute | gfxShaderStage_Raygen | gfxShaderStage_AnyHit | gfxShaderStage_ClosestHit | gfxShaderStage_Miss | gfxShaderStage_Intersection | gfxShaderStage_Callable | gfxShaderStage_Task | gfxShaderStage_Mesh
+EPI_GENREGION_END(gfxShaderStage)
+};
+
 enum gfxDescriptorSetLayoutUsage : epiS32
 {
 EPI_GENREGION_BEGIN(gfxDescriptorSetLayoutUsage)
@@ -987,6 +1064,15 @@ EPI_GENREGION_BEGIN(gfxDescriptorSetLayoutUsage)
     gfxDescriptorSetLayoutUsage_PushDescriptor = (1 << 1),
     gfxDescriptorSetLayoutUsage_HostOnlyPool = (1 << 2)
 EPI_GENREGION_END(gfxDescriptorSetLayoutUsage)
+};
+
+enum gfxDescriptorPoolUsage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDescriptorPoolUsage)
+    gfxDescriptorPoolUsage_FreeDescriptorSet = (1 << 0),
+    gfxDescriptorPoolUsage_UpdateAfterBind = (1 << 1),
+    gfxDescriptorPoolUsage_HostOnly = (1 << 2)
+EPI_GENREGION_END(gfxDescriptorPoolUsage)
 };
 
 enum gfxFenceCreateMask : epiS32
@@ -1007,45 +1093,6 @@ enum gfxSemaphoreWaitMask : epiS32
 EPI_GENREGION_BEGIN(gfxSemaphoreWaitMask)
     gfxSemaphoreWaitMask_WaitAny = (1 << 0)
 EPI_GENREGION_END(gfxSemaphoreWaitMask)
-};
-
-enum class gfxImageTiling : epiS32
-{
-EPI_GENREGION_BEGIN(gfxImageTiling)
-    Optimal = 0,
-    Linear = 1
-EPI_GENREGION_END(gfxImageTiling)
-};
-
-enum gfxImageAspect : epiS32
-{
-EPI_GENREGION_BEGIN(gfxImageAspect)
-    gfxImageAspect_Color = (1 << 0),
-    gfxImageAspect_Depth = (1 << 1),
-    gfxImageAspect_Stencil = (1 << 2),
-    gfxImageAspect_Metadata = (1 << 3),
-    gfxImageAspect_Plane0 = (1 << 4),
-    gfxImageAspect_Plane1 = (1 << 5),
-    gfxImageAspect_Plane2 = (1 << 6),
-    gfxImageAspect_MemoryPlane0 = (1 << 7),
-    gfxImageAspect_MemoryPlane1 = (1 << 8),
-    gfxImageAspect_MemoryPlane2 = (1 << 9),
-    gfxImageAspect_MemoryPlane3 = (1 << 10)
-EPI_GENREGION_END(gfxImageAspect)
-};
-
-enum class gfxCompareOp : epiS32
-{
-EPI_GENREGION_BEGIN(gfxCompareOp)
-    Never = 0,
-    Less = 1,
-    Equal = 2,
-    LessOrEqual = 3,
-    Greater = 4,
-    NotEqual = 5,
-    GreaterOrEqual = 6,
-    Always = 7
-EPI_GENREGION_END(gfxCompareOp)
 };
 
 enum gfxSamplerCreateMask : epiS32
@@ -1111,70 +1158,12 @@ EPI_GENREGION_BEGIN(gfxComponentSwizzle)
 EPI_GENREGION_END(gfxComponentSwizzle)
 };
 
-enum gfxSurfaceTransformMask : epiS32
-{
-EPI_GENREGION_BEGIN(gfxSurfaceTransformMask)
-    gfxSurfaceTransformMask_Identity = (1 << 0),
-    gfxSurfaceTransformMask_Rotate90 = (1 << 1),
-    gfxSurfaceTransformMask_Rotate180 = (1 << 2),
-    gfxSurfaceTransformMask_Rotate270 = (1 << 3),
-    gfxSurfaceTransformMask_HorizontalMirror = (1 << 4),
-    gfxSurfaceTransformMask_HorizontalMirrorRotate90 = (1 << 5),
-    gfxSurfaceTransformMask_HorizontalMirrorRotate180 = (1 << 6),
-    gfxSurfaceTransformMask_HorizontalMirrorRotate270 = (1 << 7),
-    gfxSurfaceTransformMask_Inherit = (1 << 8)
-EPI_GENREGION_END(gfxSurfaceTransformMask)
-};
-
-enum gfxCompositeAlphaMask : epiS32
-{
-EPI_GENREGION_BEGIN(gfxCompositeAlphaMask)
-    gfxCompositeAlphaMask_Opaque = (1 << 0),
-    gfxCompositeAlphaMask_PreMultiplied = (1 << 1),
-    gfxCompositeAlphaMask_PostMultiplied = (1 << 2),
-    gfxCompositeAlphaMask_Inherit = (1 << 3)
-EPI_GENREGION_END(gfxCompositeAlphaMask)
-};
-
 enum class gfxSharingMode : epiS32
 {
 EPI_GENREGION_BEGIN(gfxSharingMode)
     Exclusive = 0,
     Concurrent = 1
 EPI_GENREGION_END(gfxSharingMode)
-};
-
-enum gfxFormatFeatureMask : epiS32
-{
-EPI_GENREGION_BEGIN(gfxFormatFeatureMask)
-    gfxFormatFeatureMask_SampledImage = (1 << 0),
-    gfxFormatFeatureMask_StorageImage = (1 << 1),
-    gfxFormatFeatureMask_StorageImageAtomic = (1 << 2),
-    gfxFormatFeatureMask_UniformTexelBuffer = (1 << 3),
-    gfxFormatFeatureMask_StorageTexelBuffer = (1 << 4),
-    gfxFormatFeatureMask_StorageTexelBufferAtomic = (1 << 5),
-    gfxFormatFeatureMask_VertexBuffer = (1 << 6),
-    gfxFormatFeatureMask_ColorAttachment = (1 << 7),
-    gfxFormatFeatureMask_ColorAttachmentBlend = (1 << 8),
-    gfxFormatFeatureMask_DepthStencilAttachment = (1 << 9),
-    gfxFormatFeatureMask_BlitSrc = (1 << 10),
-    gfxFormatFeatureMask_BlitDst = (1 << 11),
-    gfxFormatFeatureMask_SampledImageFilterLinear = (1 << 12),
-    gfxFormatFeatureMask_TransferSrc = (1 << 13),
-    gfxFormatFeatureMask_TransferDst = (1 << 14),
-    gfxFormatFeatureMask_MidpointChromaSamples = (1 << 15),
-    gfxFormatFeatureMask_SampledImageYCbCrConversionLinearFilter = (1 << 16),
-    gfxFormatFeatureMask_SampledImageYCbCrConversionSeparateReconstructionFilter = (1 << 17),
-    gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicit = (1 << 18),
-    gfxFormatFeatureMask_SampledImageYCbCrConversionChromaReconstructionExplicitForceable = (1 << 19),
-    gfxFormatFeatureMask_Disjoint = (1 << 20),
-    gfxFormatFeatureMask_CositedChromaSamples = (1 << 21),
-    gfxFormatFeatureMask_SampledImageFilterMinmax = (1 << 22),
-    gfxFormatFeatureMask_SampledImageFilterCubic = (1 << 23),
-    gfxFormatFeatureMask_AccelerationStructureVertexBuffer = (1 << 24),
-    gfxFormatFeatureMask_FragmentDensityMap = (1 << 25),
-    gfxFormatFeatureMask_FragmentShadingRateAttachment = (1 << 26)
-EPI_GENREGION_END(gfxFormatFeatureMask)
 };
 
 EPI_NAMESPACE_END()

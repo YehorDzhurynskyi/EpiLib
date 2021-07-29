@@ -29,13 +29,13 @@ epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
                                   long style,
                                   const wxString& name)
 {
-    if (gfxDriver::GetInstance().GetBackend() == gfxDriverBackend::None)
+    if (gfxDriver::Get().GetBackend() == gfxDriverBackend::None)
     {
         epiLogError("Graphics driver backend isn't selected!");
         return false;
     }
 
-    if (!gfxDriver::GetInstance().IsExtensionEnabled(gfxDriverExtension::Surface))
+    if (!gfxDriver::Get().GetInstance().IsExtensionEnabled(gfxInstanceExtension::Surface))
     {
         epiLogError("Graphics driver doesn't has Surface extension enabled!");
         return false;
@@ -56,7 +56,7 @@ epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
     wxWindow::Create(parent, id, pos, size, style, name);
 
     gfxWindow window(GetHWND());
-    std::optional<gfxSurface> surface = gfxDriver::GetInstance().CreateSurface(window);
+    std::optional<gfxSurface> surface = gfxDriver::Get().GetInstance().CreateSurface(window);
     if (!surface.has_value())
     {
         epiLogError("Falied to create Surface!");

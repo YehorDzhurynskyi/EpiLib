@@ -23,8 +23,8 @@
 //*********************************************************
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.h"
-#include "EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.cxx"
+#include "EpiGraphicsDriver/gfxGPUCrashTracker.h"
+#include "EpiGraphicsDriver/gfxGPUCrashTracker.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxShaderProgram.h"

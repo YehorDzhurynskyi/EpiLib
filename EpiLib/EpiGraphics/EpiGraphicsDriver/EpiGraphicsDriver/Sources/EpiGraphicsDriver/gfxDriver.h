@@ -4,25 +4,26 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriver/gfxDriver.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
-#include "EpiGraphicsDriverCommon/gfxDevice.h"
-#include "EpiGraphicsDriverCommon/gfxSurface.h"
-#include "EpiGraphicsDriverCommon/gfxWindow.h"
+#include "EpiGraphicsDriver/gfxGPUCrashTracker.h"
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
-
-#include "EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.h"
+#include "EpiGraphicsDriverCommon/gfxInstance.h"
 
 #include "EpiCore/ObjectModel/Object.h"
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
+enum class gfxDriverBackend : epiS32
 {
-
-class gfxDriverImpl;
-
-} // namespace internalgfx
+EPI_GENREGION_BEGIN(gfxDriverBackend)
+    None = -1,
+    Null = 0,
+    OpenGL = 1,
+    Vulkan = 2,
+    Software = 3,
+    COUNT = 4
+EPI_GENREGION_END(gfxDriverBackend)
+};
 
 class gfxDriver : public Object
 {
@@ -36,29 +37,22 @@ public:
     enum gfxDriver_PIDs
     {
         PID_Backend = 0x4058f0ed,
-        PID_PhysicalDevices = 0x16b8cc07,
         PID_GPUCrashTracker = 0x5e835150,
+        PID_Instance = 0xbb46d388,
         PID_COUNT = 3
     };
 
 protected:
     gfxDriverBackend m_Backend{gfxDriverBackend::None};
-    epiArray<gfxPhysicalDevice> m_PhysicalDevices{};
     gfxGPUCrashTracker m_GPUCrashTracker{};
+    gfxInstance m_Instance{};
 
 EPI_GENREGION_END(gfxDriver)
 
 public:
-    static gfxDriver& GetInstance();
+    static gfxDriver& Get();
 
-    static void SwitchBackend(gfxDriverBackend backend, const epiArray<gfxDriverExtension>& extensionsRequired);
-
-public:
-    std::optional<gfxSurface> CreateSurface(const gfxWindow& window) const;
-    std::optional<gfxDevice> CreateDevice(const gfxDeviceCreateInfo& info) const;
-
-    epiBool IsExtensionSupported(gfxDriverExtension extension) const;
-    epiBool IsExtensionEnabled(gfxDriverExtension extension) const;
+    static void SwitchBackend(gfxDriverBackend backend, const epiArray<gfxInstanceExtension>& extensionsRequired);
 
 protected:
     gfxDriver() = default;
@@ -67,12 +61,7 @@ protected:
     gfxDriver(gfxDriver&& rhs) = delete;
     gfxDriver& operator=(gfxDriver&& rhs) = delete;
 
-    epiBool HasImpl() const;
-
-    void Reset(const std::shared_ptr<internalgfx::gfxDriverImpl>& impl, gfxDriverBackend backend);
-
-protected:
-    std::shared_ptr<internalgfx::gfxDriverImpl> m_Impl;
+    void Reset(gfxInstance&& instance, gfxDriverBackend backend);
 };
 
 EPI_NAMESPACE_END()

@@ -2,6 +2,9 @@ project(EpiGraphicsDriverCommon)
 
 add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxDriverInternal.h
+    Sources/EpiGraphicsDriverCommon/gfxInstance.epi
+    Sources/EpiGraphicsDriverCommon/gfxInstance.h
+    Sources/EpiGraphicsDriverCommon/gfxInstance.cpp
     Sources/EpiGraphicsDriverCommon/gfxPhysicalDevice.epi
     Sources/EpiGraphicsDriverCommon/gfxPhysicalDevice.h
     Sources/EpiGraphicsDriverCommon/gfxPhysicalDevice.cpp
@@ -81,10 +84,6 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.epi
     Sources/EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.h
     Sources/EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.cpp
-
-    Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.epi
-    Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.h
-    Sources/EpiGraphicsDriverCommon/Debug/gfxGPUCrashTracker.cpp
 )
 get_target_property(EpiGraphicsDriverCommon_SOURCES EpiGraphicsDriverCommon SOURCES)
 epi_pack_sources(${EpiGraphicsDriverCommon_SOURCES})

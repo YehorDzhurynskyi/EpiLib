@@ -1,4 +1,4 @@
-#include "EpiGraphicsDriverVK/gfxDriverImplVK.h"
+#include "EpiGraphicsDriverVK/gfxInstanceImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
@@ -21,7 +21,7 @@ static constexpr const epiChar* kDriverExtensionNames[]
     VK_KHR_SURFACE_EXTENSION_NAME,
     VK_KHR_WIN32_SURFACE_EXTENSION_NAME
 };
-static_assert(epiArrLen(kDriverExtensionNames) == static_cast<epiU32>(gfxDriverExtension::COUNT));
+static_assert(epiArrLen(kDriverExtensionNames) == static_cast<epiU32>(gfxInstanceExtension::COUNT));
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL epiVKDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                                          VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -50,7 +50,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL epiVKDebugCallback(VkDebugUtilsMessageSeve
     return VK_FALSE;
 }
 
-const epiChar* ExtensionNameOf(gfxDriverExtension extension)
+const epiChar* ExtensionNameOf(gfxInstanceExtension extension)
 {
     const epiU32 at = static_cast<epiU32>(extension);
     epiAssert(at < epiArrLen(kDriverExtensionNames));
@@ -62,21 +62,18 @@ const epiChar* ExtensionNameOf(gfxDriverExtension extension)
 
 EPI_NAMESPACE_BEGIN()
 
-namespace internalgfx
-{
-
-epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
-                              epiU32 apiVersionMinor,
-                              epiU32 apiVersionPatch,
-                              const epiChar* appName,
-                              const epiArray<gfxDriverExtension>& extensionRequired,
-                              epiU32 appVersionMajor,
-                              epiU32 appVersionMinor,
-                              epiU32 appVersionPatch,
-                              const epiChar* engineName,
-                              epiU32 engineVersionMajor,
-                              epiU32 engineVersionMinor,
-                              epiU32 engineVersionPatch)
+epiBool gfxInstanceImplVK::Init(epiU32 apiVersionMajor,
+                                epiU32 apiVersionMinor,
+                                epiU32 apiVersionPatch,
+                                const epiChar* appName,
+                                const epiArray<gfxInstanceExtension>& extensionRequired,
+                                epiU32 appVersionMajor,
+                                epiU32 appVersionMinor,
+                                epiU32 appVersionPatch,
+                                const epiChar* engineName,
+                                epiU32 engineVersionMajor,
+                                epiU32 engineVersionMinor,
+                                epiU32 engineVersionPatch)
 {
     FillExtensionsSupported();
 
@@ -147,7 +144,7 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
     createInfo.ppEnabledLayerNames = validationLayers.data();
 
     std::vector<const epiChar*> extensions;
-    for (gfxDriverExtension extension : extensionRequired)
+    for (gfxInstanceExtension extension : extensionRequired)
     {
         if (!IsExtensionSupported(extension))
         {
@@ -208,7 +205,7 @@ epiBool gfxDriverImplVK::Init(epiU32 apiVersionMajor,
     return true;
 }
 
-gfxDriverImplVK::~gfxDriverImplVK()
+gfxInstanceImplVK::~gfxInstanceImplVK()
 {
 #ifdef EPI_BUILD_DEBUG
     if (m_VKDebugMessenger != VK_NULL_HANDLE)
@@ -226,12 +223,12 @@ gfxDriverImplVK::~gfxDriverImplVK()
     }
 }
 
-std::shared_ptr<gfxSurface::Impl> gfxDriverImplVK::CreateSurface(const gfxWindow& window) const
+std::shared_ptr<gfxSurface::Impl> gfxInstanceImplVK::CreateSurface(const gfxWindow& window) const
 {
     return std::make_shared<gfxSurfaceImplVK>(m_VkInstance, window);
 }
 
-std::shared_ptr<gfxDevice::Impl> gfxDriverImplVK::CreateDevice(const gfxDeviceCreateInfo& info) const
+std::shared_ptr<gfxDevice::Impl> gfxInstanceImplVK::CreateDevice(const gfxDeviceCreateInfo& info) const
 {
     if (!info.GetPhysicalDevice().HasImpl())
     {
@@ -248,22 +245,22 @@ std::shared_ptr<gfxDevice::Impl> gfxDriverImplVK::CreateDevice(const gfxDeviceCr
     return impl;
 }
 
-epiBool gfxDriverImplVK::IsExtensionSupported(gfxDriverExtension extension) const
+epiBool gfxInstanceImplVK::IsExtensionSupported(gfxInstanceExtension extension) const
 {
     return m_ExtensionSupported[static_cast<epiU32>(extension)];
 }
 
-epiBool gfxDriverImplVK::IsExtensionEnabled(gfxDriverExtension extension) const
+epiBool gfxInstanceImplVK::IsExtensionEnabled(gfxInstanceExtension extension) const
 {
     return m_ExtensionEnabled[static_cast<epiU32>(extension)];
 }
 
-VkInstance gfxDriverImplVK::GetVkInstance() const
+VkInstance gfxInstanceImplVK::GetVkInstance() const
 {
     return m_VkInstance;
 }
 
-void gfxDriverImplVK::FillExtensionsSupported()
+void gfxInstanceImplVK::FillExtensionsSupported()
 {
     epiU32 supportedExtensionsCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionsCount, nullptr);
@@ -289,7 +286,5 @@ void gfxDriverImplVK::FillExtensionsSupported()
         }
     }
 }
-
-} // namespace internalgfx
 
 EPI_NAMESPACE_END()
