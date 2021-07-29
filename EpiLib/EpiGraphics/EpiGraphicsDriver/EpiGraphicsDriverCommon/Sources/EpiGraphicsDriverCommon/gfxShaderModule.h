@@ -1,7 +1,7 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriverCommon/gfxShaderProgram.hxx"
+#include "EpiGraphicsDriverCommon/gfxShaderModule.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"

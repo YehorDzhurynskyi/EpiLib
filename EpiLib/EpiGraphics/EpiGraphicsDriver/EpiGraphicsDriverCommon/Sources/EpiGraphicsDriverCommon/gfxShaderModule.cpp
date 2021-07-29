@@ -1,6 +1,6 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
-#include "EpiGraphicsDriverCommon/gfxShaderProgram.cxx"
+#include "EpiGraphicsDriverCommon/gfxShaderModule.h"
+#include "EpiGraphicsDriverCommon/gfxShaderModule.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"

@@ -27,7 +27,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriver/gfxGPUCrashTracker.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
+#include "EpiGraphicsDriverCommon/gfxShaderModule.h"
 
 #if EPI_NVIDIA_NSIGHT_AFTERMATH
 #include <fstream>

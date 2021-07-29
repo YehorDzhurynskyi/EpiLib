@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/Text/gfxTextRenderedAtlas.h"
 #include "EpiGraphics/Text/gfxTextRenderedGlyph.h"
 #include "EpiGraphics/Text/gfxTextFace.h"
-#include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
+#include "EpiGraphicsDriverCommon/gfxShaderModule.h"
 
 #include "EpiCore/Color.h"
 

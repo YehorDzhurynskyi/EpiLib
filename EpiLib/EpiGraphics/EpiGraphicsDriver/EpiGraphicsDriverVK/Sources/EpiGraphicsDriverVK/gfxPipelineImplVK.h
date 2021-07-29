@@ -3,7 +3,7 @@
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
-#include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
+#include "EpiGraphicsDriverVK/gfxShaderModuleImplVK.h"
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.h"
 

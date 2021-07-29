@@ -9,7 +9,7 @@
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineLayoutImplVK.h"
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
-#include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
+#include "EpiGraphicsDriverVK/gfxShaderModuleImplVK.h"
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsDriverVK/gfxImageImplVK.h"
 #include "EpiGraphicsDriverVK/gfxImageViewImplVK.h"

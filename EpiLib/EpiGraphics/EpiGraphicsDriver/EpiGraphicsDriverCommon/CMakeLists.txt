@@ -53,9 +53,9 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxImageView.epi
     Sources/EpiGraphicsDriverCommon/gfxImageView.h
     Sources/EpiGraphicsDriverCommon/gfxImageView.cpp
-    Sources/EpiGraphicsDriverCommon/gfxShaderProgram.epi
-    Sources/EpiGraphicsDriverCommon/gfxShaderProgram.h
-    Sources/EpiGraphicsDriverCommon/gfxShaderProgram.cpp
+    Sources/EpiGraphicsDriverCommon/gfxShaderModule.epi
+    Sources/EpiGraphicsDriverCommon/gfxShaderModule.h
+    Sources/EpiGraphicsDriverCommon/gfxShaderModule.cpp
     Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.epi
     Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.h
     Sources/EpiGraphicsDriverCommon/gfxFrameBuffer.cpp

@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxContext.h"
 #include "EpiGraphics/gfxDrawer.h"
-#include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
+#include "EpiGraphicsDriverCommon/gfxShaderModule.h"
 
 EPI_NAMESPACE_BEGIN()
 

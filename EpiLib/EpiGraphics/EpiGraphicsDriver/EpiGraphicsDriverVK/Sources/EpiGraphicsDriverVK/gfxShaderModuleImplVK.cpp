@@ -1,4 +1,4 @@
-#include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
+#include "EpiGraphicsDriverVK/gfxShaderModuleImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 
