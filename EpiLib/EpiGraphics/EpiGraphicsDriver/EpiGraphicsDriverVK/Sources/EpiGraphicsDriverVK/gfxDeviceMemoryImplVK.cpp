@@ -2,7 +2,7 @@
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
-#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -82,7 +82,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
 epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryImageCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl)
 {
     // TODO: make common function for image and buffer
-    const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTexture::Impl::ExtractImpl(info.GetImage()));
+    const gfxImageImplVK* imageImpl = static_cast<const gfxImageImplVK*>(gfxImage::Impl::ExtractImpl(info.GetImage()));
     epiAssert(imageImpl != nullptr);
 
     VkMemoryRequirements memRequirements;

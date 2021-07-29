@@ -1,18 +1,18 @@
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriverCommon/gfxTexture.h"
-#include "EpiGraphicsDriverCommon/gfxTexture.cxx"
+#include "EpiGraphicsDriverCommon/gfxImage.h"
+#include "EpiGraphicsDriverCommon/gfxImage.cxx"
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
 
 EPI_NAMESPACE_BEGIN()
 
-gfxTexture::gfxTexture(const std::shared_ptr<Impl>& impl)
+gfxImage::gfxImage(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
 }
 
-epiBool gfxTexture::HasImpl() const
+epiBool gfxImage::HasImpl() const
 {
     return static_cast<epiBool>(m_Impl);
 }

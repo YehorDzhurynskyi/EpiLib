@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxEnum.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
-#include "EpiGraphicsDriverCommon/gfxTexture.h"
+#include "EpiGraphicsDriverCommon/gfxImage.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -75,7 +75,7 @@ public:
     };
 
 protected:
-    gfxTexture m_Image{};
+    gfxImage m_Image{};
     gfxDeviceMemoryProperty m_PropertyMask{};
 
 EPI_GENREGION_END(gfxDeviceMemoryImageCreateInfo)

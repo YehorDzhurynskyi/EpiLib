@@ -892,29 +892,29 @@ VkLogicOp gfxLogicOpTo(gfxLogicOp logicOp)
     }
 }
 
-VkImageType gfxTextureTypeTo(gfxTextureType type)
+VkImageType gfxImageTypeTo(gfxImageType type)
 {
     switch (type)
     {
-    case gfxTextureType::Texture1D: return VK_IMAGE_TYPE_1D;
-    case gfxTextureType::Texture2D: return VK_IMAGE_TYPE_2D;
-    case gfxTextureType::Texture3D: return VK_IMAGE_TYPE_3D;
-    default: epiLogError("Unhandled gfxTextureType=`{}`", type); return VK_IMAGE_TYPE_MAX_ENUM; // TODO: use str repr of enum
+    case gfxImageType::Image1D: return VK_IMAGE_TYPE_1D;
+    case gfxImageType::Image2D: return VK_IMAGE_TYPE_2D;
+    case gfxImageType::Image3D: return VK_IMAGE_TYPE_3D;
+    default: epiLogError("Unhandled gfxImageType=`{}`", type); return VK_IMAGE_TYPE_MAX_ENUM; // TODO: use str repr of enum
     }
 }
 
-VkImageViewType gfxTextureViewTypeTo(gfxTextureViewType viewType)
+VkImageViewType gfxImageViewTypeTo(gfxImageViewType viewType)
 {
     switch (viewType)
     {
-    case gfxTextureViewType::TextureView1D: return VK_IMAGE_VIEW_TYPE_1D;
-    case gfxTextureViewType::TextureView2D: return VK_IMAGE_VIEW_TYPE_2D;
-    case gfxTextureViewType::TextureView3D: return VK_IMAGE_VIEW_TYPE_3D;
-    case gfxTextureViewType::TextureViewCube: return VK_IMAGE_VIEW_TYPE_CUBE;
-    case gfxTextureViewType::TextureView1DArray: return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
-    case gfxTextureViewType::TextureView2DArray: return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-    case gfxTextureViewType::TextureViewCubeArray: return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
-    default: epiLogError("Unhandled gfxTextureViewType=`{}`", viewType); return VK_IMAGE_VIEW_TYPE_MAX_ENUM; // TODO: use str repr of enum
+    case gfxImageViewType::ImageView1D: return VK_IMAGE_VIEW_TYPE_1D;
+    case gfxImageViewType::ImageView2D: return VK_IMAGE_VIEW_TYPE_2D;
+    case gfxImageViewType::ImageView3D: return VK_IMAGE_VIEW_TYPE_3D;
+    case gfxImageViewType::ImageViewCube: return VK_IMAGE_VIEW_TYPE_CUBE;
+    case gfxImageViewType::ImageView1DArray: return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+    case gfxImageViewType::ImageView2DArray: return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+    case gfxImageViewType::ImageViewCubeArray: return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+    default: epiLogError("Unhandled gfxImageViewType=`{}`", viewType); return VK_IMAGE_VIEW_TYPE_MAX_ENUM; // TODO: use str repr of enum
     }
 }
 

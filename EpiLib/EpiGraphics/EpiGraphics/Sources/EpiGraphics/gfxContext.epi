@@ -4,7 +4,6 @@ class gfxContext
     {
         gfxDrawerText DrawerText;
         gfxDrawerPrimitive DrawerPrimitive;
-        gfxVertexArray NullVertexArray;
     }
 
     gfxCamera* Camera;

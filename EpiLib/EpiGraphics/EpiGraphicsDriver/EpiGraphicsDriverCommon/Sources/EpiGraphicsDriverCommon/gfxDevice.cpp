@@ -152,34 +152,34 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
     return frameBuffer;
 }
 
-std::optional<gfxTexture> gfxDevice::CreateTexture(const gfxTextureCreateInfo& info) const
+std::optional<gfxImage> gfxDevice::CreateImage(const gfxImageCreateInfo& info) const
 {
-    std::optional<gfxTexture> texture;
+    std::optional<gfxImage> image;
 
-    if (std::shared_ptr<gfxTexture::Impl> impl = m_Impl->CreateTexture(info))
+    if (std::shared_ptr<gfxImage::Impl> impl = m_Impl->CreateImage(info))
     {
-        texture = gfxTexture(std::move(impl));
+        image = gfxImage(std::move(impl));
     }
 
-    return texture;
+    return image;
 }
 
-std::optional<gfxTextureView> gfxDevice::CreateTextureView(const gfxTextureViewCreateInfo& info) const
+std::optional<gfxImageView> gfxDevice::CreateImageView(const gfxImageViewCreateInfo& info) const
 {
-    std::optional<gfxTextureView> textureView;
+    std::optional<gfxImageView> imageView;
 
     if (!info.GetImage().HasImpl())
     {
-        epiLogError("Failed to create TextureView! Provided Texture has no implementation!");
-        return textureView;
+        epiLogError("Failed to create ImageView! The provided Image has no implementation!");
+        return imageView;
     }
 
-    if (std::shared_ptr<gfxTextureView::Impl> impl = m_Impl->CreateTextureView(info))
+    if (std::shared_ptr<gfxImageView::Impl> impl = m_Impl->CreateImageView(info))
     {
-        textureView = gfxTextureView(std::move(impl));
+        imageView = gfxImageView(std::move(impl));
     }
 
-    return textureView;
+    return imageView;
 }
 
 std::optional<gfxSampler> gfxDevice::CreateSampler(const gfxSamplerCreateInfo& info) const

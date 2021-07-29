@@ -47,12 +47,12 @@ add_library(EpiGraphicsDriverCommon
     Sources/EpiGraphicsDriverCommon/gfxBuffer.epi
     Sources/EpiGraphicsDriverCommon/gfxBuffer.h
     Sources/EpiGraphicsDriverCommon/gfxBuffer.cpp
-    Sources/EpiGraphicsDriverCommon/gfxTexture.epi
-    Sources/EpiGraphicsDriverCommon/gfxTexture.h
-    Sources/EpiGraphicsDriverCommon/gfxTexture.cpp
-    Sources/EpiGraphicsDriverCommon/gfxTextureView.epi
-    Sources/EpiGraphicsDriverCommon/gfxTextureView.h
-    Sources/EpiGraphicsDriverCommon/gfxTextureView.cpp
+    Sources/EpiGraphicsDriverCommon/gfxImage.epi
+    Sources/EpiGraphicsDriverCommon/gfxImage.h
+    Sources/EpiGraphicsDriverCommon/gfxImage.cpp
+    Sources/EpiGraphicsDriverCommon/gfxImageView.epi
+    Sources/EpiGraphicsDriverCommon/gfxImageView.h
+    Sources/EpiGraphicsDriverCommon/gfxImageView.cpp
     Sources/EpiGraphicsDriverCommon/gfxShaderProgram.epi
     Sources/EpiGraphicsDriverCommon/gfxShaderProgram.h
     Sources/EpiGraphicsDriverCommon/gfxShaderProgram.cpp

@@ -11,8 +11,8 @@
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsDriverVK/gfxShaderProgramImplVK.h"
 #include "EpiGraphicsDriverVK/gfxFrameBufferImplVK.h"
-#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
-#include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageViewImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSamplerImplVK.h"
 #include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
 #include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
@@ -429,7 +429,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
             const gfxSamplerImplVK* sampler = static_cast<const gfxSamplerImplVK*>(gfxSampler::Impl::ExtractImpl(imageInfo.GetSampler()));
             epiAssert(sampler != nullptr);
 
-            const gfxTextureViewImplVK* imageView = static_cast<const gfxTextureViewImplVK*>(gfxTextureView::Impl::ExtractImpl(imageInfo.GetImageView()));
+            const gfxImageViewImplVK* imageView = static_cast<const gfxImageViewImplVK*>(gfxImageView::Impl::ExtractImpl(imageInfo.GetImageView()));
             epiAssert(imageView != nullptr);
 
             VkDescriptorImageInfo imageInfoVk{};
@@ -658,9 +658,9 @@ std::shared_ptr<gfxFrameBuffer::Impl> gfxDeviceImplVK::CreateFrameBuffer(const g
     return impl;
 }
 
-std::shared_ptr<gfxTexture::Impl> gfxDeviceImplVK::CreateTexture(const gfxTextureCreateInfo& info) const
+std::shared_ptr<gfxImage::Impl> gfxDeviceImplVK::CreateImage(const gfxImageCreateInfo& info) const
 {
-    std::shared_ptr<gfxTextureImplVKOwner> impl = std::make_shared<gfxTextureImplVKOwner>(m_VkDevice);
+    std::shared_ptr<gfxImageImplVKOwner> impl = std::make_shared<gfxImageImplVKOwner>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -669,9 +669,9 @@ std::shared_ptr<gfxTexture::Impl> gfxDeviceImplVK::CreateTexture(const gfxTextur
     return impl;
 }
 
-std::shared_ptr<gfxTextureView::Impl> gfxDeviceImplVK::CreateTextureView(const gfxTextureViewCreateInfo& info) const
+std::shared_ptr<gfxImageView::Impl> gfxDeviceImplVK::CreateImageView(const gfxImageViewCreateInfo& info) const
 {
-    std::shared_ptr<gfxTextureViewImplVK> impl = std::make_shared<gfxTextureViewImplVK>(m_VkDevice);
+    std::shared_ptr<gfxImageViewImplVK> impl = std::make_shared<gfxImageViewImplVK>(m_VkDevice);
     if (!impl->Init(info))
     {
         impl.reset();

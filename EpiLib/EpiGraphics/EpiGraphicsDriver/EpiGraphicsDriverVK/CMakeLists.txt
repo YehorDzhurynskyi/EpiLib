@@ -7,10 +7,10 @@ add_library(EpiGraphicsDriverVK
     Sources/EpiGraphicsDriverVK/gfxDeviceMemoryImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxBufferImplVK.h
     Sources/EpiGraphicsDriverVK/gfxBufferImplVK.cpp
-    Sources/EpiGraphicsDriverVK/gfxTextureImplVK.h
-    Sources/EpiGraphicsDriverVK/gfxTextureImplVK.cpp
-    Sources/EpiGraphicsDriverVK/gfxTextureViewImplVK.h
-    Sources/EpiGraphicsDriverVK/gfxTextureViewImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxImageImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxImageImplVK.cpp
+    Sources/EpiGraphicsDriverVK/gfxImageViewImplVK.h
+    Sources/EpiGraphicsDriverVK/gfxImageViewImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxShaderProgramImplVK.h
     Sources/EpiGraphicsDriverVK/gfxShaderProgramImplVK.cpp
     Sources/EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h

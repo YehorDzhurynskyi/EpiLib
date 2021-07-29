@@ -55,8 +55,8 @@ gfxTextRenderedGlyph gfxTextFace::CreateRenderedGlyph(const epiWChar ch, epiU32 
     }
 
     // TODO: restore
-    // gfxTexture& texture = target.GetTexture();
-    // texture.Create2D(slot->bitmap.buffer, slot->bitmap.width, slot->bitmap.rows, gfxTextureFormat::R, gfxTexturePixelType::UBYTE);
+    // gfxImage& texture = target.GetTexture();
+    // texture.Create2D(slot->bitmap.buffer, slot->bitmap.width, slot->bitmap.rows, gfxImageFormat::R, gfxImagePixelType::UBYTE);
 
     epiVec2u bearing(slot->bitmap_left, slot->bitmap_top);
     target.SetBearing(bearing);
@@ -195,8 +195,8 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
     target.SetHeight(metricsSize.height >> 6);
 
     // TODO: restore
-    // gfxTexture& texture = target.GetTexture();
-    // texture.Create2D(data.get(), texWidth, texHeight, gfxTextureFormat::RGB, gfxTexturePixelType::UBYTE);
+    // gfxImage& texture = target.GetTexture();
+    // texture.Create2D(data.get(), texWidth, texHeight, gfxImageFormat::RGB, gfxImagePixelType::UBYTE);
 
     return target;
 }
@@ -305,8 +305,8 @@ gfxTextRenderedAtlas gfxTextFace::CreateRenderedAtlas(const epiWChar* atlasText,
         pen += slot->advance.x >> 6;
     }
 
-    gfxTexture& texture = target.GetTexture();
-    texture.Create2D(data.get(), texWidth, texHeight, gfxTextureFormat::R, gfxTexturePixelType::UBYTE);
+    gfxImage& texture = target.GetTexture();
+    texture.Create2D(data.get(), texWidth, texHeight, gfxImageFormat::R, gfxImagePixelType::UBYTE);
 
     return target;
 }

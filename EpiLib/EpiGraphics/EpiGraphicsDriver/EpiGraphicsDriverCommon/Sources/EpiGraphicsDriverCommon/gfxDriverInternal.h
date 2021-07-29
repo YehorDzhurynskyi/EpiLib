@@ -113,10 +113,10 @@ public:
     epiU32 GetBufferCount() const { return m_ImageViews.Size(); }
     virtual epiSize2u GetExtent() const = 0;
 
-    const epiArray<std::shared_ptr<gfxTextureView::Impl>>& GetImageViews() const { return m_ImageViews; }
+    const epiArray<std::shared_ptr<gfxImageView::Impl>>& GetImageViews() const { return m_ImageViews; }
 
 protected:
-    epiArray<std::shared_ptr<gfxTextureView::Impl>> m_ImageViews;
+    epiArray<std::shared_ptr<gfxImageView::Impl>> m_ImageViews;
 };
 
 class gfxPhysicalDevice::Impl
@@ -172,8 +172,8 @@ public:
     virtual std::shared_ptr<gfxPipelineGraphics::Impl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxTexture::Impl> CreateTexture(const gfxTextureCreateInfo& info) const = 0;
-    virtual std::shared_ptr<gfxTextureView::Impl> CreateTextureView(const gfxTextureViewCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxImage::Impl> CreateImage(const gfxImageCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxImageView::Impl> CreateImageView(const gfxImageViewCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxSampler::Impl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxCommandPool::Impl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
     virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
@@ -290,10 +290,10 @@ public:
     virtual ~Impl() = default;
 };
 
-class gfxTexture::Impl
+class gfxImage::Impl
 {
 public:
-    static const gfxTexture::Impl* ExtractImpl(const gfxTexture& image) { return image.m_Impl.get(); }
+    static const gfxImage::Impl* ExtractImpl(const gfxImage& image) { return image.m_Impl.get(); }
 
 public:
     Impl() = default;
@@ -304,10 +304,10 @@ public:
     virtual ~Impl() = default;
 };
 
-class gfxTextureView::Impl
+class gfxImageView::Impl
 {
 public:
-    static const gfxTextureView::Impl* ExtractImpl(const gfxTextureView& imageView) { return imageView.m_Impl.get(); }
+    static const gfxImageView::Impl* ExtractImpl(const gfxImageView& imageView) { return imageView.m_Impl.get(); }
 
 public:
     Impl() = default;
@@ -516,7 +516,7 @@ public:
     virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
     virtual void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) = 0;
     virtual void Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
-    virtual void Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) = 0;
+    virtual void Copy(const gfxBuffer& src, const gfxImage& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) = 0;
 };
 
 EPI_NAMESPACE_END()

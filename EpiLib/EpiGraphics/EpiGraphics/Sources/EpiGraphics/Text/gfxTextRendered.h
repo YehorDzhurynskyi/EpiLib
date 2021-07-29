@@ -6,7 +6,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphicsDriverCommon/gfxTexture.h"
+#include "EpiGraphicsDriverCommon/gfxImage.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -22,12 +22,12 @@ public:
 
     enum gfxTextRendered_PIDs
     {
-        PID_Texture = 0x4ddb34ee,
+        PID_Image = 0x4fc2b5b,
         PID_COUNT = 1
     };
 
 protected:
-    gfxTexture m_Texture{};
+    gfxImage m_Image{};
 
 EPI_GENREGION_END(gfxTextRendered)
 

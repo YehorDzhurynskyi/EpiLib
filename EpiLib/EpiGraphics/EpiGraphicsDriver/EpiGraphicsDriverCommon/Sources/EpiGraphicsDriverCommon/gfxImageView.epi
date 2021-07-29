@@ -1,7 +1,7 @@
-class gfxTextureViewCreateInfo
+class gfxImageViewCreateInfo
 {
-    gfxTexture Image;
-    gfxTextureViewType ViewType;
+    gfxImage Image;
+    gfxImageViewType ViewType;
     gfxFormat Format = gfxFormat::UNDEFINED;
     gfxComponentSwizzle ComponentSwizzleMappingR = gfxComponentSwizzle::Identity;
     gfxComponentSwizzle ComponentSwizzleMappingG = gfxComponentSwizzle::Identity;
@@ -10,6 +10,6 @@ class gfxTextureViewCreateInfo
     gfxImageSubresourceRange SubresourceRange;
 };
 
-class gfxTextureView
+class gfxImageView
 {
 };

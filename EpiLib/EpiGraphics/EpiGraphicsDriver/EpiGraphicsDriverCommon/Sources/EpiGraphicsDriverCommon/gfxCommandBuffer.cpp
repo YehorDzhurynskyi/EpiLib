@@ -217,7 +217,7 @@ gfxCommandBuffer::Record& gfxCommandBuffer::Record::Copy(const gfxBuffer& src, c
     return *this;
 }
 
-gfxCommandBuffer::Record& gfxCommandBuffer::Record::Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
+gfxCommandBuffer::Record& gfxCommandBuffer::Record::Copy(const gfxBuffer& src, const gfxImage& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
 {
     if (!src.HasImpl())
     {

@@ -8,7 +8,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxSampler.h"
-#include "EpiGraphicsDriverCommon/gfxTextureView.h"
+#include "EpiGraphicsDriverCommon/gfxImageView.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -56,7 +56,7 @@ public:
 
 protected:
     gfxSampler m_Sampler{};
-    gfxTextureView m_ImageView{};
+    gfxImageView m_ImageView{};
     gfxImageLayout m_ImageLayout{};
 
 EPI_GENREGION_END(gfxDescriptorImageInfo)

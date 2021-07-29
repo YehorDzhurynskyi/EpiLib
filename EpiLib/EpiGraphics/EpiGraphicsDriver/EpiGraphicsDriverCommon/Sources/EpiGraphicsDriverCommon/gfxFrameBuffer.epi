@@ -5,7 +5,7 @@ class gfxFrameBufferCreateInfo
     epiSize2u Size;
 
     [ReadOnly]
-    epiArray<gfxTextureView> Attachments;
+    epiArray<gfxImageView> Attachments;
 };
 
 class gfxFrameBuffer

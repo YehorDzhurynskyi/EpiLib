@@ -3,7 +3,7 @@
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 #include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
-#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageImplVK.h"
 #include "EpiGraphicsDriverVK/gfxSurfaceImplVK.h"
 #include "EpiGraphicsDriverVK/gfxCommandPoolImplVK.h"
 #include "EpiGraphicsDriverVK/gfxCommandBufferImplVK.h"
@@ -14,7 +14,7 @@
 #include "EpiGraphicsDriverVK/Synchronization/gfxSemaphoreImplVK.h"
 #include "EpiGraphicsDriverVK/Synchronization/gfxFenceImplVK.h"
 
-#include "EpiGraphicsDriverCommon/gfxTextureView.h"
+#include "EpiGraphicsDriverCommon/gfxImageView.h"
 
 #include <vulkan/vulkan.h>
 
@@ -99,10 +99,9 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
         return false;
     }
 
-    for (const VkImage& image : swapChainImages)
+    for (const VkImage& imageVk : swapChainImages)
     {
-        std::shared_ptr<gfxTextureImplVK> textureImpl = std::make_shared<gfxTextureImplVK>(image);
-        gfxTexture texture(textureImpl);
+        gfxImage image(std::make_shared<gfxImageImplVK>(imageVk));
 
         gfxImageSubresourceRange subresourceRange{};
         subresourceRange.SetAspectMask(gfxImageAspect_Color);
@@ -111,14 +110,14 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
         subresourceRange.SetBaseArrayLayer(0);
         subresourceRange.SetLayerCount(1);
 
-        gfxTextureViewCreateInfo textureViewCreateInfo;
-        textureViewCreateInfo.SetImage(texture);
-        textureViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
-        textureViewCreateInfo.SetFormat(info.GetImageFormat());
-        textureViewCreateInfo.SetSubresourceRange(subresourceRange);
+        gfxImageViewCreateInfo imageViewCreateInfo;
+        imageViewCreateInfo.SetImage(image);
+        imageViewCreateInfo.SetViewType(gfxImageViewType::ImageView2D);
+        imageViewCreateInfo.SetFormat(info.GetImageFormat());
+        imageViewCreateInfo.SetSubresourceRange(subresourceRange);
 
-        std::shared_ptr<gfxTextureView::Impl> textureViewImpl = m_Device.CreateTextureView(textureViewCreateInfo);
-        m_ImageViews.push_back(std::move(textureViewImpl));
+        std::shared_ptr<gfxImageView::Impl> imageViewImpl = m_Device.CreateImageView(imageViewCreateInfo);
+        m_ImageViews.push_back(std::move(imageViewImpl));
     }
 
     m_Extent = info.GetImageExtent();

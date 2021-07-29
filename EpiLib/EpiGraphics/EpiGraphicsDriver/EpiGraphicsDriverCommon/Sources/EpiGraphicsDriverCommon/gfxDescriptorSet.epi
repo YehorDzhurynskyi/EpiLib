@@ -8,7 +8,7 @@ class gfxDescriptorBufferInfo
 class gfxDescriptorImageInfo
 {
     gfxSampler Sampler;
-    gfxTextureView ImageView;
+    gfxImageView ImageView;
     gfxImageLayout ImageLayout;
 };
 

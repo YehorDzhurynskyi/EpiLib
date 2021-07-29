@@ -14,8 +14,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsDriverCommon/gfxPipelineLayout.h"
 #include "EpiGraphicsDriverCommon/gfxPipeline.h"
 #include "EpiGraphicsDriverCommon/gfxFrameBuffer.h"
-#include "EpiGraphicsDriverCommon/gfxTexture.h"
-#include "EpiGraphicsDriverCommon/gfxTextureView.h"
+#include "EpiGraphicsDriverCommon/gfxImage.h"
+#include "EpiGraphicsDriverCommon/gfxImageView.h"
 #include "EpiGraphicsDriverCommon/gfxCommandPool.h"
 #include "EpiGraphicsDriverCommon/gfxBuffer.h"
 #include "EpiGraphicsDriverCommon/gfxDeviceMemory.h"
@@ -96,8 +96,8 @@ public:
     std::optional<gfxPipelineGraphics> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const;
     std::optional<gfxShaderModule> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const;
     std::optional<gfxFrameBuffer> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const;
-    std::optional<gfxTexture> CreateTexture(const gfxTextureCreateInfo& info) const;
-    std::optional<gfxTextureView> CreateTextureView(const gfxTextureViewCreateInfo& info) const;
+    std::optional<gfxImage> CreateImage(const gfxImageCreateInfo& info) const;
+    std::optional<gfxImageView> CreateImageView(const gfxImageViewCreateInfo& info) const;
     std::optional<gfxSampler> CreateSampler(const gfxSamplerCreateInfo& info) const;
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
     std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info) const;

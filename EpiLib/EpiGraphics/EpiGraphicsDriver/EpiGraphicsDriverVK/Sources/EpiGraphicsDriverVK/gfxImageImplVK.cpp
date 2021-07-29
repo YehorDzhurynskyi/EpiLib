@@ -1,4 +1,4 @@
-#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
@@ -7,27 +7,27 @@
 
 EPI_NAMESPACE_BEGIN()
 
-gfxTextureImplVK::gfxTextureImplVK(VkImage image)
+gfxImageImplVK::gfxImageImplVK(VkImage image)
     : m_VkImage{image}
 {
 }
 
-VkImage gfxTextureImplVK::GetVkImage() const
+VkImage gfxImageImplVK::GetVkImage() const
 {
     return m_VkImage;
 }
 
-gfxTextureImplVKOwner::gfxTextureImplVKOwner(VkDevice device)
-    : gfxTextureImplVK{nullptr}
+gfxImageImplVKOwner::gfxImageImplVKOwner(VkDevice device)
+    : gfxImageImplVK{nullptr}
     , m_VkDevice{device}
 {
 }
 
-epiBool gfxTextureImplVKOwner::Init(const gfxTextureCreateInfo& info)
+epiBool gfxImageImplVKOwner::Init(const gfxImageCreateInfo& info)
 {
     VkImageCreateInfo imageCreateInfo{};
     imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageCreateInfo.imageType = gfxTextureTypeTo(info.GetType());
+    imageCreateInfo.imageType = gfxImageTypeTo(info.GetType());
     imageCreateInfo.format = gfxFormatTo(info.GetFormat());
     imageCreateInfo.extent.width = info.GetExtent().x;
     imageCreateInfo.extent.height = info.GetExtent().y;
@@ -51,7 +51,7 @@ epiBool gfxTextureImplVKOwner::Init(const gfxTextureCreateInfo& info)
     return true;
 }
 
-gfxTextureImplVKOwner::~gfxTextureImplVKOwner()
+gfxImageImplVKOwner::~gfxImageImplVKOwner()
 {
     vkDestroyImage(m_VkDevice, m_VkImage, nullptr);
 }

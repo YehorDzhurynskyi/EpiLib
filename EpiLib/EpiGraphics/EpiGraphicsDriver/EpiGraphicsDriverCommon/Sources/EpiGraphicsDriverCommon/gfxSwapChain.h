@@ -78,7 +78,7 @@ protected:
     epiSize2u GetExtent_Callback() const;
 
 protected:
-    epiArray<gfxTextureView> m_ImageViews{};
+    epiArray<gfxImageView> m_ImageViews{};
 
 EPI_GENREGION_END(gfxSwapChain)
 

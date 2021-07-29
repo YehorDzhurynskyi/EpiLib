@@ -1,6 +1,6 @@
-class gfxTextureCreateInfo
+class gfxImageCreateInfo
 {
-    gfxTextureType Type;
+    gfxImageType Type;
     gfxFormat Format = gfxFormat::UNDEFINED;
     epiVec3u Extent;
     epiU32 MipLevels;
@@ -12,7 +12,7 @@ class gfxTextureCreateInfo
 };
 
 # TODO: rename gfxImage
-class gfxTexture
+class gfxImage
 {
 };
 
@@ -35,7 +35,7 @@ class gfxImageSubresourceRange
 
 class gfxImageMemoryBarrier
 {
-    gfxTexture Image;
+    gfxImage Image;
     gfxAccess SrcAccessMask;
     gfxAccess DstAccessMask;
     gfxImageLayout OldLayout;

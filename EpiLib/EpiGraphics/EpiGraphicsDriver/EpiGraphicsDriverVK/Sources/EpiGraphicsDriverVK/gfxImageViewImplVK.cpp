@@ -1,27 +1,27 @@
-#include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageViewImplVK.h"
 
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
-#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageImplVK.h"
 
 #include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
-gfxTextureViewImplVK::gfxTextureViewImplVK(VkDevice device)
+gfxImageViewImplVK::gfxImageViewImplVK(VkDevice device)
     : m_VkDevice{device}
 {
 }
 
-epiBool gfxTextureViewImplVK::Init(const gfxTextureViewCreateInfo& info)
+epiBool gfxImageViewImplVK::Init(const gfxImageViewCreateInfo& info)
 {
-    const gfxTextureImplVK* imageVk = static_cast<const gfxTextureImplVK*>(gfxTexture::Impl::ExtractImpl(info.GetImage()));
+    const gfxImageImplVK* imageVk = static_cast<const gfxImageImplVK*>(gfxImage::Impl::ExtractImpl(info.GetImage()));
     epiAssert(imageVk != nullptr);
 
     VkImageViewCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     createInfo.image = imageVk->GetVkImage();
-    createInfo.viewType = gfxTextureViewTypeTo(info.GetViewType());
+    createInfo.viewType = gfxImageViewTypeTo(info.GetViewType());
     createInfo.format = gfxFormatTo(info.GetFormat());
     createInfo.components.r = gfxComponentSwizzleTo(info.GetComponentSwizzleMappingR());
     createInfo.components.g = gfxComponentSwizzleTo(info.GetComponentSwizzleMappingG());
@@ -42,12 +42,12 @@ epiBool gfxTextureViewImplVK::Init(const gfxTextureViewCreateInfo& info)
     return true;
 }
 
-gfxTextureViewImplVK::~gfxTextureViewImplVK()
+gfxImageViewImplVK::~gfxImageViewImplVK()
 {
     vkDestroyImageView(m_VkDevice, m_VkImageView, nullptr);
 }
 
-VkImageView gfxTextureViewImplVK::GetVkImageView() const
+VkImageView gfxImageViewImplVK::GetVkImageView() const
 {
     return m_VkImageView;
 }

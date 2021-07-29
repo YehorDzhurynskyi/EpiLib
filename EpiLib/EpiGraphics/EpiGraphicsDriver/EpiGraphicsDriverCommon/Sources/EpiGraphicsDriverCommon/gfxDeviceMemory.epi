@@ -12,7 +12,7 @@ class gfxDeviceMemoryBufferCreateInfo
 
 class gfxDeviceMemoryImageCreateInfo
 {
-    gfxTexture Image;
+    gfxImage Image;
     gfxDeviceMemoryProperty PropertyMask;
 };
 

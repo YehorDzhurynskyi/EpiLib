@@ -3,7 +3,7 @@
 #include "EpiGraphicsDriverVK/gfxErrorVK.h"
 #include "EpiGraphicsDriverVK/gfxEnumVK.h"
 #include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
-#include "EpiGraphicsDriverVK/gfxTextureViewImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageViewImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -28,9 +28,9 @@ epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info)
     std::transform(info.GetAttachments().begin(),
                    info.GetAttachments().end(),
                    std::back_inserter(attachments),
-                   [](const gfxTextureView& attachment)
+                   [](const gfxImageView& attachment)
     {
-        const gfxTextureViewImplVK* attachmentVk = static_cast<const gfxTextureViewImplVK*>(gfxTextureView::Impl::ExtractImpl(attachment));
+        const gfxImageViewImplVK* attachmentVk = static_cast<const gfxImageViewImplVK*>(gfxImageView::Impl::ExtractImpl(attachment));
         epiAssert(attachmentVk != nullptr);
 
         return attachmentVk->GetVkImageView();

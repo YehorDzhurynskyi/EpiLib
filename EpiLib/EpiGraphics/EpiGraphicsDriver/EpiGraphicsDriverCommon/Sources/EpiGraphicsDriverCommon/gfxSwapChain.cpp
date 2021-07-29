@@ -65,7 +65,7 @@ epiSize2u gfxSwapChain::GetExtent_Callback() const
 
 void gfxSwapChain::RebindImpl()
 {
-    epiArray<gfxTextureView>& imageViews = GetImageViews();
+    epiArray<gfxImageView>& imageViews = GetImageViews();
     imageViews.Clear();
     imageViews.Reserve(m_Impl->GetImageViews().Size());
 
@@ -73,9 +73,9 @@ void gfxSwapChain::RebindImpl()
     std::transform(m_Impl->GetImageViews().begin(),
                    m_Impl->GetImageViews().end(),
                    std::back_inserter(imageViews),
-                   [](const std::shared_ptr<gfxTextureView::Impl>& imageViewImpl)
+                   [](const std::shared_ptr<gfxImageView::Impl>& imageViewImpl)
     {
-        return gfxTextureView(imageViewImpl);
+        return gfxImageView(imageViewImpl);
     });
 }
 

@@ -31,8 +31,8 @@ public:
     std::shared_ptr<gfxPipelineGraphics::Impl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const override;
     std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const override;
     std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const override;
-    std::shared_ptr<gfxTexture::Impl> CreateTexture(const gfxTextureCreateInfo& info) const override;
-    std::shared_ptr<gfxTextureView::Impl> CreateTextureView(const gfxTextureViewCreateInfo& info) const override;
+    std::shared_ptr<gfxImage::Impl> CreateImage(const gfxImageCreateInfo& info) const override;
+    std::shared_ptr<gfxImageView::Impl> CreateImageView(const gfxImageViewCreateInfo& info) const override;
     std::shared_ptr<gfxSampler::Impl> CreateSampler(const gfxSamplerCreateInfo& info) const override;
     std::shared_ptr<gfxCommandPool::Impl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const override;
     std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const override;

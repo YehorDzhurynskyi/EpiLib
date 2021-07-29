@@ -7,7 +7,7 @@ EPI_GENREGION_END(include)
 #include "EpiCore/ObjectModel/Object.h"
 
 #include "EpiGraphicsDriverCommon/gfxRenderPass.h"
-#include "EpiGraphicsDriverCommon/gfxTextureView.h"
+#include "EpiGraphicsDriverCommon/gfxImageView.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -31,12 +31,12 @@ public:
 protected:
     gfxRenderPass m_RenderPass{};
     epiSize2u m_Size{};
-    epiArray<gfxTextureView> m_Attachments{};
+    epiArray<gfxImageView> m_Attachments{};
 
 EPI_GENREGION_END(gfxFrameBufferCreateInfo)
 
 public:
-    void AddAttachment(const gfxTextureView& attachment);
+    void AddAttachment(const gfxImageView& attachment);
 };
 
 class gfxFrameBuffer : public Object

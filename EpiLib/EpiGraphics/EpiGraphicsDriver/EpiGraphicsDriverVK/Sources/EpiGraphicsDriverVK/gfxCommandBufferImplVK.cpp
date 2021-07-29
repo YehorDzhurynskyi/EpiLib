@@ -9,7 +9,7 @@
 #include "EpiGraphicsDriverVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsDriverVK/gfxDescriptorSetImplVK.h"
 #include "EpiGraphicsDriverVK/gfxBufferImplVK.h"
-#include "EpiGraphicsDriverVK/gfxTextureImplVK.h"
+#include "EpiGraphicsDriverVK/gfxImageImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -237,7 +237,7 @@ void gfxCommandBufferImplVK::PipelineBarrier(const gfxCommandBufferRecordPipelin
                    std::back_inserter(imageMemoryBarriers),
                    [](const gfxImageMemoryBarrier& barrier)
     {
-        const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTexture::Impl::ExtractImpl(barrier.GetImage()));
+        const gfxImageImplVK* imageImpl = static_cast<const gfxImageImplVK*>(gfxImage::Impl::ExtractImpl(barrier.GetImage()));
         epiAssert(imageImpl != nullptr);
 
         VkImageMemoryBarrier barrierVk{};
@@ -409,12 +409,12 @@ void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxBuffer& dst, co
                     copyRegionsVk.data());
 }
 
-void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxTexture& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
+void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxImage& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
 {
     const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(src));
     epiAssert(bufferImpl != nullptr);
 
-    const gfxTextureImplVK* imageImpl = static_cast<const gfxTextureImplVK*>(gfxTexture::Impl::ExtractImpl(dst));
+    const gfxImageImplVK* imageImpl = static_cast<const gfxImageImplVK*>(gfxImage::Impl::ExtractImpl(dst));
     epiAssert(imageImpl != nullptr);
 
     std::vector<VkBufferImageCopy> regions;

@@ -1,7 +1,0 @@
-class gfxVertexArray
-{
-    [Virtual, ReadOnly]
-    {
-        epiBool IsCreated;
-    }
-};

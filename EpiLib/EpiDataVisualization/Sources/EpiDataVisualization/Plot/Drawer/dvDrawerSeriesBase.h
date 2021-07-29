@@ -8,7 +8,6 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxContext.h"
 #include "EpiGraphics/gfxDrawer.h"
-#include "EpiGraphicsDriverCommon/gfxVertexArray.h"
 #include "EpiGraphicsDriverCommon/gfxShaderProgram.h"
 
 EPI_NAMESPACE_BEGIN()
@@ -42,7 +41,7 @@ protected:
 private:
     // TODO: maybe move it out from here
     // TODO: repair
-    gfxVertexArray m_VertexArrayLineStrip;
+    //gfxVertexArray m_VertexArrayLineStrip;
     // gfxVertexBuffer m_VertexBufferLineStrip;
     // gfxShaderProgram m_ShaderProgramLineStrip;
 

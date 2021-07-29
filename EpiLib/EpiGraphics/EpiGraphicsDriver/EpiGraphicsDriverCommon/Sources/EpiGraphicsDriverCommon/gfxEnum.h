@@ -6,26 +6,26 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class gfxTextureType : epiS32
+enum class gfxImageType : epiS32
 {
-EPI_GENREGION_BEGIN(gfxTextureType)
-    Texture1D = 0,
-    Texture2D = 1,
-    Texture3D = 2
-EPI_GENREGION_END(gfxTextureType)
+EPI_GENREGION_BEGIN(gfxImageType)
+    Image1D = 0,
+    Image2D = 1,
+    Image3D = 2
+EPI_GENREGION_END(gfxImageType)
 };
 
-enum class gfxTextureViewType : epiS32
+enum class gfxImageViewType : epiS32
 {
-EPI_GENREGION_BEGIN(gfxTextureViewType)
-    TextureView1D = 0,
-    TextureView2D = 1,
-    TextureView3D = 2,
-    TextureViewCube = 3,
-    TextureView1DArray = 4,
-    TextureView2DArray = 5,
-    TextureViewCubeArray = 6
-EPI_GENREGION_END(gfxTextureViewType)
+EPI_GENREGION_BEGIN(gfxImageViewType)
+    ImageView1D = 0,
+    ImageView2D = 1,
+    ImageView3D = 2,
+    ImageViewCube = 3,
+    ImageView1DArray = 4,
+    ImageView2DArray = 5,
+    ImageViewCubeArray = 6
+EPI_GENREGION_END(gfxImageViewType)
 };
 
 enum class gfxVertexBufferUsage : epiS32

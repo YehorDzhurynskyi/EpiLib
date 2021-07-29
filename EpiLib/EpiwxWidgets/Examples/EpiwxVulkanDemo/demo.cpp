@@ -520,11 +520,11 @@ public:
         }
 
         {
-            mmImage image = mmImage::LoadFromFile("texture.jpg").ToR8G8B8A8();
-            epiAssert(!image.GetIsEmpty());
+            mmImage imageRGBA = mmImage::LoadFromFile("texture.jpg").ToR8G8B8A8();
+            epiAssert(!imageRGBA.GetIsEmpty());
 
             gfxBufferCreateInfo stagingBufferCreateInfo;
-            stagingBufferCreateInfo.SetCapacity(image.GetBytes());
+            stagingBufferCreateInfo.SetCapacity(imageRGBA.GetBytes());
             stagingBufferCreateInfo.SetUsage(gfxBufferUsage_TransferSrc);
 
             std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
@@ -537,29 +537,29 @@ public:
             std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
             epiAssert(stagingDeviceMemory.has_value());
 
-            if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(image.GetBytes()))
+            if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(imageRGBA.GetBytes()))
             {
-                memcpy(mapping.Data(), image.GetData().data(), image.GetBytes());
+                memcpy(mapping.Data(), imageRGBA.GetData().data(), imageRGBA.GetBytes());
             }
 
-            gfxTextureCreateInfo textureCreateInfo{};
-            textureCreateInfo.SetType(gfxTextureType::Texture2D);
-            textureCreateInfo.SetExtent(epiVec3u{image.GetWidth(), image.GetHeight(), 1});
-            textureCreateInfo.SetMipLevels(1);
-            textureCreateInfo.SetArrayLayers(1);
-            textureCreateInfo.SetFormat(gfxFormat::R8G8B8A8_SRGB);
-            textureCreateInfo.SetInitialLayout(gfxImageLayout::Undefined);
-            textureCreateInfo.SetUsage(epiMask(gfxImageUsage_TRANSFER_DST, gfxImageUsage_SAMPLED));
-            textureCreateInfo.SetSampleCount(gfxSampleCount::Sample1);
-            textureCreateInfo.SetTiling(gfxImageTiling::Optimal);
+            gfxImageCreateInfo imageCreateInfo{};
+            imageCreateInfo.SetType(gfxImageType::Image2D);
+            imageCreateInfo.SetExtent(epiVec3u{imageRGBA.GetWidth(), imageRGBA.GetHeight(), 1});
+            imageCreateInfo.SetMipLevels(1);
+            imageCreateInfo.SetArrayLayers(1);
+            imageCreateInfo.SetFormat(gfxFormat::R8G8B8A8_SRGB);
+            imageCreateInfo.SetInitialLayout(gfxImageLayout::Undefined);
+            imageCreateInfo.SetUsage(epiMask(gfxImageUsage_TRANSFER_DST, gfxImageUsage_SAMPLED));
+            imageCreateInfo.SetSampleCount(gfxSampleCount::Sample1);
+            imageCreateInfo.SetTiling(gfxImageTiling::Optimal);
 
-            std::optional<gfxTexture> texture = g_Device.CreateTexture(textureCreateInfo);
-            epiAssert(texture.has_value());
+            std::optional<gfxImage> image = g_Device.CreateImage(imageCreateInfo);
+            epiAssert(image.has_value());
 
-            m_Image = *texture;
+            m_Image = *image;
 
             gfxDeviceMemoryImageCreateInfo imageDeviceMemoryCreateInfo;
-            imageDeviceMemoryCreateInfo.SetImage(*texture);
+            imageDeviceMemoryCreateInfo.SetImage(*image);
             imageDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
 
             std::optional<gfxDeviceMemory> imageDeviceMemory = g_Device.CreateDeviceMemory(imageDeviceMemoryCreateInfo);
@@ -632,7 +632,7 @@ public:
                     copyRegion.SetBufferRowLength(0);
                     copyRegion.SetBufferImageHeight(0);
                     copyRegion.SetImageOffset(epiVec3s{0, 0, 0});
-                    copyRegion.SetImageExtent(epiVec3u{image.GetWidth(), image.GetHeight(), 1});
+                    copyRegion.SetImageExtent(epiVec3u{imageRGBA.GetWidth(), imageRGBA.GetHeight(), 1});
                     copyRegion.SetImageSubresource(subresource);
 
                     record.Copy(*stagingBuffer, m_Image, gfxImageLayout::TransferDstOptimal, {copyRegion});
@@ -696,13 +696,13 @@ public:
                 subresourceRange.SetBaseArrayLayer(0);
                 subresourceRange.SetLayerCount(1);
 
-                gfxTextureViewCreateInfo imageViewCreateInfo{};
+                gfxImageViewCreateInfo imageViewCreateInfo{};
                 imageViewCreateInfo.SetImage(m_Image);
-                imageViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
+                imageViewCreateInfo.SetViewType(gfxImageViewType::ImageView2D);
                 imageViewCreateInfo.SetFormat(gfxFormat::R8G8B8A8_SRGB);
                 imageViewCreateInfo.SetSubresourceRange(subresourceRange);
 
-                std::optional<gfxTextureView> imageView = g_Device.CreateTextureView(imageViewCreateInfo);
+                std::optional<gfxImageView> imageView = g_Device.CreateImageView(imageViewCreateInfo);
                 epiAssert(imageView.has_value());
 
                 m_ImageView = *imageView;
@@ -787,13 +787,13 @@ protected:
     epiArray<gfxFence> m_FencesImagesInFlight;
 
     gfxDeviceMemory m_ImageDeviceMemory;
-    gfxTexture m_Image;
-    gfxTextureView m_ImageView;
+    gfxImage m_Image;
+    gfxImageView m_ImageView;
     gfxSampler m_ImageSampler;
 
     gfxDeviceMemory m_DepthImageDeviceMemory;
-    gfxTexture m_DepthImage;
-    gfxTextureView m_DepthImageView;
+    gfxImage m_DepthImage;
+    gfxImageView m_DepthImageView;
 };
 
 wxBEGIN_EVENT_TABLE(epiWXVulkanDemoTriangleCanvas, epiWXVulkanCanvas)
@@ -926,21 +926,21 @@ void epiWXVulkanDemoTriangleCanvas::RecreateDepthImage()
 {
     epiAssert(g_PhysicalDevice.FormatPropertiesFor(kDepthFormatRequired).GetOptimalTilingFeatureMask() & gfxFormatFeatureMask_DepthStencilAttachment);
 
-    gfxTextureCreateInfo textureCreateInfo{};
-    textureCreateInfo.SetType(gfxTextureType::Texture2D);
-    textureCreateInfo.SetExtent(epiVec3u{m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y, 1});
-    textureCreateInfo.SetMipLevels(1);
-    textureCreateInfo.SetArrayLayers(1);
-    textureCreateInfo.SetFormat(kDepthFormatRequired);
-    textureCreateInfo.SetInitialLayout(gfxImageLayout::Undefined);
-    textureCreateInfo.SetUsage(gfxImageUsage_DEPTH_STENCIL_ATTACHMENT);
-    textureCreateInfo.SetSampleCount(gfxSampleCount::Sample1);
-    textureCreateInfo.SetTiling(gfxImageTiling::Optimal);
+    gfxImageCreateInfo imageCreateInfo{};
+    imageCreateInfo.SetType(gfxImageType::Image2D);
+    imageCreateInfo.SetExtent(epiVec3u{m_SwapChain.GetExtent().x, m_SwapChain.GetExtent().y, 1});
+    imageCreateInfo.SetMipLevels(1);
+    imageCreateInfo.SetArrayLayers(1);
+    imageCreateInfo.SetFormat(kDepthFormatRequired);
+    imageCreateInfo.SetInitialLayout(gfxImageLayout::Undefined);
+    imageCreateInfo.SetUsage(gfxImageUsage_DEPTH_STENCIL_ATTACHMENT);
+    imageCreateInfo.SetSampleCount(gfxSampleCount::Sample1);
+    imageCreateInfo.SetTiling(gfxImageTiling::Optimal);
 
-    std::optional<gfxTexture> texture = g_Device.CreateTexture(textureCreateInfo);
-    epiAssert(texture.has_value());
+    std::optional<gfxImage> image = g_Device.CreateImage(imageCreateInfo);
+    epiAssert(image.has_value());
 
-    m_DepthImage = *texture;
+    m_DepthImage = *image;
 
     gfxDeviceMemoryImageCreateInfo imageDeviceMemoryCreateInfo;
     imageDeviceMemoryCreateInfo.SetImage(m_DepthImage);
@@ -958,13 +958,13 @@ void epiWXVulkanDemoTriangleCanvas::RecreateDepthImage()
     subresourceRange.SetBaseMipLevel(0);
     subresourceRange.SetLevelCount(1);
 
-    gfxTextureViewCreateInfo imageViewCreateInfo;
+    gfxImageViewCreateInfo imageViewCreateInfo;
     imageViewCreateInfo.SetImage(m_DepthImage);
-    imageViewCreateInfo.SetViewType(gfxTextureViewType::TextureView2D);
+    imageViewCreateInfo.SetViewType(gfxImageViewType::ImageView2D);
     imageViewCreateInfo.SetFormat(kDepthFormatRequired);
     imageViewCreateInfo.SetSubresourceRange(subresourceRange);
 
-    std::optional<gfxTextureView> imageView = g_Device.CreateTextureView(imageViewCreateInfo);
+    std::optional<gfxImageView> imageView = g_Device.CreateImageView(imageViewCreateInfo);
     epiAssert(imageView.has_value());
 
     m_DepthImageView = *imageView;
@@ -973,7 +973,7 @@ void epiWXVulkanDemoTriangleCanvas::RecreateDepthImage()
 void epiWXVulkanDemoTriangleCanvas::RecreateFrameBuffers()
 {
     m_FrameBuffers.Clear();
-    for (const gfxTextureView& imageView : m_SwapChain.GetImageViews())
+    for (const gfxImageView& imageView : m_SwapChain.GetImageViews())
     {
         gfxFrameBufferCreateInfo frameBufferCreateInfo;
         frameBufferCreateInfo.SetSize(m_SwapChain.GetExtent());

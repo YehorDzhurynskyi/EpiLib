@@ -1,25 +1,25 @@
 #pragma once
 
 EPI_GENREGION_BEGIN(include)
-#include "EpiGraphicsDriverCommon/gfxTextureView.hxx"
+#include "EpiGraphicsDriverCommon/gfxImageView.hxx"
 EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphicsDriverCommon/gfxTexture.h"
+#include "EpiGraphicsDriverCommon/gfxImage.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxTextureViewCreateInfo : public Object
+class gfxImageViewCreateInfo : public Object
 {
-EPI_GENREGION_BEGIN(gfxTextureViewCreateInfo)
+EPI_GENREGION_BEGIN(gfxImageViewCreateInfo)
 
-EPI_GENHIDDEN_gfxTextureViewCreateInfo()
+EPI_GENHIDDEN_gfxImageViewCreateInfo()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xf520ccaf};
+    constexpr static epiMetaTypeID TypeID{0x2a8efe4c};
 
-    enum gfxTextureViewCreateInfo_PIDs
+    enum gfxImageViewCreateInfo_PIDs
     {
         PID_Image = 0x4fc2b5b,
         PID_ViewType = 0xf626a923,
@@ -33,8 +33,8 @@ public:
     };
 
 protected:
-    gfxTexture m_Image{};
-    gfxTextureViewType m_ViewType{};
+    gfxImage m_Image{};
+    gfxImageViewType m_ViewType{};
     gfxFormat m_Format{gfxFormat::UNDEFINED};
     gfxComponentSwizzle m_ComponentSwizzleMappingR{gfxComponentSwizzle::Identity};
     gfxComponentSwizzle m_ComponentSwizzleMappingG{gfxComponentSwizzle::Identity};
@@ -42,31 +42,31 @@ protected:
     gfxComponentSwizzle m_ComponentSwizzleMappingA{gfxComponentSwizzle::Identity};
     gfxImageSubresourceRange m_SubresourceRange{};
 
-EPI_GENREGION_END(gfxTextureViewCreateInfo)
+EPI_GENREGION_END(gfxImageViewCreateInfo)
 };
 
-class gfxTextureView : public Object
+class gfxImageView : public Object
 {
-EPI_GENREGION_BEGIN(gfxTextureView)
+EPI_GENREGION_BEGIN(gfxImageView)
 
-EPI_GENHIDDEN_gfxTextureView()
+EPI_GENHIDDEN_gfxImageView()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xfed04145};
+    constexpr static epiMetaTypeID TypeID{0x555681eb};
 
-    enum gfxTextureView_PIDs
+    enum gfxImageView_PIDs
     {
         PID_COUNT = 0
     };
 
-EPI_GENREGION_END(gfxTextureView)
+EPI_GENREGION_END(gfxImageView)
 
 public:
     class Impl;
 
 public:
-    gfxTextureView() = default;
-    explicit gfxTextureView(const std::shared_ptr<Impl>& impl);
+    gfxImageView() = default;
+    explicit gfxImageView(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 

@@ -5,7 +5,7 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-void gfxFrameBufferCreateInfo::AddAttachment(const gfxTextureView& attachment)
+void gfxFrameBufferCreateInfo::AddAttachment(const gfxImageView& attachment)
 {
     m_Attachments.push_back(attachment);
 }

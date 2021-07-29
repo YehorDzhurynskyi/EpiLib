@@ -17,7 +17,7 @@ EPI_GENREGION_BEGIN(gfxImageCreateInfo)
 EPI_GENHIDDEN_gfxImageCreateInfo()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x724865ad};
+    constexpr static epiMetaTypeID TypeID{0xa554a68e};
 
     enum gfxImageCreateInfo_PIDs
     {
@@ -54,7 +54,7 @@ EPI_GENREGION_BEGIN(gfxImage)
 EPI_GENHIDDEN_gfxImage()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0x50caeee4};
+    constexpr static epiMetaTypeID TypeID{0x72c55cfe};
 
     enum gfxImage_PIDs
     {

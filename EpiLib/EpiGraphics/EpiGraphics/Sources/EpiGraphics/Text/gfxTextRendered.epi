@@ -1,5 +1,5 @@
 class gfxTextRendered
 {
     [ReadOnly]
-    gfxTexture Texture;
+    gfxImage Image;
 };

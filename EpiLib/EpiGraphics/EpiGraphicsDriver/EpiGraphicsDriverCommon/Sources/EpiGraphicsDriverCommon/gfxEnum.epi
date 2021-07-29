@@ -1,19 +1,19 @@
-enum gfxTextureType
+enum gfxImageType
 {
-    Texture1D,
-    Texture2D,
-    Texture3D
+    Image1D,
+    Image2D,
+    Image3D
 };
 
-enum gfxTextureViewType
+enum gfxImageViewType
 {
-    TextureView1D,
-    TextureView2D,
-    TextureView3D,
-    TextureViewCube,
-    TextureView1DArray,
-    TextureView2DArray,
-    TextureViewCubeArray
+    ImageView1D,
+    ImageView2D,
+    ImageView3D,
+    ImageViewCube,
+    ImageView1DArray,
+    ImageView2DArray,
+    ImageViewCubeArray
 };
 
 enum gfxVertexBufferUsage
