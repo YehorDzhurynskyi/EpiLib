@@ -2,7 +2,7 @@
 
 #include "EpiGraphicsDriver/gfxDriver.h"
 
-#include "EpiGraphicsDriverCommon/gfxDescriptorSet.h"
+#include "EpiGraphics/gfxDescriptorSet.h"
 
 #include "EpiDrawer/Camera/drwCameraPersp.h"
 

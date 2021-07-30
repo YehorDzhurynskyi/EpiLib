@@ -11,7 +11,7 @@ EPI_GENREGION_END(include)
 #include "EpiDrawer/Text/drwTextRenderedAtlas.h"
 #include "EpiDrawer/Text/drwTextFace.h"
 
-#include "EpiGraphicsDriverCommon/gfxShaderModule.h"
+#include "EpiGraphics/gfxShaderModule.h"
 
 #include "EpiCore/Color.h"
 

@@ -1,1 +1,33 @@
+option(EPI_GRAPHICS_DRIVER_GL "Enable OpenGL Graphics API support" OFF)
+option(EPI_GRAPHICS_DRIVER_VK "Enable Vulkan Graphics API support" ON)
+
+#add_subdirectory(EpiGraphicsImpl)
+add_subdirectory(EpiGraphics)
 add_subdirectory(EpiGraphicsDriver)
+
+if (EPI_GRAPHICS_DRIVER_GL)
+    find_package(OpenGL)
+
+    if (OpenGL_FOUND)
+        message(STATUS "OpenGL libraries are found: ${OPENGL_LIBRARIES}")
+        add_subdirectory(EpiGraphicsImplGL)
+        target_link_libraries(EpiGraphicsDriver PRIVATE EpiGraphicsImplGL)
+    else()
+        message(WARNING "Failed to find OpenGL, skipping OpenGL Graphics Driver compilation...")
+    endif()
+endif()
+
+if (EPI_GRAPHICS_DRIVER_VK)
+    find_package(Vulkan)
+
+    if (Vulkan_FOUND)
+        message(STATUS "Vulkan libraries are found: ${Vulkan_LIBRARIES}")
+        add_subdirectory(EpiGraphicsImplVK)
+        target_link_libraries(EpiGraphicsDriver PRIVATE EpiGraphicsImplVK)
+    else()
+        message(WARNING "Failed to find Vulkan, skipping Vulkan Graphics Driver compilation...")
+        if (NOT $ENV{VK_SDK_PATH})
+            message(WARNING "VK_SDK_PATH environment variable isn't set, try to install Vulkan SDK then reboot your device")
+        endif()
+    endif()
+endif()

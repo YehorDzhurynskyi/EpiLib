@@ -1,10 +1,10 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxSurface.h"
-#include "EpiGraphicsDriverCommon/gfxSwapChain.h"
-#include "EpiGraphicsDriverCommon/gfxPhysicalDevice.h"
-#include "EpiGraphicsDriverCommon/gfxDevice.h"
-#include "EpiGraphicsDriverCommon/gfxQueueFamily.h"
+#include "EpiGraphics/gfxSurface.h"
+#include "EpiGraphics/gfxSwapChain.h"
+#include "EpiGraphics/gfxPhysicalDevice.h"
+#include "EpiGraphics/gfxDevice.h"
+#include "EpiGraphics/gfxQueueFamily.h"
 
 #include <wx/window.h>
 

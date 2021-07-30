@@ -9,7 +9,7 @@ EPI_GENREGION_END(include)
 #include "EpiDrawer/drwContext.h"
 #include "EpiDrawer/drwDrawer.h"
 #include "EpiDrawer/Camera/drwCamera.h"
-#include "EpiGraphicsDriverCommon/gfxShaderModule.h"
+#include "EpiGraphics/gfxShaderModule.h"
 
 EPI_NAMESPACE_BEGIN()
 

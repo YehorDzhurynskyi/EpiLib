@@ -1,32 +1,28 @@
-option(EPI_GRAPHICS_DRIVER_GL "Enable OpenGL Graphics API support" OFF)
-option(EPI_GRAPHICS_DRIVER_VK "Enable Vulkan Graphics API support" ON)
+project(EpiGraphicsDriver)
 
-add_subdirectory(EpiGraphicsDriverCommon)
-add_subdirectory(EpiGraphicsDriver)
+add_library(EpiGraphicsDriver
+    Sources/EpiGraphicsDriver/gfxDriver.epi
+    Sources/EpiGraphicsDriver/gfxDriver.h
+    Sources/EpiGraphicsDriver/gfxDriver.cpp
 
-if (EPI_GRAPHICS_DRIVER_GL)
-    find_package(OpenGL)
+    Sources/EpiGraphicsDriver/gfxGPUCrashTracker.epi
+    Sources/EpiGraphicsDriver/gfxGPUCrashTracker.h
+    Sources/EpiGraphicsDriver/gfxGPUCrashTracker.cpp
+)
+get_target_property(EpiGraphicsDriver_SOURCES EpiGraphicsDriver SOURCES)
+epi_pack_sources(${EpiGraphicsDriver_SOURCES})
 
-    if (OpenGL_FOUND)
-        message(STATUS "OpenGL libraries are found: ${OPENGL_LIBRARIES}")
-        add_subdirectory(EpiGraphicsDriverGL)
-        target_link_libraries(EpiGraphicsDriver PRIVATE EpiGraphicsDriverGL)
-    else()
-        message(WARNING "Failed to find OpenGL, skipping OpenGL Graphics Driver compilation...")
-    endif()
-endif()
+target_include_directories(EpiGraphicsDriver
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Sources>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
+)
 
-if (EPI_GRAPHICS_DRIVER_VK)
-    find_package(Vulkan)
+target_link_libraries(EpiGraphicsDriver
+    PUBLIC
+        EpiGraphics
+)
 
-    if (Vulkan_FOUND)
-        message(STATUS "Vulkan libraries are found: ${Vulkan_LIBRARIES}")
-        add_subdirectory(EpiGraphicsDriverVK)
-        target_link_libraries(EpiGraphicsDriver PRIVATE EpiGraphicsDriverVK)
-    else()
-        message(WARNING "Failed to find Vulkan, skipping Vulkan Graphics Driver compilation...")
-        if (NOT $ENV{VK_SDK_PATH})
-            message(WARNING "VK_SDK_PATH environment variable isn't set, try to install Vulkan SDK then reboot your device")
-        endif()
-    endif()
-endif()
+epi_module_register(EpiGraphicsDriver
+    FOLDER "EpiLib"
+)

@@ -1,10 +1,11 @@
 #include "EpiwxWidgets/Vulkan/epiWXVulkanCanvas.h"
 
 #include "EpiGraphicsDriver/gfxDriver.h"
-#include "EpiGraphicsDriverCommon/gfxDevice.h"
-#include "EpiGraphicsDriverCommon/gfxWindow.h"
-#include "EpiGraphicsDriverCommon/gfxEnum.h"
-#include "EpiGraphicsDriverCommon/gfxQueueDescriptor.h"
+
+#include "EpiGraphics/gfxDevice.h"
+#include "EpiGraphics/gfxWindow.h"
+#include "EpiGraphics/gfxEnum.h"
+#include "EpiGraphics/gfxQueueDescriptor.h"
 
 #include <wx/app.h>
 
