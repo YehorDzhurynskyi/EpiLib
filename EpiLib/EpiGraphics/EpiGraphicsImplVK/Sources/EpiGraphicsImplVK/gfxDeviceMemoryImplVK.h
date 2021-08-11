@@ -1,15 +1,13 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-#include "EpiGraphicsImplVK/gfxBufferImplVK.h"
-#include "EpiGraphicsImplVK/gfxPhysicalDeviceImplVK.h"
+#include "EpiGraphicsImpl/gfxDeviceMemoryImpl.h"
 
 struct VkDevice_T;
 struct VkDeviceMemory_T;
 
 EPI_NAMESPACE_BEGIN()
 
+class gfxPhysicalDeviceImplVK;
 class gfxDeviceMemoryImplVK : public gfxDeviceMemory::Impl
 {
 public:

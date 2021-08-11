@@ -1,41 +1,33 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkSwapchainKHR_T;
-struct VkImageView_T;
+#include "EpiGraphics/gfxSwapChain.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDeviceImplVK;
-class gfxSwapChainImplVK : public gfxSwapChain::Impl
+class gfxSwapChain::Impl
 {
 public:
-    explicit gfxSwapChainImplVK(const gfxDeviceImplVK& device);
-    gfxSwapChainImplVK(const gfxSwapChainImplVK& rhs) = delete;
-    gfxSwapChainImplVK& operator=(const gfxSwapChainImplVK& rhs) = delete;
-    gfxSwapChainImplVK(gfxSwapChainImplVK&& rhs) = default;
-    gfxSwapChainImplVK& operator=(gfxSwapChainImplVK&& rhs) = default;
-    ~gfxSwapChainImplVK() override;
+    static const gfxSwapChain::Impl* ExtractImpl(const gfxSwapChain& swapChain) { return swapChain.m_Impl.get(); }
 
-    epiBool Init(const gfxSwapChainCreateInfo& info);
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool Recreate(const gfxSwapChainCreateInfo& info) override;
+    virtual epiBool Recreate(const gfxSwapChainCreateInfo& info) = 0;
 
-    epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) override;
+    virtual epiS32 AcquireNextImage(const gfxSemaphore* signalSemaphore, const gfxFence* signalFence, epiU64 timeout) = 0;
 
-    epiSize2u GetExtent() const override;
+    epiU32 GetBufferCount() const { return m_ImageViews.Size(); }
+    virtual epiSize2u GetExtent() const = 0;
 
-    VkSwapchainKHR_T* GetVkSwapChain() const;
+    const epiArray<std::shared_ptr<gfxImageView::Impl>>& GetImageViews() const { return m_ImageViews; }
 
 protected:
-    epiBool Reset();
-
-protected:
-    const gfxDeviceImplVK& m_Device;
-    VkSwapchainKHR_T* m_VkSwapChain{nullptr};
-
-    epiSize2u m_Extent{};
+    epiArray<std::shared_ptr<gfxImageView::Impl>> m_ImageViews;
 };
 
 EPI_NAMESPACE_END()

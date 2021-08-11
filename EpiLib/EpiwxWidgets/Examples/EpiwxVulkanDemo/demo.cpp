@@ -862,7 +862,7 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 
     gfxQueuePresentInfo queuePresentInfo{};
     queuePresentInfo.GetWaitSemaphores().push_back(m_SemaphoreRenderFinished[frameIndex]);
-    queuePresentInfo.GetSwapChains().push_back(m_SwapChain);
+    queuePresentInfo.GetSwapChains().push_back(&m_SwapChain);
     queuePresentInfo.GetSwapChainImageIndices().push_back(imageIndex);
 
     m_QueueFamily[0].Present(queuePresentInfo);

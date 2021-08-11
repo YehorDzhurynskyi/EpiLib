@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxImage.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
 EPI_NAMESPACE_BEGIN()
 
 gfxImage::gfxImage(const std::shared_ptr<Impl>& impl)

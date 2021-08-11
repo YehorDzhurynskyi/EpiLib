@@ -3,6 +3,7 @@
 #include "EpiGraphicsImplVK/gfxErrorVK.h"
 #include "EpiGraphicsImplVK/gfxEnumVK.h"
 #include "EpiGraphicsImplVK/gfxDescriptorSetImplVK.h"
+#include "EpiGraphicsImplVK/gfxDescriptorSetLayoutImplVK.h"
 
 #include <vulkan/vulkan.h>
 

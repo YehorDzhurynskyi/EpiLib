@@ -1,29 +1,21 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkDevice_T;
-struct VkFramebuffer_T;
+#include "EpiGraphics/gfxFrameBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxFrameBufferImplVK : public gfxFrameBuffer::Impl
+class gfxFrameBuffer::Impl
 {
 public:
-    explicit gfxFrameBufferImplVK(VkDevice_T* device);
-    gfxFrameBufferImplVK(const gfxFrameBufferImplVK& rhs) = delete;
-    gfxFrameBufferImplVK& operator=(const gfxFrameBufferImplVK& rhs) = delete;
-    gfxFrameBufferImplVK(gfxFrameBufferImplVK&& rhs) = default;
-    gfxFrameBufferImplVK& operator=(gfxFrameBufferImplVK&& rhs) = default;
-    ~gfxFrameBufferImplVK() override;
+    static const gfxFrameBuffer::Impl* ExtractImpl(const gfxFrameBuffer& frameBuffer) { return frameBuffer.m_Impl.get(); }
 
-    epiBool Init(const gfxFrameBufferCreateInfo& info);
-
-    VkFramebuffer_T* GetVkFrameBuffer() const;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkFramebuffer_T* m_VkFrameBuffer{nullptr};
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 };
 
 EPI_NAMESPACE_END()

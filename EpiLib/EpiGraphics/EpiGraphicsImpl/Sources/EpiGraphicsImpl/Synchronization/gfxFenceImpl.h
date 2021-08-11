@@ -1,34 +1,24 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-#include "EpiGraphicsDriverCommon/Synchronization/gfxFence.h"
-
-struct VkFence_T;
-struct VkDevice_T;
+#include "EpiGraphics/Synchronization/gfxFence.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxFenceImplVK : public gfxFence::Impl
+class gfxFence::Impl
 {
 public:
-    explicit gfxFenceImplVK(VkDevice_T* device);
-    gfxFenceImplVK(const gfxFenceImplVK& rhs) = delete;
-    gfxFenceImplVK& operator=(const gfxFenceImplVK& rhs) = delete;
-    gfxFenceImplVK(gfxFenceImplVK&& rhs) = default;
-    gfxFenceImplVK& operator=(gfxFenceImplVK&& rhs) = default;
-    ~gfxFenceImplVK() override;
+    static const gfxFence::Impl* ExtractImpl(const gfxFence& fence) { return fence.m_Impl.get(); }
 
-    epiBool Init(const gfxFenceCreateInfo& info);
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool Reset() override;
-    epiBool Wait(epiU64 timeout) override;
-
-    VkFence_T* GetVkFence() const;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkFence_T* m_VkFence{nullptr};
+    virtual epiBool Reset() = 0;
+    virtual epiBool Wait(epiU64 timeout) = 0;
 };
 
 EPI_NAMESPACE_END()

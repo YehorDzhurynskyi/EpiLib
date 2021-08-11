@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/gfxQueueFamilyImpl.h"
 
 EPI_NAMESPACE_BEGIN()
 

@@ -1,29 +1,21 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-struct VkDevice_T;
-struct VkDescriptorSetLayout_T;
+#include "EpiGraphics/gfxDescriptorSetLayout.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDescriptorSetLayoutImplVK : public gfxDescriptorSetLayout::Impl
+class gfxDescriptorSetLayout::Impl
 {
 public:
-    explicit gfxDescriptorSetLayoutImplVK(VkDevice_T* device);
-    gfxDescriptorSetLayoutImplVK(const gfxDescriptorSetLayoutImplVK& rhs) = delete;
-    gfxDescriptorSetLayoutImplVK& operator=(const gfxDescriptorSetLayoutImplVK& rhs) = delete;
-    gfxDescriptorSetLayoutImplVK(gfxDescriptorSetLayoutImplVK&& rhs) = default;
-    gfxDescriptorSetLayoutImplVK& operator=(gfxDescriptorSetLayoutImplVK&& rhs) = default;
-    ~gfxDescriptorSetLayoutImplVK() override;
+    static const gfxDescriptorSetLayout::Impl* ExtractImpl(const gfxDescriptorSetLayout& layout) { return layout.m_Impl.get(); }
 
-    epiBool Init(const gfxDescriptorSetLayoutCreateInfo& info);
-
-    VkDescriptorSetLayout_T* GetVkDescriptorSetLayout() const;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkDescriptorSetLayout_T* m_VkDescriptorSetLayout{nullptr};
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 };
 
 EPI_NAMESPACE_END()

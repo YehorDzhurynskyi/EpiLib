@@ -1,29 +1,21 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkImageView_T;
-struct VkDevice_T;
+#include "EpiGraphics/gfxImageView.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxImageViewImplVK : public gfxImageView::Impl
+class gfxImageView::Impl
 {
 public:
-    explicit gfxImageViewImplVK(VkDevice_T* device);
-    gfxImageViewImplVK(const gfxImageViewImplVK& rhs) = delete;
-    gfxImageViewImplVK& operator=(const gfxImageViewImplVK& rhs) = delete;
-    gfxImageViewImplVK(gfxImageViewImplVK&& rhs) = default;
-    gfxImageViewImplVK& operator=(gfxImageViewImplVK&& rhs) = default;
-    ~gfxImageViewImplVK() override;
+    static const gfxImageView::Impl* ExtractImpl(const gfxImageView& imageView) { return imageView.m_Impl.get(); }
 
-    epiBool Init(const gfxImageViewCreateInfo& info);
-
-    VkImageView_T* GetVkImageView() const;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkImageView_T* m_VkImageView{nullptr};
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 };
 
 EPI_NAMESPACE_END()

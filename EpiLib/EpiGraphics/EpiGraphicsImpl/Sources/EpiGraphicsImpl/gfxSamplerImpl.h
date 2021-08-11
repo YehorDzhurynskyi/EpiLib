@@ -1,29 +1,21 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkDevice_T;
-struct VkSampler_T;
+#include "EpiGraphics/gfxSampler.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxSamplerImplVK : public gfxSampler::Impl
+class gfxSampler::Impl
 {
 public:
-    explicit gfxSamplerImplVK(VkDevice_T* device);
-    gfxSamplerImplVK(const gfxSamplerImplVK& rhs) = delete;
-    gfxSamplerImplVK& operator=(const gfxSamplerImplVK& rhs) = delete;
-    gfxSamplerImplVK(gfxSamplerImplVK&& rhs) = default;
-    gfxSamplerImplVK& operator=(gfxSamplerImplVK&& rhs) = default;
-    ~gfxSamplerImplVK() override;
+    static const gfxSampler::Impl* ExtractImpl(const gfxSampler& sampler) { return sampler.m_Impl.get(); }
 
-    epiBool Init(const gfxSamplerCreateInfo& info);
-
-    VkSampler_T* GetVkSampler() const;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkSampler_T* m_VkSampler{nullptr};
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 };
 
 EPI_NAMESPACE_END()

@@ -1,9 +1,12 @@
 #include "EpiGraphicsImplVK/gfxSurfaceImplVK.h"
 
-#include "EpiGraphicsImplVK/gfxSwapChainImplVK.h"
-#include "EpiGraphicsImplVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsImplVK/gfxEnumVK.h"
 #include "EpiGraphicsImplVK/gfxErrorVK.h"
+#include "EpiGraphicsImplVK/gfxSwapChainImplVK.h"
+#include "EpiGraphicsImplVK/gfxDeviceImplVK.h"
+#include "EpiGraphicsImplVK/gfxQueueFamilyImplVK.h"
+
+#include "EpiGraphics/gfxWindow.h"
 
 #include <vulkan/vulkan.h>
 
@@ -14,16 +17,9 @@
 
 EPI_NAMESPACE_BEGIN()
 
-gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance_T* instance, const gfxWindow& window)
+gfxSurfaceImplVK::gfxSurfaceImplVK(VkInstance_T* instance)
     : m_VkInstance{instance}
 {
-    VkWin32SurfaceCreateInfoKHR createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-    createInfo.hwnd = window.GetHWND();
-    createInfo.hinstance = GetModuleHandle(nullptr);
-
-    const VkResult result = vkCreateWin32SurfaceKHR(m_VkInstance, &createInfo, nullptr, &m_VkSurface);
-    gfxLogErrorIfNotSuccessEx(result, "Failed to call vkCreateWin32SurfaceKHR!"); // TODO: gfxLogErrorOnFailEx
 }
 
 gfxSurfaceImplVK::~gfxSurfaceImplVK()
@@ -32,6 +28,22 @@ gfxSurfaceImplVK::~gfxSurfaceImplVK()
     {
         vkDestroySurfaceKHR(m_VkInstance, m_VkSurface, nullptr);
     }
+}
+
+epiBool gfxSurfaceImplVK::Init(const gfxWindow& window)
+{
+    VkWin32SurfaceCreateInfoKHR createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+    createInfo.hwnd = window.GetHWND();
+    createInfo.hinstance = GetModuleHandle(nullptr);
+
+    if (const VkResult result = vkCreateWin32SurfaceKHR(m_VkInstance, &createInfo, nullptr, &m_VkSurface); result != VK_SUCCESS)
+    {
+        gfxLogErrorEx(result, "Failed to call vkCreateWin32SurfaceKHR!");
+        return false;
+    }
+
+    return true;
 }
 
 epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const

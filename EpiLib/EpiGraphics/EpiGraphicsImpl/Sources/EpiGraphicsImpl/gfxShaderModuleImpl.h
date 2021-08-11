@@ -1,40 +1,26 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkDevice_T;
-struct VkShaderModule_T;
-struct VkPipelineShaderStageCreateInfo_T;
+#include "EpiGraphics/gfxShaderModule.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxShaderModuleImplVK : public gfxShaderModule::Impl
+class gfxShaderModule::Impl
 {
 public:
-    explicit gfxShaderModuleImplVK(VkDevice_T* device);
-    gfxShaderModuleImplVK(const gfxShaderModuleImplVK& rhs) = delete;
-    gfxShaderModuleImplVK& operator=(const gfxShaderModuleImplVK& rhs) = delete;
-    gfxShaderModuleImplVK(gfxShaderModuleImplVK&& rhs) = default;
-    gfxShaderModuleImplVK& operator=(gfxShaderModuleImplVK&& rhs) = default;
-    ~gfxShaderModuleImplVK() override;
+    static const gfxShaderModule::Impl* ExtractImpl(const gfxShaderModule& shaderModule) { return shaderModule.m_Impl.get(); }
 
-    epiBool Init(const gfxShaderModuleCreateInfo& info);
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    gfxShaderStage GetStage() const override;
-    const epiArray<epiU8>& GetCode() const override;
-    gfxShaderModuleFrontend GetFrontend() const override;
-    const epiString& GetEntryPoint() const override;
-
-    VkShaderModule_T* GetVkShaderModule() const;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkShaderModule_T* m_VkShaderModule{nullptr};
-
-    gfxShaderStage m_Stage{};
-    epiArray<epiU8> m_Code;
-    gfxShaderModuleFrontend m_Frontend{gfxShaderModuleFrontend::Unknown};
-    epiString m_EntryPoint;
+    virtual gfxShaderStage GetStage() const = 0;
+    virtual const epiArray<epiU8>& GetCode() const = 0;
+    virtual gfxShaderModuleFrontend GetFrontend() const = 0;
+    virtual const epiString& GetEntryPoint() const = 0;
 };
 
 EPI_NAMESPACE_END()

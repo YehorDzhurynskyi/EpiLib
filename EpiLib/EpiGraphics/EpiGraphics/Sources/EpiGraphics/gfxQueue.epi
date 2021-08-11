@@ -14,7 +14,7 @@ class gfxQueuePresentInfo
     [ReadOnly]
     {
         epiArray<gfxSemaphore> WaitSemaphores;
-        epiArray<gfxSwapChain> SwapChains;
+        epiPtrArray<gfxSwapChain> SwapChains; # TODO: add a docstring (using Ptr because of cyclic include)
         epiArray<epiU32> SwapChainImageIndices;
     }
 };

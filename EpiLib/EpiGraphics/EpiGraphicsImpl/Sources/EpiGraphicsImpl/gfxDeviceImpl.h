@@ -1,56 +1,49 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-#include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
-
-struct VkDevice_T;
+#include "EpiGraphics/gfxDevice.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDeviceImplVK : public gfxDevice::Impl
+class gfxDevice::Impl
 {
 public:
-    gfxDeviceImplVK() = default;
-    gfxDeviceImplVK(const gfxDeviceImplVK& rhs) = delete;
-    gfxDeviceImplVK& operator=(const gfxDeviceImplVK& rhs) = delete;
-    gfxDeviceImplVK(gfxDeviceImplVK&& rhs) = default;
-    gfxDeviceImplVK& operator=(gfxDeviceImplVK&& rhs) = default;
-    ~gfxDeviceImplVK() override;
+    static std::shared_ptr<gfxDevice::Impl> ExtractImpl(const gfxDevice& device) { return device.m_Impl; }
 
-    epiBool Init(const gfxDeviceCreateInfo& info);
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const override;
-    epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const override;
+    virtual epiBool IsExtensionEnabled(gfxPhysicalDeviceExtension extension) const = 0;
+    virtual epiBool IsFeatureEnabled(gfxPhysicalDeviceFeature feature) const = 0;
 
-    epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const override;
+    virtual epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const = 0;
 
-    std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const override;
-    std::shared_ptr<gfxRenderPass::Impl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const override;
-    std::shared_ptr<gfxPipelineLayout::Impl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const override;
-    std::shared_ptr<gfxPipelineGraphics::Impl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const override;
-    std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const override;
-    std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const override;
-    std::shared_ptr<gfxImage::Impl> CreateImage(const gfxImageCreateInfo& info) const override;
-    std::shared_ptr<gfxImageView::Impl> CreateImageView(const gfxImageViewCreateInfo& info) const override;
-    std::shared_ptr<gfxSampler::Impl> CreateSampler(const gfxSamplerCreateInfo& info) const override;
-    std::shared_ptr<gfxCommandPool::Impl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const override;
-    std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const override;
-    std::shared_ptr<gfxDeviceMemory::Impl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const override;
-    std::shared_ptr<gfxDeviceMemory::Impl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const override;
-    std::shared_ptr<gfxDescriptorSetLayout::Impl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const override;
-    std::shared_ptr<gfxDescriptorPool::Impl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const override;
-    std::shared_ptr<gfxSemaphore::Impl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const override;
-    std::shared_ptr<gfxFence::Impl> CreateFence(const gfxFenceCreateInfo& info) const override;
+    virtual std::shared_ptr<gfxSwapChain::Impl> CreateSwapChain(const gfxSwapChainCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxRenderPass::Impl> CreateRenderPass(const gfxRenderPassCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxPipelineLayout::Impl> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxPipelineGraphics::Impl> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxShaderModule::Impl> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxFrameBuffer::Impl> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxImage::Impl> CreateImage(const gfxImageCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxImageView::Impl> CreateImageView(const gfxImageViewCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxSampler::Impl> CreateSampler(const gfxSamplerCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxCommandPool::Impl> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxBuffer::Impl> CreateBuffer(const gfxBufferCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDeviceMemory::Impl> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDeviceMemory::Impl> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDescriptorSetLayout::Impl> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxDescriptorPool::Impl> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxSemaphore::Impl> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const = 0;
+    virtual std::shared_ptr<gfxFence::Impl> CreateFence(const gfxFenceCreateInfo& info) const = 0;
 
-    VkDevice_T* GetVkDevice() const;
+    const epiArray<std::shared_ptr<gfxQueueFamily::Impl>>& GetQueueFamilies() const { return m_QueueFamilies; }
 
 protected:
-    VkDevice_T* m_VkDevice{nullptr};
-
-    std::weak_ptr<gfxPhysicalDeviceImplVK> m_PhysicalDevice;
-    epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};
-    epiBool m_FeatureEnabled[static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT)]{};
+    epiArray<std::shared_ptr<gfxQueueFamily::Impl>> m_QueueFamilies;
 };
 
 EPI_NAMESPACE_END()

@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphicsDriver/gfxDriver.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
 #include "EpiGraphicsImplVK/gfxInstanceImplVK.h"
 
 EPI_NAMESPACE_BEGIN()

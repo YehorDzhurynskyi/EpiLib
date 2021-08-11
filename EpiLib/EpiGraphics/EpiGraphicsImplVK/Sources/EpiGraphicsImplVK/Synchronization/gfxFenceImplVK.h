@@ -1,8 +1,6 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-#include "EpiGraphics/Synchronization/gfxFence.h"
+#include "EpiGraphicsImpl/Synchronization/gfxFenceImpl.h"
 
 struct VkFence_T;
 struct VkDevice_T;

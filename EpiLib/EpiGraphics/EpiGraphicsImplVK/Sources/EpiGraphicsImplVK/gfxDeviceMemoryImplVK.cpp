@@ -3,6 +3,8 @@
 #include "EpiGraphicsImplVK/gfxErrorVK.h"
 #include "EpiGraphicsImplVK/gfxEnumVK.h"
 #include "EpiGraphicsImplVK/gfxImageImplVK.h"
+#include "EpiGraphicsImplVK/gfxPhysicalDeviceImplVK.h"
+#include "EpiGraphicsImplVK/gfxBufferImplVK.h"
 
 #include <vulkan/vulkan.h>
 

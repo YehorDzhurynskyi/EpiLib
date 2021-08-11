@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxDescriptorSetLayout.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
 EPI_NAMESPACE_BEGIN()
 
 gfxDescriptorSetLayoutCreateInfo& gfxDescriptorSetLayoutCreateInfo::AddBinding(epiU32 binding, gfxDescriptorType descriptorType, epiU32 descriptorCount, gfxShaderStage shaderStageMask)

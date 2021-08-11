@@ -1,27 +1,25 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-struct VkDevice_T;
-struct VkCommandPool_T;
+#include "EpiGraphics/gfxCommandPool.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxCommandPoolImplVK : public gfxCommandPool::Impl
+class gfxCommandPool::Impl
 {
 public:
-    explicit gfxCommandPoolImplVK(VkDevice_T* device);
-    gfxCommandPoolImplVK(const gfxCommandPoolImplVK& rhs) = delete;
-    gfxCommandPoolImplVK& operator=(const gfxCommandPoolImplVK& rhs) = delete;
-    gfxCommandPoolImplVK(gfxCommandPoolImplVK&& rhs) = default;
-    gfxCommandPoolImplVK& operator=(gfxCommandPoolImplVK&& rhs) = default;
-    ~gfxCommandPoolImplVK() override;
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool Init(const gfxCommandPoolCreateInfo& info);
+    const epiArray<std::shared_ptr<gfxCommandBuffer::Impl>>& GetPrimaryCommandBuffers() { return m_PrimaryCommandBuffers; }
+    const epiArray<std::shared_ptr<gfxCommandBuffer::Impl>>& GetSecondaryCommandBuffers() { return m_SecondaryCommandBuffers; }
 
 protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkCommandPool_T* m_VkCommandPool{nullptr};
+    epiArray<std::shared_ptr<gfxCommandBuffer::Impl>> m_PrimaryCommandBuffers;
+    epiArray<std::shared_ptr<gfxCommandBuffer::Impl>> m_SecondaryCommandBuffers;
 };
 
 EPI_NAMESPACE_END()

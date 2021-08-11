@@ -1,29 +1,21 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkRenderPass_T;
-struct VkDevice_T;
+#include "EpiGraphics/gfxRenderPass.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxRenderPassImplVK : public gfxRenderPass::Impl
+class gfxRenderPass::Impl
 {
 public:
-    gfxRenderPassImplVK(VkDevice_T* device);
-    gfxRenderPassImplVK(const gfxRenderPassImplVK& rhs) = delete;
-    gfxRenderPassImplVK& operator=(const gfxRenderPassImplVK& rhs) = delete;
-    gfxRenderPassImplVK(gfxRenderPassImplVK&& rhs) = default;
-    gfxRenderPassImplVK& operator=(gfxRenderPassImplVK&& rhs) = default;
-    ~gfxRenderPassImplVK() override;
+    static const gfxRenderPass::Impl* ExtractImpl(const gfxRenderPass& renderPass) { return renderPass.m_Impl.get(); }
 
-    epiBool Init(const gfxRenderPassCreateInfo& info);
-
-    VkRenderPass_T* GetVkRenderPass() const;
-
-protected:
-    VkRenderPass_T* m_VkRenderPass{nullptr};
-    VkDevice_T* m_VkDevice{nullptr};
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 };
 
 EPI_NAMESPACE_END()

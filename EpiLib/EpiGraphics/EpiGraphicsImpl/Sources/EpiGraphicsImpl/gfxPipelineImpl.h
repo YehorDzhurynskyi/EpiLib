@@ -1,35 +1,33 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-#include "EpiGraphicsDriverVK/gfxDeviceImplVK.h"
-#include "EpiGraphicsDriverVK/gfxShaderModuleImplVK.h"
-#include "EpiGraphicsDriverVK/gfxRenderPassImplVK.h"
-#include "EpiGraphicsDriverVK/gfxDescriptorSetLayoutImplVK.h"
-
-struct VkDevice_T;
-struct VkPipeline_T;
-struct VkDescriptorSetLayout_T;
+#include "EpiGraphics/gfxPipeline.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxPipelineGraphicsImplVK : public gfxPipelineGraphics::Impl
+class gfxPipelineGraphics::Impl
 {
 public:
-    explicit gfxPipelineGraphicsImplVK(const gfxDeviceImplVK& device);
-    gfxPipelineGraphicsImplVK(const gfxPipelineGraphicsImplVK& rhs) = delete;
-    gfxPipelineGraphicsImplVK& operator=(const gfxPipelineGraphicsImplVK& rhs) = delete;
-    gfxPipelineGraphicsImplVK(gfxPipelineGraphicsImplVK&& rhs) = default;
-    gfxPipelineGraphicsImplVK& operator=(gfxPipelineGraphicsImplVK&& rhs) = default;
-    ~gfxPipelineGraphicsImplVK() override;
+    static const gfxPipelineGraphics::Impl* ExtractImpl(const gfxPipelineGraphics& pipeline) { return pipeline.m_Impl.get(); }
 
-    epiBool Init(const gfxPipelineGraphicsCreateInfo& info);
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    VkPipeline_T* GetVkPipeline() const;
+    epiBool IsDynamic(gfxPipelineDynamicState state) const { return m_DynamicStates[static_cast<epiU32>(state)]; }
+
+    const epiArray<gfxPipelineViewport>& GetViewports() const { return m_Viewports; }
+    epiArray<gfxPipelineViewport>& GetViewports() { return m_Viewports; }
+    const epiArray<epiRect2s>& GetScissors() const { return m_Scissors; }
+    epiArray<epiRect2s>& GetScissors() { return m_Scissors; }
 
 protected:
-    const gfxDeviceImplVK& m_Device;
-    VkPipeline_T* m_VkPipeline{nullptr};
+    epiBool m_DynamicStates[static_cast<epiU32>(gfxPipelineDynamicState::COUNT)]{};
+    epiArray<gfxPipelineViewport> m_Viewports{};
+    epiArray<epiRect2s> m_Scissors{};
 };
 
 EPI_NAMESPACE_END()

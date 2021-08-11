@@ -1,7 +1,7 @@
 option(EPI_GRAPHICS_DRIVER_GL "Enable OpenGL Graphics API support" OFF)
 option(EPI_GRAPHICS_DRIVER_VK "Enable Vulkan Graphics API support" ON)
 
-#add_subdirectory(EpiGraphicsImpl)
+add_subdirectory(EpiGraphicsImpl)
 add_subdirectory(EpiGraphics)
 add_subdirectory(EpiGraphicsDriver)
 

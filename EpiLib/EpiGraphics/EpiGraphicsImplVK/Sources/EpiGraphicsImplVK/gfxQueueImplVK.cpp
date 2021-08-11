@@ -158,9 +158,11 @@ epiBool gfxQueueImplVK::Present(const gfxQueuePresentInfo& info)
     std::vector<VkSemaphore> waitSemaphoresVk;
     waitSemaphoresVk.reserve(info.GetWaitSemaphores().Size());
 
-    std::transform(info.GetSwapChains().begin(), info.GetSwapChains().end(), std::back_inserter(swapChainsVk), [](const gfxSwapChain& swapChain)
+    std::transform(info.GetSwapChains().begin(), info.GetSwapChains().end(), std::back_inserter(swapChainsVk), [](const gfxSwapChain* swapChain)
     {
-        const gfxSwapChainImplVK* swapChainImpl = static_cast<const gfxSwapChainImplVK*>(gfxSwapChain::Impl::ExtractImpl(swapChain));
+        epiAssert(swapChain != nullptr);
+
+        const gfxSwapChainImplVK* swapChainImpl = static_cast<const gfxSwapChainImplVK*>(gfxSwapChain::Impl::ExtractImpl(*swapChain));
         epiAssert(swapChainImpl != nullptr);
 
         return swapChainImpl->GetVkSwapChain();

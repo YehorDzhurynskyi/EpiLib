@@ -1,43 +1,21 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkImage_T;
-struct VkImageView_T;
-struct VkDevice_T;
+#include "EpiGraphics/gfxImage.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxImageImplVK : public gfxImage::Impl
+class gfxImage::Impl
 {
 public:
-    explicit gfxImageImplVK(VkImage_T* image);
-    gfxImageImplVK(const gfxImageImplVK& rhs) = delete;
-    gfxImageImplVK& operator=(const gfxImageImplVK& rhs) = delete;
-    gfxImageImplVK(gfxImageImplVK&& rhs) = default;
-    gfxImageImplVK& operator=(gfxImageImplVK&& rhs) = default;
-    ~gfxImageImplVK() override = default;
+    static const gfxImage::Impl* ExtractImpl(const gfxImage& image) { return image.m_Impl.get(); }
 
-    VkImage_T* GetVkImage() const;
-
-protected:
-    VkImage_T* m_VkImage{nullptr};
-};
-
-class gfxImageImplVKOwner : public gfxImageImplVK
-{
 public:
-    explicit gfxImageImplVKOwner(VkDevice_T* device);
-    gfxImageImplVKOwner(const gfxImageImplVKOwner& rhs) = delete;
-    gfxImageImplVKOwner& operator=(const gfxImageImplVKOwner& rhs) = delete;
-    gfxImageImplVKOwner(gfxImageImplVKOwner&& rhs) = default;
-    gfxImageImplVKOwner& operator=(gfxImageImplVKOwner&& rhs) = default;
-    ~gfxImageImplVKOwner() override;
-
-    epiBool Init(const gfxImageCreateInfo& info);
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 };
 
 EPI_NAMESPACE_END()

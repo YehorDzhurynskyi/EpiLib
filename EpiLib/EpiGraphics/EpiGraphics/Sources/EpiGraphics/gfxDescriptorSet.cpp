@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxDescriptorSet.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
 EPI_NAMESPACE_BEGIN()
 
 gfxDescriptorSet::gfxDescriptorSet(const std::shared_ptr<Impl>& impl)

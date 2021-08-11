@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/gfxQueueImpl.h"
 
 struct VkQueue_T;
 struct VkFence_T;

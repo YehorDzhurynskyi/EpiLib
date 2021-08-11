@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/gfxDeviceImpl.h"
 
 #include "EpiGraphicsImplVK/gfxPhysicalDeviceImplVK.h"
 

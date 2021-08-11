@@ -3,9 +3,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxCommandPool.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-#include "EpiGraphics/gfxFrameBuffer.h"
-#include "EpiGraphics/gfxRenderPass.h"
+#include "EpiGraphicsImpl/gfxCommandPoolImpl.h"
 
 EPI_NAMESPACE_BEGIN()
 

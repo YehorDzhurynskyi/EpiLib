@@ -1,32 +1,23 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-#include "EpiGraphicsDriverCommon/Synchronization/gfxSemaphore.h"
-
-struct VkDevice_T;
-struct VkSemaphore_T;
+#include "EpiGraphics/Synchronization/gfxSemaphore.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxSemaphoreImplVK : public gfxSemaphore::Impl
+class gfxSemaphore::Impl
 {
 public:
-    explicit gfxSemaphoreImplVK(VkDevice_T* device);
-    gfxSemaphoreImplVK(const gfxSemaphoreImplVK& rhs) = delete;
-    gfxSemaphoreImplVK& operator=(const gfxSemaphoreImplVK& rhs) = delete;
-    gfxSemaphoreImplVK(gfxSemaphoreImplVK&& rhs) = default;
-    gfxSemaphoreImplVK& operator=(gfxSemaphoreImplVK&& rhs) = default;
-    ~gfxSemaphoreImplVK() override;
+    static const gfxSemaphore::Impl* ExtractImpl(const gfxSemaphore& semaphore) { return semaphore.m_Impl.get(); }
 
-    epiBool Init(const gfxSemaphoreCreateInfo& info);
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout) override;
-
-    VkSemaphore_T* GetVkSemaphore() const;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkSemaphore_T* m_VkSemaphore{nullptr};
+    virtual epiBool Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeout) = 0;
 };
 
 EPI_NAMESPACE_END()

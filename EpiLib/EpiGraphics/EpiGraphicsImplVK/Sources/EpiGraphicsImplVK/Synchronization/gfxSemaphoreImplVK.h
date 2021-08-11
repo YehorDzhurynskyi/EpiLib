@@ -1,7 +1,6 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-#include "EpiGraphics/Synchronization/gfxSemaphore.h"
+#include "EpiGraphicsImpl/Synchronization/gfxSemaphoreImpl.h"
 
 struct VkDevice_T;
 struct VkSemaphore_T;

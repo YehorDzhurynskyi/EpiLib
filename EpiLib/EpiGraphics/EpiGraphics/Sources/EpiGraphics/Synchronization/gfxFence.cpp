@@ -3,7 +3,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/Synchronization/gfxFence.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/Synchronization/gfxFenceImpl.h"
 
 EPI_NAMESPACE_BEGIN()
 

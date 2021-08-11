@@ -11,6 +11,7 @@
 #include "EpiGraphicsImplVK/gfxFrameBufferImplVK.h"
 #include "EpiGraphicsImplVK/gfxPipelineImplVK.h"
 #include "EpiGraphicsImplVK/gfxBufferImplVK.h"
+#include "EpiGraphicsImplVK/gfxQueueFamilyImplVK.h"
 #include "EpiGraphicsImplVK/Synchronization/gfxSemaphoreImplVK.h"
 #include "EpiGraphicsImplVK/Synchronization/gfxFenceImplVK.h"
 

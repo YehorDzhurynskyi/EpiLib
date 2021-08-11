@@ -1,29 +1,21 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-struct VkDevice_T;
-struct VkBuffer_T;
+#include "EpiGraphics/gfxBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxBufferImplVK : public gfxBuffer::Impl
+class gfxBuffer::Impl
 {
 public:
-    explicit gfxBufferImplVK(VkDevice_T* device);
-    gfxBufferImplVK(const gfxBufferImplVK& rhs) = delete;
-    gfxBufferImplVK& operator=(const gfxBufferImplVK& rhs) = delete;
-    gfxBufferImplVK(gfxBufferImplVK&& rhs) = default;
-    gfxBufferImplVK& operator=(gfxBufferImplVK&& rhs) = default;
-    ~gfxBufferImplVK() override;
+    static const gfxBuffer::Impl* ExtractImpl(const gfxBuffer& buffer) { return buffer.m_Impl.get(); }
 
-    epiBool Init(const gfxBufferCreateInfo& info);
-
-    VkBuffer_T* GetVkBuffer() const;
-
-protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkBuffer_T* m_VkBuffer{nullptr};
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 };
 
 EPI_NAMESPACE_END()

@@ -1,50 +1,45 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-struct VkCommandBuffer_T;
+#include "EpiGraphics/gfxCommandBuffer.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxCommandBufferImplVK : public gfxCommandBuffer::Impl
+class gfxCommandBuffer::Impl
 {
 public:
-    gfxCommandBufferImplVK(VkCommandBuffer_T* commandBuffer, epiBool isPrimary);
-    gfxCommandBufferImplVK(const gfxCommandBufferImplVK& rhs) = delete;
-    gfxCommandBufferImplVK& operator=(const gfxCommandBufferImplVK& rhs) = delete;
-    gfxCommandBufferImplVK(gfxCommandBufferImplVK&& rhs) = default;
-    gfxCommandBufferImplVK& operator=(gfxCommandBufferImplVK&& rhs) = default;
-    ~gfxCommandBufferImplVK() override = default;
+    static const gfxCommandBuffer::Impl* ExtractImpl(const gfxCommandBuffer& commandBuffer) { return commandBuffer.m_Impl.get(); }
 
-    epiBool GetIsPrimary() const override;
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool RecordBegin(gfxCommandBufferUsage usage) override;
-    epiBool RecordEnd() override;
+    virtual epiBool GetIsPrimary() const = 0;
 
-    void RenderPassBegin(const gfxRenderPassBeginInfo& info) override;
-    void RenderPassEnd() override;
+    virtual epiBool RecordBegin(gfxCommandBufferUsage usage) = 0;
+    virtual epiBool RecordEnd() = 0;
 
-    void PipelineBind(const gfxPipelineGraphics& pipeline) override;
-    void PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier) override;
+    virtual void RenderPassBegin(const gfxRenderPassBeginInfo& info) = 0;
+    virtual void RenderPassEnd() = 0;
 
-    void VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {}) override;
-    void IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0) override;
-    void DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
-                            const gfxPipelineLayout& pipelineLayout,
-                            const epiArray<gfxDescriptorSet>& sets,
-                            const epiArray<epiU32>& offsets,
-                            epiU32 firstSet) override;
+    virtual void PipelineBind(const gfxPipelineGraphics& pipeline) = 0;
+    virtual void PipelineBarrier(const gfxCommandBufferRecordPipelineBarier& pipelineBarrier) = 0;
 
-    void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) override;
-    void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) override;
-    void Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) override;
-    void Copy(const gfxBuffer& src, const gfxImage& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) override;
+    virtual void VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {}) = 0;
+    virtual void IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0) = 0;
+    virtual void DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
+                                    const gfxPipelineLayout& pipelineLayout,
+                                    const epiArray<gfxDescriptorSet>& sets,
+                                    const epiArray<epiU32>& offsets,
+                                    epiU32 firstSet) = 0;
 
-    VkCommandBuffer_T* GetVkCommandBuffer() const;
-
-protected:
-    VkCommandBuffer_T* m_VkCommandBuffer{nullptr};
-    epiBool m_IsPrimary{false};
+    virtual void Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance) = 0;
+    virtual void DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance) = 0;
+    virtual void Copy(const gfxBuffer& src, const gfxBuffer& dst, const epiArray<gfxCommandBufferRecordCopyRegion>& copyRegions) = 0;
+    virtual void Copy(const gfxBuffer& src, const gfxImage& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions) = 0;
 };
 
 EPI_NAMESPACE_END()

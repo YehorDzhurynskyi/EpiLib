@@ -3,7 +3,10 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxSurface.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/gfxSurfaceImpl.h"
+
+#include "EpiGraphics/gfxPhysicalDevice.h"
+#include "EpiGraphics/gfxQueueFamily.h"
 
 EPI_NAMESPACE_BEGIN()
 

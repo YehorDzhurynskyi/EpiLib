@@ -225,7 +225,13 @@ gfxInstanceImplVK::~gfxInstanceImplVK()
 
 std::shared_ptr<gfxSurface::Impl> gfxInstanceImplVK::CreateSurface(const gfxWindow& window) const
 {
-    return std::make_shared<gfxSurfaceImplVK>(m_VkInstance, window);
+    std::shared_ptr<gfxSurfaceImplVK> impl = std::make_shared<gfxSurfaceImplVK>(m_VkInstance);
+    if (!impl->Init(window))
+    {
+        impl.reset();
+    }
+
+    return impl;
 }
 
 std::shared_ptr<gfxDevice::Impl> gfxInstanceImplVK::CreateDevice(const gfxDeviceCreateInfo& info) const

@@ -1,11 +1,6 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-#include "EpiGraphicsImplVK/gfxDeviceImplVK.h"
-#include "EpiGraphicsImplVK/gfxShaderModuleImplVK.h"
-#include "EpiGraphicsImplVK/gfxRenderPassImplVK.h"
-#include "EpiGraphicsImplVK/gfxDescriptorSetLayoutImplVK.h"
+#include "EpiGraphicsImpl/gfxPipelineImpl.h"
 
 struct VkDevice_T;
 struct VkPipeline_T;
@@ -13,6 +8,7 @@ struct VkDescriptorSetLayout_T;
 
 EPI_NAMESPACE_BEGIN()
 
+class gfxDeviceImplVK;
 class gfxPipelineGraphicsImplVK : public gfxPipelineGraphics::Impl
 {
 public:

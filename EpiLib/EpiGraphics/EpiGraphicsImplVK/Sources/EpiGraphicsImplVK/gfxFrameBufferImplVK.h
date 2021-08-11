@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/gfxFrameBufferImpl.h"
 
 struct VkDevice_T;
 struct VkFramebuffer_T;

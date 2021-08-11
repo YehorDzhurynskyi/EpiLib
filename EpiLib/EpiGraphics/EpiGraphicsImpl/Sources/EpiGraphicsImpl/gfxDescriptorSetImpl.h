@@ -1,25 +1,21 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkDescriptorSet_T;
+#include "EpiGraphics/gfxDescriptorSet.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDescriptorSetImplVK : public gfxDescriptorSet::Impl
+class gfxDescriptorSet::Impl
 {
 public:
-    explicit gfxDescriptorSetImplVK(VkDescriptorSet_T* descriptorSet);
-    gfxDescriptorSetImplVK(const gfxDescriptorSetImplVK& rhs) = delete;
-    gfxDescriptorSetImplVK& operator=(const gfxDescriptorSetImplVK& rhs) = delete;
-    gfxDescriptorSetImplVK(gfxDescriptorSetImplVK&& rhs) = default;
-    gfxDescriptorSetImplVK& operator=(gfxDescriptorSetImplVK&& rhs) = default;
-    ~gfxDescriptorSetImplVK() override = default;
+    static const gfxDescriptorSet::Impl* ExtractImpl(const gfxDescriptorSet& set) { return set.m_Impl.get(); }
 
-    VkDescriptorSet_T* GetVkDescriptorSet() const;
-
-protected:
-    VkDescriptorSet_T* m_VkDescriptorSet{nullptr};
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 };
 
 EPI_NAMESPACE_END()

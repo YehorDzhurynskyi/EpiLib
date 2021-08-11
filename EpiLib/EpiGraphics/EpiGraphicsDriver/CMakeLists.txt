@@ -21,6 +21,9 @@ target_include_directories(EpiGraphicsDriver
 target_link_libraries(EpiGraphicsDriver
     PUBLIC
         EpiGraphics
+
+    PRIVATE
+        EpiGraphicsImpl
 )
 
 epi_module_register(EpiGraphicsDriver

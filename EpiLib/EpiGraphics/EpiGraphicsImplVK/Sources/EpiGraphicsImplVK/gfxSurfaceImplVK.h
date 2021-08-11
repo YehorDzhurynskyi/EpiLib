@@ -1,21 +1,24 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/gfxSurfaceImpl.h"
 
 struct VkInstance_T;
 struct VkSurfaceKHR_T;
 
 EPI_NAMESPACE_BEGIN()
 
+class gfxWindow;
 class gfxSurfaceImplVK : public gfxSurface::Impl
 {
 public:
-    gfxSurfaceImplVK(VkInstance_T* instance, const gfxWindow& window);
+    gfxSurfaceImplVK(VkInstance_T* instance);
     gfxSurfaceImplVK(const gfxSurfaceImplVK& rhs) = delete;
     gfxSurfaceImplVK& operator=(const gfxSurfaceImplVK& rhs) = delete;
     gfxSurfaceImplVK(gfxSurfaceImplVK&& rhs) = default;
     gfxSurfaceImplVK& operator=(gfxSurfaceImplVK&& rhs) = default;
     ~gfxSurfaceImplVK() override;
+
+    epiBool Init(const gfxWindow& window);
 
     epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const override;
     epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const override;

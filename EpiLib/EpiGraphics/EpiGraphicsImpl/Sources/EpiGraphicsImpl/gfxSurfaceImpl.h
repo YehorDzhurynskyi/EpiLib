@@ -1,33 +1,27 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkInstance_T;
-struct VkSurfaceKHR_T;
+#include "EpiGraphics/gfxSurface.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxSurfaceImplVK : public gfxSurface::Impl
+class gfxSurface::Impl
 {
 public:
-    gfxSurfaceImplVK(VkInstance_T* instance, const gfxWindow& window);
-    gfxSurfaceImplVK(const gfxSurfaceImplVK& rhs) = delete;
-    gfxSurfaceImplVK& operator=(const gfxSurfaceImplVK& rhs) = delete;
-    gfxSurfaceImplVK(gfxSurfaceImplVK&& rhs) = default;
-    gfxSurfaceImplVK& operator=(gfxSurfaceImplVK&& rhs) = default;
-    ~gfxSurfaceImplVK() override;
+    static const gfxSurface::Impl* ExtractImpl(const gfxSurface& surface) { return surface.m_Impl.get(); }
 
-    epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const override;
-    epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const override;
-    gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDevice& device) const override;
-    epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDevice& device) const override;
-    epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const override;
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    VkSurfaceKHR_T* GetVkSurface() const;
-
-protected:
-    VkInstance_T* m_VkInstance{nullptr};
-    VkSurfaceKHR_T* m_VkSurface{nullptr};
+    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamily& queueFamily) const = 0;
+    virtual epiBool IsPresentSupportedFor(const gfxPhysicalDevice& device, const gfxQueueFamilyDescriptor& queueFamilyDesc) const = 0;
+    virtual gfxSurfaceCapabilities GetCapabilitiesFor(const gfxPhysicalDevice& device) const = 0;
+    virtual epiArray<gfxSurfaceFormat> GetSupportedFormatsFor(const gfxPhysicalDevice& device) const = 0;
+    virtual epiArray<gfxSurfacePresentMode> GetSupportedPresentModesFor(const gfxPhysicalDevice& device) const = 0;
 };
 
 EPI_NAMESPACE_END()

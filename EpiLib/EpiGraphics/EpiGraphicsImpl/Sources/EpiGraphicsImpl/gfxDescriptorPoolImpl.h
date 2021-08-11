@@ -1,31 +1,23 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-#include "EpiGraphicsImplVK/gfxDescriptorSetLayoutImplVK.h"
-
-struct VkDevice_T;
-struct VkDescriptorPool_T;
+#include "EpiGraphics/gfxDescriptorPool.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDescriptorPoolImplVK : public gfxDescriptorPool::Impl
+class gfxDescriptorPool::Impl
 {
 public:
-    explicit gfxDescriptorPoolImplVK(VkDevice_T* device);
-    gfxDescriptorPoolImplVK(const gfxDescriptorPoolImplVK& rhs) = delete;
-    gfxDescriptorPoolImplVK& operator=(const gfxDescriptorPoolImplVK& rhs) = delete;
-    gfxDescriptorPoolImplVK(gfxDescriptorPoolImplVK&& rhs) = default;
-    gfxDescriptorPoolImplVK& operator=(gfxDescriptorPoolImplVK&& rhs) = default;
-    ~gfxDescriptorPoolImplVK() override;
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool Init(const gfxDescriptorPoolCreateInfo& info);
-
-    VkDescriptorPool_T* GetVkDescriptorPool() const;
+    const epiArray<std::shared_ptr<gfxDescriptorSet::Impl>>& GetDescriptorSets() { return m_DescriptorSets; }
 
 protected:
-    VkDevice_T* m_VkDevice{nullptr};
-    VkDescriptorPool_T* m_VkDescriptorPool{nullptr};
+    epiArray<std::shared_ptr<gfxDescriptorSet::Impl>> m_DescriptorSets;
 };
 
 EPI_NAMESPACE_END()

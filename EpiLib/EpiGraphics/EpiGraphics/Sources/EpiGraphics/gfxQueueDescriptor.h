@@ -9,10 +9,10 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/gfxEnum.h"
 #include "EpiGraphics/gfxQueue.h"
 #include "EpiGraphics/gfxQueueFamily.h"
+#include "EpiGraphics/gfxSurface.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxSurface;
 class gfxQueueDescriptor : public Object
 {
 EPI_GENREGION_BEGIN(gfxQueueDescriptor)

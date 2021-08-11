@@ -1,8 +1,6 @@
 #pragma once
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
-#include "EpiGraphicsImplVK/gfxQueueFamilyImplVK.h"
+#include "EpiGraphicsImpl/gfxPhysicalDeviceImpl.h"
 
 struct VkPhysicalDevice_T;
 

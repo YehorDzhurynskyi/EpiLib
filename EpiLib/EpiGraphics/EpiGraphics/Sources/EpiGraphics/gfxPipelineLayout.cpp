@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxPipelineLayout.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
 EPI_NAMESPACE_BEGIN()
 
 gfxPipelineLayoutCreateInfo& gfxPipelineLayoutCreateInfo::AddDescriptorSetLayout(const gfxDescriptorSetLayout& layout)

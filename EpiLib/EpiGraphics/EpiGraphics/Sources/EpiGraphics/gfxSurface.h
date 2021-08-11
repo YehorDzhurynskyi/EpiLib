@@ -4,10 +4,9 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxSurface.hxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxEnum.h"
-#include "EpiGraphics/gfxQueueDescriptor.h"
-
 #include "EpiCore/ObjectModel/Object.h"
+
+#include "EpiGraphics/gfxEnum.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -82,6 +81,8 @@ public:
 };
 
 class gfxPhysicalDevice;
+class gfxQueueFamily;
+class gfxQueueFamilyDescriptor;
 class gfxSurface : public Object
 {
 EPI_GENREGION_BEGIN(gfxSurface)

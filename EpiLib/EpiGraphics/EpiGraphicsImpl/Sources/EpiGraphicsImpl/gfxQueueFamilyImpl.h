@@ -1,47 +1,56 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
+#include "EpiGraphics/gfxQueueFamily.h"
+
+#include "EpiGraphics/gfxDevice.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxQueueFamilyDescriptorImplVK : public gfxQueueFamilyDescriptor::Impl
+class gfxQueueFamilyDescriptor::Impl
 {
 public:
-    gfxQueueFamilyDescriptorImplVK(epiU32 queueFamilyIndex, epiU32 queueCount, gfxQueueType supportedQueueTypes);
-    gfxQueueFamilyDescriptorImplVK(const gfxQueueFamilyDescriptorImplVK& rhs) = default;
-    gfxQueueFamilyDescriptorImplVK& operator=(const gfxQueueFamilyDescriptorImplVK& rhs) = default;
-    gfxQueueFamilyDescriptorImplVK(gfxQueueFamilyDescriptorImplVK&& rhs) = default;
-    gfxQueueFamilyDescriptorImplVK& operator=(gfxQueueFamilyDescriptorImplVK&& rhs) = default;
-    ~gfxQueueFamilyDescriptorImplVK() override = default;
+    static const gfxQueueFamilyDescriptor::Impl* ExtractImpl(const gfxQueueFamilyDescriptor& queueFamilyDescriptor) { return queueFamilyDescriptor.m_Impl.get(); }
 
-    epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
-    gfxQueueType GetQueueTypeSupportedMask() const override;
-    epiU32 GetQueueCount() const override;
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiU32 GetIndex() const;
-
-protected:
-    epiU32 m_Index{0};
-    epiU32 m_QueueCount{0};
-    gfxQueueType m_QueueTypeSupportedMask{0};
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+    virtual gfxQueueType GetQueueTypeSupportedMask() const = 0;
+    virtual epiU32 GetQueueCount() const = 0;
 };
 
-class gfxQueueFamilyImplVK : public gfxQueueFamily::Impl
+class gfxQueueFamily::Impl
 {
 public:
-    explicit gfxQueueFamilyImplVK(const gfxQueueFamilyDescriptorImplVK& queueFamilyDesc);
-    gfxQueueFamilyImplVK(const gfxQueueFamilyImplVK& rhs) = default;
-    gfxQueueFamilyImplVK& operator=(const gfxQueueFamilyImplVK& rhs) = default;
-    gfxQueueFamilyImplVK(gfxQueueFamilyImplVK&& rhs) = default;
-    gfxQueueFamilyImplVK& operator=(gfxQueueFamilyImplVK&& rhs) = default;
-    ~gfxQueueFamilyImplVK() override = default;
+    static const gfxQueueFamily::Impl* ExtractImpl(const gfxQueueFamily& queueFamily) { return queueFamily.m_Impl.get(); }
 
-    void Init(const gfxDevice::Impl& device, const gfxQueueDescriptor& queueDesc) override;
+public:
+    explicit Impl(const gfxQueueFamilyDescriptor::Impl& queueFamilyDesc)
+        : m_QueueTypeMask{queueFamilyDesc.GetQueueTypeSupportedMask()}
+    {
+    }
 
-    epiU32 GetIndex() const;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+
+    virtual void Init(const gfxDevice::Impl& device, const gfxQueueDescriptor& queueDesc) = 0;
+
+    gfxQueueType GetQueueTypeMask() const { return m_QueueTypeMask; }
+    epiU32 GetQueueCount() const { return m_Queues.Size(); }
+
+    const epiArray<std::shared_ptr<gfxQueue::Impl>>& GetQueues() const { return m_Queues; }
 
 protected:
-    epiU32 m_Index{0};
+    epiArray<std::shared_ptr<gfxQueue::Impl>> m_Queues;
+    gfxQueueType m_QueueTypeMask{0};
 };
 
 EPI_NAMESPACE_END()

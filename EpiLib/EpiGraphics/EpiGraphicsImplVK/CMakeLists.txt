@@ -74,7 +74,7 @@ find_package(Vulkan REQUIRED FATAL_ERROR)
 
 target_link_libraries(EpiGraphicsImplVK
     PRIVATE
-        EpiGraphics
+        EpiGraphicsImpl
         Vulkan::Vulkan
         shaderc
 )

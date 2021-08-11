@@ -1,44 +1,32 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-struct VkQueue_T;
-struct VkFence_T;
+#include "EpiGraphics/gfxQueue.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDeviceImplVK;
-class gfxQueueFamilyImplVK;
-class gfxQueueImplVK : public gfxQueue::Impl
+class gfxQueue::Impl
 {
 public:
-    gfxQueueImplVK(const gfxDeviceImplVK& device, const gfxQueueFamilyImplVK& queueFamily, epiU32 queueIndex, epiFloat priority);
-    gfxQueueImplVK(const gfxQueueImplVK& rhs) = delete;
-    gfxQueueImplVK& operator=(const gfxQueueImplVK& rhs) = delete;
-    gfxQueueImplVK(gfxQueueImplVK&& rhs);
-    gfxQueueImplVK& operator=(gfxQueueImplVK&& rhs);
-    ~gfxQueueImplVK() override = default;
+    static const gfxQueue::Impl* ExtractImpl(const gfxQueue& queue) { return queue.m_Impl.get(); }
 
-    epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos) override;
-    epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence) override;
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool Present(const gfxQueuePresentInfo& info) override;
+    virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos) = 0;
+    virtual epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence) = 0;
 
-    epiBool Wait() override;
+    virtual epiBool Present(const gfxQueuePresentInfo& info) = 0;
 
-    gfxQueueType GetType() const override;
-    epiFloat GetPriority() const override;
-    epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
+    virtual epiBool Wait() = 0;
 
-    VkQueue_T* GetVkQueue() const;
-
-protected:
-    epiBool Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFence_T* signalFence);
-
-protected:
-    VkQueue_T* m_VkQueue{nullptr};
-    gfxQueueType m_Type{0};
-    epiFloat m_Priority{0.0f};
+    virtual gfxQueueType GetType() const = 0;
+    virtual epiFloat GetPriority() const = 0;
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
 };
 
 EPI_NAMESPACE_END()

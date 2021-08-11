@@ -3,7 +3,9 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxQueue.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/gfxQueueImpl.h"
+
+#include "EpiGraphics/gfxSwapChain.h"
 
 namespace
 {
@@ -137,9 +139,9 @@ epiBool gfxQueue::Present(const gfxQueuePresentInfo& info)
 
     const epiBool allSwapChainsAreValid = std::all_of(info.GetSwapChains().begin(),
                                                       info.GetSwapChains().end(),
-                                                      [](const gfxSwapChain& swapChain)
+                                                      [](const gfxSwapChain* swapChain)
     {
-        return swapChain.HasImpl();
+        return swapChain != nullptr && swapChain->HasImpl();
     });
 
     if (!allSwapChainsAreValid)

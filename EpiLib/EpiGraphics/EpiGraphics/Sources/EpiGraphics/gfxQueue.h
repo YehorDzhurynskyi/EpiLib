@@ -60,7 +60,7 @@ public:
 
 protected:
     epiArray<gfxSemaphore> m_WaitSemaphores{};
-    epiArray<gfxSwapChain> m_SwapChains{};
+    epiPtrArray<gfxSwapChain> m_SwapChains{};
     epiArray<epiU32> m_SwapChainImageIndices{};
 
 EPI_GENREGION_END(gfxQueuePresentInfo)

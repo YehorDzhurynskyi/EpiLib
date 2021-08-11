@@ -3,8 +3,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxDevice.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-#include "EpiGraphics/gfxSurface.h"
+#include "EpiGraphicsImpl/gfxDeviceImpl.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -12,11 +11,11 @@ gfxDevice::gfxDevice(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
     epiArray<gfxQueueFamily>& queueFamilies = GetQueueFamilies();
-    queueFamilies.Reserve(impl->GetQueueFamilies().Size());
+    queueFamilies.Reserve(m_Impl->GetQueueFamilies().Size());
 
     // NOTE: filling gfxQueueFamily with their implementations (gfxDeviceImpl still owns these implementations)
-    std::transform(impl->GetQueueFamilies().begin(),
-                   impl->GetQueueFamilies().end(),
+    std::transform(m_Impl->GetQueueFamilies().begin(),
+                   m_Impl->GetQueueFamilies().end(),
                    std::back_inserter(queueFamilies),
                    [](const std::shared_ptr<gfxQueueFamily::Impl>& queueFamilyImpl)
     {

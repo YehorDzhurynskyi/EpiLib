@@ -3,8 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxRenderPass.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-
 EPI_NAMESPACE_BEGIN()
 
 void gfxRenderSubPassSchema::AddAttachment(const gfxAttachmentSchema& attachment, epiU32 attachmentIndex, gfxAttachmentBindPoint bindPoint)

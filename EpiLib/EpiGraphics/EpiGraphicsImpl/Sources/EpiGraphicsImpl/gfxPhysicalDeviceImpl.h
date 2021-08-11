@@ -1,38 +1,36 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-#include "EpiGraphicsDriverVK/gfxQueueFamilyImplVK.h"
-
-struct VkPhysicalDevice_T;
+#include "EpiGraphics/gfxPhysicalDevice.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxPhysicalDeviceImplVK : public gfxPhysicalDevice::Impl
+class gfxPhysicalDevice::Impl
 {
 public:
-    void Init(VkPhysicalDevice_T* device);
+    static std::shared_ptr<gfxPhysicalDevice::Impl> ExtractImpl(const gfxPhysicalDevice& device) { return device.m_Impl; }
 
-    epiFloat GetMaxSamplerAnisotropy() const override;
-    epiString GetName() const override;
-    gfxPhysicalDeviceType GetType() const override;
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    gfxFormatProperties FormatPropertiesFor(gfxFormat format) const override;
+    virtual epiFloat GetMaxSamplerAnisotropy() const = 0;
+    virtual epiString GetName() const = 0;
+    virtual gfxPhysicalDeviceType GetType() const = 0;
 
-    epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const override;
-    epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const override;
-    epiBool IsQueueTypeSupported(gfxQueueType mask) const override;
+    virtual gfxFormatProperties FormatPropertiesFor(gfxFormat format) const = 0;
 
-    VkPhysicalDevice_T* GetVkPhysicalDevice() const;
+    virtual epiBool IsExtensionSupported(gfxPhysicalDeviceExtension extension) const = 0;
+    virtual epiBool IsFeatureSupported(gfxPhysicalDeviceFeature feature) const = 0;
+    virtual epiBool IsQueueTypeSupported(gfxQueueType mask) const = 0;
+
+    const epiArray<std::shared_ptr<gfxQueueFamilyDescriptor::Impl>>& GetQueueFamilyDescriptors() const { return m_QueueFamilyDescriptors; }
 
 protected:
-    void FillExtensionsSupported();
-    void FillFeaturesSupported();
-
-protected:
-    VkPhysicalDevice_T* m_VkDevice{nullptr};
-    epiBool m_ExtensionSupported[static_cast<epiU32>(gfxPhysicalDeviceExtension::COUNT)]{};
-    epiBool m_FeatureSupported[static_cast<epiU32>(gfxPhysicalDeviceFeature::COUNT)]{};
+    epiArray<std::shared_ptr<gfxQueueFamilyDescriptor::Impl>> m_QueueFamilyDescriptors;
 };
 
 EPI_NAMESPACE_END()

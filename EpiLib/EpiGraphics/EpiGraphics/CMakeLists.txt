@@ -1,7 +1,6 @@
 project(EpiGraphics)
 
 add_library(EpiGraphics
-    Sources/EpiGraphics/gfxDriverInternal.h
     Sources/EpiGraphics/gfxInstance.epi
     Sources/EpiGraphics/gfxInstance.h
     Sources/EpiGraphics/gfxInstance.cpp
@@ -97,6 +96,9 @@ target_include_directories(EpiGraphics
 target_link_libraries(EpiGraphics
     PUBLIC
         EpiCore
+
+    PRIVATE
+        EpiGraphicsImpl
 )
 
 find_package(NsightAftermath)

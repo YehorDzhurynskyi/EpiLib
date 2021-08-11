@@ -1,53 +1,29 @@
 #pragma once
 
-#include "EpiGraphicsDriverCommon/gfxDriverInternal.h"
-
-#include "EpiGraphicsDriverVK/gfxPhysicalDeviceImplVK.h"
-
-struct VkDebugUtilsMessengerEXT_T;
-struct VkInstance_T;
+#include "EpiGraphics/gfxInstance.h"
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxInstanceImplVK : public gfxInstance::Impl
+class gfxInstance::Impl
 {
 public:
-    gfxInstanceImplVK() = default;
-    gfxInstanceImplVK(const gfxInstanceImplVK& rhs) = delete;
-    gfxInstanceImplVK& operator=(const gfxInstanceImplVK& rhs) = delete;
-    gfxInstanceImplVK(gfxInstanceImplVK&& rhs) = delete;
-    gfxInstanceImplVK& operator=(gfxInstanceImplVK&& rhs) = delete;
-    ~gfxInstanceImplVK() override;
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
 
-    epiBool Init(epiU32 apiVersionMajor,
-                 epiU32 apiVersionMinor,
-                 epiU32 apiVersionPatch,
-                 const epiChar* appName,
-                 const epiArray<gfxInstanceExtension>& extensionRequired,
-                 epiU32 appVersionMajor = 1u,
-                 epiU32 appVersionMinor = 0u,
-                 epiU32 appVersionPatch = 0u,
-                 const epiChar* engineName = "No Engine",
-                 epiU32 engineVersionMajor = 1u,
-                 epiU32 engineVersionMinor = 0u,
-                 epiU32 engineVersionPatch = 0u);
+    virtual std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const = 0;
+    virtual std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) const = 0;
 
-    std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const override;
-    std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) const override;
+    virtual epiBool IsExtensionSupported(gfxInstanceExtension extension) const = 0;
+    virtual epiBool IsExtensionEnabled(gfxInstanceExtension extension) const = 0;
 
-    epiBool IsExtensionSupported(gfxInstanceExtension extension) const override;
-    epiBool IsExtensionEnabled(gfxInstanceExtension extension) const override;
-
-    VkInstance_T* GetVkInstance() const;
+    const epiArray<std::shared_ptr<gfxPhysicalDevice::Impl>>& GetPhysicalDevices() const { return m_PhysicalDevices; }
 
 protected:
-    void FillExtensionsSupported();
-
-protected:
-    VkInstance_T* m_VkInstance{nullptr};
-    EPI_BUILD_DEBUG_ONLY(VkDebugUtilsMessengerEXT_T* m_VKDebugMessenger{nullptr});
-    epiBool m_ExtensionSupported[static_cast<epiU32>(gfxInstanceExtension::COUNT)]{};
-    epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxInstanceExtension::COUNT)]{};
+    epiArray<std::shared_ptr<gfxPhysicalDevice::Impl>> m_PhysicalDevices;
 };
 
 EPI_NAMESPACE_END()

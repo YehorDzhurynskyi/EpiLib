@@ -3,7 +3,7 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/Synchronization/gfxSemaphore.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
+#include "EpiGraphicsImpl/Synchronization/gfxSemaphoreImpl.h"
 
 EPI_NAMESPACE_BEGIN()
 

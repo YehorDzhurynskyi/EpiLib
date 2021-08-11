@@ -3,9 +3,6 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxQueueDescriptor.cxx"
 EPI_GENREGION_END(include)
 
-#include "EpiGraphics/gfxDriverInternal.h"
-#include "EpiGraphics/gfxSurface.h"
-
 EPI_NAMESPACE_BEGIN()
 
 gfxQueueDescriptor::gfxQueueDescriptor(gfxQueueType typeMask, const epiArray<epiFloat>& priorities, const epiArray<gfxSurface>& surfaceTargets)
