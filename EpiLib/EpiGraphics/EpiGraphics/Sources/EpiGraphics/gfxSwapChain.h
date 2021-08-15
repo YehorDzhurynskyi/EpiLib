@@ -104,4 +104,29 @@ protected:
     std::shared_ptr<Impl> m_Impl;
 };
 
+class gfxQueuePresentInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxQueuePresentInfo)
+
+EPI_GENHIDDEN_gfxQueuePresentInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xcfe3f532};
+
+    enum gfxQueuePresentInfo_PIDs
+    {
+        PID_WaitSemaphores = 0xde36b270,
+        PID_SwapChains = 0x322c907,
+        PID_SwapChainImageIndices = 0x4d0af9fd,
+        PID_COUNT = 3
+    };
+
+protected:
+    epiArray<gfxSemaphore> m_WaitSemaphores{};
+    epiArray<gfxSwapChain> m_SwapChains{};
+    epiArray<epiU32> m_SwapChainImageIndices{};
+
+EPI_GENREGION_END(gfxQueuePresentInfo)
+};
+
 EPI_NAMESPACE_END()

@@ -34,3 +34,13 @@ class gfxSwapChain
     [ReadOnly] # TODO: const only
     epiArray<gfxImageView> ImageViews;
 };
+
+class gfxQueuePresentInfo
+{
+    [ReadOnly]
+    {
+        epiArray<gfxSemaphore> WaitSemaphores;
+        epiArray<gfxSwapChain> SwapChains;
+        epiArray<epiU32> SwapChainImageIndices;
+    }
+};

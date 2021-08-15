@@ -40,32 +40,7 @@ protected:
 EPI_GENREGION_END(gfxQueueSubmitInfo)
 };
 
-class gfxSwapChain;
-class gfxQueuePresentInfo : public Object
-{
-EPI_GENREGION_BEGIN(gfxQueuePresentInfo)
-
-EPI_GENHIDDEN_gfxQueuePresentInfo()
-
-public:
-    constexpr static epiMetaTypeID TypeID{0xcfe3f532};
-
-    enum gfxQueuePresentInfo_PIDs
-    {
-        PID_WaitSemaphores = 0xde36b270,
-        PID_SwapChains = 0x322c907,
-        PID_SwapChainImageIndices = 0x4d0af9fd,
-        PID_COUNT = 3
-    };
-
-protected:
-    epiArray<gfxSemaphore> m_WaitSemaphores{};
-    epiPtrArray<gfxSwapChain> m_SwapChains{};
-    epiArray<epiU32> m_SwapChainImageIndices{};
-
-EPI_GENREGION_END(gfxQueuePresentInfo)
-};
-
+class gfxQueuePresentInfo;
 class gfxQueue : public Object
 {
 EPI_GENREGION_BEGIN(gfxQueue)
@@ -102,7 +77,7 @@ public:
     epiBool Submit(const gfxQueueSubmitInfo& info);
     epiBool Submit(const gfxQueueSubmitInfo& info, const gfxFence& signalFence);
 
-    epiBool Present(const gfxQueuePresentInfo& info);
+    epiBool Present(const gfxQueuePresentInfo& info); // NOTE: this function is defined in gfxSwapChain.cpp because of cyclic including
 
     epiBool Wait();
 
