@@ -35,7 +35,7 @@ epiBool gfxCommandBufferImplVK::RecordBegin(gfxCommandBufferUsage usage)
 
     if (const VkResult result = vkBeginCommandBuffer(m_VkCommandBuffer, &beginInfo); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkBeginCommandBuffer!");
+        gfxLogVkResultEx(result, "Failed to call vkBeginCommandBuffer!");
         return false;
     }
 
@@ -46,7 +46,7 @@ epiBool gfxCommandBufferImplVK::RecordEnd()
 {
     if (const VkResult result = vkEndCommandBuffer(m_VkCommandBuffer); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkEndCommandBuffer!");
+        gfxLogVkResultEx(result, "Failed to call vkEndCommandBuffer!");
         return false;
     }
 

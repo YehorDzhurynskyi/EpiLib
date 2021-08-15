@@ -143,7 +143,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFenc
 
     if (const VkResult result = vkQueueSubmit(m_VkQueue, submitInfosVk.size(), submitInfosVk.data(), signalFence); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkQueueSubmit!");
+        gfxLogVkResultEx(result, "Failed to call vkQueueSubmit!");
         return false;
     }
 
@@ -185,7 +185,7 @@ epiBool gfxQueueImplVK::Present(const gfxQueuePresentInfo& info)
 
     if (const VkResult result = vkQueuePresentKHR(m_VkQueue, &presentInfo); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkQueuePresentKHR!");
+        gfxLogVkResultEx(result, "Failed to call vkQueuePresentKHR!");
         return false;
     }
 
@@ -196,7 +196,7 @@ epiBool gfxQueueImplVK::Wait()
 {
     if (const VkResult result = vkQueueWaitIdle(m_VkQueue); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkQueueWaitIdle!");
+        gfxLogVkResultEx(result, "Failed to call vkQueueWaitIdle!");
         return false;
     }
 

@@ -51,7 +51,7 @@ epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info)
 
     if (const VkResult result = vkCreateFramebuffer(m_VkDevice, &framebufferInfo, nullptr, &m_VkFrameBuffer); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateFramebuffer!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateFramebuffer!");
         return false;
     }
 

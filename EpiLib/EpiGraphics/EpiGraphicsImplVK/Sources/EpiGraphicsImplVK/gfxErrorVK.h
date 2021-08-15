@@ -4,11 +4,9 @@
 
 EPI_NAMESPACE_BEGIN()
 
-const epiChar* gfxErrorStr(VkResult result);
+const epiChar* gfxVkResultStr(VkResult result);
 
-#define gfxLogError(r) do {((r) < 0 ? epiLogError("{}!", gfxErrorStr(r)) : epiLogInfo("{}.", gfxErrorStr(r)));} while (0)
-#define gfxLogErrorEx(r, m) do {((r) < 0 ? epiLogError("{} {}!", m, gfxErrorStr(r)) : epiLogInfo("{} {}.", m, gfxErrorStr(r)));} while (0)
-#define gfxLogErrorIfNotSuccess(r) do {if ((r) != VK_SUCCESS) { gfxLogError(r); }} while (0)
-#define gfxLogErrorIfNotSuccessEx(r, m) do {if ((r) != VK_SUCCESS) { gfxLogErrorEx(r, m); }} while (0)
+#define gfxLogVkResult(r) do {((r) < 0 ? epiLogError("{}!", gfxVkResultStr(r)) : epiLogInfo("{}.", gfxVkResultStr(r)));} while (0)
+#define gfxLogVkResultEx(r, m) do {((r) < 0 ? epiLogError("{} {}!", m, gfxVkResultStr(r)) : epiLogInfo("{} {}.", m, gfxVkResultStr(r)));} while (0)
 
 EPI_NAMESPACE_END()

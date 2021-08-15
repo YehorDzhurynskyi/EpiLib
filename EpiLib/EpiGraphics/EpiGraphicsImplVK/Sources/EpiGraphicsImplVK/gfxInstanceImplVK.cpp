@@ -168,7 +168,7 @@ epiBool gfxInstanceImplVK::Init(epiU32 apiVersionMajor,
 
     if (const VkResult result = vkCreateInstance(&createInfo, nullptr, &m_VkInstance); result != VK_SUCCESS)
     {
-        gfxLogError(result, "Failed to call vkCreateInstance!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateInstance!");
         return false;
     }
 
@@ -182,7 +182,7 @@ epiBool gfxInstanceImplVK::Init(epiU32 apiVersionMajor,
 
     if (const VkResult result = vkCreateDebugUtilsMessengerEXTFunc(m_VkInstance, &createInfoDebugMessenger, nullptr, &m_VKDebugMessenger); result != VK_SUCCESS)
     {
-        gfxLogError(result, "Failed to call vkCreateDebugUtilsMessengerEXTFunc!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateDebugUtilsMessengerEXTFunc!");
         return false;
     }
 #endif // EPI_BUILD_DEBUG

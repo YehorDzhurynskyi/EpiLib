@@ -25,7 +25,7 @@ epiBool gfxFenceImplVK::Init(const gfxFenceCreateInfo& info)
 
     if (const VkResult result = vkCreateFence(m_VkDevice, &createInfo, nullptr, &m_VkFence); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateFence!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateFence!");
         return false;
     }
 
@@ -36,7 +36,7 @@ epiBool gfxFenceImplVK::Reset()
 {
     if (const VkResult result = vkResetFences(m_VkDevice, 1, &m_VkFence); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkResetFences!");
+        gfxLogVkResultEx(result, "Failed to call vkResetFences!");
         return false;
     }
 
@@ -47,7 +47,7 @@ epiBool gfxFenceImplVK::Wait(epiU64 timeout)
 {
     if (const VkResult result = vkWaitForFences(m_VkDevice, 1, &m_VkFence, VK_TRUE, timeout); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkWaitForFences!");
+        gfxLogVkResultEx(result, "Failed to call vkWaitForFences!");
         return false;
     }
 

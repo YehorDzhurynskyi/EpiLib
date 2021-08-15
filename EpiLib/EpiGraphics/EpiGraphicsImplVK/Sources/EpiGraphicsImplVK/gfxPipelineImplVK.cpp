@@ -237,7 +237,7 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
 
     if (const VkResult result = vkCreateGraphicsPipelines(m_Device.GetVkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_VkPipeline); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateGraphicsPipelines!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateGraphicsPipelines!");
         return false;
     }
 

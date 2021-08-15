@@ -45,7 +45,7 @@ epiBool gfxDescriptorSetLayoutImplVK::Init(const gfxDescriptorSetLayoutCreateInf
 
     if (const VkResult result = vkCreateDescriptorSetLayout(m_VkDevice, &layoutInfo, nullptr, &m_VkDescriptorSetLayout); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateDescriptorSetLayout!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateDescriptorSetLayout!");
         return false;
     }
 

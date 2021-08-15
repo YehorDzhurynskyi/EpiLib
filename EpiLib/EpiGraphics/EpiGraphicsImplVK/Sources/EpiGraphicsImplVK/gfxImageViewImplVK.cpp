@@ -35,7 +35,7 @@ epiBool gfxImageViewImplVK::Init(const gfxImageViewCreateInfo& info)
 
     if (const VkResult result = vkCreateImageView(m_VkDevice, &createInfo, nullptr, &m_VkImageView); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateImageView!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateImageView!");
         return false;
     }
 

@@ -387,7 +387,7 @@ epiBool gfxDeviceImplVK::Init(const gfxDeviceCreateInfo& info)
 
     if (const VkResult result = vkCreateDevice(physicalDevice->GetVkPhysicalDevice(), &createInfo, nullptr, &m_VkDevice); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateDevice!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateDevice!");
         return false;
     }
 

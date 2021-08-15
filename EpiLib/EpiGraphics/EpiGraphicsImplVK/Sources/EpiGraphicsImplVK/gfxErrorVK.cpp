@@ -2,7 +2,7 @@
 
 EPI_NAMESPACE_BEGIN()
 
-const epiChar* gfxErrorStr(VkResult result)
+const epiChar* gfxVkResultStr(VkResult result)
 {
     switch (result)
     {

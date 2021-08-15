@@ -61,7 +61,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
 
     if (const VkResult result = vkAllocateMemory(m_VkDevice, &allocInfo, nullptr, &m_VkDeviceMemory); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkAllocateMemory!");
+        gfxLogVkResultEx(result, "Failed to call vkAllocateMemory!");
         return false;
     }
 
@@ -74,7 +74,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
 
     if (const VkResult result = vkBindBufferMemory(m_VkDevice, bufferImpl->GetVkBuffer(), m_VkDeviceMemory, kOffset); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkBindBufferMemory!");
+        gfxLogVkResultEx(result, "Failed to call vkBindBufferMemory!");
         return false;
     }
 
@@ -116,7 +116,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryImageCreateInfo& info, 
 
     if (const VkResult result = vkAllocateMemory(m_VkDevice, &allocInfo, nullptr, &m_VkDeviceMemory); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkAllocateMemory!");
+        gfxLogVkResultEx(result, "Failed to call vkAllocateMemory!");
         return false;
     }
 
@@ -129,7 +129,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryImageCreateInfo& info, 
 
     if (const VkResult result = vkBindImageMemory(m_VkDevice, imageImpl->GetVkImage(), m_VkDeviceMemory, kOffset); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkBindBufferMemory!");
+        gfxLogVkResultEx(result, "Failed to call vkBindBufferMemory!");
         return false;
     }
 
@@ -138,10 +138,10 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryImageCreateInfo& info, 
 
 epiByte* gfxDeviceMemoryImplVK::Map(epiSize_t size, epiSize_t offset)
 {
-    void* data;
+    void* data = nullptr;
     if (const VkResult result = vkMapMemory(m_VkDevice, m_VkDeviceMemory, offset, size, 0, &data); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkMapMemory!");
+        gfxLogVkResultEx(result, "Failed to call vkMapMemory!");
         return nullptr;
     }
 

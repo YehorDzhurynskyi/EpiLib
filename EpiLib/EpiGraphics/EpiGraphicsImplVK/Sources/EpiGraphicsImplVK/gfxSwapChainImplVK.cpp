@@ -82,21 +82,21 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 
     if (const VkResult result = vkCreateSwapchainKHR(m_Device.GetVkDevice(), &createInfo, nullptr, &m_VkSwapChain); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateSwapchainKHR!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateSwapchainKHR!");
         return false;
     }
 
     epiU32 imageCount = 0;
     if (const VkResult result = vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, nullptr); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkGetSwapchainImagesKHR!");
+        gfxLogVkResultEx(result, "Failed to call vkGetSwapchainImagesKHR!");
         return false;
     }
 
     std::vector<VkImage> swapChainImages(imageCount);
     if (const VkResult result = vkGetSwapchainImagesKHR(m_Device.GetVkDevice(), m_VkSwapChain, &imageCount, swapChainImages.data()); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkGetSwapchainImagesKHR!");
+        gfxLogVkResultEx(result, "Failed to call vkGetSwapchainImagesKHR!");
         return false;
     }
 
@@ -131,7 +131,7 @@ epiBool gfxSwapChainImplVK::Reset()
     const VkResult result = vkDeviceWaitIdle(m_Device.GetVkDevice());
     if (result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkDeviceWaitIdle!");
+        gfxLogVkResultEx(result, "Failed to call vkDeviceWaitIdle!");
         return false;
     }
 
@@ -182,7 +182,7 @@ epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore,
                                                       signalFenceVk,
                                                       &imageIndex); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkAcquireNextImageKHR!");
+        gfxLogVkResultEx(result, "Failed to call vkAcquireNextImageKHR!");
         if (result != VK_SUBOPTIMAL_KHR)
         {
             return -1;

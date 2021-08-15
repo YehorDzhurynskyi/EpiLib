@@ -44,7 +44,7 @@ epiBool gfxImageImplVKOwner::Init(const gfxImageCreateInfo& info)
 
     if (const VkResult result = vkCreateImage(m_VkDevice, &imageCreateInfo, nullptr, &m_VkImage); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateImage!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateImage!");
         return false;
     }
 

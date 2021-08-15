@@ -39,7 +39,7 @@ epiBool gfxSurfaceImplVK::Init(const gfxWindow& window)
 
     if (const VkResult result = vkCreateWin32SurfaceKHR(m_VkInstance, &createInfo, nullptr, &m_VkSurface); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateWin32SurfaceKHR!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateWin32SurfaceKHR!");
         return false;
     }
 
@@ -114,7 +114,7 @@ gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDev
     VkSurfaceCapabilitiesKHR capabilitiesVk;
     if (const VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(deviceVk->GetVkPhysicalDevice(), GetVkSurface(), &capabilitiesVk); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkGetPhysicalDeviceSurfaceCapabilitiesKHR!");
+        gfxLogVkResultEx(result, "Failed to call vkGetPhysicalDeviceSurfaceCapabilitiesKHR!");
         return capabilities;
     }
 

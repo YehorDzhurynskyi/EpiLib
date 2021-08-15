@@ -64,7 +64,7 @@ epiBool gfxDescriptorPoolImplVK::Init(const gfxDescriptorPoolCreateInfo& info)
 
     if (const VkResult result = vkCreateDescriptorPool(m_VkDevice, &poolInfo, nullptr, &m_VkDescriptorPool); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateDescriptorPool!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateDescriptorPool!");
         return false;
     }
 
@@ -93,7 +93,7 @@ epiBool gfxDescriptorPoolImplVK::Init(const gfxDescriptorPoolCreateInfo& info)
 
     if (const VkResult result = vkAllocateDescriptorSets(m_VkDevice, &allocInfo, sets.data()); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkAllocateDescriptorSets!");
+        gfxLogVkResultEx(result, "Failed to call vkAllocateDescriptorSets!");
         return false;
     }
 

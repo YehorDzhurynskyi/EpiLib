@@ -27,7 +27,7 @@ epiBool gfxBufferImplVK::Init(const gfxBufferCreateInfo& info)
 
     if (const VkResult result = vkCreateBuffer(m_VkDevice, &bufferInfo, nullptr, &m_VkBuffer); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateBuffer!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateBuffer!");
         return false;
     }
 

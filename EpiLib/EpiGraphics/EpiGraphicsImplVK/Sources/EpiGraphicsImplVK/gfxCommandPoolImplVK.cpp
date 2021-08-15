@@ -74,7 +74,7 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info)
 
     if (const VkResult result = vkCreateCommandPool(m_VkDevice, &poolInfo, nullptr, &m_VkCommandPool); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateCommandPool!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateCommandPool!");
         return false;
     }
 
@@ -90,7 +90,7 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info)
         commandBuffers.resize(primaryBufferCount);
         if (const VkResult result = vkAllocateCommandBuffers(m_VkDevice, &allocInfo, commandBuffers.data()); result != VK_SUCCESS)
         {
-            gfxLogErrorEx(result, "Failed to call vkAllocateCommandBuffers!");
+            gfxLogVkResultEx(result, "Failed to call vkAllocateCommandBuffers!");
             return false;
         }
 
@@ -113,7 +113,7 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info)
         commandBuffers.resize(secondaryBufferCount);
         if (const VkResult result = vkAllocateCommandBuffers(m_VkDevice, &allocInfo, commandBuffers.data()); result != VK_SUCCESS)
         {
-            gfxLogErrorEx(result, "Failed to call vkAllocateCommandBuffers!");
+            gfxLogVkResultEx(result, "Failed to call vkAllocateCommandBuffers!");
             return false;
         }
 

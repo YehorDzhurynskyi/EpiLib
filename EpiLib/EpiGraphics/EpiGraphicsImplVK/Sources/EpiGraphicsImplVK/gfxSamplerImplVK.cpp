@@ -40,7 +40,7 @@ epiBool gfxSamplerImplVK::Init(const gfxSamplerCreateInfo& info)
 
     if (const VkResult result = vkCreateSampler(m_VkDevice, &samplerCreateInfo, nullptr, &m_VkSampler); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateSampler!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateSampler!");
         return false;
     }
 

@@ -25,7 +25,7 @@ epiBool gfxSemaphoreImplVK::Init(const gfxSemaphoreCreateInfo& info)
 
     if (const VkResult result = vkCreateSemaphore(m_VkDevice, &createInfo, nullptr, &m_VkSemaphore); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateSemaphore!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateSemaphore!");
         return false;
     }
 
@@ -72,7 +72,7 @@ epiBool gfxSemaphoreImplVK::Wait(const gfxSemaphoreWaitInfo& info, epiU64 timeou
 
     if (const VkResult result = vkWaitSemaphores(m_VkDevice, &waitInfo, timeout); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkWaitSemaphores!");
+        gfxLogVkResultEx(result, "Failed to call vkWaitSemaphores!");
         return false;
     }
 

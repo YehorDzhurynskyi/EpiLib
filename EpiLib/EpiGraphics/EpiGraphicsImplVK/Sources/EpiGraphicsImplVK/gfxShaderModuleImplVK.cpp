@@ -65,7 +65,7 @@ epiBool gfxShaderModuleImplVK::Init(const gfxShaderModuleCreateInfo& info)
 
     if (const VkResult result = vkCreateShaderModule(m_VkDevice, &createInfo, nullptr, &m_VkShaderModule); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateShaderModule!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateShaderModule!");
         return false;
     }
 

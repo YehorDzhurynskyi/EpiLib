@@ -120,7 +120,7 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
 
     if (const VkResult result = vkCreateRenderPass(m_VkDevice, &renderPassInfo, nullptr, &m_VkRenderPass); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreateRenderPass!");
+        gfxLogVkResultEx(result, "Failed to call vkCreateRenderPass!");
         return false;
     }
 

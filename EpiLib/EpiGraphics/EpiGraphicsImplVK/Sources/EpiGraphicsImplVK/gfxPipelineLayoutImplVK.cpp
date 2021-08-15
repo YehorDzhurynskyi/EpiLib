@@ -56,7 +56,7 @@ epiBool gfxPipelineLayoutImplVK::Init(const gfxPipelineLayoutCreateInfo& info)
 
     if (const VkResult result = vkCreatePipelineLayout(m_VkDevice, &pipelineLayoutInfo, nullptr, &m_VkPipelineLayout); result != VK_SUCCESS)
     {
-        gfxLogErrorEx(result, "Failed to call vkCreatePipelineLayout!");
+        gfxLogVkResultEx(result, "Failed to call vkCreatePipelineLayout!");
         return false;
     }
 
