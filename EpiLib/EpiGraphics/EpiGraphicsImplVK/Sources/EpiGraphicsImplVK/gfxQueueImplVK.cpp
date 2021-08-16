@@ -47,7 +47,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos)
 
 epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence)
 {
-    const gfxFenceImplVK* signalFenceImpl = static_cast<const gfxFenceImplVK*>(gfxFence::Impl::ExtractImpl(signalFence));
+    const std::shared_ptr<gfxFenceImplVK> signalFenceImpl = ImplOf<gfxFenceImplVK>(signalFence);
     epiAssert(signalFenceImpl != nullptr);
 
     return Submit(infos, signalFenceImpl->GetVkFence());
@@ -83,7 +83,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFenc
                        std::back_inserter(commandBuffersInfoVk),
                        [](const gfxCommandBuffer& commandBuffer)
         {
-            const gfxCommandBufferImplVK* commandBufferImpl = static_cast<const gfxCommandBufferImplVK*>(gfxCommandBuffer::Impl::ExtractImpl(commandBuffer));
+            const std::shared_ptr<gfxCommandBufferImplVK> commandBufferImpl = ImplOf<gfxCommandBufferImplVK>(commandBuffer);
             epiAssert(commandBufferImpl != nullptr);
 
             return commandBufferImpl->GetVkCommandBuffer();
@@ -97,7 +97,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFenc
                        std::back_inserter(waitSemaphoresInfoVk),
                        [](const gfxSemaphore& semaphore)
         {
-            const gfxSemaphoreImplVK* semaphoreImpl = static_cast<const gfxSemaphoreImplVK*>(gfxSemaphore::Impl::ExtractImpl(semaphore));
+            const std::shared_ptr<gfxSemaphoreImplVK> semaphoreImpl = ImplOf<gfxSemaphoreImplVK>(semaphore);
             epiAssert(semaphoreImpl != nullptr);
 
             return semaphoreImpl->GetVkSemaphore();
@@ -122,7 +122,7 @@ epiBool gfxQueueImplVK::Submit(const epiArray<gfxQueueSubmitInfo>& infos, VkFenc
                        std::back_inserter(signalSemaphoresInfoVk),
                        [](const gfxSemaphore& semaphore)
         {
-            const gfxSemaphoreImplVK* semaphoreImpl = static_cast<const gfxSemaphoreImplVK*>(gfxSemaphore::Impl::ExtractImpl(semaphore));
+            const std::shared_ptr<gfxSemaphoreImplVK> semaphoreImpl = ImplOf<gfxSemaphoreImplVK>(semaphore);
             epiAssert(semaphoreImpl != nullptr);
 
             return semaphoreImpl->GetVkSemaphore();
@@ -160,7 +160,7 @@ epiBool gfxQueueImplVK::Present(const gfxQueuePresentInfo& info)
 
     std::transform(info.GetSwapChains().begin(), info.GetSwapChains().end(), std::back_inserter(swapChainsVk), [](const gfxSwapChain& swapChain)
     {
-        const gfxSwapChainImplVK* swapChainImpl = static_cast<const gfxSwapChainImplVK*>(gfxSwapChain::Impl::ExtractImpl(swapChain));
+        const std::shared_ptr<gfxSwapChainImplVK> swapChainImpl = ImplOf<gfxSwapChainImplVK>(swapChain);
         epiAssert(swapChainImpl != nullptr);
 
         return swapChainImpl->GetVkSwapChain();
@@ -168,7 +168,7 @@ epiBool gfxQueueImplVK::Present(const gfxQueuePresentInfo& info)
 
     std::transform(info.GetWaitSemaphores().begin(), info.GetWaitSemaphores().end(), std::back_inserter(waitSemaphoresVk), [](const gfxSemaphore& semaphore)
     {
-        const gfxSemaphoreImplVK* semaphorempl = static_cast<const gfxSemaphoreImplVK*>(gfxSemaphore::Impl::ExtractImpl(semaphore));
+        const std::shared_ptr<gfxSemaphoreImplVK> semaphorempl = ImplOf<gfxSemaphoreImplVK>(semaphore);
         epiAssert(semaphorempl != nullptr);
 
         return semaphorempl->GetVkSemaphore();

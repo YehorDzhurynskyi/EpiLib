@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxDescriptorSetLayout::Impl
 {
 public:
-    static const gfxDescriptorSetLayout::Impl* ExtractImpl(const gfxDescriptorSetLayout& layout) { return layout.m_Impl.get(); }
+    static std::shared_ptr<gfxDescriptorSetLayout::Impl> ExtractImpl(const gfxDescriptorSetLayout& layout) { return layout.m_Impl; }
 
 public:
     Impl() = default;

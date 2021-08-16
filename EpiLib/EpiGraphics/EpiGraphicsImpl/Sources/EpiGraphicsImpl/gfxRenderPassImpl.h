@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxRenderPass::Impl
 {
 public:
-    static const gfxRenderPass::Impl* ExtractImpl(const gfxRenderPass& renderPass) { return renderPass.m_Impl.get(); }
+    static std::shared_ptr<gfxRenderPass::Impl> ExtractImpl(const gfxRenderPass& renderPass) { return renderPass.m_Impl; }
 
 public:
     Impl() = default;

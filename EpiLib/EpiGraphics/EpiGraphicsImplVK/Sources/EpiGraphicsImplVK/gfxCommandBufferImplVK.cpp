@@ -67,10 +67,10 @@ void gfxCommandBufferImplVK::RenderPassBegin(const gfxRenderPassBeginInfo& info)
         return;
     }
 
-    const gfxRenderPassImplVK* renderPassImpl = static_cast<const gfxRenderPassImplVK*>(gfxRenderPass::Impl::ExtractImpl(info.GetRenderPass()));
+    const std::shared_ptr<gfxRenderPassImplVK> renderPassImpl = ImplOf<gfxRenderPassImplVK>(info.GetRenderPass());
     epiAssert(renderPassImpl != nullptr);
 
-    const gfxFrameBufferImplVK* frameBufferImpl = static_cast<const gfxFrameBufferImplVK*>(gfxFrameBuffer::Impl::ExtractImpl(info.GetFrameBuffer()));
+    const std::shared_ptr<gfxFrameBufferImplVK> frameBufferImpl = ImplOf<gfxFrameBufferImplVK>(info.GetFrameBuffer());
     epiAssert(frameBufferImpl != nullptr);
 
     VkRenderPassBeginInfo renderPassInfo{};
@@ -118,7 +118,7 @@ void gfxCommandBufferImplVK::PipelineBind(const gfxPipelineGraphics& pipeline)
         return;
     }
 
-    const gfxPipelineGraphicsImplVK* pipelineImpl = static_cast<const gfxPipelineGraphicsImplVK*>(gfxPipelineGraphics::Impl::ExtractImpl(pipeline));
+    const std::shared_ptr<gfxPipelineGraphicsImplVK> pipelineImpl = ImplOf<gfxPipelineGraphicsImplVK>(pipeline);
     epiAssert(pipelineImpl != nullptr);
 
     vkCmdBindPipeline(m_VkCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineImpl->GetVkPipeline());
@@ -216,7 +216,7 @@ void gfxCommandBufferImplVK::PipelineBarrier(const gfxCommandBufferRecordPipelin
                    std::back_inserter(bufferMemoryBarriers),
                    [](const gfxBufferMemoryBarrier& barrier)
     {
-        const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(barrier.GetBuffer()));
+        const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(barrier.GetBuffer());
         epiAssert(bufferImpl != nullptr);
 
         VkBufferMemoryBarrier barrierVk{};
@@ -237,7 +237,7 @@ void gfxCommandBufferImplVK::PipelineBarrier(const gfxCommandBufferRecordPipelin
                    std::back_inserter(imageMemoryBarriers),
                    [](const gfxImageMemoryBarrier& barrier)
     {
-        const gfxImageImplVK* imageImpl = static_cast<const gfxImageImplVK*>(gfxImage::Impl::ExtractImpl(barrier.GetImage()));
+        const std::shared_ptr<gfxImageImplVK> imageImpl = ImplOf<gfxImageImplVK>(barrier.GetImage());
         epiAssert(imageImpl != nullptr);
 
         VkImageMemoryBarrier barrierVk{};
@@ -288,7 +288,7 @@ void gfxCommandBufferImplVK::VertexBuffersBind(const epiArray<gfxBuffer>& buffer
 
     std::transform(buffers.begin(), buffers.end(), std::back_inserter(buffersVk), [](const gfxBuffer& buffer)
     {
-        const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(buffer));
+        const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(buffer);
         epiAssert(bufferImpl != nullptr);
 
         return bufferImpl->GetVkBuffer();
@@ -311,7 +311,7 @@ void gfxCommandBufferImplVK::IndexBufferBind(const gfxBuffer& buffer, gfxIndexBu
         return;
     }
 
-    const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(buffer));
+    const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(buffer);
     epiAssert(bufferImpl != nullptr);
 
     vkCmdBindIndexBuffer(m_VkCommandBuffer, bufferImpl->GetVkBuffer(), offset, gfxIndexBufferTypeTo(type));
@@ -323,7 +323,7 @@ void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
                                                 const epiArray<epiU32>& offsets,
                                                 epiU32 firstSet)
 {
-    const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayout::Impl::ExtractImpl(pipelineLayout));
+    const std::shared_ptr<gfxPipelineLayoutImplVK> pipelineLayoutVk = ImplOf<gfxPipelineLayoutImplVK>(pipelineLayout);
     if (pipelineLayoutVk == nullptr)
     {
         epiLogError("Failed to Bind DescriptorSets! Provided PipelineLayout has no implementation!");
@@ -346,7 +346,7 @@ void gfxCommandBufferImplVK::DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
 
     std::transform(sets.begin(), sets.end(), std::back_inserter(descriptorSets), [](const gfxDescriptorSet& set)
     {
-        return static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSet::Impl::ExtractImpl(set))->GetVkDescriptorSet();
+        return ImplOf<gfxDescriptorSetImplVK>(set)->GetVkDescriptorSet();
     });
 
     vkCmdBindDescriptorSets(m_VkCommandBuffer,
@@ -396,10 +396,10 @@ void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxBuffer& dst, co
         return copyRegionVk;
     });
 
-    const gfxBufferImplVK* srcImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(src));
+    const std::shared_ptr<gfxBufferImplVK> srcImpl = ImplOf<gfxBufferImplVK>(src);
     epiAssert(srcImpl != nullptr);
 
-    const gfxBufferImplVK* dstImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(dst));
+    const std::shared_ptr<gfxBufferImplVK> dstImpl = ImplOf<gfxBufferImplVK>(dst);
     epiAssert(dstImpl != nullptr);
 
     vkCmdCopyBuffer(m_VkCommandBuffer,
@@ -411,10 +411,10 @@ void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxBuffer& dst, co
 
 void gfxCommandBufferImplVK::Copy(const gfxBuffer& src, const gfxImage& dst, gfxImageLayout dstLayout, const epiArray<gfxCommandBufferRecordCopyBufferToImage>& copyRegions)
 {
-    const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(src));
+    const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(src);
     epiAssert(bufferImpl != nullptr);
 
-    const gfxImageImplVK* imageImpl = static_cast<const gfxImageImplVK*>(gfxImage::Impl::ExtractImpl(dst));
+    const std::shared_ptr<gfxImageImplVK> imageImpl = ImplOf<gfxImageImplVK>(dst);
     epiAssert(imageImpl != nullptr);
 
     std::vector<VkBufferImageCopy> regions;

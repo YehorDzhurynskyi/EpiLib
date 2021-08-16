@@ -70,7 +70,7 @@ epiBool gfxDeviceImplVK::Init(const gfxDeviceCreateInfo& info)
     }
 
     {
-        const std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = std::static_pointer_cast<gfxPhysicalDeviceImplVK>(gfxPhysicalDevice::Impl::ExtractImpl(info.GetPhysicalDevice()));
+        const std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = ImplOf<gfxPhysicalDeviceImplVK>(info.GetPhysicalDevice());
         epiAssert(physicalDevice != nullptr);
 
         m_PhysicalDevice = physicalDevice;
@@ -426,10 +426,10 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                        std::back_inserter(imageInfos),
                        [](const gfxDescriptorImageInfo& imageInfo)
         {
-            const gfxSamplerImplVK* sampler = static_cast<const gfxSamplerImplVK*>(gfxSampler::Impl::ExtractImpl(imageInfo.GetSampler()));
+            const std::shared_ptr<gfxSamplerImplVK> sampler = ImplOf<gfxSamplerImplVK>(imageInfo.GetSampler());
             epiAssert(sampler != nullptr);
 
-            const gfxImageViewImplVK* imageView = static_cast<const gfxImageViewImplVK*>(gfxImageView::Impl::ExtractImpl(imageInfo.GetImageView()));
+            const std::shared_ptr<gfxImageViewImplVK> imageView = ImplOf<gfxImageViewImplVK>(imageInfo.GetImageView());
             epiAssert(imageView != nullptr);
 
             VkDescriptorImageInfo imageInfoVk{};
@@ -453,7 +453,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                        std::back_inserter(bufferInfos),
                        [](const gfxDescriptorBufferInfo& bufferInfo)
         {
-            const gfxBufferImplVK* buffer = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(bufferInfo.GetBuffer()));
+            const std::shared_ptr<gfxBufferImplVK> buffer = ImplOf<gfxBufferImplVK>(bufferInfo.GetBuffer());
             epiAssert(buffer != nullptr);
 
             VkDescriptorBufferInfo bufferInfoVk{};
@@ -477,7 +477,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
     const epiBool writesAreValid = std::all_of(writes.begin(), writes.end(), [](const gfxDescriptorSetWrite& write)
     {
         // NOTE: should be provided either image infos or buffer infos or buffer view infos
-        const epiBool isValid = (gfxDescriptorSet::Impl::ExtractImpl(write.GetDstSet()) != nullptr) &&
+        const epiBool isValid = (write.GetDstSet().HasImpl()) &&
                                 ((write.GetImageInfos().Size() ^ write.GetBufferInfos().Size()) /* TODO: ^ write.GetBufferViewInfos() */);
         if (!isValid)
         {
@@ -491,7 +491,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                                                                                            write.GetBufferInfos().end(),
                                                                                            [](const gfxDescriptorBufferInfo& bufferInfo)
         {
-            return gfxBuffer::Impl::ExtractImpl(bufferInfo.GetBuffer()) != nullptr;
+            return bufferInfo.GetBuffer().HasImpl();
         });
 
         if (!isBufferInfosValid)
@@ -541,7 +541,7 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                     &transformBufferInfos,
                     &transformBufferViewInfos](const gfxDescriptorSetWrite& write)
     {
-        const gfxDescriptorSetImplVK* set = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSet::Impl::ExtractImpl(write.GetDstSet()));
+        const std::shared_ptr<gfxDescriptorSetImplVK> set = ImplOf<gfxDescriptorSetImplVK>(write.GetDstSet());
         epiAssert(set != nullptr);
 
         std::vector<VkDescriptorImageInfo>& imageInfos = writesImageInfosVk.emplace_back(std::move(transformImageInfos(write)));
@@ -570,10 +570,10 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
                    std::back_inserter(copiesVk),
                    [](const gfxDescriptorSetCopy& copy)
     {
-        const gfxDescriptorSetImplVK* srcSet = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSet::Impl::ExtractImpl(copy.GetSrcSet()));
+        const std::shared_ptr<gfxDescriptorSetImplVK> srcSet = ImplOf<gfxDescriptorSetImplVK>(copy.GetSrcSet());
         epiAssert(srcSet != nullptr);
 
-        const gfxDescriptorSetImplVK* dstSet = static_cast<const gfxDescriptorSetImplVK*>(gfxDescriptorSet::Impl::ExtractImpl(copy.GetDstSet()));
+        const std::shared_ptr<gfxDescriptorSetImplVK> dstSet = ImplOf<gfxDescriptorSetImplVK>(copy.GetDstSet());
         epiAssert(dstSet != nullptr);
 
         VkCopyDescriptorSet copyVk{};

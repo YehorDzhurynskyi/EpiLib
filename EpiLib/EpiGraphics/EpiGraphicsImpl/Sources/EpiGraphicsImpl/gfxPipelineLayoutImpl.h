@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxPipelineLayout::Impl
 {
 public:
-    static const gfxPipelineLayout::Impl* ExtractImpl(const gfxPipelineLayout& layout) { return layout.m_Impl.get(); }
+    static std::shared_ptr<gfxPipelineLayout::Impl> ExtractImpl(const gfxPipelineLayout& layout) { return layout.m_Impl; }
 
 public:
     Impl() = default;

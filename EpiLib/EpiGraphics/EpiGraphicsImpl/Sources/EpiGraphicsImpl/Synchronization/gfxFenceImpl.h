@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxFence::Impl
 {
 public:
-    static const gfxFence::Impl* ExtractImpl(const gfxFence& fence) { return fence.m_Impl.get(); }
+    static std::shared_ptr<gfxFence::Impl> ExtractImpl(const gfxFence& fence) { return fence.m_Impl; }
 
 public:
     Impl() = default;

@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxImageView::Impl
 {
 public:
-    static const gfxImageView::Impl* ExtractImpl(const gfxImageView& imageView) { return imageView.m_Impl.get(); }
+    static std::shared_ptr<gfxImageView::Impl> ExtractImpl(const gfxImageView& imageView) { return imageView.m_Impl; }
 
 public:
     Impl() = default;

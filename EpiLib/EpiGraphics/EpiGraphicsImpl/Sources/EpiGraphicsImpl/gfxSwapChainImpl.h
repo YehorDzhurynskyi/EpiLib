@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxSwapChain::Impl
 {
 public:
-    static const gfxSwapChain::Impl* ExtractImpl(const gfxSwapChain& swapChain) { return swapChain.m_Impl.get(); }
+    static std::shared_ptr<gfxSwapChain::Impl> ExtractImpl(const gfxSwapChain& swapChain) { return swapChain.m_Impl; }
 
 public:
     Impl() = default;

@@ -15,7 +15,7 @@ gfxImageViewImplVK::gfxImageViewImplVK(VkDevice device)
 
 epiBool gfxImageViewImplVK::Init(const gfxImageViewCreateInfo& info)
 {
-    const gfxImageImplVK* imageVk = static_cast<const gfxImageImplVK*>(gfxImage::Impl::ExtractImpl(info.GetImage()));
+    const std::shared_ptr<gfxImageImplVK> imageVk = ImplOf<gfxImageImplVK>(info.GetImage());
     epiAssert(imageVk != nullptr);
 
     VkImageViewCreateInfo createInfo{};

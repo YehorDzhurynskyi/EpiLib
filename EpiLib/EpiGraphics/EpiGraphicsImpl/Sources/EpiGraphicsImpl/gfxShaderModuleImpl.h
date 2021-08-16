@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxShaderModule::Impl
 {
 public:
-    static const gfxShaderModule::Impl* ExtractImpl(const gfxShaderModule& shaderModule) { return shaderModule.m_Impl.get(); }
+    static std::shared_ptr<gfxShaderModule::Impl> ExtractImpl(const gfxShaderModule& shaderModule) { return shaderModule.m_Impl; }
 
 public:
     Impl() = default;

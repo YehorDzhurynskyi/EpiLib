@@ -9,7 +9,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxQueueFamilyDescriptor::Impl
 {
 public:
-    static const gfxQueueFamilyDescriptor::Impl* ExtractImpl(const gfxQueueFamilyDescriptor& queueFamilyDescriptor) { return queueFamilyDescriptor.m_Impl.get(); }
+    static std::shared_ptr<gfxQueueFamilyDescriptor::Impl> ExtractImpl(const gfxQueueFamilyDescriptor& queueFamilyDescriptor) { return queueFamilyDescriptor.m_Impl; }
 
 public:
     Impl() = default;
@@ -27,7 +27,7 @@ public:
 class gfxQueueFamily::Impl
 {
 public:
-    static const gfxQueueFamily::Impl* ExtractImpl(const gfxQueueFamily& queueFamily) { return queueFamily.m_Impl.get(); }
+    static std::shared_ptr<gfxQueueFamily::Impl> ExtractImpl(const gfxQueueFamily& queueFamily) { return queueFamily.m_Impl; }
 
 public:
     explicit Impl(const gfxQueueFamilyDescriptor::Impl& queueFamilyDesc)

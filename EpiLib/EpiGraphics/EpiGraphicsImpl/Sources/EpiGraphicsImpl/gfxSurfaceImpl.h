@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxSurface::Impl
 {
 public:
-    static const gfxSurface::Impl* ExtractImpl(const gfxSurface& surface) { return surface.m_Impl.get(); }
+    static std::shared_ptr<gfxSurface::Impl> ExtractImpl(const gfxSurface& surface) { return surface.m_Impl; }
 
 public:
     Impl() = default;

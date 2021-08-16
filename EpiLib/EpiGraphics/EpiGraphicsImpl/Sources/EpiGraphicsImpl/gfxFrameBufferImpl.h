@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxFrameBuffer::Impl
 {
 public:
-    static const gfxFrameBuffer::Impl* ExtractImpl(const gfxFrameBuffer& frameBuffer) { return frameBuffer.m_Impl.get(); }
+    static std::shared_ptr<gfxFrameBuffer::Impl> ExtractImpl(const gfxFrameBuffer& frameBuffer) { return frameBuffer.m_Impl; }
 
 public:
     Impl() = default;

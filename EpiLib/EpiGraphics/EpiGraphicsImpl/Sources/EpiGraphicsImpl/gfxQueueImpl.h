@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxQueue::Impl
 {
 public:
-    static const gfxQueue::Impl* ExtractImpl(const gfxQueue& queue) { return queue.m_Impl.get(); }
+    static std::shared_ptr<gfxQueue::Impl> ExtractImpl(const gfxQueue& queue) { return queue.m_Impl; }
 
 public:
     Impl() = default;

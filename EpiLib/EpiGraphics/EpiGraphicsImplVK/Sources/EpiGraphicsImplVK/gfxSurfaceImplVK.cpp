@@ -60,10 +60,10 @@ epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDevice& device,
         return false;
     }
 
-    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<gfxPhysicalDeviceImplVK>(gfxPhysicalDevice::Impl::ExtractImpl(device));
+    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = ImplOf<gfxPhysicalDeviceImplVK>(device);
     epiAssert(deviceVk != nullptr);
 
-    const gfxQueueFamilyImplVK* queueFamilyVk = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamily::Impl::ExtractImpl(queueFamily));
+    const std::shared_ptr<gfxQueueFamilyImplVK> queueFamilyVk = ImplOf<gfxQueueFamilyImplVK>(queueFamily);
     epiAssert(queueFamilyVk != nullptr);
 
     VkBool32 presentSupported = false;
@@ -86,10 +86,10 @@ epiBool gfxSurfaceImplVK::IsPresentSupportedFor(const gfxPhysicalDevice& device,
         return false;
     }
 
-    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<gfxPhysicalDeviceImplVK>(gfxPhysicalDevice::Impl::ExtractImpl(device));
+    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = ImplOf<gfxPhysicalDeviceImplVK>(device);
     epiAssert(deviceVk != nullptr);
 
-    const gfxQueueFamilyDescriptorImplVK* queueFamilyDescriptorVk = static_cast<const gfxQueueFamilyDescriptorImplVK*>(gfxQueueFamilyDescriptor::Impl::ExtractImpl(queueFamilyDesc));
+    const std::shared_ptr<gfxQueueFamilyDescriptorImplVK> queueFamilyDescriptorVk = ImplOf<gfxQueueFamilyDescriptorImplVK>(queueFamilyDesc);
     epiAssert(queueFamilyDescriptorVk != nullptr);
 
     VkBool32 presentSupported = false;
@@ -106,7 +106,7 @@ gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDev
         return {};
     }
 
-    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<gfxPhysicalDeviceImplVK>(gfxPhysicalDevice::Impl::ExtractImpl(device));
+    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = ImplOf<gfxPhysicalDeviceImplVK>(device);
     epiAssert(deviceVk != nullptr);
 
     gfxSurfaceCapabilities capabilities;
@@ -144,7 +144,7 @@ epiArray<gfxSurfaceFormat> gfxSurfaceImplVK::GetSupportedFormatsFor(const gfxPhy
         return {};
     }
 
-    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<gfxPhysicalDeviceImplVK>(gfxPhysicalDevice::Impl::ExtractImpl(device));
+    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = ImplOf<gfxPhysicalDeviceImplVK>(device);
     epiAssert(deviceVk != nullptr);
 
     epiU32 formatCount;
@@ -175,7 +175,7 @@ epiArray<gfxSurfacePresentMode> gfxSurfaceImplVK::GetSupportedPresentModesFor(co
         return {};
     }
 
-    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = std::static_pointer_cast<gfxPhysicalDeviceImplVK>(gfxPhysicalDevice::Impl::ExtractImpl(device));
+    const std::shared_ptr<gfxPhysicalDeviceImplVK> deviceVk = ImplOf<gfxPhysicalDeviceImplVK>(device);
     epiAssert(deviceVk != nullptr);
 
     epiU32 presentModeCount;

@@ -23,14 +23,14 @@ gfxPipelineGraphicsImplVK::~gfxPipelineGraphicsImplVK()
 
 epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& info)
 {
-    const gfxPipelineLayoutImplVK* pipelineLayoutVk = static_cast<const gfxPipelineLayoutImplVK*>(gfxPipelineLayout::Impl::ExtractImpl(info.GetPipelineLayout()));
+    const std::shared_ptr<gfxPipelineLayoutImplVK> pipelineLayoutVk = ImplOf<gfxPipelineLayoutImplVK>(info.GetPipelineLayout());
     if (pipelineLayoutVk == nullptr)
     {
         epiLogError("Failed to Init PipelineGraphics! The provided PipelineLayout has no implementation!");
         return false;
     }
 
-    const gfxRenderPassImplVK* renderPassVk = static_cast<const gfxRenderPassImplVK*>(gfxRenderPass::Impl::ExtractImpl(info.GetRenderPass()));
+    const std::shared_ptr<gfxRenderPassImplVK> renderPassVk = ImplOf<gfxRenderPassImplVK>(info.GetRenderPass());
     if (renderPassVk == nullptr)
     {
         epiLogError("Failed to Init PipelineGraphics! The provided RenderPass has no implementation!");
@@ -173,7 +173,7 @@ epiBool gfxPipelineGraphicsImplVK::Init(const gfxPipelineGraphicsCreateInfo& inf
                    std::back_inserter(stages),
                    [](const gfxPipelineShaderStageCreateInfo& stageInfo)
     {
-        const gfxShaderModuleImplVK* module = static_cast<const gfxShaderModuleImplVK*>(gfxShaderModule::Impl::ExtractImpl(stageInfo.GetShaderModule()));
+        const std::shared_ptr<gfxShaderModuleImplVK> module = ImplOf<gfxShaderModuleImplVK>(stageInfo.GetShaderModule());
         epiAssert(module != nullptr);
 
         VkPipelineShaderStageCreateInfo stage{};

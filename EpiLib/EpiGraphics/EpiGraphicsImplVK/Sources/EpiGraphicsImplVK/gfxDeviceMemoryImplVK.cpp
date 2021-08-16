@@ -29,7 +29,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
         return false;
     }
 
-    const gfxBufferImplVK* bufferImpl = static_cast<const gfxBufferImplVK*>(gfxBuffer::Impl::ExtractImpl(info.GetBuffer()));
+    const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(info.GetBuffer());
     epiAssert(bufferImpl != nullptr);
 
     VkMemoryRequirements memRequirements;
@@ -84,7 +84,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
 epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryImageCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl)
 {
     // TODO: make common function for image and buffer
-    const gfxImageImplVK* imageImpl = static_cast<const gfxImageImplVK*>(gfxImage::Impl::ExtractImpl(info.GetImage()));
+    const std::shared_ptr<gfxImageImplVK> imageImpl = ImplOf<gfxImageImplVK>(info.GetImage());
     epiAssert(imageImpl != nullptr);
 
     VkMemoryRequirements memRequirements;

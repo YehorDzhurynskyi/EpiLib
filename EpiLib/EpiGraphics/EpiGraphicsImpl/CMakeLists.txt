@@ -1,6 +1,8 @@
 project(EpiGraphicsImpl)
 
 add_library(EpiGraphicsImpl
+    Sources/EpiGraphicsImpl/common.h
+
     Sources/EpiGraphicsImpl/gfxInstanceImpl.h
     Sources/EpiGraphicsImpl/gfxInstanceImpl.cpp
     Sources/EpiGraphicsImpl/gfxDeviceMemoryImpl.h
@@ -50,6 +52,11 @@ add_library(EpiGraphicsImpl
     Sources/EpiGraphicsImpl/Synchronization/gfxFenceImpl.cpp
     Sources/EpiGraphicsImpl/Synchronization/gfxSemaphoreImpl.h
     Sources/EpiGraphicsImpl/Synchronization/gfxSemaphoreImpl.cpp
+)
+
+target_precompile_headers(EpiGraphicsImpl
+    PUBLIC
+        [["EpiGraphicsImpl/common.h"]]
 )
 
 get_target_property(EpiGraphicsImpl_SOURCES EpiGraphicsImpl SOURCES)

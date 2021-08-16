@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxSemaphore::Impl
 {
 public:
-    static const gfxSemaphore::Impl* ExtractImpl(const gfxSemaphore& semaphore) { return semaphore.m_Impl.get(); }
+    static std::shared_ptr<gfxSemaphore::Impl> ExtractImpl(const gfxSemaphore& semaphore) { return semaphore.m_Impl; }
 
 public:
     Impl() = default;

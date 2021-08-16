@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxSampler::Impl
 {
 public:
-    static const gfxSampler::Impl* ExtractImpl(const gfxSampler& sampler) { return sampler.m_Impl.get(); }
+    static std::shared_ptr<gfxSampler::Impl> ExtractImpl(const gfxSampler& sampler) { return sampler.m_Impl; }
 
 public:
     Impl() = default;

@@ -64,7 +64,7 @@ epiBool gfxCommandPoolImplVK::Init(const gfxCommandPoolCreateInfo& info)
         return false;
     }
 
-    const gfxQueueFamilyImplVK* queueFamilyImplVk = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamily::Impl::ExtractImpl(info.GetQueueFamily()));
+    const std::shared_ptr<gfxQueueFamilyImplVK> queueFamilyImplVk = ImplOf<gfxQueueFamilyImplVK>(info.GetQueueFamily());
     epiAssert(queueFamilyImplVk != nullptr);
 
     VkCommandPoolCreateInfo poolInfo{};

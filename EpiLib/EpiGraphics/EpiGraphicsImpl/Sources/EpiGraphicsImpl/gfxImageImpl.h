@@ -7,7 +7,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxImage::Impl
 {
 public:
-    static const gfxImage::Impl* ExtractImpl(const gfxImage& image) { return image.m_Impl.get(); }
+    static std::shared_ptr<gfxImage::Impl> ExtractImpl(const gfxImage& image) { return image.m_Impl; }
 
 public:
     Impl() = default;

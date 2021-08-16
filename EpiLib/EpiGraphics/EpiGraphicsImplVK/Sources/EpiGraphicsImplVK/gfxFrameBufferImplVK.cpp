@@ -30,13 +30,13 @@ epiBool gfxFrameBufferImplVK::Init(const gfxFrameBufferCreateInfo& info)
                    std::back_inserter(attachments),
                    [](const gfxImageView& attachment)
     {
-        const gfxImageViewImplVK* attachmentVk = static_cast<const gfxImageViewImplVK*>(gfxImageView::Impl::ExtractImpl(attachment));
+        const std::shared_ptr<gfxImageViewImplVK> attachmentVk = ImplOf<gfxImageViewImplVK>(attachment);
         epiAssert(attachmentVk != nullptr);
 
         return attachmentVk->GetVkImageView();
     });
 
-    const gfxRenderPassImplVK* renderPassVk = static_cast<const gfxRenderPassImplVK*>(gfxRenderPass::Impl::ExtractImpl(info.GetRenderPass()));
+    const std::shared_ptr<gfxRenderPassImplVK> renderPassVk = ImplOf<gfxRenderPassImplVK>(info.GetRenderPass());
     epiAssert(renderPassVk != nullptr);
 
     // TODO: add renderpass compatibility check

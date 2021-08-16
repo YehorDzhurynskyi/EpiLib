@@ -76,7 +76,7 @@ epiBool gfxDescriptorPoolImplVK::Init(const gfxDescriptorPoolCreateInfo& info)
                    std::back_inserter(layouts),
                    [](const gfxDescriptorSetLayout& layout)
     {
-        const gfxDescriptorSetLayoutImplVK* layoutVk = static_cast<const gfxDescriptorSetLayoutImplVK*>(gfxDescriptorSetLayout::Impl::ExtractImpl(layout));
+        const std::shared_ptr<gfxDescriptorSetLayoutImplVK> layoutVk = ImplOf<gfxDescriptorSetLayoutImplVK>(layout);
         epiAssert(layoutVk != nullptr);
 
         return layoutVk->GetVkDescriptorSetLayout();

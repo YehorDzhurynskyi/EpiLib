@@ -33,7 +33,7 @@ gfxSwapChainImplVK::~gfxSwapChainImplVK()
 
 epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 {
-    const gfxSurfaceImplVK* surfaceImpl = static_cast<const gfxSurfaceImplVK*>(gfxSurface::Impl::ExtractImpl(info.GetSurface()));
+    const std::shared_ptr<gfxSurfaceImplVK> surfaceImpl = ImplOf<gfxSurfaceImplVK>(info.GetSurface());
     epiAssert(surfaceImpl != nullptr);
 
     std::vector<epiU32> queueFamilyIndices;
@@ -44,7 +44,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
                    std::back_inserter(queueFamilyIndices),
                    [](const gfxQueueFamily& queueFamily)
     {
-        const gfxQueueFamilyImplVK* queueFamilyImpl = static_cast<const gfxQueueFamilyImplVK*>(gfxQueueFamily::Impl::ExtractImpl(queueFamily));
+        const std::shared_ptr<gfxQueueFamilyImplVK> queueFamilyImpl = ImplOf<gfxQueueFamilyImplVK>(queueFamily);
         epiAssert(queueFamilyImpl != nullptr);
 
         return queueFamilyImpl->GetIndex();
@@ -73,7 +73,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 #if 0 // TODO: set
     if (info.GetOldSwapChain().HasImpl())
     {
-        const gfxSwapChainImplVK* oldSwapChainImpl = static_cast<const gfxSwapChainImplVK*>(gfxSwapChainImpl::ExtractImpl(info.GetOldSwapChain()));
+        const std::shared_ptr<gfxSwapChainImplVK> oldSwapChainImpl = ImplOf<gfxSwapChainImplVK>(info.GetOldSwapChain());
         epiAssert(oldSwapChainImpl != nullptr);
 
         createInfo.oldSwapchain = oldSwapChainImpl->GetVkSwapChain();
@@ -160,7 +160,7 @@ epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore,
 
     if (signalSemaphore != nullptr)
     {
-        const gfxSemaphoreImplVK* signalSemaphoreImpl = static_cast<const gfxSemaphoreImplVK*>(gfxSemaphore::Impl::ExtractImpl(*signalSemaphore));
+        const std::shared_ptr<gfxSemaphoreImplVK> signalSemaphoreImpl = ImplOf<gfxSemaphoreImplVK>(*signalSemaphore);
         epiAssert(signalSemaphoreImpl != nullptr);
 
         signalSemaphoreVk = signalSemaphoreImpl->GetVkSemaphore();
@@ -168,7 +168,7 @@ epiS32 gfxSwapChainImplVK::AcquireNextImage(const gfxSemaphore* signalSemaphore,
 
     if (signalFence != nullptr)
     {
-        const gfxFenceImplVK* signalFenceImpl = static_cast<const gfxFenceImplVK*>(gfxFence::Impl::ExtractImpl(*signalFence));
+        const std::shared_ptr<gfxFenceImplVK> signalFenceImpl = ImplOf<gfxFenceImplVK>(*signalFence);
         epiAssert(signalFenceImpl != nullptr);
 
         signalFenceVk = signalFenceImpl->GetVkFence();
