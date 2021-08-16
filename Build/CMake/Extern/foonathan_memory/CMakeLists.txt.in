@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 2.8.2)
+
+project(foonathan_memory-extern NONE)
+
+include(ExternalProject)
+ExternalProject_Add(foonathan_memory
+    GIT_REPOSITORY      https://github.com/foonathan/memory
+    GIT_TAG             v0.7
+    SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/foonathan_memory/src"
+    BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/foonathan_memory/build"
+
+    GIT_SHALLOW         1
+    GIT_PROGRESS        1
+
+    CONFIGURE_COMMAND   ""
+    BUILD_COMMAND       ""
+    INSTALL_COMMAND     ""
+    TEST_COMMAND        ""
+)

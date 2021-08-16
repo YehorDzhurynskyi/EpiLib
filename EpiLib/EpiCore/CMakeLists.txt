@@ -96,6 +96,7 @@ epi_extern_add(nlohmann_json)
 epi_extern_add(glm)
 epi_extern_add(fmt)
 epi_extern_add(cpu_features)
+epi_extern_add(foonathan_memory)
 epi_extern_add(easy_profiler)
 
 configure_file(Sources/EpiCore/epi_config.h.in Sources/EpiCore/epi_config.h)
@@ -157,6 +158,7 @@ target_link_libraries(EpiCore
         cpu_features
         $<$<CONFIG:Profile>:easy_profiler>
         exprtk
+        foonathan_memory
 )
 
 if (Epi_USE_METAPROPERTY_NAME)
