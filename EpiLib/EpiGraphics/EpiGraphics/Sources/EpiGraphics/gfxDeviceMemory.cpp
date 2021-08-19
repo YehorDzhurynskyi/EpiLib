@@ -49,8 +49,46 @@ epiBool gfxDeviceMemory::HasImpl() const
     return static_cast<epiBool>(m_Impl);
 }
 
+epiBool gfxDeviceMemory::BindBuffer(const gfxBindBufferMemoryInfo& info)
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to bind Buffer! Calling object has no implementation!");
+        return false;
+    }
+
+    if (!info.GetBuffer().HasImpl())
+    {
+        epiLogError("Failed to bind Buffer! The provided Buffer has no implementation!");
+        return false;
+    }
+
+    return m_Impl->BindBuffer(info);
+}
+
+epiBool gfxDeviceMemory::BindImage(const gfxBindImageMemoryInfo& info)
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to bind Image! Calling object has no implementation!");
+        return false;
+    }
+
+    if (!info.GetImage().HasImpl())
+    {
+        epiLogError("Failed to bind Image! The provided Image has no implementation!");
+        return false;
+    }
+
+    return m_Impl->BindImage(info);
+}
+
 gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
 {
+    // TODO: check whether the following memory is already mapped
+    // Mapping the same VkDeviceMemory block multiple times is illegal, but only
+    // one mapping at a time is allowed.This includes mapping disjoint regions.
+
     // TODO: add warning message if Map is used with a non-coherent memory to call flush:
     // - Use a memory heap that is host coherent, indicated with VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
     // - Call vkFlushMappedMemoryRanges after writing to the mapped memory, and call vkInvalidateMappedMemoryRanges before reading from the mapped memory

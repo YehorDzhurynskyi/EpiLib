@@ -20,24 +20,12 @@ gfxDeviceMemoryImplVK::~gfxDeviceMemoryImplVK()
     vkFreeMemory(m_VkDevice, m_VkDeviceMemory, nullptr);
 }
 
-epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
+epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryCreateInfo& info,
                                     const gfxPhysicalDeviceImplVK& physicalDeviceImpl)
 {
-    if (!info.GetBuffer().HasImpl())
-    {
-        epiLogError("Failed to allocate memory for the Buffer! The provided Buffer has no implementation!");
-        return false;
-    }
-
-    const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(info.GetBuffer());
-    epiAssert(bufferImpl != nullptr);
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(m_VkDevice, bufferImpl->GetVkBuffer(), &memRequirements);
-
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.allocationSize = info.GetSize();
     allocInfo.memoryTypeIndex = std::numeric_limits<epiU32>::max();
 
     VkPhysicalDeviceMemoryProperties memProperties;
@@ -46,7 +34,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
     const VkMemoryPropertyFlagBits memoryPropertyMask = gfxDeviceMemoryPropertyTo(info.GetPropertyMask());
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
     {
-        if ((memRequirements.memoryTypeBits & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & memoryPropertyMask) == memoryPropertyMask)
+        if ((memProperties.memoryTypes[i].propertyFlags & memoryPropertyMask) == memoryPropertyMask)
         {
             allocInfo.memoryTypeIndex = i;
             break;
@@ -65,14 +53,27 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
         return false;
     }
 
-    constexpr VkDeviceSize kOffset = 0;
-    if (kOffset % memRequirements.alignment != 0)
+    m_AllocatedSize = allocInfo.allocationSize;
+    m_MemoryTypeIndex = allocInfo.memoryTypeIndex;
+
+    return true;
+}
+
+epiBool gfxDeviceMemoryImplVK::BindBuffer(const gfxBindBufferMemoryInfo& info)
+{
+    const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(info.GetBuffer());
+    epiAssert(bufferImpl != nullptr);
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(m_VkDevice, bufferImpl->GetVkBuffer(), &memRequirements);
+
+    if (!ValidateMemoryRequirements(memRequirements.size, memRequirements.alignment, memRequirements.memoryTypeBits, info.GetOffset()))
     {
-        epiLogError("Failed to call vkBindBufferMemory! offset=`{}` should be a multiple of required alignment=`{}`", kOffset, memRequirements.alignment);
+        epiLogError("Failed to bind Buffer! A memory requirements validation has failed!");
         return false;
     }
 
-    if (const VkResult result = vkBindBufferMemory(m_VkDevice, bufferImpl->GetVkBuffer(), m_VkDeviceMemory, kOffset); result != VK_SUCCESS)
+    if (const VkResult result = vkBindBufferMemory(m_VkDevice, bufferImpl->GetVkBuffer(), m_VkDeviceMemory, info.GetOffset()); result != VK_SUCCESS)
     {
         gfxLogVkResultEx(result, "Failed to call vkBindBufferMemory!");
         return false;
@@ -81,55 +82,23 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryBufferCreateInfo& info,
     return true;
 }
 
-epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryImageCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl)
+epiBool gfxDeviceMemoryImplVK::BindImage(const gfxBindImageMemoryInfo& info)
 {
-    // TODO: make common function for image and buffer
     const std::shared_ptr<gfxImageImplVK> imageImpl = ImplOf<gfxImageImplVK>(info.GetImage());
     epiAssert(imageImpl != nullptr);
 
     VkMemoryRequirements memRequirements;
     vkGetImageMemoryRequirements(m_VkDevice, imageImpl->GetVkImage(), &memRequirements);
 
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = std::numeric_limits<epiU32>::max();
-
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(physicalDeviceImpl.GetVkPhysicalDevice(), &memProperties);
-
-    const VkMemoryPropertyFlagBits memoryPropertyMask = gfxDeviceMemoryPropertyTo(info.GetPropertyMask());
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+    if (!ValidateMemoryRequirements(memRequirements.size, memRequirements.alignment, memRequirements.memoryTypeBits, info.GetOffset()))
     {
-        if ((memRequirements.memoryTypeBits & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & memoryPropertyMask) == memoryPropertyMask)
-        {
-            allocInfo.memoryTypeIndex = i;
-            break;
-        }
-    }
-
-    if (allocInfo.memoryTypeIndex >= memProperties.memoryTypeCount)
-    {
-        epiLogError("Failed to find suitable memory type!");
+        epiLogError("Failed to bind Image! A memory requirements validation has failed!");
         return false;
     }
 
-    if (const VkResult result = vkAllocateMemory(m_VkDevice, &allocInfo, nullptr, &m_VkDeviceMemory); result != VK_SUCCESS)
+    if (const VkResult result = vkBindImageMemory(m_VkDevice, imageImpl->GetVkImage(), m_VkDeviceMemory, info.GetOffset()); result != VK_SUCCESS)
     {
-        gfxLogVkResultEx(result, "Failed to call vkAllocateMemory!");
-        return false;
-    }
-
-    constexpr VkDeviceSize kOffset = 0;
-    if (kOffset % memRequirements.alignment != 0)
-    {
-        epiLogError("Failed to call vkBindBufferMemory! offset=`{}` should be a multiple of required alignment=`{}`", kOffset, memRequirements.alignment);
-        return false;
-    }
-
-    if (const VkResult result = vkBindImageMemory(m_VkDevice, imageImpl->GetVkImage(), m_VkDeviceMemory, kOffset); result != VK_SUCCESS)
-    {
-        gfxLogVkResultEx(result, "Failed to call vkBindBufferMemory!");
+        gfxLogVkResultEx(result, "Failed to call vkBindImageMemory!");
         return false;
     }
 
@@ -156,6 +125,38 @@ void gfxDeviceMemoryImplVK::Unmap()
 VkDeviceMemory gfxDeviceMemoryImplVK::GetVkDeviceMemory() const
 {
     return m_VkDeviceMemory;
+}
+
+epiBool gfxDeviceMemoryImplVK::ValidateMemoryRequirements(epiSize_t requiredSize,
+                                                          epiSize_t requiredAlignment,
+                                                          uint32_t requiredMemoryTypeBits,
+                                                          epiSize_t actualOffset) const
+{
+    if (requiredSize > m_AllocatedSize)
+    {
+        epiLogError("Failed to bind Buffer! The required size=`{}` is greater than AllocatedSize=`{}`",
+                    requiredSize,
+                    m_AllocatedSize);
+        return false;
+    }
+
+    if (actualOffset % requiredAlignment != 0)
+    {
+        epiLogError("Failed to bind Buffer! Offset=`{}` should be a multiple of the required alignment=`{}`",
+                    actualOffset,
+                    requiredAlignment);
+        return false;
+    }
+
+    if (!(requiredMemoryTypeBits & (1 << m_MemoryTypeIndex)))
+    {
+        epiLogError("Failed to bind Buffer! Required MemoryTypeBits=`{}` doesn't match used MemoryTypeIndex=`{}`",
+                    requiredMemoryTypeBits,
+                    m_MemoryTypeIndex);
+        return false;
+    }
+
+    return true;
 }
 
 EPI_NAMESPACE_END()

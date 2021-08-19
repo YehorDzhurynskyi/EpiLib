@@ -592,6 +592,38 @@ epiBool gfxDeviceImplVK::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWri
     vkUpdateDescriptorSets(m_VkDevice, writesVk.size(), writesVk.data(), copiesVk.size(), copiesVk.data());
 }
 
+std::optional<gfxMemoryRequirements> gfxDeviceImplVK::MemoryRequirementsOf(const gfxBuffer& buffer) const
+{
+    gfxMemoryRequirements memRequirements{};
+
+    const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(buffer);
+    epiAssert(bufferImpl != nullptr);
+
+    VkMemoryRequirements memRequirementsVk;
+    vkGetBufferMemoryRequirements(m_VkDevice, bufferImpl->GetVkBuffer(), &memRequirementsVk);
+
+    memRequirements.SetSize(memRequirementsVk.size);
+    memRequirements.SetAlignment(memRequirementsVk.alignment);
+
+    return memRequirements;
+}
+
+std::optional<gfxMemoryRequirements> gfxDeviceImplVK::MemoryRequirementsOf(const gfxImage& image) const
+{
+    gfxMemoryRequirements memRequirements{};
+
+    const std::shared_ptr<gfxImageImplVK> imageImpl = ImplOf<gfxImageImplVK>(image);
+    epiAssert(imageImpl != nullptr);
+
+    VkMemoryRequirements memRequirementsVk;
+    vkGetImageMemoryRequirements(m_VkDevice, imageImpl->GetVkImage(), &memRequirementsVk);
+
+    memRequirements.SetSize(memRequirementsVk.size);
+    memRequirements.SetAlignment(memRequirementsVk.alignment);
+
+    return memRequirements;
+}
+
 std::shared_ptr<gfxSwapChain::Impl> gfxDeviceImplVK::CreateSwapChain(const gfxSwapChainCreateInfo& info) const
 {
     std::shared_ptr<gfxSwapChainImplVK> impl = std::make_shared<gfxSwapChainImplVK>(*this);
@@ -713,30 +745,12 @@ std::shared_ptr<gfxBuffer::Impl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCr
     return impl;
 }
 
-std::shared_ptr<gfxDeviceMemory::Impl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const
+std::shared_ptr<gfxDeviceMemory::Impl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const
 {
     std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = m_PhysicalDevice.lock();
     if (!physicalDevice)
     {
         epiLogError("Failed to create DeviceMemory! The attached PhysicalDevice is disposed!");
-        return nullptr;
-    }
-
-    std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
-    if (!impl->Init(info, *physicalDevice.get()))
-    {
-        impl.reset();
-    }
-
-    return impl;
-}
-
-std::shared_ptr<gfxDeviceMemory::Impl> gfxDeviceImplVK::CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const
-{
-    std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = m_PhysicalDevice.lock();
-    if (!physicalDevice)
-    {
-        epiLogError("Failed to create DeviceMemory! The attached PhysicalDevice is null!");
         return nullptr;
     }
 

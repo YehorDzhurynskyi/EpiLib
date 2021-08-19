@@ -4,15 +4,21 @@ class gfxMemoryBarrier
     gfxAccess DstAccessMask;
 };
 
-class gfxDeviceMemoryBufferCreateInfo
+class gfxBindBufferMemoryInfo
 {
     gfxBuffer Buffer;
-    gfxDeviceMemoryProperty PropertyMask;
+    epiSize_t Offset;
 };
 
-class gfxDeviceMemoryImageCreateInfo
+class gfxBindImageMemoryInfo
 {
     gfxImage Image;
+    epiSize_t Offset;
+};
+
+class gfxDeviceMemoryCreateInfo
+{
+    epiSize_t Size;
     gfxDeviceMemoryProperty PropertyMask;
 };
 

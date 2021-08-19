@@ -28,6 +28,29 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+class gfxMemoryRequirements : public Object
+{
+EPI_GENREGION_BEGIN(gfxMemoryRequirements)
+
+EPI_GENHIDDEN_gfxMemoryRequirements()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x5c680a91};
+
+    enum gfxMemoryRequirements_PIDs
+    {
+        PID_Size = 0x57f28b54,
+        PID_Alignment = 0xae3f9cff,
+        PID_COUNT = 2
+    };
+
+protected:
+    epiSize_t m_Size{0};
+    epiSize_t m_Alignment{0};
+
+EPI_GENREGION_END(gfxMemoryRequirements)
+};
+
 class gfxDeviceCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxDeviceCreateInfo)
@@ -89,6 +112,9 @@ public:
 
     epiBool UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& writes, const epiArray<gfxDescriptorSetCopy>& copies) const;
 
+    std::optional<gfxMemoryRequirements> MemoryRequirementsOf(const gfxBuffer& buffer) const;
+    std::optional<gfxMemoryRequirements> MemoryRequirementsOf(const gfxImage& image) const;
+
     // TODO: add From suffix
     std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info) const;
     std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
@@ -101,8 +127,7 @@ public:
     std::optional<gfxSampler> CreateSampler(const gfxSamplerCreateInfo& info) const;
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
     std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info) const;
-    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const;
-    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const;
+    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const;
     std::optional<gfxDescriptorSetLayout> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const;
     std::optional<gfxDescriptorPool> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const;
     std::optional<gfxSemaphore> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const;

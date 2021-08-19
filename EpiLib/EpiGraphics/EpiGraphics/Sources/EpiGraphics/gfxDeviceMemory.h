@@ -35,50 +35,73 @@ protected:
 EPI_GENREGION_END(gfxMemoryBarrier)
 };
 
-class gfxDeviceMemoryBufferCreateInfo : public Object
+class gfxBindBufferMemoryInfo : public Object
 {
-EPI_GENREGION_BEGIN(gfxDeviceMemoryBufferCreateInfo)
+EPI_GENREGION_BEGIN(gfxBindBufferMemoryInfo)
 
-EPI_GENHIDDEN_gfxDeviceMemoryBufferCreateInfo()
+EPI_GENHIDDEN_gfxBindBufferMemoryInfo()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xe0466a67};
+    constexpr static epiMetaTypeID TypeID{0x691f6202};
 
-    enum gfxDeviceMemoryBufferCreateInfo_PIDs
+    enum gfxBindBufferMemoryInfo_PIDs
     {
         PID_Buffer = 0x36f6f5c4,
-        PID_PropertyMask = 0x483bfadf,
+        PID_Offset = 0x5ea6cfe6,
         PID_COUNT = 2
     };
 
 protected:
     gfxBuffer m_Buffer{};
-    gfxDeviceMemoryProperty m_PropertyMask{};
+    epiSize_t m_Offset{0};
 
-EPI_GENREGION_END(gfxDeviceMemoryBufferCreateInfo)
+EPI_GENREGION_END(gfxBindBufferMemoryInfo)
 };
 
-class gfxDeviceMemoryImageCreateInfo : public Object
+class gfxBindImageMemoryInfo : public Object
 {
-EPI_GENREGION_BEGIN(gfxDeviceMemoryImageCreateInfo)
+EPI_GENREGION_BEGIN(gfxBindImageMemoryInfo)
 
-EPI_GENHIDDEN_gfxDeviceMemoryImageCreateInfo()
+EPI_GENHIDDEN_gfxBindImageMemoryInfo()
 
 public:
-    constexpr static epiMetaTypeID TypeID{0xa512b933};
+    constexpr static epiMetaTypeID TypeID{0x2b1c0be7};
 
-    enum gfxDeviceMemoryImageCreateInfo_PIDs
+    enum gfxBindImageMemoryInfo_PIDs
     {
         PID_Image = 0x4fc2b5b,
-        PID_PropertyMask = 0x483bfadf,
+        PID_Offset = 0x5ea6cfe6,
         PID_COUNT = 2
     };
 
 protected:
     gfxImage m_Image{};
+    epiSize_t m_Offset{0};
+
+EPI_GENREGION_END(gfxBindImageMemoryInfo)
+};
+
+class gfxDeviceMemoryCreateInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryCreateInfo)
+
+EPI_GENHIDDEN_gfxDeviceMemoryCreateInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xd2391506};
+
+    enum gfxDeviceMemoryCreateInfo_PIDs
+    {
+        PID_Size = 0x57f28b54,
+        PID_PropertyMask = 0x483bfadf,
+        PID_COUNT = 2
+    };
+
+protected:
+    epiSize_t m_Size{0};
     gfxDeviceMemoryProperty m_PropertyMask{};
 
-EPI_GENREGION_END(gfxDeviceMemoryImageCreateInfo)
+EPI_GENREGION_END(gfxDeviceMemoryCreateInfo)
 };
 
 class gfxDeviceMemory : public Object
@@ -126,6 +149,9 @@ public:
     explicit gfxDeviceMemory(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
+
+    epiBool BindBuffer(const gfxBindBufferMemoryInfo& info);
+    epiBool BindImage(const gfxBindImageMemoryInfo& info);
 
     Mapping Map(epiSize_t size, epiSize_t offset = 0);
 

@@ -14,6 +14,9 @@ public:
     Impl& operator=(Impl&& rhs) = default;
     virtual ~Impl() = default;
 
+    virtual epiBool BindBuffer(const gfxBindBufferMemoryInfo& info) = 0;
+    virtual epiBool BindImage(const gfxBindImageMemoryInfo& info) = 0;
+
     virtual epiByte* Map(epiSize_t size, epiSize_t offset) = 0;
     virtual void Unmap() = 0;
 };

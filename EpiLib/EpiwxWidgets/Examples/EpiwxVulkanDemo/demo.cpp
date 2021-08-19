@@ -395,14 +395,22 @@ public:
 
             m_VertexBuffer = *vertexBuffer;
 
-            gfxDeviceMemoryBufferCreateInfo vertexDeviceMemoryCreateInfo;
-            vertexDeviceMemoryCreateInfo.SetBuffer(m_VertexBuffer);
+            std::optional<gfxMemoryRequirements> memRequirements = g_Device.MemoryRequirementsOf(m_VertexBuffer);
+            epiAssert(memRequirements.has_value());
+
+            gfxDeviceMemoryCreateInfo vertexDeviceMemoryCreateInfo;
+            vertexDeviceMemoryCreateInfo.SetSize(memRequirements->GetSize());
             vertexDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
 
             std::optional<gfxDeviceMemory> deviceMemory = g_Device.CreateDeviceMemory(vertexDeviceMemoryCreateInfo);
             epiAssert(deviceMemory.has_value());
 
             m_VertexDeviceMemory = *deviceMemory;
+
+            gfxBindBufferMemoryInfo bindInfo{};
+            bindInfo.SetBuffer(m_VertexBuffer);
+
+            m_VertexDeviceMemory.BindBuffer(bindInfo);
         }
 
         {
@@ -413,12 +421,20 @@ public:
             std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
             epiAssert(stagingBuffer.has_value());
 
-            gfxDeviceMemoryBufferCreateInfo stagingDeviceMemoryCreateInfo;
-            stagingDeviceMemoryCreateInfo.SetBuffer(*stagingBuffer);
+            std::optional<gfxMemoryRequirements> memRequirements = g_Device.MemoryRequirementsOf(*stagingBuffer);
+            epiAssert(memRequirements.has_value());
+
+            gfxDeviceMemoryCreateInfo stagingDeviceMemoryCreateInfo;
+            stagingDeviceMemoryCreateInfo.SetSize(memRequirements->GetSize());
             stagingDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
 
             std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
             epiAssert(stagingDeviceMemory.has_value());
+
+            gfxBindBufferMemoryInfo bindInfo{};
+            bindInfo.SetBuffer(*stagingBuffer);
+
+            stagingDeviceMemory->BindBuffer(bindInfo);
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(vertexBufferCapacity))
             {
@@ -463,14 +479,22 @@ public:
 
             m_IndexBuffer = *indexBuffer;
 
-            gfxDeviceMemoryBufferCreateInfo indexDeviceMemoryCreateInfo;
-            indexDeviceMemoryCreateInfo.SetBuffer(m_IndexBuffer);
+            std::optional<gfxMemoryRequirements> memRequirements = g_Device.MemoryRequirementsOf(m_IndexBuffer);
+            epiAssert(memRequirements.has_value());
+
+            gfxDeviceMemoryCreateInfo indexDeviceMemoryCreateInfo;
+            indexDeviceMemoryCreateInfo.SetSize(memRequirements->GetSize());
             indexDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
 
             std::optional<gfxDeviceMemory> deviceMemory = g_Device.CreateDeviceMemory(indexDeviceMemoryCreateInfo);
             epiAssert(deviceMemory.has_value());
 
             m_IndexDeviceMemory = *deviceMemory;
+
+            gfxBindBufferMemoryInfo bindInfo{};
+            bindInfo.SetBuffer(m_IndexBuffer);
+
+            m_IndexDeviceMemory.BindBuffer(bindInfo);
         }
 
         {
@@ -481,12 +505,20 @@ public:
             std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
             epiAssert(stagingBuffer.has_value());
 
-            gfxDeviceMemoryBufferCreateInfo stagingDeviceMemoryCreateInfo;
-            stagingDeviceMemoryCreateInfo.SetBuffer(*stagingBuffer);
+            std::optional<gfxMemoryRequirements> memRequirements = g_Device.MemoryRequirementsOf(*stagingBuffer);
+            epiAssert(memRequirements.has_value());
+
+            gfxDeviceMemoryCreateInfo stagingDeviceMemoryCreateInfo;
+            stagingDeviceMemoryCreateInfo.SetSize(memRequirements->GetSize());
             stagingDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
 
             std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
             epiAssert(stagingDeviceMemory.has_value());
+
+            gfxBindBufferMemoryInfo bindInfo{};
+            bindInfo.SetBuffer(*stagingBuffer);
+
+            stagingDeviceMemory->BindBuffer(bindInfo);
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(indexBufferCapacity))
             {
@@ -530,12 +562,20 @@ public:
             std::optional<gfxBuffer> stagingBuffer = g_Device.CreateBuffer(stagingBufferCreateInfo);
             epiAssert(stagingBuffer.has_value());
 
-            gfxDeviceMemoryBufferCreateInfo stagingDeviceMemoryCreateInfo;
-            stagingDeviceMemoryCreateInfo.SetBuffer(*stagingBuffer);
+            std::optional<gfxMemoryRequirements> memRequirements = g_Device.MemoryRequirementsOf(*stagingBuffer);
+            epiAssert(memRequirements.has_value());
+
+            gfxDeviceMemoryCreateInfo stagingDeviceMemoryCreateInfo;
+            stagingDeviceMemoryCreateInfo.SetSize(memRequirements->GetSize());
             stagingDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
 
             std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
             epiAssert(stagingDeviceMemory.has_value());
+
+            gfxBindBufferMemoryInfo bindInfo{};
+            bindInfo.SetBuffer(*stagingBuffer);
+
+            stagingDeviceMemory->BindBuffer(bindInfo);
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(imageRGBA.GetBytes()))
             {
@@ -558,14 +598,24 @@ public:
 
             m_Image = *image;
 
-            gfxDeviceMemoryImageCreateInfo imageDeviceMemoryCreateInfo;
-            imageDeviceMemoryCreateInfo.SetImage(*image);
-            imageDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
+            {
+                std::optional<gfxMemoryRequirements> memRequirements = g_Device.MemoryRequirementsOf(m_Image);
+                epiAssert(memRequirements.has_value());
 
-            std::optional<gfxDeviceMemory> imageDeviceMemory = g_Device.CreateDeviceMemory(imageDeviceMemoryCreateInfo);
-            epiAssert(imageDeviceMemory.has_value());
+                gfxDeviceMemoryCreateInfo imageDeviceMemoryCreateInfo;
+                imageDeviceMemoryCreateInfo.SetSize(memRequirements->GetSize());
+                imageDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
 
-            m_ImageDeviceMemory = *imageDeviceMemory;
+                std::optional<gfxDeviceMemory> imageDeviceMemory = g_Device.CreateDeviceMemory(imageDeviceMemoryCreateInfo);
+                epiAssert(imageDeviceMemory.has_value());
+
+                m_ImageDeviceMemory = *imageDeviceMemory;
+
+                gfxBindImageMemoryInfo bindImageInfo{};
+                bindImageInfo.SetImage(m_Image);
+
+                m_ImageDeviceMemory.BindImage(bindImageInfo);
+            }
 
             { // pipeline barrier
                 gfxCommandPoolCreateInfo commandPoolCreateInfo;
@@ -942,14 +992,24 @@ void epiWXVulkanDemoTriangleCanvas::RecreateDepthImage()
 
     m_DepthImage = *image;
 
-    gfxDeviceMemoryImageCreateInfo imageDeviceMemoryCreateInfo;
-    imageDeviceMemoryCreateInfo.SetImage(m_DepthImage);
-    imageDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
+    {
+        std::optional<gfxMemoryRequirements> memRequirements = g_Device.MemoryRequirementsOf(m_DepthImage);
+        epiAssert(memRequirements.has_value());
 
-    std::optional<gfxDeviceMemory> imageDeviceMemory = g_Device.CreateDeviceMemory(imageDeviceMemoryCreateInfo);
-    epiAssert(imageDeviceMemory.has_value());
+        gfxDeviceMemoryCreateInfo imageDeviceMemoryCreateInfo;
+        imageDeviceMemoryCreateInfo.SetSize(memRequirements->GetSize());
+        imageDeviceMemoryCreateInfo.SetPropertyMask(gfxDeviceMemoryProperty_DeviceLocal);
 
-    m_DepthImageDeviceMemory = *imageDeviceMemory;
+        std::optional<gfxDeviceMemory> imageDeviceMemory = g_Device.CreateDeviceMemory(imageDeviceMemoryCreateInfo);
+        epiAssert(imageDeviceMemory.has_value());
+
+        m_DepthImageDeviceMemory = *imageDeviceMemory;
+
+        gfxBindImageMemoryInfo bindImageInfo{};
+        bindImageInfo.SetImage(m_DepthImage);
+
+        m_DepthImageDeviceMemory.BindImage(bindImageInfo);
+    }
 
     gfxImageSubresourceRange subresourceRange;
     subresourceRange.SetAspectMask(gfxImageAspect_Depth);
@@ -1060,14 +1120,22 @@ void epiWXVulkanDemoTriangleCanvas::RecreateUniformBuffers()
 
             m_UniformBuffers[i] = *uniformBuffer;
 
-            gfxDeviceMemoryBufferCreateInfo uniformDeviceMemoryCreateInfo;
-            uniformDeviceMemoryCreateInfo.SetBuffer(m_UniformBuffers[i]);
+            std::optional<gfxMemoryRequirements> memRequirements = g_Device.MemoryRequirementsOf(m_UniformBuffers[i]);
+            epiAssert(memRequirements.has_value());
+
+            gfxDeviceMemoryCreateInfo uniformDeviceMemoryCreateInfo;
+            uniformDeviceMemoryCreateInfo.SetSize(memRequirements->GetSize());
             uniformDeviceMemoryCreateInfo.SetPropertyMask(epiMask(gfxDeviceMemoryProperty_HostCoherent, gfxDeviceMemoryProperty_HostVisible));
 
             std::optional<gfxDeviceMemory> uniformDeviceMemory = g_Device.CreateDeviceMemory(uniformDeviceMemoryCreateInfo);
             epiAssert(uniformDeviceMemory.has_value());
 
             m_UniformDeviceMemories[i] = *uniformDeviceMemory;
+
+            gfxBindBufferMemoryInfo bindInfo{};
+            bindInfo.SetBuffer(m_UniformBuffers[i]);
+
+            m_UniformDeviceMemories[i].BindBuffer(bindInfo);
         }
 
         {

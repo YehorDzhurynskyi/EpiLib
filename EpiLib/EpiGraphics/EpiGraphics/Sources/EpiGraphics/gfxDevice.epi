@@ -1,3 +1,9 @@
+class gfxMemoryRequirements
+{
+    epiSize_t Size;
+    epiSize_t Alignment;
+};
+
 class gfxDeviceCreateInfo
 {
     gfxPhysicalDevice PhysicalDevice;

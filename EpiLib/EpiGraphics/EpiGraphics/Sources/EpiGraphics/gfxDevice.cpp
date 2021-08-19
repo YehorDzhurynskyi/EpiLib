@@ -43,6 +43,40 @@ epiBool gfxDevice::UpdateDescriptorSets(const epiArray<gfxDescriptorSetWrite>& w
     return m_Impl->UpdateDescriptorSets(writes, copies);
 }
 
+std::optional<gfxMemoryRequirements> gfxDevice::MemoryRequirementsOf(const gfxBuffer& buffer) const
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to get Buffer MemoryRequirements! Calling object has no implementation!");
+        return std::nullopt;
+    }
+
+    if (!buffer.HasImpl())
+    {
+        epiLogError("Failed to get Buffer MemoryRequirements! The provided Buffer has no implementation!");
+        return std::nullopt;
+    }
+
+    return m_Impl->MemoryRequirementsOf(buffer);
+}
+
+std::optional<gfxMemoryRequirements> gfxDevice::MemoryRequirementsOf(const gfxImage& image) const
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to get Image MemoryRequirements! Calling object has no implementation!");
+        return std::nullopt;
+    }
+
+    if (!image.HasImpl())
+    {
+        epiLogError("Failed to get Image MemoryRequirements! The provided Image has no implementation!");
+        return std::nullopt;
+    }
+
+    return m_Impl->MemoryRequirementsOf(image);
+}
+
 std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateInfo& info) const
 {
     std::optional<gfxSwapChain> swapChain;
@@ -223,33 +257,9 @@ std::optional<gfxBuffer> gfxDevice::CreateBuffer(const gfxBufferCreateInfo& info
     return buffer;
 }
 
-std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemoryBufferCreateInfo& info) const
+std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const
 {
     std::optional<gfxDeviceMemory> deviceMemory;
-
-    if (!info.GetBuffer().HasImpl())
-    {
-        epiLogError("Failed to create DeviceMemory! Provided Buffer has no implementation!");
-        return deviceMemory;
-    }
-
-    if (std::shared_ptr<gfxDeviceMemory::Impl> impl = m_Impl->CreateDeviceMemory(info))
-    {
-        deviceMemory = gfxDeviceMemory(std::move(impl));
-    }
-
-    return deviceMemory;
-}
-
-std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemoryImageCreateInfo& info) const
-{
-    std::optional<gfxDeviceMemory> deviceMemory;
-
-    if (!info.GetImage().HasImpl())
-    {
-        epiLogError("Failed to create DeviceMemory! Provided Image has no implementation!");
-        return deviceMemory;
-    }
 
     if (std::shared_ptr<gfxDeviceMemory::Impl> impl = m_Impl->CreateDeviceMemory(info))
     {

@@ -18,8 +18,10 @@ public:
     gfxDeviceMemoryImplVK& operator=(gfxDeviceMemoryImplVK&& rhs) = default;
     ~gfxDeviceMemoryImplVK() override;
 
-    epiBool Init(const gfxDeviceMemoryBufferCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl);
-    epiBool Init(const gfxDeviceMemoryImageCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl);
+    epiBool Init(const gfxDeviceMemoryCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl);
+
+    epiBool BindBuffer(const gfxBindBufferMemoryInfo& info) override;
+    epiBool BindImage(const gfxBindImageMemoryInfo& info) override;
 
     epiByte* Map(epiSize_t size, epiSize_t offset) override;
     void Unmap() override;
@@ -27,8 +29,17 @@ public:
     VkDeviceMemory_T* GetVkDeviceMemory() const;
 
 protected:
+    epiBool ValidateMemoryRequirements(epiSize_t requiredSize,
+                                       epiSize_t requiredAlignment,
+                                       uint32_t requiredMemoryTypeBits,
+                                       epiSize_t actualOffset) const;
+
+protected:
     VkDevice_T* m_VkDevice{nullptr};
     VkDeviceMemory_T* m_VkDeviceMemory{nullptr};
+
+    epiSize_t m_AllocatedSize{0};
+    epiS32 m_MemoryTypeIndex{-1};
 };
 
 EPI_NAMESPACE_END()
