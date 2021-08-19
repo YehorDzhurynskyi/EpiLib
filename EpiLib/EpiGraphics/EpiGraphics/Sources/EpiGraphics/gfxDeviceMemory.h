@@ -56,6 +56,9 @@ protected:
     epiSize_t m_Offset{0};
 
 EPI_GENREGION_END(gfxBindBufferMemoryInfo)
+
+public:
+    static gfxBindBufferMemoryInfo FromBuffer(const gfxBuffer& buffer, epiSize_t offset = 0);
 };
 
 class gfxBindImageMemoryInfo : public Object
@@ -79,6 +82,9 @@ protected:
     epiSize_t m_Offset{0};
 
 EPI_GENREGION_END(gfxBindImageMemoryInfo)
+
+public:
+    static gfxBindImageMemoryInfo FromImage(const gfxImage& image, epiSize_t offset = 0);
 };
 
 class gfxDeviceMemoryCreateInfo : public Object

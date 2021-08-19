@@ -7,6 +7,24 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
+gfxBindBufferMemoryInfo gfxBindBufferMemoryInfo::FromBuffer(const gfxBuffer& buffer, epiSize_t offset)
+{
+    gfxBindBufferMemoryInfo info{};
+    info.SetBuffer(buffer);
+    info.SetOffset(offset);
+
+    return info;
+}
+
+gfxBindImageMemoryInfo gfxBindImageMemoryInfo::FromImage(const gfxImage& image, epiSize_t offset)
+{
+    gfxBindImageMemoryInfo info{};
+    info.SetImage(image);
+    info.SetOffset(offset);
+
+    return info;
+}
+
 gfxDeviceMemory::Mapping::Mapping(const std::shared_ptr<Impl>& impl, epiSize_t size, epiSize_t offset)
     : m_Impl{impl}
 {

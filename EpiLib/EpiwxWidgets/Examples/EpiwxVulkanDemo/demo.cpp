@@ -407,10 +407,7 @@ public:
 
             m_VertexDeviceMemory = *deviceMemory;
 
-            gfxBindBufferMemoryInfo bindInfo{};
-            bindInfo.SetBuffer(m_VertexBuffer);
-
-            m_VertexDeviceMemory.BindBuffer(bindInfo);
+            m_VertexDeviceMemory.BindBuffer(gfxBindBufferMemoryInfo::FromBuffer(m_VertexBuffer));
         }
 
         {
@@ -431,10 +428,7 @@ public:
             std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
             epiAssert(stagingDeviceMemory.has_value());
 
-            gfxBindBufferMemoryInfo bindInfo{};
-            bindInfo.SetBuffer(*stagingBuffer);
-
-            stagingDeviceMemory->BindBuffer(bindInfo);
+            stagingDeviceMemory->BindBuffer(gfxBindBufferMemoryInfo::FromBuffer(*stagingBuffer));
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(vertexBufferCapacity))
             {
@@ -491,10 +485,7 @@ public:
 
             m_IndexDeviceMemory = *deviceMemory;
 
-            gfxBindBufferMemoryInfo bindInfo{};
-            bindInfo.SetBuffer(m_IndexBuffer);
-
-            m_IndexDeviceMemory.BindBuffer(bindInfo);
+            m_IndexDeviceMemory.BindBuffer(gfxBindBufferMemoryInfo::FromBuffer(m_IndexBuffer));
         }
 
         {
@@ -515,10 +506,7 @@ public:
             std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
             epiAssert(stagingDeviceMemory.has_value());
 
-            gfxBindBufferMemoryInfo bindInfo{};
-            bindInfo.SetBuffer(*stagingBuffer);
-
-            stagingDeviceMemory->BindBuffer(bindInfo);
+            stagingDeviceMemory->BindBuffer(gfxBindBufferMemoryInfo::FromBuffer(*stagingBuffer));
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(indexBufferCapacity))
             {
@@ -572,10 +560,7 @@ public:
             std::optional<gfxDeviceMemory> stagingDeviceMemory = g_Device.CreateDeviceMemory(stagingDeviceMemoryCreateInfo);
             epiAssert(stagingDeviceMemory.has_value());
 
-            gfxBindBufferMemoryInfo bindInfo{};
-            bindInfo.SetBuffer(*stagingBuffer);
-
-            stagingDeviceMemory->BindBuffer(bindInfo);
+            stagingDeviceMemory->BindBuffer(gfxBindBufferMemoryInfo::FromBuffer(*stagingBuffer));
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(imageRGBA.GetBytes()))
             {
@@ -611,10 +596,7 @@ public:
 
                 m_ImageDeviceMemory = *imageDeviceMemory;
 
-                gfxBindImageMemoryInfo bindImageInfo{};
-                bindImageInfo.SetImage(m_Image);
-
-                m_ImageDeviceMemory.BindImage(bindImageInfo);
+                m_ImageDeviceMemory.BindImage(gfxBindImageMemoryInfo::FromImage(m_Image));
             }
 
             { // pipeline barrier
@@ -1005,10 +987,7 @@ void epiWXVulkanDemoTriangleCanvas::RecreateDepthImage()
 
         m_DepthImageDeviceMemory = *imageDeviceMemory;
 
-        gfxBindImageMemoryInfo bindImageInfo{};
-        bindImageInfo.SetImage(m_DepthImage);
-
-        m_DepthImageDeviceMemory.BindImage(bindImageInfo);
+        m_DepthImageDeviceMemory.BindImage(gfxBindImageMemoryInfo::FromImage(m_DepthImage));
     }
 
     gfxImageSubresourceRange subresourceRange;
@@ -1132,10 +1111,7 @@ void epiWXVulkanDemoTriangleCanvas::RecreateUniformBuffers()
 
             m_UniformDeviceMemories[i] = *uniformDeviceMemory;
 
-            gfxBindBufferMemoryInfo bindInfo{};
-            bindInfo.SetBuffer(m_UniformBuffers[i]);
-
-            m_UniformDeviceMemories[i].BindBuffer(bindInfo);
+            m_UniformDeviceMemories[i].BindBuffer(gfxBindBufferMemoryInfo::FromBuffer(m_UniformBuffers[i]));
         }
 
         {
