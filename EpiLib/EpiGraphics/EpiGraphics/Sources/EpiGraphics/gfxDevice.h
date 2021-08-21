@@ -19,6 +19,7 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/gfxCommandPool.h"
 #include "EpiGraphics/gfxBuffer.h"
 #include "EpiGraphics/gfxDeviceMemory.h"
+#include "EpiGraphics/gfxDeviceMemoryAllocator.h"
 #include "EpiGraphics/gfxDescriptorPool.h"
 #include "EpiGraphics/gfxDescriptorSetLayout.h"
 #include "EpiGraphics/gfxDescriptorSet.h"
@@ -128,6 +129,7 @@ public:
     std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
     std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info) const;
     std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const;
+    std::optional<gfxDeviceMemoryAllocator> CreateDeviceMemoryAllocator(const gfxDeviceMemoryAllocatorCreateInfo& info) const;
     std::optional<gfxDescriptorSetLayout> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const;
     std::optional<gfxDescriptorPool> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const;
     std::optional<gfxSemaphore> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const;

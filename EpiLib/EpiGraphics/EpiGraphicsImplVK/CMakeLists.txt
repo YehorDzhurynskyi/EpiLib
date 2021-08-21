@@ -5,6 +5,8 @@ add_library(EpiGraphicsImplVK
     Sources/EpiGraphicsImplVK/gfxInstanceImplVK.cpp
     Sources/EpiGraphicsImplVK/gfxDeviceMemoryImplVK.h
     Sources/EpiGraphicsImplVK/gfxDeviceMemoryImplVK.cpp
+    Sources/EpiGraphicsImplVK/gfxDeviceMemoryAllocatorImplVK.h
+    Sources/EpiGraphicsImplVK/gfxDeviceMemoryAllocatorImplVK.cpp
     Sources/EpiGraphicsImplVK/gfxBufferImplVK.h
     Sources/EpiGraphicsImplVK/gfxBufferImplVK.cpp
     Sources/EpiGraphicsImplVK/gfxImageImplVK.h
@@ -69,6 +71,8 @@ target_include_directories(EpiGraphicsImplVK
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Sources>
 )
 
+epi_extern_add(VulkanMemoryAllocator)
+
 find_package(shaderc REQUIRED FATAL_ERROR)
 find_package(Vulkan REQUIRED FATAL_ERROR)
 
@@ -77,6 +81,7 @@ target_link_libraries(EpiGraphicsImplVK
         EpiGraphicsImpl
         Vulkan::Vulkan
         shaderc
+        VulkanMemoryAllocator
 )
 
 epi_module_register(EpiGraphicsImplVK

@@ -1166,4 +1166,17 @@ EPI_GENREGION_BEGIN(gfxSharingMode)
 EPI_GENREGION_END(gfxSharingMode)
 };
 
+enum gfxDeviceMemoryAllocatorCreateMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocatorCreateMask)
+    gfxDeviceMemoryAllocatorCreateMask_ExternallySynchronized = (1 << 0),
+    gfxDeviceMemoryAllocatorCreateMask_DedicatedAllocation = (1 << 1),
+    gfxDeviceMemoryAllocatorCreateMask_BindMemory2 = (1 << 2),
+    gfxDeviceMemoryAllocatorCreateMask_MemoryBudget = (1 << 3),
+    gfxDeviceMemoryAllocatorCreateMask_DeviceCoherentMemory = (1 << 4),
+    gfxDeviceMemoryAllocatorCreateMask_BufferDeviceAddress = (1 << 5),
+    gfxDeviceMemoryAllocatorCreateMask_MemoryPriority = (1 << 6)
+EPI_GENREGION_END(gfxDeviceMemoryAllocatorCreateMask)
+};
+
 EPI_NAMESPACE_END()

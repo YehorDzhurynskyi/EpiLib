@@ -1066,3 +1066,15 @@ enum gfxSharingMode
     Exclusive,
     Concurrent
 };
+
+[FlagMask]
+enum gfxDeviceMemoryAllocatorCreateMask
+{
+    ExternallySynchronized,
+    DedicatedAllocation,
+    BindMemory2,
+    MemoryBudget,
+    DeviceCoherentMemory,
+    BufferDeviceAddress,
+    MemoryPriority
+};

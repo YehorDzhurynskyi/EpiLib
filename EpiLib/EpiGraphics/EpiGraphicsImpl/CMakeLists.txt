@@ -7,6 +7,8 @@ add_library(EpiGraphicsImpl
     Sources/EpiGraphicsImpl/gfxInstanceImpl.cpp
     Sources/EpiGraphicsImpl/gfxDeviceMemoryImpl.h
     Sources/EpiGraphicsImpl/gfxDeviceMemoryImpl.cpp
+    Sources/EpiGraphicsImpl/gfxDeviceMemoryAllocatorImpl.h
+    Sources/EpiGraphicsImpl/gfxDeviceMemoryAllocatorImpl.cpp
     Sources/EpiGraphicsImpl/gfxBufferImpl.h
     Sources/EpiGraphicsImpl/gfxBufferImpl.cpp
     Sources/EpiGraphicsImpl/gfxImageImpl.h

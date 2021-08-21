@@ -269,6 +269,18 @@ std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemo
     return deviceMemory;
 }
 
+std::optional<gfxDeviceMemoryAllocator> gfxDevice::CreateDeviceMemoryAllocator(const gfxDeviceMemoryAllocatorCreateInfo& info) const
+{
+    std::optional<gfxDeviceMemoryAllocator> deviceMemoryAllocator;
+
+    if (std::shared_ptr<gfxDeviceMemoryAllocator::Impl> impl = m_Impl->CreateDeviceMemoryAllocator(info))
+    {
+        deviceMemoryAllocator = gfxDeviceMemoryAllocator(std::move(impl));
+    }
+
+    return deviceMemoryAllocator;
+}
+
 std::optional<gfxDescriptorSetLayout> gfxDevice::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const
 {
     std::optional<gfxDescriptorSetLayout> descriptorSetLayout;

@@ -1,0 +1,8 @@
+class gfxDeviceMemoryAllocatorCreateInfo
+{
+    gfxDeviceMemoryAllocatorCreateMask CreateMask;
+};
+
+class gfxDeviceMemoryAllocator
+{
+};

@@ -17,6 +17,7 @@
 #include "EpiGraphicsImplVK/gfxCommandPoolImplVK.h"
 #include "EpiGraphicsImplVK/gfxBufferImplVK.h"
 #include "EpiGraphicsImplVK/gfxDeviceMemoryImplVK.h"
+#include "EpiGraphicsImplVK/gfxDeviceMemoryAllocatorImplVK.h"
 #include "EpiGraphicsImplVK/gfxDescriptorPoolImplVK.h"
 #include "EpiGraphicsImplVK/gfxDescriptorSetLayoutImplVK.h"
 #include "EpiGraphicsImplVK/gfxDescriptorSetImplVK.h"
@@ -756,6 +757,17 @@ std::shared_ptr<gfxDeviceMemory::Impl> gfxDeviceImplVK::CreateDeviceMemory(const
 
     std::shared_ptr<gfxDeviceMemoryImplVK> impl = std::make_shared<gfxDeviceMemoryImplVK>(m_VkDevice);
     if (!impl->Init(info, *physicalDevice.get()))
+    {
+        impl.reset();
+    }
+
+    return impl;
+}
+
+std::shared_ptr<gfxDeviceMemoryAllocator::Impl> gfxDeviceImplVK::CreateDeviceMemoryAllocator(const gfxDeviceMemoryAllocatorCreateInfo& info) const
+{
+    std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> impl = std::make_shared<gfxDeviceMemoryAllocatorImplVK>(m_VkDevice);
+    if (!impl->Init(info))
     {
         impl.reset();
     }

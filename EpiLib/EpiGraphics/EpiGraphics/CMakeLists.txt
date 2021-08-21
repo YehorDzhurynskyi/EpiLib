@@ -43,6 +43,9 @@ add_library(EpiGraphics
     Sources/EpiGraphics/gfxDeviceMemory.epi
     Sources/EpiGraphics/gfxDeviceMemory.h
     Sources/EpiGraphics/gfxDeviceMemory.cpp
+    Sources/EpiGraphics/gfxDeviceMemoryAllocator.epi
+    Sources/EpiGraphics/gfxDeviceMemoryAllocator.h
+    Sources/EpiGraphics/gfxDeviceMemoryAllocator.cpp
     Sources/EpiGraphics/gfxBuffer.epi
     Sources/EpiGraphics/gfxBuffer.h
     Sources/EpiGraphics/gfxBuffer.cpp

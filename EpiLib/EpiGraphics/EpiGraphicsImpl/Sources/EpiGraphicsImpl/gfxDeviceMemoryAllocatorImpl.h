@@ -1,0 +1,18 @@
+#pragma once
+
+#include "EpiGraphics/gfxDeviceMemoryAllocator.h"
+
+EPI_NAMESPACE_BEGIN()
+
+class gfxDeviceMemoryAllocator::Impl
+{
+public:
+    Impl() = default;
+    Impl(const Impl& rhs) = delete;
+    Impl& operator=(const Impl& rhs) = delete;
+    Impl(Impl&& rhs) = default;
+    Impl& operator=(Impl&& rhs) = default;
+    virtual ~Impl() = default;
+};
+
+EPI_NAMESPACE_END()
