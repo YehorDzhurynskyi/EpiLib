@@ -159,21 +159,36 @@ enum gfxPhysicalDeviceFeature
     ShaderOutputViewportIndex,
     ShaderOutputLayer,
     SubgroupBroadcastDynamicId,
+
     COUNT
 };
 
 enum gfxInstanceExtension
 {
+    # NOTE: an order is important
+
     Surface,
     SurfaceWin32,
+    GetPhysicalDeviceProperties2,
+
     COUNT
 };
 
 enum gfxPhysicalDeviceExtension
 {
+    # NOTE: an order is important
+
     SwapChain,
     ImageLessFrameBuffer,
     ImageFormatList,
+    GetMemoryRequirements2,
+    DedicatedAllocation,
+    BindMemory2,
+    MemoryBudget,
+    AMDDeviceCoherentMemory,
+    BufferDeviceAddress,
+    MemoryPriority,
+
     COUNT
 };
 
@@ -1070,11 +1085,5 @@ enum gfxSharingMode
 [FlagMask]
 enum gfxDeviceMemoryAllocatorCreateMask
 {
-    ExternallySynchronized,
-    DedicatedAllocation,
-    BindMemory2,
-    MemoryBudget,
-    DeviceCoherentMemory,
-    BufferDeviceAddress,
-    MemoryPriority
+    ExternallySynchronized
 };

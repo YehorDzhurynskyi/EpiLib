@@ -187,7 +187,8 @@ enum class gfxInstanceExtension : epiS32
 EPI_GENREGION_BEGIN(gfxInstanceExtension)
     Surface = 0,
     SurfaceWin32 = 1,
-    COUNT = 2
+    GetPhysicalDeviceProperties2 = 2,
+    COUNT = 3
 EPI_GENREGION_END(gfxInstanceExtension)
 };
 
@@ -197,7 +198,14 @@ EPI_GENREGION_BEGIN(gfxPhysicalDeviceExtension)
     SwapChain = 0,
     ImageLessFrameBuffer = 1,
     ImageFormatList = 2,
-    COUNT = 3
+    GetMemoryRequirements2 = 3,
+    DedicatedAllocation = 4,
+    BindMemory2 = 5,
+    MemoryBudget = 6,
+    AMDDeviceCoherentMemory = 7,
+    BufferDeviceAddress = 8,
+    MemoryPriority = 9,
+    COUNT = 10
 EPI_GENREGION_END(gfxPhysicalDeviceExtension)
 };
 
@@ -1169,13 +1177,7 @@ EPI_GENREGION_END(gfxSharingMode)
 enum gfxDeviceMemoryAllocatorCreateMask : epiS32
 {
 EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocatorCreateMask)
-    gfxDeviceMemoryAllocatorCreateMask_ExternallySynchronized = (1 << 0),
-    gfxDeviceMemoryAllocatorCreateMask_DedicatedAllocation = (1 << 1),
-    gfxDeviceMemoryAllocatorCreateMask_BindMemory2 = (1 << 2),
-    gfxDeviceMemoryAllocatorCreateMask_MemoryBudget = (1 << 3),
-    gfxDeviceMemoryAllocatorCreateMask_DeviceCoherentMemory = (1 << 4),
-    gfxDeviceMemoryAllocatorCreateMask_BufferDeviceAddress = (1 << 5),
-    gfxDeviceMemoryAllocatorCreateMask_MemoryPriority = (1 << 6)
+    gfxDeviceMemoryAllocatorCreateMask_ExternallySynchronized = (1 << 0)
 EPI_GENREGION_END(gfxDeviceMemoryAllocatorCreateMask)
 };
 

@@ -19,7 +19,8 @@ EPI_NAMESPACE_USING()
 static constexpr const epiChar* kDriverExtensionNames[]
 {
     VK_KHR_SURFACE_EXTENSION_NAME,
-    VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+    VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+    VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
 };
 static_assert(epiArrLen(kDriverExtensionNames) == static_cast<epiU32>(gfxInstanceExtension::COUNT));
 
