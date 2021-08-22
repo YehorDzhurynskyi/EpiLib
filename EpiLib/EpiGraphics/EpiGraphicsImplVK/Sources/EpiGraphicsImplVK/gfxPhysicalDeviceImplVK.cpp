@@ -3,6 +3,7 @@
 #include "EpiGraphicsImplVK/gfxEnumVK.h"
 #include "EpiGraphicsImplVK/gfxSurfaceImplVK.h"
 #include "EpiGraphicsImplVK/gfxQueueFamilyImplVK.h"
+#include "EpiGraphicsImplVK/gfxDeviceImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -23,7 +24,12 @@ static_assert(epiArrLen(kDeviceExtensionNames) == static_cast<epiU32>(gfxPhysica
 
 EPI_NAMESPACE_BEGIN()
 
-void gfxPhysicalDeviceImplVK::Init(VkPhysicalDevice device)
+gfxPhysicalDeviceImplVK::gfxPhysicalDeviceImplVK(const gfxInstance& instance)
+    : gfxPhysicalDevice::Impl{instance}
+{
+}
+
+epiBool gfxPhysicalDeviceImplVK::Init(VkPhysicalDevice device)
 {
     m_VkDevice = device;
     FillExtensionsSupported();
@@ -49,6 +55,21 @@ void gfxPhysicalDeviceImplVK::Init(VkPhysicalDevice device)
 
         ++queueFamilyIndex;
     }
+
+    return true;
+}
+
+std::shared_ptr<gfxDevice::Impl> gfxPhysicalDeviceImplVK::CreateDevice(const gfxDeviceCreateInfo& info)
+{
+    gfxPhysicalDevice physicalDevice(shared_from_this());
+
+    std::shared_ptr<gfxDeviceImplVK> impl = std::make_shared<gfxDeviceImplVK>(physicalDevice);
+    if (!impl->Init(info))
+    {
+        impl.reset();
+    }
+
+    return impl;
 }
 
 epiFloat gfxPhysicalDeviceImplVK::GetMaxSamplerAnisotropy() const

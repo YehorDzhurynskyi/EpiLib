@@ -22,15 +22,20 @@ public:
     enum gfxDeviceMemoryAllocatorCreateInfo_PIDs
     {
         PID_CreateMask = 0xc2e0d2f0,
-        PID_COUNT = 1
+        PID_PreferredLargeHeapBlockSize = 0xcb9b9cb0,
+        PID_FrameInUseCount = 0x9c83cc1d,
+        PID_COUNT = 3
     };
 
 protected:
     gfxDeviceMemoryAllocatorCreateMask m_CreateMask{};
+    epiSize_t m_PreferredLargeHeapBlockSize{0};
+    epiU32 m_FrameInUseCount{0};
 
 EPI_GENREGION_END(gfxDeviceMemoryAllocatorCreateInfo)
 };
 
+class gfxDevice;
 class gfxDeviceMemoryAllocator : public Object
 {
 EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocator)
@@ -42,8 +47,12 @@ public:
 
     enum gfxDeviceMemoryAllocator_PIDs
     {
-        PID_COUNT = 0
+        PID_Device = 0xe83b3b8,
+        PID_COUNT = 1
     };
+
+protected:
+    const gfxDevice& GetDevice_Callback() const;
 
 EPI_GENREGION_END(gfxDeviceMemoryAllocator)
 

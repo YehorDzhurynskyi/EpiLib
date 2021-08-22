@@ -29,6 +29,18 @@ epiBool gfxPhysicalDevice::HasImpl() const
     return static_cast<epiBool>(m_Impl);
 }
 
+std::optional<gfxDevice> gfxPhysicalDevice::CreateDevice(const gfxDeviceCreateInfo& info)
+{
+    std::optional<gfxDevice> device;
+
+    if (std::shared_ptr<gfxDevice::Impl> impl = m_Impl->CreateDevice(info))
+    {
+        device = gfxDevice(std::move(impl));
+    }
+
+    return device;
+}
+
 epiFloat gfxPhysicalDevice::GetMaxSamplerAnisotropy() const
 {
     return m_Impl->GetMaxSamplerAnisotropy();
@@ -62,6 +74,13 @@ epiBool gfxPhysicalDevice::IsFeatureSupported(gfxPhysicalDeviceFeature feature) 
 epiBool gfxPhysicalDevice::IsQueueTypeSupported(gfxQueueType mask) const
 {
     return m_Impl->IsQueueTypeSupported(mask);
+}
+
+const gfxInstance& gfxPhysicalDevice::GetInstance_Callback() const
+{
+    epiAssert(HasImpl());
+
+    return m_Impl->GetInstance();
 }
 
 EPI_NAMESPACE_END()

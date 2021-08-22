@@ -10,6 +10,11 @@ class gfxPhysicalDevice
 {
     [Virtual, ReadOnly]
     {
+        gfxInstance Instance;
+    }
+
+    [Virtual, ReadOnly]
+    {
         [ReadCallback(SuppressRef=true)]
         epiString Name;
 

@@ -31,19 +31,21 @@ public:
                  epiU32 engineVersionPatch = 0u);
 
     std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const override;
-    std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) const override;
 
     epiBool IsExtensionSupported(gfxInstanceExtension extension) const override;
     epiBool IsExtensionEnabled(gfxInstanceExtension extension) const override;
 
     VkInstance_T* GetVkInstance() const;
+    epiU32 GetVkAPIVersion() const;
 
 protected:
     void FillExtensionsSupported();
 
 protected:
     VkInstance_T* m_VkInstance{nullptr};
+    epiU32 m_VkAPIVersion{0};
     EPI_BUILD_DEBUG_ONLY(VkDebugUtilsMessengerEXT_T* m_VKDebugMessenger{nullptr});
+
     epiBool m_ExtensionSupported[static_cast<epiU32>(gfxInstanceExtension::COUNT)]{};
     epiBool m_ExtensionEnabled[static_cast<epiU32>(gfxInstanceExtension::COUNT)]{};
 };

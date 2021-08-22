@@ -6,8 +6,8 @@ EPI_GENREGION_END(include)
 
 #include "EpiCore/ObjectModel/Object.h"
 
-#include "EpiGraphics/gfxPhysicalDevice.h"
 #include "EpiGraphics/gfxQueue.h"
+#include "EpiGraphics/gfxQueueDescriptor.h"
 #include "EpiGraphics/gfxEnum.h"
 #include "EpiGraphics/gfxSwapChain.h"
 #include "EpiGraphics/gfxRenderPass.h"
@@ -63,15 +63,13 @@ public:
 
     enum gfxDeviceCreateInfo_PIDs
     {
-        PID_PhysicalDevice = 0xdb69328a,
         PID_QueueDescriptorList = 0xf5d1762d,
         PID_ExtensionsRequired = 0x8d4676b0,
         PID_FeaturesRequired = 0x13fa62aa,
-        PID_COUNT = 4
+        PID_COUNT = 3
     };
 
 protected:
-    gfxPhysicalDevice m_PhysicalDevice{};
     gfxQueueDescriptorList m_QueueDescriptorList{};
     epiArray<gfxPhysicalDeviceExtension> m_ExtensionsRequired{};
     epiArray<gfxPhysicalDeviceFeature> m_FeaturesRequired{};
@@ -79,6 +77,7 @@ protected:
 EPI_GENREGION_END(gfxDeviceCreateInfo)
 };
 
+class gfxPhysicalDevice;
 class gfxDevice : public Object
 {
 EPI_GENREGION_BEGIN(gfxDevice)
@@ -90,9 +89,13 @@ public:
 
     enum gfxDevice_PIDs
     {
+        PID_PhysicalDevice = 0xdb69328a,
         PID_QueueFamilies = 0x459d6c2c,
-        PID_COUNT = 1
+        PID_COUNT = 2
     };
+
+protected:
+    const gfxPhysicalDevice& GetPhysicalDevice_Callback() const;
 
 protected:
     epiArray<gfxQueueFamily> m_QueueFamilies{};
@@ -117,23 +120,23 @@ public:
     std::optional<gfxMemoryRequirements> MemoryRequirementsOf(const gfxImage& image) const;
 
     // TODO: add From suffix
-    std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info) const;
-    std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info) const;
-    std::optional<gfxPipelineLayout> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const;
-    std::optional<gfxPipelineGraphics> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const;
-    std::optional<gfxShaderModule> CreateShaderModule(const gfxShaderModuleCreateInfo& info) const;
-    std::optional<gfxFrameBuffer> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const;
-    std::optional<gfxImage> CreateImage(const gfxImageCreateInfo& info) const;
-    std::optional<gfxImageView> CreateImageView(const gfxImageViewCreateInfo& info) const;
-    std::optional<gfxSampler> CreateSampler(const gfxSamplerCreateInfo& info) const;
-    std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info) const;
-    std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info) const;
-    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const;
-    std::optional<gfxDeviceMemoryAllocator> CreateDeviceMemoryAllocator(const gfxDeviceMemoryAllocatorCreateInfo& info) const;
-    std::optional<gfxDescriptorSetLayout> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const;
-    std::optional<gfxDescriptorPool> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const;
-    std::optional<gfxSemaphore> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const;
-    std::optional<gfxFence> CreateFence(const gfxFenceCreateInfo& info) const;
+    std::optional<gfxSwapChain> CreateSwapChain(const gfxSwapChainCreateInfo& info);
+    std::optional<gfxRenderPass> CreateRenderPass(const gfxRenderPassCreateInfo& info);
+    std::optional<gfxPipelineLayout> CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info);
+    std::optional<gfxPipelineGraphics> CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info);
+    std::optional<gfxShaderModule> CreateShaderModule(const gfxShaderModuleCreateInfo& info);
+    std::optional<gfxFrameBuffer> CreateFrameBuffer(const gfxFrameBufferCreateInfo& info);
+    std::optional<gfxImage> CreateImage(const gfxImageCreateInfo& info);
+    std::optional<gfxImageView> CreateImageView(const gfxImageViewCreateInfo& info);
+    std::optional<gfxSampler> CreateSampler(const gfxSamplerCreateInfo& info);
+    std::optional<gfxCommandPool> CreateCommandPool(const gfxCommandPoolCreateInfo& info);
+    std::optional<gfxBuffer> CreateBuffer(const gfxBufferCreateInfo& info);
+    std::optional<gfxDeviceMemory> CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info);
+    std::optional<gfxDeviceMemoryAllocator> CreateDeviceMemoryAllocator(const gfxDeviceMemoryAllocatorCreateInfo& info);
+    std::optional<gfxDescriptorSetLayout> CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info);
+    std::optional<gfxDescriptorPool> CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info);
+    std::optional<gfxSemaphore> CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info);
+    std::optional<gfxFence> CreateFence(const gfxFenceCreateInfo& info);
 
 protected:
     std::shared_ptr<Impl> m_Impl;

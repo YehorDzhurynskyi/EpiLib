@@ -56,6 +56,7 @@ protected:
 EPI_GENREGION_END(gfxSwapChainCreateInfo)
 };
 
+class gfxDevice;
 class gfxSwapChain : public Object
 {
 EPI_GENREGION_BEGIN(gfxSwapChain)
@@ -67,13 +68,15 @@ public:
 
     enum gfxSwapChain_PIDs
     {
+        PID_Device = 0xe83b3b8,
         PID_BufferCount = 0xd1605dff,
         PID_Extent = 0x21a25c7e,
         PID_ImageViews = 0x30732ad6,
-        PID_COUNT = 3
+        PID_COUNT = 4
     };
 
 protected:
+    const gfxDevice& GetDevice_Callback() const;
     epiU32 GetBufferCount_Callback() const;
     epiSize2u GetExtent_Callback() const;
 

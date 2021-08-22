@@ -11,7 +11,7 @@
 
 EPI_NAMESPACE_USING()
 
-epiWXVulkanCanvas::epiWXVulkanCanvas(const epiWXVulkanCanvasCreateInfo& info,
+epiWXVulkanCanvas::epiWXVulkanCanvas(epiWXVulkanCanvasCreateInfo& info,
                                      wxWindow* parent,
                                      wxWindowID id,
                                      const wxPoint& pos,
@@ -22,7 +22,7 @@ epiWXVulkanCanvas::epiWXVulkanCanvas(const epiWXVulkanCanvasCreateInfo& info,
     Create(info, parent, id, pos, size, style, name);
 }
 
-epiBool epiWXVulkanCanvas::Create(const epiWXVulkanCanvasCreateInfo& info,
+epiBool epiWXVulkanCanvas::Create(epiWXVulkanCanvasCreateInfo& info,
                                   wxWindow* parent,
                                   wxWindowID id,
                                   const wxPoint& pos,

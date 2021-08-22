@@ -25,6 +25,11 @@ class gfxSwapChain
 {
     [Virtual, ReadOnly]
     {
+        gfxDevice Device;
+    }
+
+    [Virtual, ReadOnly]
+    {
         epiU32 BufferCount;
 
         [ReadCallback(SuppressRef=true)]

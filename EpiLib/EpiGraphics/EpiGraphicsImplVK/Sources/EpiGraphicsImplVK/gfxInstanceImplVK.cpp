@@ -85,6 +85,8 @@ epiBool gfxInstanceImplVK::Init(epiU32 apiVersionMajor,
     appInfo.engineVersion = VK_MAKE_VERSION(engineVersionMajor, engineVersionMinor, engineVersionPatch);
     appInfo.apiVersion = VK_MAKE_VERSION(apiVersionMajor, apiVersionMinor, apiVersionPatch);
 
+    m_VkAPIVersion = appInfo.apiVersion;
+
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
@@ -194,9 +196,10 @@ epiBool gfxInstanceImplVK::Init(epiU32 apiVersionMajor,
     std::vector<VkPhysicalDevice> vkDevices(deviceCount);
     vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, vkDevices.data());
 
+    gfxInstance instance(shared_from_this());
     for (const VkPhysicalDevice& vkDevice : vkDevices)
     {
-        std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = std::make_shared<gfxPhysicalDeviceImplVK>();
+        std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDevice = std::make_shared<gfxPhysicalDeviceImplVK>(instance);
         physicalDevice->Init(vkDevice);
 
         m_PhysicalDevices.push_back(std::move(physicalDevice));
@@ -234,23 +237,6 @@ std::shared_ptr<gfxSurface::Impl> gfxInstanceImplVK::CreateSurface(const gfxWind
     return impl;
 }
 
-std::shared_ptr<gfxDevice::Impl> gfxInstanceImplVK::CreateDevice(const gfxDeviceCreateInfo& info) const
-{
-    if (!info.GetPhysicalDevice().HasImpl())
-    {
-        epiLogError("Failed to initialize Device! The provided PhysicalDevice has no implementation!");
-        return nullptr;
-    }
-
-    std::shared_ptr<gfxDeviceImplVK> impl = std::make_shared<gfxDeviceImplVK>();
-    if (!impl->Init(info))
-    {
-        impl.reset();
-    }
-
-    return impl;
-}
-
 epiBool gfxInstanceImplVK::IsExtensionSupported(gfxInstanceExtension extension) const
 {
     return m_ExtensionSupported[static_cast<epiU32>(extension)];
@@ -264,6 +250,11 @@ epiBool gfxInstanceImplVK::IsExtensionEnabled(gfxInstanceExtension extension) co
 VkInstance gfxInstanceImplVK::GetVkInstance() const
 {
     return m_VkInstance;
+}
+
+epiU32 gfxInstanceImplVK::GetVkAPIVersion() const
+{
+    return m_VkAPIVersion;
 }
 
 void gfxInstanceImplVK::FillExtensionsSupported()

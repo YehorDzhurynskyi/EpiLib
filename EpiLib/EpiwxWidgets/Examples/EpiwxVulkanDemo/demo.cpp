@@ -1310,24 +1310,26 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    gfxQueueDescriptorList queueDescriptorList;
-    queueDescriptorList.Push(gfxQueueType_Graphics, {1.0f}, {*surface});
-
-    gfxDeviceCreateInfo deviceCreateInfo;
-    deviceCreateInfo.SetPhysicalDevice(*physicalDevice);
-    deviceCreateInfo.SetQueueDescriptorList(queueDescriptorList);
-    deviceCreateInfo.SetExtensionsRequired(deviceExtensionsRequired);
-    deviceCreateInfo.SetFeaturesRequired(deviceFeaturesRequired);
-
-    std::optional<gfxDevice> device = gfxDriver::Get().GetInstance().CreateDevice(deviceCreateInfo);
-    if (!device.has_value())
-    {
-        epiLogError("Falied to create Device!");
-        return -1;
-    }
-
     g_PhysicalDevice = *physicalDevice;
-    g_Device = std::move(*device);
+
+    {
+        gfxQueueDescriptorList queueDescriptorList;
+        queueDescriptorList.Push(gfxQueueType_Graphics, {1.0f}, {*surface});
+
+        gfxDeviceCreateInfo deviceCreateInfo;
+        deviceCreateInfo.SetQueueDescriptorList(queueDescriptorList);
+        deviceCreateInfo.SetExtensionsRequired(deviceExtensionsRequired);
+        deviceCreateInfo.SetFeaturesRequired(deviceFeaturesRequired);
+
+        std::optional<gfxDevice> device = g_PhysicalDevice.CreateDevice(deviceCreateInfo);
+        if (!device.has_value())
+        {
+            epiLogError("Falied to create Device!");
+            return -1;
+        }
+
+        g_Device = std::move(*device);
+    }
 
     wxEntryStart(argc, argv);
     wxTheApp->CallOnInit();

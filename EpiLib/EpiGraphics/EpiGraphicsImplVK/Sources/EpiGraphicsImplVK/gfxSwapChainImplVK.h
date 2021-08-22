@@ -7,11 +7,10 @@ struct VkImageView_T;
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxDeviceImplVK;
 class gfxSwapChainImplVK : public gfxSwapChain::Impl
 {
 public:
-    explicit gfxSwapChainImplVK(const gfxDeviceImplVK& device);
+    explicit gfxSwapChainImplVK(const gfxDevice& device);
     gfxSwapChainImplVK(const gfxSwapChainImplVK& rhs) = delete;
     gfxSwapChainImplVK& operator=(const gfxSwapChainImplVK& rhs) = delete;
     gfxSwapChainImplVK(gfxSwapChainImplVK&& rhs) = default;
@@ -32,7 +31,6 @@ protected:
     epiBool Reset();
 
 protected:
-    const gfxDeviceImplVK& m_Device;
     VkSwapchainKHR_T* m_VkSwapChain{nullptr};
 
     epiSize2u m_Extent{};

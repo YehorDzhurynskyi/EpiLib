@@ -4,8 +4,11 @@
 
 EPI_NAMESPACE_BEGIN()
 
-class gfxInstance::Impl
+class gfxInstance::Impl : public std::enable_shared_from_this<gfxInstance::Impl>
 {
+public:
+    static std::shared_ptr<gfxInstance::Impl> ExtractImpl(const gfxInstance& instance) { return instance.m_Impl; }
+
 public:
     Impl() = default;
     Impl(const Impl& rhs) = delete;
@@ -15,7 +18,6 @@ public:
     virtual ~Impl() = default;
 
     virtual std::shared_ptr<gfxSurface::Impl> CreateSurface(const gfxWindow& window) const = 0;
-    virtual std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) const = 0;
 
     virtual epiBool IsExtensionSupported(gfxInstanceExtension extension) const = 0;
     virtual epiBool IsExtensionEnabled(gfxInstanceExtension extension) const = 0;

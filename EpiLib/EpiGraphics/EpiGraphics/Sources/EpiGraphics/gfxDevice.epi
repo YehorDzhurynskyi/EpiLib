@@ -6,7 +6,6 @@ class gfxMemoryRequirements
 
 class gfxDeviceCreateInfo
 {
-    gfxPhysicalDevice PhysicalDevice;
     gfxQueueDescriptorList QueueDescriptorList;
     epiArray<gfxPhysicalDeviceExtension> ExtensionsRequired;
     epiArray<gfxPhysicalDeviceFeature> FeaturesRequired;
@@ -14,6 +13,11 @@ class gfxDeviceCreateInfo
 
 class gfxDevice
 {
+    [Virtual, ReadOnly]
+    {
+        gfxPhysicalDevice PhysicalDevice;
+    }
+
     [ReadOnly]
     {
         epiArray<gfxQueueFamily> QueueFamilies;

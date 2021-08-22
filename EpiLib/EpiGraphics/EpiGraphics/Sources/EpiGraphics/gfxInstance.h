@@ -44,7 +44,6 @@ public:
     epiBool HasImpl() const;
 
     std::optional<gfxSurface> CreateSurface(const gfxWindow& window) const;
-    std::optional<gfxDevice> CreateDevice(const gfxDeviceCreateInfo& info) const;
 
     epiBool IsExtensionSupported(gfxInstanceExtension extension) const;
     epiBool IsExtensionEnabled(gfxInstanceExtension extension) const;

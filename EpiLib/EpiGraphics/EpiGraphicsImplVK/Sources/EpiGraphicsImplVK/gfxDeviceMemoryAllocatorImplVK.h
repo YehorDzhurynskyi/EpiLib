@@ -2,22 +2,24 @@
 
 #include "EpiGraphicsImpl/gfxDeviceMemoryAllocatorImpl.h"
 
-struct VkDevice_T;
-struct VkDeviceMemory_T;
+struct VmaAllocator_T;
 
 EPI_NAMESPACE_BEGIN()
 
 class gfxDeviceMemoryAllocatorImplVK : public gfxDeviceMemoryAllocator::Impl
 {
 public:
-    explicit gfxDeviceMemoryAllocatorImplVK(VkDevice_T* device);
+    explicit gfxDeviceMemoryAllocatorImplVK(const gfxDevice& device);
     gfxDeviceMemoryAllocatorImplVK(const gfxDeviceMemoryAllocatorImplVK& rhs) = delete;
     gfxDeviceMemoryAllocatorImplVK& operator=(const gfxDeviceMemoryAllocatorImplVK& rhs) = delete;
     gfxDeviceMemoryAllocatorImplVK(gfxDeviceMemoryAllocatorImplVK&& rhs) = default;
     gfxDeviceMemoryAllocatorImplVK& operator=(gfxDeviceMemoryAllocatorImplVK&& rhs) = default;
     ~gfxDeviceMemoryAllocatorImplVK() override;
 
-    epiBool Init(const gfxDeviceMemoryAllocatorCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl);
+    epiBool Init(const gfxDeviceMemoryAllocatorCreateInfo& info);
+
+protected:
+    VmaAllocator_T* m_VmaAllocator{nullptr};
 };
 
 EPI_NAMESPACE_END()

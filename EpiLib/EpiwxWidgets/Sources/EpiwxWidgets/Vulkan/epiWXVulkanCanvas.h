@@ -21,7 +21,7 @@ class epiWXVulkanCanvas : public wxWindow
 {
 public:
     epiWXVulkanCanvas() = default;
-    epiWXVulkanCanvas(const epiWXVulkanCanvasCreateInfo& info,
+    epiWXVulkanCanvas(epiWXVulkanCanvasCreateInfo& info,
                       wxWindow* parent,
                       wxWindowID id = wxID_ANY,
                       const wxPoint& pos = wxDefaultPosition,
@@ -29,7 +29,7 @@ public:
                       long style = 0,
                       const wxString& name = wxASCII_STR("epiWXVulkanCanvas"));
 
-    epiBool Create(const epiWXVulkanCanvasCreateInfo& info,
+    epiBool Create(epiWXVulkanCanvasCreateInfo& info,
                    wxWindow* parent,
                    wxWindowID id = wxID_ANY,
                    const wxPoint& pos = wxDefaultPosition,

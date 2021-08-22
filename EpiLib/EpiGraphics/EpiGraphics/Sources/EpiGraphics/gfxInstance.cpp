@@ -40,18 +40,6 @@ std::optional<gfxSurface> gfxInstance::CreateSurface(const gfxWindow& window) co
     return surface;
 }
 
-std::optional<gfxDevice> gfxInstance::CreateDevice(const gfxDeviceCreateInfo& info) const
-{
-    std::optional<gfxDevice> device;
-
-    if (std::shared_ptr<gfxDevice::Impl> impl = m_Impl->CreateDevice(info))
-    {
-        device = gfxDevice(std::move(impl));
-    }
-
-    return device;
-}
-
 epiBool gfxInstance::IsExtensionSupported(gfxInstanceExtension extension) const
 {
     return m_Impl->IsExtensionSupported(extension);

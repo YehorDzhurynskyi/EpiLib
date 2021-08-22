@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EpiGraphics/gfxSwapChain.h"
+#include "EpiGraphics/gfxDevice.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -10,7 +11,7 @@ public:
     static std::shared_ptr<gfxSwapChain::Impl> ExtractImpl(const gfxSwapChain& swapChain) { return swapChain.m_Impl; }
 
 public:
-    Impl() = default;
+    explicit Impl(const gfxDevice& device);
     Impl(const Impl& rhs) = delete;
     Impl& operator=(const Impl& rhs) = delete;
     Impl(Impl&& rhs) = default;
@@ -24,9 +25,11 @@ public:
     epiU32 GetBufferCount() const { return m_ImageViews.Size(); }
     virtual epiSize2u GetExtent() const = 0;
 
+    const gfxDevice& GetDevice() const;
     const epiArray<std::shared_ptr<gfxImageView::Impl>>& GetImageViews() const { return m_ImageViews; }
 
 protected:
+    gfxDevice m_Device;
     epiArray<std::shared_ptr<gfxImageView::Impl>> m_ImageViews;
 };
 

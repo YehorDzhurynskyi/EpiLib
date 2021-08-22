@@ -9,7 +9,11 @@ EPI_NAMESPACE_BEGIN()
 class gfxPhysicalDeviceImplVK : public gfxPhysicalDevice::Impl
 {
 public:
-    void Init(VkPhysicalDevice_T* device);
+    explicit gfxPhysicalDeviceImplVK(const gfxInstance& instance);
+
+    epiBool Init(VkPhysicalDevice_T* device);
+
+    std::shared_ptr<gfxDevice::Impl> CreateDevice(const gfxDeviceCreateInfo& info) override;
 
     epiFloat GetMaxSamplerAnisotropy() const override;
     epiString GetName() const override;

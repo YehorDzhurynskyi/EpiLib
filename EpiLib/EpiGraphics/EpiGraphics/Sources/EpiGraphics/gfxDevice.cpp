@@ -77,7 +77,7 @@ std::optional<gfxMemoryRequirements> gfxDevice::MemoryRequirementsOf(const gfxIm
     return m_Impl->MemoryRequirementsOf(image);
 }
 
-std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateInfo& info) const
+std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateInfo& info)
 {
     std::optional<gfxSwapChain> swapChain;
 
@@ -89,7 +89,7 @@ std::optional<gfxSwapChain> gfxDevice::CreateSwapChain(const gfxSwapChainCreateI
     return swapChain;
 }
 
-std::optional<gfxRenderPass> gfxDevice::CreateRenderPass(const gfxRenderPassCreateInfo& info) const
+std::optional<gfxRenderPass> gfxDevice::CreateRenderPass(const gfxRenderPassCreateInfo& info)
 {
     std::optional<gfxRenderPass> renderPass;
 
@@ -101,7 +101,7 @@ std::optional<gfxRenderPass> gfxDevice::CreateRenderPass(const gfxRenderPassCrea
     return renderPass;
 }
 
-std::optional<gfxPipelineLayout> gfxDevice::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info) const
+std::optional<gfxPipelineLayout> gfxDevice::CreatePipelineLayout(const gfxPipelineLayoutCreateInfo& info)
 {
     std::optional<gfxPipelineLayout> pipelineLayout;
 
@@ -113,7 +113,7 @@ std::optional<gfxPipelineLayout> gfxDevice::CreatePipelineLayout(const gfxPipeli
     return pipelineLayout;
 }
 
-std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info) const
+std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPipelineGraphicsCreateInfo& info)
 {
     std::optional<gfxPipelineGraphics> pipeline;
 
@@ -155,7 +155,7 @@ std::optional<gfxPipelineGraphics> gfxDevice::CreatePipelineGraphics(const gfxPi
     return pipeline;
 }
 
-std::optional<gfxShaderModule> gfxDevice::CreateShaderModule(const gfxShaderModuleCreateInfo& info) const
+std::optional<gfxShaderModule> gfxDevice::CreateShaderModule(const gfxShaderModuleCreateInfo& info)
 {
     std::optional<gfxShaderModule> shaderModule;
 
@@ -167,7 +167,7 @@ std::optional<gfxShaderModule> gfxDevice::CreateShaderModule(const gfxShaderModu
     return shaderModule;
 }
 
-std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info) const
+std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferCreateInfo& info)
 {
     std::optional<gfxFrameBuffer> frameBuffer;
 
@@ -185,7 +185,7 @@ std::optional<gfxFrameBuffer> gfxDevice::CreateFrameBuffer(const gfxFrameBufferC
     return frameBuffer;
 }
 
-std::optional<gfxImage> gfxDevice::CreateImage(const gfxImageCreateInfo& info) const
+std::optional<gfxImage> gfxDevice::CreateImage(const gfxImageCreateInfo& info)
 {
     std::optional<gfxImage> image;
 
@@ -197,7 +197,7 @@ std::optional<gfxImage> gfxDevice::CreateImage(const gfxImageCreateInfo& info) c
     return image;
 }
 
-std::optional<gfxImageView> gfxDevice::CreateImageView(const gfxImageViewCreateInfo& info) const
+std::optional<gfxImageView> gfxDevice::CreateImageView(const gfxImageViewCreateInfo& info)
 {
     std::optional<gfxImageView> imageView;
 
@@ -215,7 +215,7 @@ std::optional<gfxImageView> gfxDevice::CreateImageView(const gfxImageViewCreateI
     return imageView;
 }
 
-std::optional<gfxSampler> gfxDevice::CreateSampler(const gfxSamplerCreateInfo& info) const
+std::optional<gfxSampler> gfxDevice::CreateSampler(const gfxSamplerCreateInfo& info)
 {
     std::optional<gfxSampler> sampler;
 
@@ -227,7 +227,7 @@ std::optional<gfxSampler> gfxDevice::CreateSampler(const gfxSamplerCreateInfo& i
     return sampler;
 }
 
-std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolCreateInfo& info) const
+std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolCreateInfo& info)
 {
     std::optional<gfxCommandPool> commnadPool;
 
@@ -245,7 +245,7 @@ std::optional<gfxCommandPool> gfxDevice::CreateCommandPool(const gfxCommandPoolC
     return commnadPool;
 }
 
-std::optional<gfxBuffer> gfxDevice::CreateBuffer(const gfxBufferCreateInfo& info) const
+std::optional<gfxBuffer> gfxDevice::CreateBuffer(const gfxBufferCreateInfo& info)
 {
     std::optional<gfxBuffer> buffer;
 
@@ -257,7 +257,7 @@ std::optional<gfxBuffer> gfxDevice::CreateBuffer(const gfxBufferCreateInfo& info
     return buffer;
 }
 
-std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info) const
+std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemoryCreateInfo& info)
 {
     std::optional<gfxDeviceMemory> deviceMemory;
 
@@ -269,7 +269,7 @@ std::optional<gfxDeviceMemory> gfxDevice::CreateDeviceMemory(const gfxDeviceMemo
     return deviceMemory;
 }
 
-std::optional<gfxDeviceMemoryAllocator> gfxDevice::CreateDeviceMemoryAllocator(const gfxDeviceMemoryAllocatorCreateInfo& info) const
+std::optional<gfxDeviceMemoryAllocator> gfxDevice::CreateDeviceMemoryAllocator(const gfxDeviceMemoryAllocatorCreateInfo& info)
 {
     std::optional<gfxDeviceMemoryAllocator> deviceMemoryAllocator;
 
@@ -281,7 +281,7 @@ std::optional<gfxDeviceMemoryAllocator> gfxDevice::CreateDeviceMemoryAllocator(c
     return deviceMemoryAllocator;
 }
 
-std::optional<gfxDescriptorSetLayout> gfxDevice::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info) const
+std::optional<gfxDescriptorSetLayout> gfxDevice::CreateDescriptorSetLayout(const gfxDescriptorSetLayoutCreateInfo& info)
 {
     std::optional<gfxDescriptorSetLayout> descriptorSetLayout;
 
@@ -293,7 +293,7 @@ std::optional<gfxDescriptorSetLayout> gfxDevice::CreateDescriptorSetLayout(const
     return descriptorSetLayout;
 }
 
-std::optional<gfxDescriptorPool> gfxDevice::CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info) const
+std::optional<gfxDescriptorPool> gfxDevice::CreateDescriptorPool(const gfxDescriptorPoolCreateInfo& info)
 {
     std::optional<gfxDescriptorPool> descriptorPool;
 
@@ -305,7 +305,7 @@ std::optional<gfxDescriptorPool> gfxDevice::CreateDescriptorPool(const gfxDescri
     return descriptorPool;
 }
 
-std::optional<gfxSemaphore> gfxDevice::CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info) const
+std::optional<gfxSemaphore> gfxDevice::CreateSemaphoreFrom(const gfxSemaphoreCreateInfo& info)
 {
     std::optional<gfxSemaphore> semaphore;
 
@@ -317,7 +317,7 @@ std::optional<gfxSemaphore> gfxDevice::CreateSemaphoreFrom(const gfxSemaphoreCre
     return semaphore;
 }
 
-std::optional<gfxFence> gfxDevice::CreateFence(const gfxFenceCreateInfo& info) const
+std::optional<gfxFence> gfxDevice::CreateFence(const gfxFenceCreateInfo& info)
 {
     std::optional<gfxFence> fence;
 
@@ -328,6 +328,13 @@ std::optional<gfxFence> gfxDevice::CreateFence(const gfxFenceCreateInfo& info) c
 
     return fence;
 
+}
+
+const gfxPhysicalDevice& gfxDevice::GetPhysicalDevice_Callback() const
+{
+    epiAssert(HasImpl());
+
+    return m_Impl->GetPhysicalDevice();
 }
 
 EPI_NAMESPACE_END()

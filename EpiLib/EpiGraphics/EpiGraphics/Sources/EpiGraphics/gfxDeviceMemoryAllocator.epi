@@ -1,8 +1,14 @@
 class gfxDeviceMemoryAllocatorCreateInfo
 {
     gfxDeviceMemoryAllocatorCreateMask CreateMask;
+    epiSize_t PreferredLargeHeapBlockSize;
+    epiU32 FrameInUseCount;
 };
 
 class gfxDeviceMemoryAllocator
 {
+    [Virtual, ReadOnly]
+    {
+        gfxDevice Device;
+    }
 };

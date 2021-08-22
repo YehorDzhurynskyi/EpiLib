@@ -8,6 +8,7 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxEnum.h"
 #include "EpiGraphics/gfxQueueDescriptor.h"
+#include "EpiGraphics/gfxDevice.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -36,6 +37,7 @@ protected:
 EPI_GENREGION_END(gfxFormatProperties)
 };
 
+class gfxInstance;
 class gfxPhysicalDevice : public Object
 {
 EPI_GENREGION_BEGIN(gfxPhysicalDevice)
@@ -47,13 +49,15 @@ public:
 
     enum gfxPhysicalDevice_PIDs
     {
+        PID_Instance = 0xbb46d388,
         PID_Name = 0xfe11d138,
         PID_Type = 0x2cecf817,
         PID_QueueFamilyDescriptors = 0xfcffb7b9,
-        PID_COUNT = 3
+        PID_COUNT = 4
     };
 
 protected:
+    const gfxInstance& GetInstance_Callback() const;
     epiString GetName_Callback() const;
     gfxPhysicalDeviceType GetType_Callback() const;
 
@@ -70,6 +74,8 @@ public:
     explicit gfxPhysicalDevice(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
+
+    std::optional<gfxDevice> CreateDevice(const gfxDeviceCreateInfo& info);
 
     // TODO: Introduce PhysicalDeviceLimits struct and move it there
     epiFloat GetMaxSamplerAnisotropy() const;

@@ -127,4 +127,11 @@ epiBool gfxQueue::Present(const gfxQueuePresentInfo& info)
     return m_Impl->Present(info);
 }
 
+const gfxDevice& gfxSwapChain::GetDevice_Callback() const
+{
+    epiAssert(HasImpl());
+
+    return m_Impl->GetDevice();
+}
+
 EPI_NAMESPACE_END()
