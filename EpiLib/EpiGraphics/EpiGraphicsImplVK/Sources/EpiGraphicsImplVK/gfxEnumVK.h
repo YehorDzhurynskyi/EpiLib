@@ -61,5 +61,7 @@ VkSamplerAddressMode gfxSamplerAddressModeTo(gfxSamplerAddressMode mode);
 VkBorderColor gfxSamplerBorderColorTo(gfxSamplerBorderColor borderColor);
 VkComponentSwizzle gfxComponentSwizzleTo(gfxComponentSwizzle swizzle);
 VkSharingMode gfxSharingModeTo(gfxSharingMode mode);
+VkBufferCreateFlagBits gfxBufferCreateMaskTo(gfxBufferCreateMask mask);
+VkImageCreateFlagBits gfxImageCreateMaskTo(gfxImageCreateMask mask);
 
 EPI_NAMESPACE_END()

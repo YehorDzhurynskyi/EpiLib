@@ -1294,4 +1294,32 @@ VkSharingMode gfxSharingModeTo(gfxSharingMode mode)
     }
 }
 
+VkBufferCreateFlagBits gfxBufferCreateMaskTo(gfxBufferCreateMask mask)
+{
+    return epiMask((mask & gfxBufferCreateMask_SparseBinding) ? VK_BUFFER_CREATE_SPARSE_BINDING_BIT : VkBufferCreateFlagBits{},
+                   (mask & gfxBufferCreateMask_SparseResidency) ? VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT : VkBufferCreateFlagBits{},
+                   (mask & gfxBufferCreateMask_SparseAliased) ? VK_BUFFER_CREATE_SPARSE_ALIASED_BIT : VkBufferCreateFlagBits{},
+                   (mask & gfxBufferCreateMask_Protected) ? VK_BUFFER_CREATE_PROTECTED_BIT : VkBufferCreateFlagBits{},
+                   (mask & gfxBufferCreateMask_DeviceAddressCaptureReplay) ? VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT : VkBufferCreateFlagBits{});
+}
+
+VkImageCreateFlagBits gfxImageCreateMaskTo(gfxImageCreateMask mask)
+{
+    return epiMask((mask & gfxImageCreateMask_SparseBinding) ? VK_IMAGE_CREATE_SPARSE_BINDING_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_SparseResidency) ? VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_SparseAliased) ? VK_IMAGE_CREATE_SPARSE_ALIASED_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_MutableFormat) ? VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_CubeCompatible) ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_Alias) ? VK_IMAGE_CREATE_ALIAS_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_SplitInstanceBindRegions) ? VK_IMAGE_CREATE_SPARSE_ALIASED_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_TwoDimensionalArrayCompatible) ? VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_BlockTexelViewCompatible) ? VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_ExtendedUsage) ? VK_IMAGE_CREATE_EXTENDED_USAGE_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_Protected) ? VK_IMAGE_CREATE_PROTECTED_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_Disjoint) ? VK_IMAGE_CREATE_DISJOINT_BIT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_CornerSampled) ? VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_SampleLocationsCompatibleDepth) ? VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT : VkImageCreateFlagBits{},
+                   (mask & gfxImageCreateMask_Subsampled) ? VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT : VkImageCreateFlagBits{});
+}
+
 EPI_NAMESPACE_END()

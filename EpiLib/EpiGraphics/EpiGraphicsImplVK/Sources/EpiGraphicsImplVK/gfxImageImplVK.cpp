@@ -2,6 +2,7 @@
 
 #include "EpiGraphicsImplVK/gfxErrorVK.h"
 #include "EpiGraphicsImplVK/gfxEnumVK.h"
+#include "EpiGraphicsImplVK/gfxQueueFamilyImplVK.h"
 
 #include <vulkan/vulkan.h>
 
@@ -27,6 +28,7 @@ epiBool gfxImageImplVKOwner::Init(const gfxImageCreateInfo& info)
 {
     VkImageCreateInfo imageCreateInfo{};
     imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageCreateInfo.flags = gfxImageCreateMaskTo(info.GetCreateMask());
     imageCreateInfo.imageType = gfxImageTypeTo(info.GetType());
     imageCreateInfo.format = gfxFormatTo(info.GetFormat());
     imageCreateInfo.extent.width = info.GetExtent().x;
@@ -37,10 +39,27 @@ epiBool gfxImageImplVKOwner::Init(const gfxImageCreateInfo& info)
     imageCreateInfo.samples = gfxSampleCountMaskTo(info.GetSampleCount());
     imageCreateInfo.tiling = gfxImageTilingTo(info.GetTiling());
     imageCreateInfo.usage = gfxImageUsageMaskTo(info.GetUsageMask());
-    imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // TODO: configure
-    imageCreateInfo.queueFamilyIndexCount = -1; // TBD
-    imageCreateInfo.pQueueFamilyIndices = nullptr; // TBD
+    imageCreateInfo.sharingMode = gfxSharingModeTo(info.GetSharingMode());
     imageCreateInfo.initialLayout = gfxImageLayoutTo(info.GetInitialLayout());
+
+    std::vector<epiU32> queueFamilyIndices;
+    if (info.GetSharingMode() == gfxSharingMode::Concurrent)
+    {
+        queueFamilyIndices.reserve(info.GetQueueFamilies().Size());
+
+        std::transform(info.GetQueueFamilies().begin(),
+                       info.GetQueueFamilies().end(),
+                       std::back_inserter(queueFamilyIndices),
+                       [](const gfxQueueFamily& family)
+        {
+            const std::shared_ptr<gfxQueueFamilyImplVK> familyImpl = ImplOf<gfxQueueFamilyImplVK>(family);
+
+            return familyImpl->GetIndex();
+        });
+
+        imageCreateInfo.queueFamilyIndexCount = queueFamilyIndices.size();
+        imageCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+    }
 
     if (const VkResult result = vkCreateImage(m_VkDevice, &imageCreateInfo, nullptr, &m_VkImage); result != VK_SUCCESS)
     {
