@@ -2,13 +2,17 @@ class gfxSurfaceCapabilities
 {
     epiU32 MinImageCount;
     epiU32 MaxImageCount;
+
     epiU32 MaxImageArrayLayers;
+
     epiSize2u CurrentExtent;
     epiSize2u MinImageExtent;
     epiSize2u MaxImageExtent;
+
     gfxSurfaceTransformMask SupportedSurfaceTransformMask;
     gfxCompositeAlphaMask SupportedCompositeAlphaMask;
-    gfxImageUsage SupportedUsage;
+    gfxImageUsageMask SupportedUsageMask;
+
     gfxSurfaceTransformMask CurrentSurfaceTransformMask;
 };
 

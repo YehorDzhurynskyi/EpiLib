@@ -60,7 +60,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
     createInfo.imageColorSpace = gfxSurfaceColorSpaceTo(info.GetImageColorSpace());
     createInfo.imageExtent = VkExtent2D{info.GetImageExtent().x, info.GetImageExtent().y};
     createInfo.imageArrayLayers = info.GetImageArrayLayers();
-    createInfo.imageUsage = gfxImageUsageTo(info.GetImageUsageMask());
+    createInfo.imageUsage = gfxImageUsageMaskTo(info.GetImageUsageMask());
     createInfo.imageSharingMode = gfxSharingModeTo(info.GetImageSharingMode());
     createInfo.queueFamilyIndexCount = queueFamilyIndices.size();
     createInfo.pQueueFamilyIndices = queueFamilyIndices.data();

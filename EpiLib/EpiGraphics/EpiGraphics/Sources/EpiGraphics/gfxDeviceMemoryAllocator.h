@@ -7,8 +7,183 @@ EPI_GENREGION_END(include)
 #include "EpiCore/ObjectModel/Object.h"
 
 #include "EpiGraphics/gfxEnum.h"
+#include "EpiGraphics/gfxBuffer.h"
+#include "EpiGraphics/gfxImage.h"
 
 EPI_NAMESPACE_BEGIN()
+
+class gfxDeviceMemoryPoolCreateInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryPoolCreateInfo)
+
+EPI_GENHIDDEN_gfxDeviceMemoryPoolCreateInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xe48eee21};
+
+    enum gfxDeviceMemoryPoolCreateInfo_PIDs
+    {
+        PID_CreateMask = 0xc2e0d2f0,
+        PID_BlockSize = 0xfae3d937,
+        PID_MinBlockCount = 0x31087e50,
+        PID_MaxBlockCount = 0x71470626,
+        PID_FrameInUseCount = 0x9c83cc1d,
+        PID_Priority = 0x9bd0be71,
+        PID_MinAllocationAlignment = 0x86cdcdb6,
+        PID_COUNT = 7
+    };
+
+protected:
+    gfxDeviceMemoryPoolCreateMask m_CreateMask{};
+    epiSize_t m_BlockSize{0};
+    epiSize_t m_MinBlockCount{0};
+    epiSize_t m_MaxBlockCount{0};
+    epiU32 m_FrameInUseCount{0};
+    epiFloat m_Priority{0.0f};
+    epiSize_t m_MinAllocationAlignment{0};
+
+EPI_GENREGION_END(gfxDeviceMemoryPoolCreateInfo)
+};
+
+class gfxDeviceMemoryPool : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryPool)
+
+EPI_GENHIDDEN_gfxDeviceMemoryPool()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x29b4f6bf};
+
+    enum gfxDeviceMemoryPool_PIDs
+    {
+        PID_COUNT = 0
+    };
+
+EPI_GENREGION_END(gfxDeviceMemoryPool)
+};
+
+class gfxDeviceMemoryAllocationCreateInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocationCreateInfo)
+
+EPI_GENHIDDEN_gfxDeviceMemoryAllocationCreateInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x639dc2d1};
+
+    enum gfxDeviceMemoryAllocationCreateInfo_PIDs
+    {
+        PID_CreateMask = 0xc2e0d2f0,
+        PID_Usage = 0x112a7174,
+        PID_RequiredPropertiesMask = 0x5d8bea07,
+        PID_PreferredPropertiesMask = 0xca916bd6,
+        PID_Pool = 0xfa306b8,
+        PID_Priority = 0x9bd0be71,
+        PID_COUNT = 6
+    };
+
+protected:
+    gfxDeviceMemoryAllocationCreateMask m_CreateMask{};
+    gfxDeviceMemoryAllocationUsage m_Usage{};
+    gfxDeviceMemoryPropertyMask m_RequiredPropertiesMask{};
+    gfxDeviceMemoryPropertyMask m_PreferredPropertiesMask{};
+    gfxDeviceMemoryPool m_Pool{};
+    epiFloat m_Priority{0.0f};
+
+EPI_GENREGION_END(gfxDeviceMemoryAllocationCreateInfo)
+
+public:
+    static gfxDeviceMemoryAllocationCreateInfo FromUsage(gfxDeviceMemoryAllocationCreateMask createMask,
+                                                         gfxDeviceMemoryAllocationUsage usage);
+
+    static gfxDeviceMemoryAllocationCreateInfo FromPropertiesFlags(gfxDeviceMemoryAllocationCreateMask createMask,
+                                                                   gfxDeviceMemoryPropertyMask requiredPropertiesMask,
+                                                                   gfxDeviceMemoryPropertyMask preferredPropertiesMask);
+};
+
+class gfxDeviceMemoryAllocator;
+class gfxDeviceMemoryAllocation : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocation)
+
+EPI_GENHIDDEN_gfxDeviceMemoryAllocation()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xb726156b};
+
+    enum gfxDeviceMemoryAllocation_PIDs
+    {
+        PID_Allocator = 0x4f8e170f,
+        PID_COUNT = 1
+    };
+
+protected:
+    const gfxDeviceMemoryAllocator& GetAllocator_Callback() const;
+
+EPI_GENREGION_END(gfxDeviceMemoryAllocation)
+
+public:
+    class Impl;
+
+public:
+    gfxDeviceMemoryAllocation() = default;
+    explicit gfxDeviceMemoryAllocation(const std::shared_ptr<Impl>& impl);
+
+    epiBool HasImpl() const;
+
+protected:
+    std::shared_ptr<Impl> m_Impl;
+};
+
+class gfxDeviceMemoryAllocationBuffer : public gfxDeviceMemoryAllocation
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocationBuffer)
+
+EPI_GENHIDDEN_gfxDeviceMemoryAllocationBuffer()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xb98d0ad8};
+
+    enum gfxDeviceMemoryAllocationBuffer_PIDs
+    {
+        PID_Buffer = 0x36f6f5c4,
+        PID_COUNT = 1
+    };
+
+protected:
+    gfxBuffer m_Buffer{};
+
+EPI_GENREGION_END(gfxDeviceMemoryAllocationBuffer)
+
+public:
+    gfxDeviceMemoryAllocationBuffer() = default;
+    gfxDeviceMemoryAllocationBuffer(const std::shared_ptr<Impl>& impl, gfxBuffer&& buffer);
+};
+
+class gfxDeviceMemoryAllocationImage : public gfxDeviceMemoryAllocation
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocationImage)
+
+EPI_GENHIDDEN_gfxDeviceMemoryAllocationImage()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x1a9dc887};
+
+    enum gfxDeviceMemoryAllocationImage_PIDs
+    {
+        PID_Image = 0x4fc2b5b,
+        PID_COUNT = 1
+    };
+
+protected:
+    gfxImage m_Image{};
+
+EPI_GENREGION_END(gfxDeviceMemoryAllocationImage)
+
+public:
+    gfxDeviceMemoryAllocationImage() = default;
+    gfxDeviceMemoryAllocationImage(const std::shared_ptr<Impl>& impl, gfxImage&& image);
+};
 
 class gfxDeviceMemoryAllocatorCreateInfo : public Object
 {

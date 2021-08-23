@@ -6,40 +6,6 @@ EPI_GENREGION_END(include)
 
 EPI_NAMESPACE_BEGIN()
 
-enum class gfxImageType : epiS32
-{
-EPI_GENREGION_BEGIN(gfxImageType)
-    Image1D = 0,
-    Image2D = 1,
-    Image3D = 2
-EPI_GENREGION_END(gfxImageType)
-};
-
-enum class gfxImageViewType : epiS32
-{
-EPI_GENREGION_BEGIN(gfxImageViewType)
-    ImageView1D = 0,
-    ImageView2D = 1,
-    ImageView3D = 2,
-    ImageViewCube = 3,
-    ImageView1DArray = 4,
-    ImageView2DArray = 5,
-    ImageViewCubeArray = 6
-EPI_GENREGION_END(gfxImageViewType)
-};
-
-enum class gfxVertexBufferUsage : epiS32
-{
-EPI_GENREGION_BEGIN(gfxVertexBufferUsage)
-    StaticRead = 0,
-    StaticDraw = 1,
-    DynamicRead = 2,
-    DynamicDraw = 3,
-    StreamRead = 4,
-    StreamDraw = 5
-EPI_GENREGION_END(gfxVertexBufferUsage)
-};
-
 enum class gfxVertexBufferMapAccess : epiS32
 {
 EPI_GENREGION_BEGIN(gfxVertexBufferMapAccess)
@@ -563,20 +529,41 @@ EPI_GENREGION_BEGIN(gfxCompositeAlphaMask)
 EPI_GENREGION_END(gfxCompositeAlphaMask)
 };
 
-enum gfxImageUsage : epiS32
+enum gfxImageCreateMask : epiS32
 {
-EPI_GENREGION_BEGIN(gfxImageUsage)
-    gfxImageUsage_TRANSFER_SRC = (1 << 0),
-    gfxImageUsage_TRANSFER_DST = (1 << 1),
-    gfxImageUsage_SAMPLED = (1 << 2),
-    gfxImageUsage_STORAGE = (1 << 3),
-    gfxImageUsage_COLOR_ATTACHMENT = (1 << 4),
-    gfxImageUsage_DEPTH_STENCIL_ATTACHMENT = (1 << 5),
-    gfxImageUsage_TRANSIENT_ATTACHMENT = (1 << 6),
-    gfxImageUsage_INPUT_ATTACHMENT = (1 << 7),
-    gfxImageUsage_SHADING_RATE_IMAGE = (1 << 8),
-    gfxImageUsage_FRAGMENT_DENSITY_MAP = (1 << 9)
-EPI_GENREGION_END(gfxImageUsage)
+EPI_GENREGION_BEGIN(gfxImageCreateMask)
+    gfxImageCreateMask_SparseBinding = (1 << 0),
+    gfxImageCreateMask_SparseResidency = (1 << 1),
+    gfxImageCreateMask_SparseAliased = (1 << 2),
+    gfxImageCreateMask_MutableFormat = (1 << 3),
+    gfxImageCreateMask_CubeCompatible = (1 << 4),
+    gfxImageCreateMask_Alias = (1 << 5),
+    gfxImageCreateMask_SplitInstanceBindRegions = (1 << 6),
+    gfxImageCreateMask_TwoDimensionalArrayCompatible = (1 << 7),
+    gfxImageCreateMask_BlockTexelViewCompatible = (1 << 8),
+    gfxImageCreateMask_ExtendedUsage = (1 << 9),
+    gfxImageCreateMask_Protected = (1 << 10),
+    gfxImageCreateMask_Disjoint = (1 << 11),
+    gfxImageCreateMask_CornerSampled = (1 << 12),
+    gfxImageCreateMask_SampleLocationsCompatibleDepth = (1 << 13),
+    gfxImageCreateMask_Subsampled = (1 << 14)
+EPI_GENREGION_END(gfxImageCreateMask)
+};
+
+enum gfxImageUsageMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxImageUsageMask)
+    gfxImageUsageMask_TransferSrc = (1 << 0),
+    gfxImageUsageMask_TransferDst = (1 << 1),
+    gfxImageUsageMask_Sampled = (1 << 2),
+    gfxImageUsageMask_Storage = (1 << 3),
+    gfxImageUsageMask_ColorAttachment = (1 << 4),
+    gfxImageUsageMask_DepthStencilAttachment = (1 << 5),
+    gfxImageUsageMask_TransientAttachment = (1 << 6),
+    gfxImageUsageMask_InputAttachment = (1 << 7),
+    gfxImageUsageMask_ShadingRateImage = (1 << 8),
+    gfxImageUsageMask_FragmentDensityMap = (1 << 9)
+EPI_GENREGION_END(gfxImageUsageMask)
 };
 
 enum gfxImageAspect : epiS32
@@ -596,46 +583,26 @@ EPI_GENREGION_BEGIN(gfxImageAspect)
 EPI_GENREGION_END(gfxImageAspect)
 };
 
-enum class gfxPipelineInputAssemblyType : epiS32
+enum class gfxImageType : epiS32
 {
-EPI_GENREGION_BEGIN(gfxPipelineInputAssemblyType)
-    None = 0,
-    PointList = 1,
-    LineList = 2,
-    LineStrip = 3,
-    TriangleList = 4,
-    TriangleStrip = 5
-EPI_GENREGION_END(gfxPipelineInputAssemblyType)
+EPI_GENREGION_BEGIN(gfxImageType)
+    Image1D = 0,
+    Image2D = 1,
+    Image3D = 2
+EPI_GENREGION_END(gfxImageType)
 };
 
-enum class gfxSampleCount : epiS32
+enum class gfxImageViewType : epiS32
 {
-EPI_GENREGION_BEGIN(gfxSampleCount)
-    Sample1 = 0,
-    Sample2 = 1,
-    Sample4 = 2,
-    Sample8 = 3,
-    Sample16 = 4,
-    Sample32 = 5,
-    Sample64 = 6
-EPI_GENREGION_END(gfxSampleCount)
-};
-
-enum class gfxAttachmentLoadOp : epiS32
-{
-EPI_GENREGION_BEGIN(gfxAttachmentLoadOp)
-    Load = 0,
-    Clear = 1,
-    DontCare = 2
-EPI_GENREGION_END(gfxAttachmentLoadOp)
-};
-
-enum class gfxAttachmentStoreOp : epiS32
-{
-EPI_GENREGION_BEGIN(gfxAttachmentStoreOp)
-    Store = 0,
-    DontCare = 1
-EPI_GENREGION_END(gfxAttachmentStoreOp)
+EPI_GENREGION_BEGIN(gfxImageViewType)
+    ImageView1D = 0,
+    ImageView2D = 1,
+    ImageView3D = 2,
+    ImageViewCube = 3,
+    ImageView1DArray = 4,
+    ImageView2DArray = 5,
+    ImageViewCubeArray = 6
+EPI_GENREGION_END(gfxImageViewType)
 };
 
 enum class gfxImageLayout : epiS32
@@ -669,6 +636,48 @@ EPI_GENREGION_BEGIN(gfxImageTiling)
     Optimal = 0,
     Linear = 1
 EPI_GENREGION_END(gfxImageTiling)
+};
+
+enum class gfxPipelineInputAssemblyType : epiS32
+{
+EPI_GENREGION_BEGIN(gfxPipelineInputAssemblyType)
+    None = 0,
+    PointList = 1,
+    LineList = 2,
+    LineStrip = 3,
+    TriangleList = 4,
+    TriangleStrip = 5
+EPI_GENREGION_END(gfxPipelineInputAssemblyType)
+};
+
+enum gfxSampleCountMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxSampleCountMask)
+    gfxSampleCountMask_Sample1 = (1 << 0),
+    gfxSampleCountMask_Sample2 = (1 << 1),
+    gfxSampleCountMask_Sample4 = (1 << 2),
+    gfxSampleCountMask_Sample8 = (1 << 3),
+    gfxSampleCountMask_Sample16 = (1 << 4),
+    gfxSampleCountMask_Sample32 = (1 << 5),
+    gfxSampleCountMask_Sample64 = (1 << 6)
+EPI_GENREGION_END(gfxSampleCountMask)
+};
+
+enum class gfxAttachmentLoadOp : epiS32
+{
+EPI_GENREGION_BEGIN(gfxAttachmentLoadOp)
+    Load = 0,
+    Clear = 1,
+    DontCare = 2
+EPI_GENREGION_END(gfxAttachmentLoadOp)
+};
+
+enum class gfxAttachmentStoreOp : epiS32
+{
+EPI_GENREGION_BEGIN(gfxAttachmentStoreOp)
+    Store = 0,
+    DontCare = 1
+EPI_GENREGION_END(gfxAttachmentStoreOp)
 };
 
 enum class gfxPipelineBindPoint : epiS32
@@ -957,40 +966,51 @@ EPI_GENREGION_BEGIN(gfxPipelineVertexInputRate)
 EPI_GENREGION_END(gfxPipelineVertexInputRate)
 };
 
-enum gfxBufferUsage : epiS32
+enum gfxBufferCreateMask : epiS32
 {
-EPI_GENREGION_BEGIN(gfxBufferUsage)
-    gfxBufferUsage_TransferSrc = (1 << 0),
-    gfxBufferUsage_TransferDst = (1 << 1),
-    gfxBufferUsage_UniformTexelBuffer = (1 << 2),
-    gfxBufferUsage_StorageTexelBuffer = (1 << 3),
-    gfxBufferUsage_UniformBuffer = (1 << 4),
-    gfxBufferUsage_StorageBuffer = (1 << 5),
-    gfxBufferUsage_IndexBuffer = (1 << 6),
-    gfxBufferUsage_VertexBuffer = (1 << 7),
-    gfxBufferUsage_IndirectBuffer = (1 << 8),
-    gfxBufferUsage_ShaderDeviceAddress = (1 << 9),
-    gfxBufferUsage_TransformFeedbackBuffer = (1 << 10),
-    gfxBufferUsage_TransformFeedbackCounterBuffer = (1 << 11),
-    gfxBufferUsage_ConditionalRendering = (1 << 12),
-    gfxBufferUsage_AccelerationStructureBuildInputReadOnly = (1 << 13),
-    gfxBufferUsage_AccelerationStructureStorage = (1 << 14),
-    gfxBufferUsage_ShaderBindingTable = (1 << 15)
-EPI_GENREGION_END(gfxBufferUsage)
+EPI_GENREGION_BEGIN(gfxBufferCreateMask)
+    gfxBufferCreateMask_SparseBinding = (1 << 0),
+    gfxBufferCreateMask_SparseResidency = (1 << 1),
+    gfxBufferCreateMask_SparseAliased = (1 << 2),
+    gfxBufferCreateMask_Protected = (1 << 3),
+    gfxBufferCreateMask_DeviceAddressCaptureReplay = (1 << 4)
+EPI_GENREGION_END(gfxBufferCreateMask)
 };
 
-enum gfxDeviceMemoryProperty : epiS32
+enum gfxBufferUsageMask : epiS32
 {
-EPI_GENREGION_BEGIN(gfxDeviceMemoryProperty)
-    gfxDeviceMemoryProperty_DeviceLocal = (1 << 0),
-    gfxDeviceMemoryProperty_HostVisible = (1 << 1),
-    gfxDeviceMemoryProperty_HostCoherent = (1 << 2),
-    gfxDeviceMemoryProperty_HostCached = (1 << 3),
-    gfxDeviceMemoryProperty_LazilyAllocated = (1 << 4),
-    gfxDeviceMemoryProperty_Protected = (1 << 5),
-    gfxDeviceMemoryProperty_DeviceCoherent = (1 << 6),
-    gfxDeviceMemoryProperty_DeviceUncached = (1 << 7)
-EPI_GENREGION_END(gfxDeviceMemoryProperty)
+EPI_GENREGION_BEGIN(gfxBufferUsageMask)
+    gfxBufferUsageMask_TransferSrc = (1 << 0),
+    gfxBufferUsageMask_TransferDst = (1 << 1),
+    gfxBufferUsageMask_UniformTexelBuffer = (1 << 2),
+    gfxBufferUsageMask_StorageTexelBuffer = (1 << 3),
+    gfxBufferUsageMask_UniformBuffer = (1 << 4),
+    gfxBufferUsageMask_StorageBuffer = (1 << 5),
+    gfxBufferUsageMask_IndexBuffer = (1 << 6),
+    gfxBufferUsageMask_VertexBuffer = (1 << 7),
+    gfxBufferUsageMask_IndirectBuffer = (1 << 8),
+    gfxBufferUsageMask_ShaderDeviceAddress = (1 << 9),
+    gfxBufferUsageMask_TransformFeedbackBuffer = (1 << 10),
+    gfxBufferUsageMask_TransformFeedbackCounterBuffer = (1 << 11),
+    gfxBufferUsageMask_ConditionalRendering = (1 << 12),
+    gfxBufferUsageMask_AccelerationStructureBuildInputReadOnly = (1 << 13),
+    gfxBufferUsageMask_AccelerationStructureStorage = (1 << 14),
+    gfxBufferUsageMask_ShaderBindingTable = (1 << 15)
+EPI_GENREGION_END(gfxBufferUsageMask)
+};
+
+enum gfxDeviceMemoryPropertyMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryPropertyMask)
+    gfxDeviceMemoryPropertyMask_DeviceLocal = (1 << 0),
+    gfxDeviceMemoryPropertyMask_HostVisible = (1 << 1),
+    gfxDeviceMemoryPropertyMask_HostCoherent = (1 << 2),
+    gfxDeviceMemoryPropertyMask_HostCached = (1 << 3),
+    gfxDeviceMemoryPropertyMask_LazilyAllocated = (1 << 4),
+    gfxDeviceMemoryPropertyMask_Protected = (1 << 5),
+    gfxDeviceMemoryPropertyMask_DeviceCoherent = (1 << 6),
+    gfxDeviceMemoryPropertyMask_DeviceUncached = (1 << 7)
+EPI_GENREGION_END(gfxDeviceMemoryPropertyMask)
 };
 
 enum gfxCommandPoolUsage : epiS32
@@ -1179,6 +1199,49 @@ enum gfxDeviceMemoryAllocatorCreateMask : epiS32
 EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocatorCreateMask)
     gfxDeviceMemoryAllocatorCreateMask_ExternallySynchronized = (1 << 0)
 EPI_GENREGION_END(gfxDeviceMemoryAllocatorCreateMask)
+};
+
+enum gfxDeviceMemoryAllocationCreateMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocationCreateMask)
+    gfxDeviceMemoryAllocationCreateMask_DedicatedMemory = (1 << 0),
+    gfxDeviceMemoryAllocationCreateMask_NeverAllocate = (1 << 1),
+    gfxDeviceMemoryAllocationCreateMask_Mapped = (1 << 2),
+    gfxDeviceMemoryAllocationCreateMask_CanBecomeLost = (1 << 3),
+    gfxDeviceMemoryAllocationCreateMask_CanMakeOtherLost = (1 << 4),
+    gfxDeviceMemoryAllocationCreateMask_UserDataCopyString = (1 << 5),
+    gfxDeviceMemoryAllocationCreateMask_UpperAddress = (1 << 6),
+    gfxDeviceMemoryAllocationCreateMask_DontBind = (1 << 7),
+    gfxDeviceMemoryAllocationCreateMask_WithinBudget = (1 << 8),
+    gfxDeviceMemoryAllocationCreateMask_StrategyBestFit = (1 << 9),
+    gfxDeviceMemoryAllocationCreateMask_StrategyWorstFit = (1 << 10),
+    gfxDeviceMemoryAllocationCreateMask_StrategyFirstFit = (1 << 11),
+    gfxDeviceMemoryAllocationCreateMask_StrategyMinMemory = (1 << 12),
+    gfxDeviceMemoryAllocationCreateMask_StrategyMinTime = (1 << 13),
+    gfxDeviceMemoryAllocationCreateMask_StrategyMinFragmentation = (1 << 14)
+EPI_GENREGION_END(gfxDeviceMemoryAllocationCreateMask)
+};
+
+enum class gfxDeviceMemoryAllocationUsage : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocationUsage)
+    Unknown = 0,
+    GpuOnly = 1,
+    CpuOnly = 2,
+    CpuToGpu = 3,
+    GpuToCpu = 4,
+    CpuCopy = 5,
+    GpuLazilyAllocated = 6
+EPI_GENREGION_END(gfxDeviceMemoryAllocationUsage)
+};
+
+enum gfxDeviceMemoryPoolCreateMask : epiS32
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryPoolCreateMask)
+    gfxDeviceMemoryPoolCreateMask_IgnoreBufferImageGranularity = (1 << 0),
+    gfxDeviceMemoryPoolCreateMask_LinearAlgorithm = (1 << 1),
+    gfxDeviceMemoryPoolCreateMask_BuddyAlgorithm = (1 << 2)
+EPI_GENREGION_END(gfxDeviceMemoryPoolCreateMask)
 };
 
 EPI_NAMESPACE_END()

@@ -18,6 +18,7 @@ public:
     ~gfxBufferImplVK() override;
 
     epiBool Init(const gfxBufferCreateInfo& info);
+    epiBool Init(VkBuffer_T* buffer);
 
     VkBuffer_T* GetVkBuffer() const;
 

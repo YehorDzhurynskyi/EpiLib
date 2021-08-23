@@ -1,17 +1,20 @@
 class gfxImageCreateInfo
 {
+    gfxImageCreateMask CreateMask;
+    gfxImageUsageMask UsageMask;
     gfxImageType Type;
-    gfxFormat Format = gfxFormat::UNDEFINED;
+    gfxFormat Format;
     epiVec3u Extent;
     epiU32 MipLevels;
     epiU32 ArrayLayers;
-    gfxSampleCount SampleCount = gfxSampleCount::Sample1;
-    gfxImageUsage Usage;
-    gfxImageLayout InitialLayout = gfxImageLayout::Undefined;
+    gfxSampleCountMask SampleCount;
+    gfxImageLayout InitialLayout;
     gfxImageTiling Tiling;
+
+    gfxSharingMode SharingMode;
+    epiArray<gfxQueueFamily> QueueFamilies;
 };
 
-# TODO: rename gfxImage
 class gfxImage
 {
 };
@@ -31,18 +34,4 @@ class gfxImageSubresourceRange
     epiU32 LevelCount;
     epiU32 BaseArrayLayer;
     epiU32 LayerCount;
-};
-
-class gfxImageMemoryBarrier
-{
-    gfxImage Image;
-    gfxAccess SrcAccessMask;
-    gfxAccess DstAccessMask;
-    gfxImageLayout OldLayout;
-    gfxImageLayout NewLayout;
-    epiU32 SrcQueueFamilyIndex;
-    epiU32 DstQueueFamilyIndex;
-    epiBool IsSrcQueueFamilyIndexIgnored;
-    epiBool IsDstQueueFamilyIndexIgnored;
-    gfxImageSubresourceRange SubresourceRange;
 };

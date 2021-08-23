@@ -126,7 +126,7 @@ gfxSurfaceCapabilities gfxSurfaceImplVK::GetCapabilitiesFor(const gfxPhysicalDev
     capabilities.SetMaxImageExtent(epiSize2u{capabilitiesVk.maxImageExtent.width, capabilitiesVk.maxImageExtent.height});
     capabilities.SetSupportedSurfaceTransformMask(gfxSurfaceTransformMaskFrom(capabilitiesVk.supportedTransforms));
     capabilities.SetSupportedCompositeAlphaMask(gfxCompositeAlphaMaskFrom(capabilitiesVk.supportedCompositeAlpha));
-    capabilities.SetSupportedUsage(gfxImageUsageFrom(capabilitiesVk.supportedUsageFlags));
+    capabilities.SetSupportedUsageMask(gfxImageUsageMaskFrom(capabilitiesVk.supportedUsageFlags));
 
     const gfxSurfaceTransformMask currentTransform = gfxSurfaceTransformMaskFrom(capabilitiesVk.currentTransform);
     epiAssert(epiBitCount(currentTransform) == 1);

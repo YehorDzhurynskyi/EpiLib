@@ -30,18 +30,19 @@ class gfxCommandBufferRecordCopyBufferToImage
     epiVec3u ImageExtent;
 };
 
-class gfxCommandBufferRecordPipelineBarier
-{
-    gfxPipelineStage SrcStageMask;
-    gfxPipelineStage DstStageMask;
-    gfxDependency DependencyFlags;
-    epiArray<gfxMemoryBarrier> MemoryBarriers;
-    epiArray<gfxBufferMemoryBarrier> BufferMemoryBarriers;
-    epiArray<gfxImageMemoryBarrier> ImageMemoryBarriers;
-};
-
 class gfxCommandBuffer
 {
     [Virtual, ReadOnly]
     epiBool IsPrimary;
+};
+
+class gfxQueueSubmitInfo
+{
+    [ReadOnly]
+    {
+        epiArray<gfxSemaphore> WaitSemaphores;
+        epiArray<gfxPipelineStage> WaitDstStageMasks;
+        epiArray<gfxSemaphore> SignalSemaphores;
+        epiArray<gfxCommandBuffer> CommandBuffers;
+    }
 };

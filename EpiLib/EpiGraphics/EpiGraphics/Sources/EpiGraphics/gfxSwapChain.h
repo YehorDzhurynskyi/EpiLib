@@ -8,6 +8,9 @@ EPI_GENREGION_END(include)
 
 #include "EpiGraphics/gfxSurface.h"
 #include "EpiGraphics/gfxQueueFamily.h"
+#include "EpiGraphics/gfxImageView.h"
+
+#include "EpiGraphics/Synchronization/gfxSemaphore.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -46,7 +49,7 @@ protected:
     gfxSurfaceColorSpace m_ImageColorSpace{};
     epiSize2u m_ImageExtent{};
     epiU32 m_ImageArrayLayers{0};
-    gfxImageUsage m_ImageUsageMask{};
+    gfxImageUsageMask m_ImageUsageMask{};
     gfxSharingMode m_ImageSharingMode{};
     epiArray<gfxQueueFamily> m_QueueFamilies{};
     gfxCompositeAlphaMask m_CompositeAlphaMask{};

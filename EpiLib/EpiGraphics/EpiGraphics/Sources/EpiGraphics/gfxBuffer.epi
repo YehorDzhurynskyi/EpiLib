@@ -1,22 +1,13 @@
 class gfxBufferCreateInfo
 {
-    epiSize_t Capacity;
-    gfxBufferUsage Usage;
+    gfxBufferCreateMask CreateMask;
+    gfxBufferUsageMask UsageMask;
+    epiSize_t Size;
+
+    gfxSharingMode SharingMode;
+    epiArray<gfxQueueFamily> QueueFamilies;
 };
 
 class gfxBuffer
 {
-};
-
-class gfxBufferMemoryBarrier
-{
-    gfxBuffer Buffer;
-    gfxAccess SrcAccessMask;
-    gfxAccess DstAccessMask;
-    epiU32 SrcQueueFamilyIndex;
-    epiU32 DstQueueFamilyIndex;
-    epiBool IsSrcQueueFamilyIndexIgnored;
-    epiBool IsDstQueueFamilyIndexIgnored;
-    epiSize_t Offset;
-    epiSize_t Size;
 };

@@ -89,7 +89,7 @@ epiBool epiWXVulkanCanvas::Create(epiWXVulkanCanvasCreateInfo& info,
     swapChainCreateInfo.SetImageColorSpace(info.Format.GetColorSpace());
     swapChainCreateInfo.SetImageExtent(surfaceCapabilities.ClampExtent(epiSize2u{GetSize().x, GetSize().y}));
     swapChainCreateInfo.SetImageArrayLayers(1);
-    swapChainCreateInfo.SetImageUsageMask(gfxImageUsage_COLOR_ATTACHMENT);
+    swapChainCreateInfo.SetImageUsageMask(gfxImageUsageMask_ColorAttachment);
     swapChainCreateInfo.SetImageSharingMode(gfxSharingMode::Exclusive);
     swapChainCreateInfo.SetCompositeAlphaMask(gfxCompositeAlphaMask_Opaque);
     swapChainCreateInfo.SetPresentMode(info.PresentMode);

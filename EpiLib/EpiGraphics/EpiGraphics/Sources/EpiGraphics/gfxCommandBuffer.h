@@ -9,11 +9,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphics/gfxEnum.h"
 #include "EpiGraphics/gfxRenderPass.h"
 #include "EpiGraphics/gfxFrameBuffer.h"
-#include "EpiGraphics/gfxBuffer.h"
-#include "EpiGraphics/gfxPipelineLayout.h"
-#include "EpiGraphics/gfxPipeline.h"
 #include "EpiGraphics/gfxDescriptorSet.h"
-#include "EpiGraphics/gfxDeviceMemory.h"
+#include "EpiGraphics/Synchronization/gfxSemaphore.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -125,37 +122,9 @@ protected:
 EPI_GENREGION_END(gfxCommandBufferRecordCopyBufferToImage)
 };
 
-class gfxCommandBufferRecordPipelineBarier : public Object
-{
-EPI_GENREGION_BEGIN(gfxCommandBufferRecordPipelineBarier)
-
-EPI_GENHIDDEN_gfxCommandBufferRecordPipelineBarier()
-
-public:
-    constexpr static epiMetaTypeID TypeID{0x28dc5fc7};
-
-    enum gfxCommandBufferRecordPipelineBarier_PIDs
-    {
-        PID_SrcStageMask = 0x5890cb97,
-        PID_DstStageMask = 0x24ec8ab5,
-        PID_DependencyFlags = 0x68167a5,
-        PID_MemoryBarriers = 0xb0ffaf07,
-        PID_BufferMemoryBarriers = 0x7471824,
-        PID_ImageMemoryBarriers = 0x7d257b36,
-        PID_COUNT = 6
-    };
-
-protected:
-    gfxPipelineStage m_SrcStageMask{};
-    gfxPipelineStage m_DstStageMask{};
-    gfxDependency m_DependencyFlags{};
-    epiArray<gfxMemoryBarrier> m_MemoryBarriers{};
-    epiArray<gfxBufferMemoryBarrier> m_BufferMemoryBarriers{};
-    epiArray<gfxImageMemoryBarrier> m_ImageMemoryBarriers{};
-
-EPI_GENREGION_END(gfxCommandBufferRecordPipelineBarier)
-};
-
+class gfxPipelineLayout;
+class gfxPipelineGraphics;
+class gfxCommandBufferRecordPipelineBarier;
 class gfxCommandBuffer : public Object
 {
 EPI_GENREGION_BEGIN(gfxCommandBuffer)
@@ -202,10 +171,10 @@ public:
         Record& VertexBuffersBind(const epiArray<gfxBuffer>& buffers, const epiArray<epiU32>& offsets = {});
         Record& IndexBufferBind(const gfxBuffer& buffer, gfxIndexBufferType type, epiU32 offset = 0);
         Record& DescriptorSetsBind(gfxPipelineBindPoint bindPoint,
-                                                   const gfxPipelineLayout& pipelineLayout,
-                                                   const epiArray<gfxDescriptorSet>& sets,
-                                                   const epiArray<epiU32>& offsets = {},
-                                                   epiU32 firstSet = 0);
+                                   const gfxPipelineLayout& pipelineLayout,
+                                   const epiArray<gfxDescriptorSet>& sets,
+                                   const epiArray<epiU32>& offsets = {},
+                                   epiU32 firstSet = 0);
 
         Record& Draw(epiU32 vertexCount, epiU32 instanceCount, epiU32 firstVertex, epiU32 firstInstance);
         Record& DrawIndexed(epiU32 indexCount, epiU32 instanceCount, epiU32 firstIndex, epiU32 vertexOffset, epiU32 firstInstance);
@@ -227,6 +196,33 @@ public:
 
 protected:
     std::shared_ptr<Impl> m_Impl;
+};
+
+class gfxQueueSubmitInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxQueueSubmitInfo)
+
+EPI_GENHIDDEN_gfxQueueSubmitInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x37aceed2};
+
+    enum gfxQueueSubmitInfo_PIDs
+    {
+        PID_WaitSemaphores = 0xde36b270,
+        PID_WaitDstStageMasks = 0x5c9921bb,
+        PID_SignalSemaphores = 0xa8746c09,
+        PID_CommandBuffers = 0xc25694f,
+        PID_COUNT = 4
+    };
+
+protected:
+    epiArray<gfxSemaphore> m_WaitSemaphores{};
+    epiArray<gfxPipelineStage> m_WaitDstStageMasks{};
+    epiArray<gfxSemaphore> m_SignalSemaphores{};
+    epiArray<gfxCommandBuffer> m_CommandBuffers{};
+
+EPI_GENREGION_END(gfxQueueSubmitInfo)
 };
 
 EPI_NAMESPACE_END()

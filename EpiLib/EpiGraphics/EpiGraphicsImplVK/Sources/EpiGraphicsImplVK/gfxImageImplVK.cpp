@@ -34,9 +34,9 @@ epiBool gfxImageImplVKOwner::Init(const gfxImageCreateInfo& info)
     imageCreateInfo.extent.depth = info.GetExtent().z;
     imageCreateInfo.mipLevels = info.GetMipLevels();
     imageCreateInfo.arrayLayers = info.GetArrayLayers();
-    imageCreateInfo.samples = gfxSampleCountTo(info.GetSampleCount());
+    imageCreateInfo.samples = gfxSampleCountMaskTo(info.GetSampleCount());
     imageCreateInfo.tiling = gfxImageTilingTo(info.GetTiling());
-    imageCreateInfo.usage = gfxImageUsageTo(info.GetUsage());
+    imageCreateInfo.usage = gfxImageUsageMaskTo(info.GetUsageMask());
     imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // TODO: configure
     imageCreateInfo.queueFamilyIndexCount = -1; // TBD
     imageCreateInfo.pQueueFamilyIndices = nullptr; // TBD

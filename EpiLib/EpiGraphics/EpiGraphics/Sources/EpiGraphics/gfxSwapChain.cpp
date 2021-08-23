@@ -80,6 +80,13 @@ void gfxSwapChain::RebindImpl()
     });
 }
 
+const gfxDevice& gfxSwapChain::GetDevice_Callback() const
+{
+    epiAssert(HasImpl());
+
+    return m_Impl->GetDevice();
+}
+
 // NOTE: `gfxQueuePresentInfo` is located in the SwapChain translation because of cyclic including
 epiBool gfxQueue::Present(const gfxQueuePresentInfo& info)
 {
@@ -125,13 +132,6 @@ epiBool gfxQueue::Present(const gfxQueuePresentInfo& info)
     }
 
     return m_Impl->Present(info);
-}
-
-const gfxDevice& gfxSwapChain::GetDevice_Callback() const
-{
-    epiAssert(HasImpl());
-
-    return m_Impl->GetDevice();
 }
 
 EPI_NAMESPACE_END()

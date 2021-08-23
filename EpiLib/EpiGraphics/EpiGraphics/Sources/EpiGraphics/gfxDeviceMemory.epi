@@ -4,6 +4,45 @@ class gfxMemoryBarrier
     gfxAccess DstAccessMask;
 };
 
+class gfxBufferMemoryBarrier
+{
+    gfxBuffer Buffer;
+    gfxAccess SrcAccessMask;
+    gfxAccess DstAccessMask;
+    epiU32 SrcQueueFamilyIndex;
+    epiU32 DstQueueFamilyIndex;
+    epiBool IsSrcQueueFamilyIndexIgnored;
+    epiBool IsDstQueueFamilyIndexIgnored;
+    epiSize_t Offset;
+    epiSize_t Size;
+};
+
+class gfxImageMemoryBarrier
+{
+    gfxImage Image;
+    gfxAccess SrcAccessMask;
+    gfxAccess DstAccessMask;
+    gfxImageLayout OldLayout;
+    gfxImageLayout NewLayout;
+    epiU32 SrcQueueFamilyIndex;
+    epiU32 DstQueueFamilyIndex;
+    epiBool IsSrcQueueFamilyIndexIgnored;
+    epiBool IsDstQueueFamilyIndexIgnored;
+    gfxImageSubresourceRange SubresourceRange;
+};
+
+class gfxCommandBufferRecordPipelineBarier
+{
+    gfxPipelineStage SrcStageMask;
+    gfxPipelineStage DstStageMask;
+
+    gfxDependency DependencyFlags;
+
+    epiArray<gfxMemoryBarrier> MemoryBarriers;
+    epiArray<gfxBufferMemoryBarrier> BufferMemoryBarriers;
+    epiArray<gfxImageMemoryBarrier> ImageMemoryBarriers;
+};
+
 class gfxBindBufferMemoryInfo
 {
     gfxBuffer Buffer;
@@ -19,7 +58,7 @@ class gfxBindImageMemoryInfo
 class gfxDeviceMemoryCreateInfo
 {
     epiSize_t Size;
-    gfxDeviceMemoryProperty PropertyMask;
+    gfxDeviceMemoryPropertyMask PropertyMask;
 };
 
 class gfxDeviceMemory

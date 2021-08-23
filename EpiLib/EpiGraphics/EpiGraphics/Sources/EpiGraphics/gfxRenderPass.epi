@@ -6,52 +6,19 @@ enum gfxAttachmentBindPoint
     Resolve
 };
 
-class gfxAttachmentSchema
-{
-    gfxFormat Format = gfxFormat::UNDEFINED;
-    gfxSampleCount SampleCount = gfxSampleCount::Sample1;
-};
-
-class gfxAttachmentRefSchema
-{
-    gfxAttachmentSchema Attachment;
-    epiU32 AttachmentIndex;
-};
-
-class gfxRenderSubPassSchema
-{
-    [ReadOnly]
-    {
-        epiArray<gfxAttachmentRefSchema> AttachmentsInput;
-        epiArray<gfxAttachmentRefSchema> AttachmentsColor;
-        epiArray<gfxAttachmentRefSchema> AttachmentsDepthStencil;
-        epiArray<gfxAttachmentRefSchema> AttachmentsResolve;
-    }
-};
-
-class gfxRenderPassSchema
-{
-    [ReadOnly]
-    {
-        epiArray<gfxRenderSubPassSchema> SubPasses;
-    }
-
-    [Virtual, ReadOnly, ReadCallback(SuppressRef=true)]
-    {
-        epiArray<gfxAttachmentSchema> Attachments;
-    }
-};
-
 class gfxAttachment
 {
-    gfxFormat Format = gfxFormat::UNDEFINED;
-    gfxSampleCount SampleCount = gfxSampleCount::Sample1;
-    gfxAttachmentLoadOp LoadOp = gfxAttachmentLoadOp::DontCare;
-    gfxAttachmentStoreOp StoreOp = gfxAttachmentStoreOp::DontCare;
-    gfxAttachmentLoadOp StencilLoadOp = gfxAttachmentLoadOp::DontCare;
-    gfxAttachmentStoreOp StencilStoreOp = gfxAttachmentStoreOp::DontCare;
-    gfxImageLayout InitialLayout = gfxImageLayout::Undefined;
-    gfxImageLayout FinalLayout = gfxImageLayout::Undefined;
+    gfxFormat Format;
+    gfxSampleCountMask SampleCount;
+
+    gfxAttachmentLoadOp LoadOp;
+    gfxAttachmentStoreOp StoreOp;
+
+    gfxAttachmentLoadOp StencilLoadOp;
+    gfxAttachmentStoreOp StencilStoreOp;
+
+    gfxImageLayout InitialLayout;
+    gfxImageLayout FinalLayout;
 };
 
 class gfxAttachmentRef
@@ -70,8 +37,10 @@ class gfxRenderSubPassDependency
 
     gfxPipelineStage SrcStageMask;
     gfxPipelineStage DstStageMask;
+
     gfxAccess SrcAccessMask;
     gfxAccess DstAccessMask;
+
     gfxDependency DependencyFlags;
 };
 

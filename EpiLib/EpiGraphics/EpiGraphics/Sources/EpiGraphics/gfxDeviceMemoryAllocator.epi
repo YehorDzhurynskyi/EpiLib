@@ -1,3 +1,50 @@
+class gfxDeviceMemoryPoolCreateInfo
+{
+    gfxDeviceMemoryPoolCreateMask CreateMask;
+    epiSize_t BlockSize;
+    epiSize_t MinBlockCount;
+    epiSize_t MaxBlockCount;
+    epiU32 FrameInUseCount;
+    epiFloat Priority;
+    epiSize_t MinAllocationAlignment;
+};
+
+class gfxDeviceMemoryPool
+{
+};
+
+class gfxDeviceMemoryAllocationCreateInfo
+{
+    gfxDeviceMemoryAllocationCreateMask CreateMask;
+    gfxDeviceMemoryAllocationUsage Usage;
+
+    gfxDeviceMemoryPropertyMask RequiredPropertiesMask;
+    gfxDeviceMemoryPropertyMask PreferredPropertiesMask;
+
+    gfxDeviceMemoryPool Pool;
+    epiFloat Priority;
+};
+
+class gfxDeviceMemoryAllocation
+{
+    [Virtual, ReadOnly]
+    {
+        gfxDeviceMemoryAllocator Allocator;
+    }
+};
+
+class gfxDeviceMemoryAllocationBuffer : gfxDeviceMemoryAllocation
+{
+    [ReadOnly]
+    gfxBuffer Buffer;
+};
+
+class gfxDeviceMemoryAllocationImage : gfxDeviceMemoryAllocation
+{
+    [ReadOnly]
+    gfxImage Image;
+};
+
 class gfxDeviceMemoryAllocatorCreateInfo
 {
     gfxDeviceMemoryAllocatorCreateMask CreateMask;

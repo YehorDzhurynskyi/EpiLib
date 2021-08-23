@@ -8,9 +8,9 @@ EPI_NAMESPACE_BEGIN()
 
 gfxFormat gfxFormatFrom(VkFormat formatVk);
 gfxSurfaceColorSpace gfxSurfaceColorSpaceFrom(VkColorSpaceKHR colorSpaceVk);
-gfxSurfaceTransformMask gfxSurfaceTransformMaskFrom(VkSurfaceTransformFlagsKHR transform);
-gfxCompositeAlphaMask gfxCompositeAlphaMaskFrom(VkCompositeAlphaFlagsKHR compositeAlpha);
-gfxImageUsage gfxImageUsageFrom(VkImageUsageFlags usage);
+gfxSurfaceTransformMask gfxSurfaceTransformMaskFrom(VkSurfaceTransformFlagsKHR mask);
+gfxCompositeAlphaMask gfxCompositeAlphaMaskFrom(VkCompositeAlphaFlagsKHR mask);
+gfxImageUsageMask gfxImageUsageMaskFrom(VkImageUsageFlags mask);
 gfxFormatFeatureMask gfxFormatFeatureMaskFrom(VkFormatFeatureFlags mask);
 
 VkFormat gfxFormatTo(gfxFormat format);
@@ -19,7 +19,7 @@ VkSurfaceTransformFlagBitsKHR gfxSurfaceTransformMaskTo(gfxSurfaceTransformMask 
 VkCompositeAlphaFlagBitsKHR gfxCompositeAlphaMaskTo(gfxCompositeAlphaMask mask);
 VkPresentModeKHR gfxSurfacePresentModeTo(gfxSurfacePresentMode presentMode);
 VkPrimitiveTopology gfxPipelineInputAssemblyTypeTo(gfxPipelineInputAssemblyType type);
-VkSampleCountFlagBits gfxSampleCountTo(gfxSampleCount sampleCount);
+VkSampleCountFlagBits gfxSampleCountMaskTo(gfxSampleCountMask mask);
 VkAttachmentLoadOp gfxAttachmentLoadOpTo(gfxAttachmentLoadOp loadOp);
 VkAttachmentStoreOp gfxAttachmentStoreOpTo(gfxAttachmentStoreOp storeOp);
 VkImageLayout gfxImageLayoutTo(gfxImageLayout layout);
@@ -33,14 +33,14 @@ VkBlendOp gfxBlendOpTo(gfxBlendOp blendOp);
 VkLogicOp gfxLogicOpTo(gfxLogicOp logicOp);
 VkImageType gfxImageTypeTo(gfxImageType type);
 VkImageViewType gfxImageViewTypeTo(gfxImageViewType viewType);
-VkImageUsageFlagBits gfxImageUsageTo(gfxImageUsage usage);
+VkImageUsageFlagBits gfxImageUsageMaskTo(gfxImageUsageMask mask);
 VkPipelineStageFlagBits gfxPipelineStageTo(gfxPipelineStage stage);
 VkAccessFlagBits gfxAccessTo(gfxAccess access);
 VkDependencyFlagBits gfxDependencyTo(gfxDependency dependency);
 VkDynamicState gfxPipelineDynamicStateTo(gfxPipelineDynamicState state);
 VkVertexInputRate gfxPipelineVertexInputRateTo(gfxPipelineVertexInputRate rate);
-VkBufferUsageFlagBits gfxBufferUsageTo(gfxBufferUsage usage);
-VkMemoryPropertyFlagBits gfxDeviceMemoryPropertyTo(gfxDeviceMemoryProperty properties);
+VkBufferUsageFlagBits gfxBufferUsageMaskTo(gfxBufferUsageMask mask);
+VkMemoryPropertyFlagBits gfxDeviceMemoryPropertyMaskTo(gfxDeviceMemoryPropertyMask mask);
 VkCommandBufferUsageFlagBits gfxCommandBufferUsageTo(gfxCommandBufferUsage usage);
 VkCommandPoolCreateFlagBits gfxCommandPoolUsageTo(gfxCommandPoolUsage usage);
 VkIndexType gfxIndexBufferTypeTo(gfxIndexBufferType type);

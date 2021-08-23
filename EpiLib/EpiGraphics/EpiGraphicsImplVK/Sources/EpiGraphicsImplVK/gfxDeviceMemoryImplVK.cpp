@@ -31,7 +31,7 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryCreateInfo& info,
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDeviceImpl.GetVkPhysicalDevice(), &memProperties);
 
-    const VkMemoryPropertyFlagBits memoryPropertyMask = gfxDeviceMemoryPropertyTo(info.GetPropertyMask());
+    const VkMemoryPropertyFlagBits memoryPropertyMask = gfxDeviceMemoryPropertyMaskTo(info.GetPropertyMask());
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
     {
         if ((memProperties.memoryTypes[i].propertyFlags & memoryPropertyMask) == memoryPropertyMask)

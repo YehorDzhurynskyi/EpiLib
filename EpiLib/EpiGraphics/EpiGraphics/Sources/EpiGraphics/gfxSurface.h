@@ -29,7 +29,7 @@ public:
         PID_MaxImageExtent = 0x871f00cc,
         PID_SupportedSurfaceTransformMask = 0x9da9b0e4,
         PID_SupportedCompositeAlphaMask = 0x5b3422cc,
-        PID_SupportedUsage = 0xbc2208b2,
+        PID_SupportedUsageMask = 0x3500220,
         PID_CurrentSurfaceTransformMask = 0x797fb8fb,
         PID_COUNT = 10
     };
@@ -43,7 +43,7 @@ protected:
     epiSize2u m_MaxImageExtent{};
     gfxSurfaceTransformMask m_SupportedSurfaceTransformMask{};
     gfxCompositeAlphaMask m_SupportedCompositeAlphaMask{};
-    gfxImageUsage m_SupportedUsage{};
+    gfxImageUsageMask m_SupportedUsageMask{};
     gfxSurfaceTransformMask m_CurrentSurfaceTransformMask{};
 
 EPI_GENREGION_END(gfxSurfaceCapabilities)

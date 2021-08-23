@@ -8,9 +8,9 @@ class gfxSwapChainCreateInfo
     gfxSurfaceColorSpace ImageColorSpace;
     epiSize2u ImageExtent;
     epiU32 ImageArrayLayers;
-    gfxImageUsage ImageUsageMask;
-    gfxSharingMode ImageSharingMode;
+    gfxImageUsageMask ImageUsageMask;
 
+    gfxSharingMode ImageSharingMode;
     epiArray<gfxQueueFamily> QueueFamilies;
 
     gfxCompositeAlphaMask CompositeAlphaMask;

@@ -20,111 +20,6 @@ EPI_GENREGION_BEGIN(gfxAttachmentBindPoint)
 EPI_GENREGION_END(gfxAttachmentBindPoint)
 };
 
-class gfxAttachmentSchema : public Object
-{
-EPI_GENREGION_BEGIN(gfxAttachmentSchema)
-
-EPI_GENHIDDEN_gfxAttachmentSchema()
-
-public:
-    constexpr static epiMetaTypeID TypeID{0xe8a9ebd9};
-
-    enum gfxAttachmentSchema_PIDs
-    {
-        PID_Format = 0xd91677e9,
-        PID_SampleCount = 0x2397b6e7,
-        PID_COUNT = 2
-    };
-
-protected:
-    gfxFormat m_Format{gfxFormat::UNDEFINED};
-    gfxSampleCount m_SampleCount{gfxSampleCount::Sample1};
-
-EPI_GENREGION_END(gfxAttachmentSchema)
-};
-
-class gfxAttachmentRefSchema : public Object
-{
-EPI_GENREGION_BEGIN(gfxAttachmentRefSchema)
-
-EPI_GENHIDDEN_gfxAttachmentRefSchema()
-
-public:
-    constexpr static epiMetaTypeID TypeID{0x5a53d803};
-
-    enum gfxAttachmentRefSchema_PIDs
-    {
-        PID_Attachment = 0x3602da6b,
-        PID_AttachmentIndex = 0x6c2112bf,
-        PID_COUNT = 2
-    };
-
-protected:
-    gfxAttachmentSchema m_Attachment{};
-    epiU32 m_AttachmentIndex{0};
-
-EPI_GENREGION_END(gfxAttachmentRefSchema)
-};
-
-class gfxRenderSubPassSchema : public Object
-{
-EPI_GENREGION_BEGIN(gfxRenderSubPassSchema)
-
-EPI_GENHIDDEN_gfxRenderSubPassSchema()
-
-public:
-    constexpr static epiMetaTypeID TypeID{0xc7486cb2};
-
-    enum gfxRenderSubPassSchema_PIDs
-    {
-        PID_AttachmentsInput = 0xc826fdca,
-        PID_AttachmentsColor = 0x765887f4,
-        PID_AttachmentsDepthStencil = 0x929bf3a8,
-        PID_AttachmentsResolve = 0x9252270f,
-        PID_COUNT = 4
-    };
-
-protected:
-    epiArray<gfxAttachmentRefSchema> m_AttachmentsInput{};
-    epiArray<gfxAttachmentRefSchema> m_AttachmentsColor{};
-    epiArray<gfxAttachmentRefSchema> m_AttachmentsDepthStencil{};
-    epiArray<gfxAttachmentRefSchema> m_AttachmentsResolve{};
-
-EPI_GENREGION_END(gfxRenderSubPassSchema)
-
-public:
-    void AddAttachment(const gfxAttachmentSchema& attachment, epiU32 attachmentIndex, gfxAttachmentBindPoint bindPoint);
-};
-
-class gfxRenderPassSchema : public Object
-{
-EPI_GENREGION_BEGIN(gfxRenderPassSchema)
-
-EPI_GENHIDDEN_gfxRenderPassSchema()
-
-public:
-    constexpr static epiMetaTypeID TypeID{0x32e90ba9};
-
-    enum gfxRenderPassSchema_PIDs
-    {
-        PID_SubPasses = 0x3289b30,
-        PID_Attachments = 0xc1587501,
-        PID_COUNT = 2
-    };
-
-protected:
-    epiArray<gfxAttachmentSchema> GetAttachments_Callback() const;
-
-protected:
-    epiArray<gfxRenderSubPassSchema> m_SubPasses{};
-
-EPI_GENREGION_END(gfxRenderPassSchema)
-
-public:
-    void AddSubPass(gfxRenderSubPassSchema&& subpass);
-    void AddAttachment(gfxAttachmentSchema&& attachment);
-};
-
 class gfxAttachment : public Object
 {
 EPI_GENREGION_BEGIN(gfxAttachment)
@@ -148,20 +43,19 @@ public:
     };
 
 protected:
-    gfxFormat m_Format{gfxFormat::UNDEFINED};
-    gfxSampleCount m_SampleCount{gfxSampleCount::Sample1};
-    gfxAttachmentLoadOp m_LoadOp{gfxAttachmentLoadOp::DontCare};
-    gfxAttachmentStoreOp m_StoreOp{gfxAttachmentStoreOp::DontCare};
-    gfxAttachmentLoadOp m_StencilLoadOp{gfxAttachmentLoadOp::DontCare};
-    gfxAttachmentStoreOp m_StencilStoreOp{gfxAttachmentStoreOp::DontCare};
-    gfxImageLayout m_InitialLayout{gfxImageLayout::Undefined};
-    gfxImageLayout m_FinalLayout{gfxImageLayout::Undefined};
+    gfxFormat m_Format{};
+    gfxSampleCountMask m_SampleCount{};
+    gfxAttachmentLoadOp m_LoadOp{};
+    gfxAttachmentStoreOp m_StoreOp{};
+    gfxAttachmentLoadOp m_StencilLoadOp{};
+    gfxAttachmentStoreOp m_StencilStoreOp{};
+    gfxImageLayout m_InitialLayout{};
+    gfxImageLayout m_FinalLayout{};
 
 EPI_GENREGION_END(gfxAttachment)
 
 public:
     epiBool IsCompatibleWith(const gfxAttachment& rhs) const;
-    epiBool IsCompatibleWith(const gfxAttachmentSchema& rhs) const;
 };
 
 class gfxAttachmentRef : public Object
@@ -190,7 +84,6 @@ EPI_GENREGION_END(gfxAttachmentRef)
 
 public:
     epiBool IsCompatibleWith(const gfxAttachmentRef& rhs) const;
-    epiBool IsCompatibleWith(const gfxAttachmentRefSchema& rhs) const;
 };
 
 class gfxRenderSubPass : public Object
@@ -223,7 +116,6 @@ EPI_GENREGION_END(gfxRenderSubPass)
 
 public:
     epiBool IsCompatibleWith(const gfxRenderSubPass& rhs) const;
-    epiBool IsCompatibleWith(const gfxRenderSubPassSchema& rhs) const;
 
     void AddAttachment(const gfxAttachment& attachment, epiU32 attachmentIndex, gfxImageLayout layout, gfxAttachmentBindPoint bindPoint);
 };
@@ -330,7 +222,6 @@ public:
     epiBool HasImpl() const;
 
     epiBool IsCompatibleWith(const gfxRenderPass& rhs) const;
-    epiBool IsCompatibleWith(const gfxRenderPassSchema& rhs) const;
 
 protected:
     std::shared_ptr<Impl> m_Impl;

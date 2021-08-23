@@ -35,6 +35,113 @@ protected:
 EPI_GENREGION_END(gfxMemoryBarrier)
 };
 
+class gfxBufferMemoryBarrier : public Object
+{
+EPI_GENREGION_BEGIN(gfxBufferMemoryBarrier)
+
+EPI_GENHIDDEN_gfxBufferMemoryBarrier()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xb7925aff};
+
+    enum gfxBufferMemoryBarrier_PIDs
+    {
+        PID_Buffer = 0x36f6f5c4,
+        PID_SrcAccessMask = 0xe4d2b1e8,
+        PID_DstAccessMask = 0x31ce8c4d,
+        PID_SrcQueueFamilyIndex = 0x292c7bd,
+        PID_DstQueueFamilyIndex = 0x837f242b,
+        PID_IsSrcQueueFamilyIndexIgnored = 0xe8ba2402,
+        PID_IsDstQueueFamilyIndexIgnored = 0x71d3dc18,
+        PID_Offset = 0x5ea6cfe6,
+        PID_Size = 0x57f28b54,
+        PID_COUNT = 9
+    };
+
+protected:
+    gfxBuffer m_Buffer{};
+    gfxAccess m_SrcAccessMask{};
+    gfxAccess m_DstAccessMask{};
+    epiU32 m_SrcQueueFamilyIndex{0};
+    epiU32 m_DstQueueFamilyIndex{0};
+    epiBool m_IsSrcQueueFamilyIndexIgnored{false};
+    epiBool m_IsDstQueueFamilyIndexIgnored{false};
+    epiSize_t m_Offset{0};
+    epiSize_t m_Size{0};
+
+EPI_GENREGION_END(gfxBufferMemoryBarrier)
+};
+
+class gfxImageMemoryBarrier : public Object
+{
+EPI_GENREGION_BEGIN(gfxImageMemoryBarrier)
+
+EPI_GENHIDDEN_gfxImageMemoryBarrier()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xdb16c216};
+
+    enum gfxImageMemoryBarrier_PIDs
+    {
+        PID_Image = 0x4fc2b5b,
+        PID_SrcAccessMask = 0xe4d2b1e8,
+        PID_DstAccessMask = 0x31ce8c4d,
+        PID_OldLayout = 0x93cbca0d,
+        PID_NewLayout = 0xcdc94336,
+        PID_SrcQueueFamilyIndex = 0x292c7bd,
+        PID_DstQueueFamilyIndex = 0x837f242b,
+        PID_IsSrcQueueFamilyIndexIgnored = 0xe8ba2402,
+        PID_IsDstQueueFamilyIndexIgnored = 0x71d3dc18,
+        PID_SubresourceRange = 0x5a75fb0e,
+        PID_COUNT = 10
+    };
+
+protected:
+    gfxImage m_Image{};
+    gfxAccess m_SrcAccessMask{};
+    gfxAccess m_DstAccessMask{};
+    gfxImageLayout m_OldLayout{};
+    gfxImageLayout m_NewLayout{};
+    epiU32 m_SrcQueueFamilyIndex{0};
+    epiU32 m_DstQueueFamilyIndex{0};
+    epiBool m_IsSrcQueueFamilyIndexIgnored{false};
+    epiBool m_IsDstQueueFamilyIndexIgnored{false};
+    gfxImageSubresourceRange m_SubresourceRange{};
+
+EPI_GENREGION_END(gfxImageMemoryBarrier)
+};
+
+class gfxCommandBufferRecordPipelineBarier : public Object
+{
+EPI_GENREGION_BEGIN(gfxCommandBufferRecordPipelineBarier)
+
+EPI_GENHIDDEN_gfxCommandBufferRecordPipelineBarier()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x28dc5fc7};
+
+    enum gfxCommandBufferRecordPipelineBarier_PIDs
+    {
+        PID_SrcStageMask = 0x5890cb97,
+        PID_DstStageMask = 0x24ec8ab5,
+        PID_DependencyFlags = 0x68167a5,
+        PID_MemoryBarriers = 0xb0ffaf07,
+        PID_BufferMemoryBarriers = 0x7471824,
+        PID_ImageMemoryBarriers = 0x7d257b36,
+        PID_COUNT = 6
+    };
+
+protected:
+    gfxPipelineStage m_SrcStageMask{};
+    gfxPipelineStage m_DstStageMask{};
+    gfxDependency m_DependencyFlags{};
+    epiArray<gfxMemoryBarrier> m_MemoryBarriers{};
+    epiArray<gfxBufferMemoryBarrier> m_BufferMemoryBarriers{};
+    epiArray<gfxImageMemoryBarrier> m_ImageMemoryBarriers{};
+
+EPI_GENREGION_END(gfxCommandBufferRecordPipelineBarier)
+};
+
 class gfxBindBufferMemoryInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxBindBufferMemoryInfo)
@@ -105,7 +212,7 @@ public:
 
 protected:
     epiSize_t m_Size{0};
-    gfxDeviceMemoryProperty m_PropertyMask{};
+    gfxDeviceMemoryPropertyMask m_PropertyMask{};
 
 EPI_GENREGION_END(gfxDeviceMemoryCreateInfo)
 };

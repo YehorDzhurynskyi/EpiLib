@@ -41,7 +41,7 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
             VkAttachmentDescription& colorAttachment = attachments.emplace_back();
             colorAttachment = {};
             colorAttachment.format = gfxFormatTo(attachment.GetFormat());
-            colorAttachment.samples = gfxSampleCountTo(attachment.GetSampleCount());
+            colorAttachment.samples = gfxSampleCountMaskTo(attachment.GetSampleCount());
             colorAttachment.loadOp = gfxAttachmentLoadOpTo(attachment.GetLoadOp());
             colorAttachment.storeOp = gfxAttachmentStoreOpTo(attachment.GetStoreOp());
             colorAttachment.stencilLoadOp = gfxAttachmentLoadOpTo(attachment.GetStencilLoadOp());
@@ -66,7 +66,7 @@ epiBool gfxRenderPassImplVK::Init(const gfxRenderPassCreateInfo& info)
             VkAttachmentDescription& depthStencilAttachment = attachments.emplace_back();
             depthStencilAttachment = {};
             depthStencilAttachment.format = gfxFormatTo(attachment.GetFormat());
-            depthStencilAttachment.samples = gfxSampleCountTo(attachment.GetSampleCount());
+            depthStencilAttachment.samples = gfxSampleCountMaskTo(attachment.GetSampleCount());
             depthStencilAttachment.loadOp = gfxAttachmentLoadOpTo(attachment.GetLoadOp());
             depthStencilAttachment.storeOp = gfxAttachmentStoreOpTo(attachment.GetStoreOp());
             depthStencilAttachment.stencilLoadOp = gfxAttachmentLoadOpTo(attachment.GetStencilLoadOp());
