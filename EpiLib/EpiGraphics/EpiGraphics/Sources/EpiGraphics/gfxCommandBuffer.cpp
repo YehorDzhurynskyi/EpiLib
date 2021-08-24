@@ -3,73 +3,11 @@ EPI_GENREGION_BEGIN(include)
 #include "EpiGraphics/gfxCommandBuffer.cxx"
 EPI_GENREGION_END(include)
 
+#include "EpiGraphicsImpl/gfxCommandBufferImpl.h"
+
 #include "EpiGraphics/gfxPipelineLayout.h"
 #include "EpiGraphics/gfxPipeline.h"
 #include "EpiGraphics/gfxDeviceMemory.h"
-#include "EpiGraphics/Synchronization/gfxFence.h"
-
-#include "EpiGraphicsImpl/gfxCommandBufferImpl.h"
-#include "EpiGraphicsImpl/gfxQueueImpl.h"
-
-namespace
-{
-
-EPI_NAMESPACE_USING()
-
-epiBool QueueSubmitInfoIsValid(const gfxQueueSubmitInfo& info)
-{
-    const epiBool allcommandBuffersAreValid = std::all_of(info.GetCommandBuffers().begin(),
-                                                          info.GetCommandBuffers().end(),
-                                                          [](const gfxCommandBuffer& commandBuffer)
-    {
-        return commandBuffer.HasImpl();
-    });
-
-    if (!allcommandBuffersAreValid)
-    {
-        epiLogError("Failed to Submit QueueSubmitInfo! Some of the provided CommandBuffers has no implementation!");
-        return false;
-    }
-
-    const epiBool allSignalSemaphoresAreValid = std::all_of(info.GetSignalSemaphores().begin(),
-                                                            info.GetSignalSemaphores().end(),
-                                                            [](const gfxSemaphore& semaphore)
-    {
-        return semaphore.HasImpl();
-    });
-
-    if (!allSignalSemaphoresAreValid)
-    {
-        epiLogError("Failed to Submit QueueSubmitInfo! Some of the provided signal Semaphores has no implementation!");
-        return false;
-    }
-
-    const epiBool allWaitSemaphoresAreValid = std::all_of(info.GetWaitSemaphores().begin(),
-                                                          info.GetWaitSemaphores().end(),
-                                                          [](const gfxSemaphore& semaphore)
-    {
-        return semaphore.HasImpl();
-    });
-
-    if (!allWaitSemaphoresAreValid)
-    {
-        epiLogError("Failed to Submit QueueSubmitInfo! Some of the provided wait Semaphores has no implementation!");
-        return false;
-    }
-
-    if (info.GetWaitSemaphores().Size() != info.GetWaitDstStageMasks().Size())
-    {
-        epiLogError("Failed to Submit QueueSubmitInfo! The number of the provided wait Semaphores (count=`{}`) "
-                    "should be equal to wait dst stage masks (count=`{}`)!",
-                    info.GetWaitSemaphores().Size(),
-                    info.GetWaitDstStageMasks().Size());
-        return false;
-    }
-
-    return true;
-};
-
-} // namespace
 
 EPI_NAMESPACE_BEGIN()
 
@@ -323,34 +261,6 @@ gfxCommandBuffer::Record gfxCommandBuffer::RecordCommands(gfxCommandBufferUsage 
 epiBool gfxCommandBuffer::GetIsPrimary_Callback() const
 {
     return m_Impl->GetIsPrimary();
-}
-
-// NOTE: `gfxQueueSubmitInfo` is located in the SwapChain translation because of cyclic including
-epiBool gfxQueue::Submit(const epiArray<gfxQueueSubmitInfo>& infos)
-{
-    if (!std::all_of(infos.begin(), infos.end(), &QueueSubmitInfoIsValid))
-    {
-        return false;
-    }
-
-    return m_Impl->Submit(infos);
-}
-
-// NOTE: `gfxQueueSubmitInfo` is located in the SwapChain translation because of cyclic including
-epiBool gfxQueue::Submit(const epiArray<gfxQueueSubmitInfo>& infos, const gfxFence& signalFence)
-{
-    if (!signalFence.HasImpl())
-    {
-        epiLogError("Failed to Submit QueueSubmitInfo! The provided signal Fence has no implementation!");
-        return false;
-    }
-
-    if (!std::all_of(infos.begin(), infos.end(), &QueueSubmitInfoIsValid))
-    {
-        return false;
-    }
-
-    return m_Impl->Submit(infos, signalFence);
 }
 
 EPI_NAMESPACE_END()

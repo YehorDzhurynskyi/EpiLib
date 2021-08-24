@@ -4,7 +4,6 @@ EPI_GENREGION_BEGIN(include)
 EPI_GENREGION_END(include)
 
 #include "EpiGraphicsImpl/gfxSwapChainImpl.h"
-#include "EpiGraphicsImpl/gfxQueueImpl.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -85,53 +84,6 @@ const gfxDevice& gfxSwapChain::GetDevice_Callback() const
     epiAssert(HasImpl());
 
     return m_Impl->GetDevice();
-}
-
-// NOTE: `gfxQueuePresentInfo` is located in the SwapChain translation because of cyclic including
-epiBool gfxQueue::Present(const gfxQueuePresentInfo& info)
-{
-    if (!IsQueueTypeSupported(gfxQueueType_Graphics))
-    {
-        epiLogError("Failed to Present QueuePresentInfo! Present should be called on graphics Queue!");
-        return false;
-    }
-
-    const epiBool allSemaphoresAreValid = std::all_of(info.GetWaitSemaphores().begin(),
-                                                      info.GetWaitSemaphores().end(),
-                                                      [](const gfxSemaphore& semaphore)
-    {
-        return semaphore.HasImpl();
-    });
-
-    if (!allSemaphoresAreValid)
-    {
-        epiLogError("Failed to Present QueuePresentInfo! Some of the provided wait Semaphores have no implementation!");
-        return false;
-    }
-
-    const epiBool allSwapChainsAreValid = std::all_of(info.GetSwapChains().begin(),
-                                                      info.GetSwapChains().end(),
-                                                      [](const gfxSwapChain& swapChain)
-    {
-        return swapChain.HasImpl();
-    });
-
-    if (!allSwapChainsAreValid)
-    {
-        epiLogError("Failed to Present QueuePresentInfo! Some of the provided SwapChains have no implementation!");
-        return false;
-    }
-
-    if (info.GetSwapChains().Size() != info.GetSwapChainImageIndices().Size())
-    {
-        epiLogError("Failed to Present QueuePresentInfo! The number of the SwapChain image indices "
-                    "(count=`{}`) and SwapChains (count=`{}`) should be equal!",
-                    info.GetSwapChainImageIndices().Size(),
-                    info.GetSwapChains().Size());
-        return false;
-    }
-
-    return m_Impl->Present(info);
 }
 
 EPI_NAMESPACE_END()
