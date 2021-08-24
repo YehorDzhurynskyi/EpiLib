@@ -16,6 +16,9 @@ public:
     Impl& operator=(Impl&& rhs) = default;
     virtual ~Impl() = default;
 
+    virtual epiBool BindBuffer(const gfxBuffer& buffer) = 0;
+    virtual epiBool BindImage(const gfxImage& image) = 0;
+
     const gfxDeviceMemoryAllocator& GetAllocator() const;
 
 protected:

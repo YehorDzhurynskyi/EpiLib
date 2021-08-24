@@ -221,13 +221,7 @@ epiBool gfxDeviceMemoryAllocationImplVK::InitBufferAllocated(const gfxDeviceMemo
         return false;
     }
 
-    if (const VkResult result = vmaBindBufferMemory(allocatorImpl->GetVmaAllocator(), m_VmaAllocation, bufferImpl->GetVkBuffer()); result != VK_SUCCESS)
-    {
-        gfxLogVkResultEx(result, "Failed to call vmaBindBufferMemory!");
-        return false;
-    }
-
-    return true;
+    return BindBuffer(buffer);
 }
 
 epiBool gfxDeviceMemoryAllocationImplVK::InitImageAllocated(const gfxDeviceMemoryAllocationCreateInfo& info,
@@ -249,6 +243,28 @@ epiBool gfxDeviceMemoryAllocationImplVK::InitImageAllocated(const gfxDeviceMemor
         gfxLogVkResultEx(result, "Failed to call vmaAllocateMemoryForImage!");
         return false;
     }
+
+    return BindImage(image);
+}
+
+epiBool gfxDeviceMemoryAllocationImplVK::BindBuffer(const gfxBuffer& buffer)
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+    const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(buffer);
+
+    if (const VkResult result = vmaBindBufferMemory(allocatorImpl->GetVmaAllocator(), m_VmaAllocation, bufferImpl->GetVkBuffer()); result != VK_SUCCESS)
+    {
+        gfxLogVkResultEx(result, "Failed to call vmaBindBufferMemory!");
+        return false;
+    }
+
+    return true;
+}
+
+epiBool gfxDeviceMemoryAllocationImplVK::BindImage(const gfxImage& image)
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+    const std::shared_ptr<gfxImageImplVK> imageImpl = ImplOf<gfxImageImplVK>(image);
 
     if (const VkResult result = vmaBindImageMemory(allocatorImpl->GetVmaAllocator(), m_VmaAllocation, imageImpl->GetVkImage()); result != VK_SUCCESS)
     {

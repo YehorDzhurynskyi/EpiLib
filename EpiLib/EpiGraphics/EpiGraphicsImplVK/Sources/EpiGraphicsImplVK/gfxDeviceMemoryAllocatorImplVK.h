@@ -29,6 +29,9 @@ public:
     epiBool InitImageAllocated(const gfxDeviceMemoryAllocationCreateInfo& info,
                                const gfxImage& image);
 
+    epiBool BindBuffer(const gfxBuffer& buffer) override;
+    epiBool BindImage(const gfxImage& image) override;
+
 protected:
     VmaAllocation_T* m_VmaAllocation{nullptr};
 };

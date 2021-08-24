@@ -131,6 +131,9 @@ public:
 
     epiBool HasImpl() const;
 
+    epiBool BindBuffer(const gfxBuffer& buffer);
+    epiBool BindImage(const gfxImage& image);
+
 protected:
     std::shared_ptr<Impl> m_Impl;
 };
@@ -239,6 +242,18 @@ public:
     explicit gfxDeviceMemoryAllocator(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
+
+    std::optional<gfxDeviceMemoryAllocationBuffer> CreateBuffer(const gfxDeviceMemoryAllocationCreateInfo& allocationInfo,
+                                                                const gfxBufferCreateInfo& bufferInfo);
+
+    std::optional<gfxDeviceMemoryAllocationImage> CreateImage(const gfxDeviceMemoryAllocationCreateInfo& allocationInfo,
+                                                              const gfxImageCreateInfo& imageInfo);
+
+    std::optional<gfxDeviceMemoryAllocation> AllocateBuffer(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                                            const gfxBuffer& buffer);
+
+    std::optional<gfxDeviceMemoryAllocation> AllocateImage(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                                           const gfxImage& image);
 
 protected:
     std::shared_ptr<Impl> m_Impl;
