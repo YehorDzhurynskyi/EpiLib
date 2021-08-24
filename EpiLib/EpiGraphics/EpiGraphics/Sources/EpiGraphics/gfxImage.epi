@@ -17,6 +17,10 @@ class gfxImageCreateInfo
 
 class gfxImage
 {
+    [Virtual, ReadOnly]
+    {
+        gfxDevice Device;
+    }
 };
 
 class gfxImageSubresourceLayers

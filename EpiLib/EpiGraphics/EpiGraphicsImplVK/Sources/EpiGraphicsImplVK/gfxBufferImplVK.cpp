@@ -2,20 +2,23 @@
 
 #include "EpiGraphicsImplVK/gfxErrorVK.h"
 #include "EpiGraphicsImplVK/gfxEnumVK.h"
+#include "EpiGraphicsImplVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsImplVK/gfxQueueFamilyImplVK.h"
 
 #include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
-gfxBufferImplVK::gfxBufferImplVK(VkDevice device)
-    : m_VkDevice{device}
+gfxBufferImplVK::gfxBufferImplVK(const gfxDevice& device)
+    : gfxBuffer::Impl{device}
 {
 }
 
 gfxBufferImplVK::~gfxBufferImplVK()
 {
-    vkDestroyBuffer(m_VkDevice, m_VkBuffer, nullptr);
+    const std::shared_ptr<gfxDeviceImplVK> deviceImpl = ImplOf<gfxDeviceImplVK>(m_Device);
+
+    vkDestroyBuffer(deviceImpl->GetVkDevice(), m_VkBuffer, nullptr);
 }
 
 epiBool gfxBufferImplVK::Init(const gfxBufferCreateInfo& info)
@@ -45,7 +48,8 @@ epiBool gfxBufferImplVK::Init(const gfxBufferCreateInfo& info)
         bufferInfo.pQueueFamilyIndices = queueFamilyIndices.data();
     }
 
-    if (const VkResult result = vkCreateBuffer(m_VkDevice, &bufferInfo, nullptr, &m_VkBuffer); result != VK_SUCCESS)
+    const std::shared_ptr<gfxDeviceImplVK> deviceImpl = ImplOf<gfxDeviceImplVK>(m_Device);
+    if (const VkResult result = vkCreateBuffer(deviceImpl->GetVkDevice(), &bufferInfo, nullptr, &m_VkBuffer); result != VK_SUCCESS)
     {
         gfxLogVkResultEx(result, "Failed to call vkCreateBuffer!");
         return false;

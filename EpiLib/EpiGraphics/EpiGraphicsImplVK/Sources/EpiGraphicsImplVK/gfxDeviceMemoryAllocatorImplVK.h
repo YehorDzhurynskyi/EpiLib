@@ -17,17 +17,17 @@ public:
     gfxDeviceMemoryAllocationImplVK& operator=(gfxDeviceMemoryAllocationImplVK&& rhs) = default;
     ~gfxDeviceMemoryAllocationImplVK() override;
 
-    std::optional<gfxBuffer> InitForCreatedBuffer(const gfxDeviceMemoryAllocationCreateInfo& info,
-                                                  const gfxBufferCreateInfo& bufferInfo);
+    std::optional<gfxBuffer> InitBuffer(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                        const gfxBufferCreateInfo& bufferInfo);
 
-    std::optional<gfxImage> InitForCreatedImage(const gfxDeviceMemoryAllocationCreateInfo& info,
-                                                const gfxImageCreateInfo& imageInfo);
+    std::optional<gfxImage> InitImage(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                      const gfxImageCreateInfo& imageInfo);
 
-    epiBool InitForAllocatedBuffer(const gfxDeviceMemoryAllocationCreateInfo& info,
-                                   const gfxBuffer& buffer);
+    epiBool InitBufferAllocated(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                const gfxBuffer& buffer);
 
-    epiBool InitForAllocatedImage(const gfxDeviceMemoryAllocationCreateInfo& info,
-                                  const gfxImage& image);
+    epiBool InitImageAllocated(const gfxDeviceMemoryAllocationCreateInfo& info,
+                               const gfxImage& image);
 
 protected:
     VmaAllocation_T* m_VmaAllocation{nullptr};

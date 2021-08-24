@@ -6,6 +6,7 @@
 #include "EpiGraphicsImplVK/gfxInstanceImplVK.h"
 #include "EpiGraphicsImplVK/gfxBufferImplVK.h"
 #include "EpiGraphicsImplVK/gfxImageImplVK.h"
+#include "EpiGraphicsImplVK/gfxQueueFamilyImplVK.h"
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
@@ -70,8 +71,8 @@ gfxDeviceMemoryAllocationImplVK::~gfxDeviceMemoryAllocationImplVK()
     vmaFreeMemory(allocatorImpl->GetVmaAllocator(), m_VmaAllocation);
 }
 
-std::optional<gfxBuffer> gfxDeviceMemoryAllocationImplVK::InitForCreatedBuffer(const gfxDeviceMemoryAllocationCreateInfo& info,
-                                                                               const gfxBufferCreateInfo& bufferInfo)
+std::optional<gfxBuffer> gfxDeviceMemoryAllocationImplVK::InitBuffer(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                                                     const gfxBufferCreateInfo& bufferInfo)
 {
     const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
 
@@ -84,6 +85,29 @@ std::optional<gfxBuffer> gfxDeviceMemoryAllocationImplVK::InitForCreatedBuffer(c
     // TODO: set other properties
 
     VkBufferCreateInfo bufferCreateInfo{};
+    bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferCreateInfo.flags = gfxBufferCreateMaskTo(bufferInfo.GetCreateMask());
+    bufferCreateInfo.size = bufferInfo.GetSize();
+    bufferCreateInfo.usage = gfxBufferUsageMaskTo(bufferInfo.GetUsageMask());
+    bufferCreateInfo.sharingMode = gfxSharingModeTo(bufferInfo.GetSharingMode());
+
+    std::vector<epiU32> queueFamilyIndices;
+    if (bufferInfo.GetSharingMode() == gfxSharingMode::Concurrent)
+    {
+        queueFamilyIndices.reserve(bufferInfo.GetQueueFamilies().Size());
+
+        std::transform(bufferInfo.GetQueueFamilies().begin(),
+                       bufferInfo.GetQueueFamilies().end(),
+                       std::back_inserter(queueFamilyIndices),
+                       [](const gfxQueueFamily& family)
+        {
+            const std::shared_ptr<gfxQueueFamilyImplVK> familyImpl = ImplOf<gfxQueueFamilyImplVK>(family);
+            return familyImpl->GetIndex();
+        });
+
+        bufferCreateInfo.queueFamilyIndexCount = queueFamilyIndices.size();
+        bufferCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+    }
 
     VkBuffer bufferVk{nullptr};
     if (const VkResult result = vmaCreateBuffer(allocatorImpl->GetVmaAllocator(),
@@ -97,17 +121,88 @@ std::optional<gfxBuffer> gfxDeviceMemoryAllocationImplVK::InitForCreatedBuffer(c
         return std::nullopt;
     }
 
-    return std::nullopt;
+    const std::shared_ptr<gfxBufferImplVK> bufferImpl = std::make_shared<gfxBufferImplVK>(m_Allocator.GetDevice());
+    if (!bufferImpl->Init(bufferVk))
+    {
+        epiLogError("Failed to init Buffer!");
+        return std::nullopt;
+    }
+
+    return gfxBuffer(bufferImpl);
 }
 
-std::optional<gfxImage> gfxDeviceMemoryAllocationImplVK::InitForCreatedImage(const gfxDeviceMemoryAllocationCreateInfo& info,
-                                                                             const gfxImageCreateInfo& imageInfo)
+std::optional<gfxImage> gfxDeviceMemoryAllocationImplVK::InitImage(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                                                   const gfxImageCreateInfo& imageInfo)
 {
-    return std::nullopt;
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+
+    VmaAllocationCreateInfo createInfo{};
+    createInfo.flags = gfxDeviceMemoryAllocationCreateMaskTo(info.GetCreateMask());
+    createInfo.usage = gfxDeviceMemoryAllocationUsageTo(info.GetUsage());
+    createInfo.requiredFlags = gfxDeviceMemoryPropertyMaskTo(info.GetRequiredPropertiesMask());
+    createInfo.preferredFlags = gfxDeviceMemoryPropertyMaskTo(info.GetPreferredPropertiesMask());
+    createInfo.priority = info.GetPriority();
+    // TODO: set other properties
+
+    VkImageCreateInfo imageCreateInfo{};
+    imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageCreateInfo.flags = gfxImageCreateMaskTo(imageInfo.GetCreateMask());
+    imageCreateInfo.imageType = gfxImageTypeTo(imageInfo.GetType());
+    imageCreateInfo.format = gfxFormatTo(imageInfo.GetFormat());
+    imageCreateInfo.extent.width = imageInfo.GetExtent().x;
+    imageCreateInfo.extent.height = imageInfo.GetExtent().y;
+    imageCreateInfo.extent.depth = imageInfo.GetExtent().z;
+    imageCreateInfo.mipLevels = imageInfo.GetMipLevels();
+    imageCreateInfo.arrayLayers = imageInfo.GetArrayLayers();
+    imageCreateInfo.samples = gfxSampleCountMaskTo(imageInfo.GetSampleCount());
+    imageCreateInfo.tiling = gfxImageTilingTo(imageInfo.GetTiling());
+    imageCreateInfo.usage = gfxImageUsageMaskTo(imageInfo.GetUsageMask());
+    imageCreateInfo.sharingMode = gfxSharingModeTo(imageInfo.GetSharingMode());
+    imageCreateInfo.initialLayout = gfxImageLayoutTo(imageInfo.GetInitialLayout());
+
+    std::vector<epiU32> queueFamilyIndices;
+    if (imageInfo.GetSharingMode() == gfxSharingMode::Concurrent)
+    {
+        queueFamilyIndices.reserve(imageInfo.GetQueueFamilies().Size());
+
+        std::transform(imageInfo.GetQueueFamilies().begin(),
+                       imageInfo.GetQueueFamilies().end(),
+                       std::back_inserter(queueFamilyIndices),
+                       [](const gfxQueueFamily& family)
+        {
+            const std::shared_ptr<gfxQueueFamilyImplVK> familyImpl = ImplOf<gfxQueueFamilyImplVK>(family);
+
+            return familyImpl->GetIndex();
+        });
+
+        imageCreateInfo.queueFamilyIndexCount = queueFamilyIndices.size();
+        imageCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+    }
+
+    VkImage imageVk{nullptr};
+    if (const VkResult result = vmaCreateImage(allocatorImpl->GetVmaAllocator(),
+                                               &imageCreateInfo,
+                                               &createInfo,
+                                               &imageVk,
+                                               &m_VmaAllocation,
+                                               nullptr); result != VK_SUCCESS)
+    {
+        gfxLogVkResultEx(result, "Failed to call vmaCreateImage!");
+        return std::nullopt;
+    }
+
+    const std::shared_ptr<gfxImageImplVK> imageImpl = std::make_shared<gfxImageImplVK>(m_Allocator.GetDevice());
+    if (!imageImpl->Init(imageVk))
+    {
+        epiLogError("Failed to init Image!");
+        return std::nullopt;
+    }
+
+    return gfxImage(imageImpl);
 }
 
-epiBool gfxDeviceMemoryAllocationImplVK::InitForAllocatedBuffer(const gfxDeviceMemoryAllocationCreateInfo& info,
-                                                                const gfxBuffer& buffer)
+epiBool gfxDeviceMemoryAllocationImplVK::InitBufferAllocated(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                                             const gfxBuffer& buffer)
 {
     const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
     const std::shared_ptr<gfxBufferImplVK> bufferImpl = ImplOf<gfxBufferImplVK>(buffer);
@@ -135,8 +230,8 @@ epiBool gfxDeviceMemoryAllocationImplVK::InitForAllocatedBuffer(const gfxDeviceM
     return true;
 }
 
-epiBool gfxDeviceMemoryAllocationImplVK::InitForAllocatedImage(const gfxDeviceMemoryAllocationCreateInfo& info,
-                                                               const gfxImage& image)
+epiBool gfxDeviceMemoryAllocationImplVK::InitImageAllocated(const gfxDeviceMemoryAllocationCreateInfo& info,
+                                                            const gfxImage& image)
 {
     const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
     const std::shared_ptr<gfxImageImplVK> imageImpl = ImplOf<gfxImageImplVK>(image);
@@ -230,7 +325,7 @@ std::optional<gfxDeviceMemoryAllocationBuffer> gfxDeviceMemoryAllocatorImplVK::C
 
     std::shared_ptr<gfxDeviceMemoryAllocationImplVK> impl = std::make_shared<gfxDeviceMemoryAllocationImplVK>(allocator);
 
-    std::optional<gfxBuffer> buffer = impl->InitForCreatedBuffer(allocationInfo, bufferInfo);
+    std::optional<gfxBuffer> buffer = impl->InitBuffer(allocationInfo, bufferInfo);
     if (!buffer.has_value())
     {
         epiLogError("Failed to create Buffer!");
@@ -247,7 +342,7 @@ std::optional<gfxDeviceMemoryAllocationImage> gfxDeviceMemoryAllocatorImplVK::Cr
 
     std::shared_ptr<gfxDeviceMemoryAllocationImplVK> impl = std::make_shared<gfxDeviceMemoryAllocationImplVK>(allocator);
 
-    std::optional<gfxImage> image = impl->InitForCreatedImage(allocationInfo, imageInfo);
+    std::optional<gfxImage> image = impl->InitImage(allocationInfo, imageInfo);
     if (!image.has_value())
     {
         epiLogError("Failed to create Image!");
@@ -263,7 +358,7 @@ std::optional<gfxDeviceMemoryAllocation> gfxDeviceMemoryAllocatorImplVK::Allocat
     gfxDeviceMemoryAllocator allocator(shared_from_this());
 
     std::shared_ptr<gfxDeviceMemoryAllocationImplVK> impl = std::make_shared<gfxDeviceMemoryAllocationImplVK>(allocator);
-    if (!impl->InitForAllocatedBuffer(info, buffer))
+    if (!impl->InitBufferAllocated(info, buffer))
     {
         epiLogError("Failed to allocate Buffer!");
         return std::nullopt;
@@ -278,7 +373,7 @@ std::optional<gfxDeviceMemoryAllocation> gfxDeviceMemoryAllocatorImplVK::Allocat
     gfxDeviceMemoryAllocator allocator(shared_from_this());
 
     std::shared_ptr<gfxDeviceMemoryAllocationImplVK> impl = std::make_shared<gfxDeviceMemoryAllocationImplVK>(allocator);
-    if (!impl->InitForAllocatedImage(info, image))
+    if (!impl->InitImageAllocated(info, image))
     {
         epiLogError("Failed to allocate Image!");
         return std::nullopt;

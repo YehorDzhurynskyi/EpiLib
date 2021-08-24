@@ -40,6 +40,7 @@ protected:
 EPI_GENREGION_END(gfxBufferCreateInfo)
 };
 
+class gfxDevice;
 class gfxBuffer : public Object
 {
 EPI_GENREGION_BEGIN(gfxBuffer)
@@ -51,8 +52,12 @@ public:
 
     enum gfxBuffer_PIDs
     {
-        PID_COUNT = 0
+        PID_Device = 0xe83b3b8,
+        PID_COUNT = 1
     };
+
+protected:
+    const gfxDevice& GetDevice_Callback() const;
 
 EPI_GENREGION_END(gfxBuffer)
 

@@ -11,12 +11,15 @@ EPI_NAMESPACE_BEGIN()
 class gfxImageImplVK : public gfxImage::Impl
 {
 public:
-    explicit gfxImageImplVK(VkImage_T* image);
+    explicit gfxImageImplVK(const gfxDevice& device);
     gfxImageImplVK(const gfxImageImplVK& rhs) = delete;
     gfxImageImplVK& operator=(const gfxImageImplVK& rhs) = delete;
     gfxImageImplVK(gfxImageImplVK&& rhs) = default;
     gfxImageImplVK& operator=(gfxImageImplVK&& rhs) = default;
-    ~gfxImageImplVK() override = default;
+    ~gfxImageImplVK() override;
+
+    epiBool Init(const gfxImageCreateInfo& info);
+    epiBool Init(VkImage_T* image);
 
     VkImage_T* GetVkImage() const;
 
@@ -24,20 +27,15 @@ protected:
     VkImage_T* m_VkImage{nullptr};
 };
 
-class gfxImageImplVKOwner : public gfxImageImplVK
+class gfxImageImplVKSwapChain : public gfxImage::Impl
 {
 public:
-    explicit gfxImageImplVKOwner(VkDevice_T* device);
-    gfxImageImplVKOwner(const gfxImageImplVKOwner& rhs) = delete;
-    gfxImageImplVKOwner& operator=(const gfxImageImplVKOwner& rhs) = delete;
-    gfxImageImplVKOwner(gfxImageImplVKOwner&& rhs) = default;
-    gfxImageImplVKOwner& operator=(gfxImageImplVKOwner&& rhs) = default;
-    ~gfxImageImplVKOwner() override;
+    gfxImageImplVKSwapChain(const gfxDevice& device, VkImage_T* image);
 
-    epiBool Init(const gfxImageCreateInfo& info);
+    VkImage_T* GetVkImage() const;
 
 protected:
-    VkDevice_T* m_VkDevice{nullptr};
+    VkImage_T* m_VkImage{nullptr};
 };
 
 EPI_NAMESPACE_END()

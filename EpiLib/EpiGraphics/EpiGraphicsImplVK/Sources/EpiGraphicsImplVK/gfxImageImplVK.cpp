@@ -2,29 +2,26 @@
 
 #include "EpiGraphicsImplVK/gfxErrorVK.h"
 #include "EpiGraphicsImplVK/gfxEnumVK.h"
+#include "EpiGraphicsImplVK/gfxDeviceImplVK.h"
 #include "EpiGraphicsImplVK/gfxQueueFamilyImplVK.h"
 
 #include <vulkan/vulkan.h>
 
 EPI_NAMESPACE_BEGIN()
 
-gfxImageImplVK::gfxImageImplVK(VkImage image)
-    : m_VkImage{image}
+gfxImageImplVK::gfxImageImplVK(const gfxDevice& device)
+    : gfxImage::Impl{device}
 {
 }
 
-VkImage gfxImageImplVK::GetVkImage() const
+gfxImageImplVK::~gfxImageImplVK()
 {
-    return m_VkImage;
+    const std::shared_ptr<gfxDeviceImplVK> deviceImpl = ImplOf<gfxDeviceImplVK>(m_Device);
+
+    vkDestroyImage(deviceImpl->GetVkDevice(), m_VkImage, nullptr);
 }
 
-gfxImageImplVKOwner::gfxImageImplVKOwner(VkDevice device)
-    : gfxImageImplVK{nullptr}
-    , m_VkDevice{device}
-{
-}
-
-epiBool gfxImageImplVKOwner::Init(const gfxImageCreateInfo& info)
+epiBool gfxImageImplVK::Init(const gfxImageCreateInfo& info)
 {
     VkImageCreateInfo imageCreateInfo{};
     imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -61,7 +58,8 @@ epiBool gfxImageImplVKOwner::Init(const gfxImageCreateInfo& info)
         imageCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
     }
 
-    if (const VkResult result = vkCreateImage(m_VkDevice, &imageCreateInfo, nullptr, &m_VkImage); result != VK_SUCCESS)
+    const std::shared_ptr<gfxDeviceImplVK> deviceImpl = ImplOf<gfxDeviceImplVK>(m_Device);
+    if (const VkResult result = vkCreateImage(deviceImpl->GetVkDevice(), &imageCreateInfo, nullptr, &m_VkImage); result != VK_SUCCESS)
     {
         gfxLogVkResultEx(result, "Failed to call vkCreateImage!");
         return false;
@@ -70,9 +68,27 @@ epiBool gfxImageImplVKOwner::Init(const gfxImageCreateInfo& info)
     return true;
 }
 
-gfxImageImplVKOwner::~gfxImageImplVKOwner()
+epiBool gfxImageImplVK::Init(VkImage image)
 {
-    vkDestroyImage(m_VkDevice, m_VkImage, nullptr);
+    m_VkImage = image;
+
+    return true;
+}
+
+VkImage gfxImageImplVK::GetVkImage() const
+{
+    return m_VkImage;
+}
+
+gfxImageImplVKSwapChain::gfxImageImplVKSwapChain(const gfxDevice& device, VkImage image)
+    : gfxImage::Impl{device}
+    , m_VkImage{image}
+{
+}
+
+VkImage gfxImageImplVKSwapChain::GetVkImage() const
+{
+    return m_VkImage;
 }
 
 EPI_NAMESPACE_END()

@@ -687,7 +687,9 @@ std::shared_ptr<gfxFrameBuffer::Impl> gfxDeviceImplVK::CreateFrameBuffer(const g
 
 std::shared_ptr<gfxImage::Impl> gfxDeviceImplVK::CreateImage(const gfxImageCreateInfo& info)
 {
-    std::shared_ptr<gfxImageImplVKOwner> impl = std::make_shared<gfxImageImplVKOwner>(m_VkDevice);
+    gfxDevice device(shared_from_this());
+
+    std::shared_ptr<gfxImageImplVK> impl = std::make_shared<gfxImageImplVK>(device);
     if (!impl->Init(info))
     {
         impl.reset();
@@ -731,7 +733,9 @@ std::shared_ptr<gfxCommandPool::Impl> gfxDeviceImplVK::CreateCommandPool(const g
 
 std::shared_ptr<gfxBuffer::Impl> gfxDeviceImplVK::CreateBuffer(const gfxBufferCreateInfo& info)
 {
-    std::shared_ptr<gfxBufferImplVK> impl = std::make_shared<gfxBufferImplVK>(m_VkDevice);
+    gfxDevice device(shared_from_this());
+
+    std::shared_ptr<gfxBufferImplVK> impl = std::make_shared<gfxBufferImplVK>(device);
     if (!impl->Init(info))
     {
         impl.reset();

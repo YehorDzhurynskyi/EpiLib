@@ -10,7 +10,7 @@ EPI_NAMESPACE_BEGIN()
 class gfxBufferImplVK : public gfxBuffer::Impl
 {
 public:
-    explicit gfxBufferImplVK(VkDevice_T* device);
+    explicit gfxBufferImplVK(const gfxDevice& device);
     gfxBufferImplVK(const gfxBufferImplVK& rhs) = delete;
     gfxBufferImplVK& operator=(const gfxBufferImplVK& rhs) = delete;
     gfxBufferImplVK(gfxBufferImplVK&& rhs) = default;
@@ -23,7 +23,6 @@ public:
     VkBuffer_T* GetVkBuffer() const;
 
 protected:
-    VkDevice_T* m_VkDevice{nullptr};
     VkBuffer_T* m_VkBuffer{nullptr};
 };
 

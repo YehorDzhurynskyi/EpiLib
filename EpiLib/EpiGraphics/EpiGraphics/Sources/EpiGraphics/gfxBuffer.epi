@@ -10,4 +10,8 @@ class gfxBufferCreateInfo
 
 class gfxBuffer
 {
+    [Virtual, ReadOnly]
+    {
+        gfxDevice Device;
+    }
 };

@@ -105,7 +105,7 @@ epiBool gfxSwapChainImplVK::Init(const gfxSwapChainCreateInfo& info)
 
     for (const VkImage& imageVk : swapChainImages)
     {
-        gfxImage image(std::make_shared<gfxImageImplVK>(imageVk));
+        gfxImage image(std::make_shared<gfxImageImplVKSwapChain>(m_Device, imageVk));
 
         gfxImageSubresourceRange subresourceRange{};
         subresourceRange.SetAspectMask(gfxImageAspect_Color);
