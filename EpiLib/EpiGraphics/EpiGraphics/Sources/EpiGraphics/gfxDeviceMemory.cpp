@@ -25,26 +25,31 @@ gfxBindImageMemoryInfo gfxBindImageMemoryInfo::FromImage(const gfxImage& image, 
     return info;
 }
 
-gfxDeviceMemory::Mapping::Mapping(const std::shared_ptr<Impl>& impl, epiSize_t size, epiSize_t offset)
-    : m_Impl{impl}
+epiBool gfxDeviceMemory::Mapping::Init(const std::shared_ptr<Impl>& deviceMemoryImpl, epiSize_t size, epiSize_t offset)
 {
-    if (m_Impl)
+    if (deviceMemoryImpl == nullptr)
     {
-        m_Data = m_Impl->Map(size, offset);
+        epiLogError("Failed to initialize DeviceMemory mapping! The provided DeviceMemory has no implementation!");
+        return false;
     }
+
+    m_DeviceMemoryImpl = deviceMemoryImpl;
+    m_Data = m_DeviceMemoryImpl->Map(size, offset);
+
+    return true;
 }
 
 gfxDeviceMemory::Mapping::~Mapping()
 {
     if (IsMapped())
     {
-        m_Impl->Unmap();
+        m_DeviceMemoryImpl->Unmap();
     }
 }
 
 epiBool gfxDeviceMemory::Mapping::IsMapped() const
 {
-    return m_Impl != nullptr && m_Data != nullptr;
+    return m_DeviceMemoryImpl != nullptr && m_Data != nullptr;
 }
 
 gfxDeviceMemory::Mapping::operator epiBool() const
@@ -65,6 +70,17 @@ gfxDeviceMemory::gfxDeviceMemory(const std::shared_ptr<Impl>& impl)
 epiBool gfxDeviceMemory::HasImpl() const
 {
     return static_cast<epiBool>(m_Impl);
+}
+
+epiBool gfxDeviceMemory::IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to query DeviceMemoryProperty status! Calling object has no implementation!");
+        return false;
+    }
+
+    return m_Impl->IsPropertyEnabled(mask);
 }
 
 epiBool gfxDeviceMemory::BindBuffer(const gfxBindBufferMemoryInfo& info)
@@ -103,6 +119,7 @@ epiBool gfxDeviceMemory::BindImage(const gfxBindImageMemoryInfo& info)
 
 gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
 {
+    
     // TODO: check whether the following memory is already mapped
     // Mapping the same VkDeviceMemory block multiple times is illegal, but only
     // one mapping at a time is allowed.This includes mapping disjoint regions.
@@ -113,9 +130,26 @@ gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
     //
     // Add `epiBool flush = true` parameter:
     // call vkFlushMappedMemoryRanges if memory isn't coherent
-    //
-    // check whether memory is host-local
-    return Mapping(m_Impl, size, offset);
+    // Regions of memory specified for flush/invalidate must be aligned to VkPhysicalDeviceLimits::nonCoherentAtomSize.
+    // This is automatically ensured by the library. In any memory type that is HOST_VISIBLE but not HOST_COHERENT,
+    // all allocations within blocks are aligned to this value, so their offsets are always multiply of nonCoherentAtomSize
+    // and two different allocations never share same "line" of this size.
+
+    Mapping mapping;
+
+    if (!IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible))
+    {
+        epiLogError("Failed to map DeviceMemory! The memory couldn't be mapped on non-host-visible DeviceMemory!");
+        return mapping;
+    }
+
+    if (!mapping.Init(m_Impl, size, offset))
+    {
+        epiLogError("Failed to map DeviceMemory! The mapping initialization has failed!");
+        return mapping;
+    }
+
+    return mapping;
 }
 
 EPI_NAMESPACE_END()

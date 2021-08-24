@@ -14,6 +14,8 @@ public:
     Impl& operator=(Impl&& rhs) = default;
     virtual ~Impl() = default;
 
+    virtual epiBool IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const = 0;
+
     virtual epiBool BindBuffer(const gfxBindBufferMemoryInfo& info) = 0;
     virtual epiBool BindImage(const gfxBindImageMemoryInfo& info) = 0;
 

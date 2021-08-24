@@ -432,9 +432,10 @@ public:
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(vertexBufferCapacity))
             {
+                epiSize_t cursor = 0;
                 for (const Vertex& v : m_Vertices)
                 {
-                    mapping.PushBack(v);
+                    cursor = mapping.PushBack(v, cursor);
                 }
             }
 
@@ -510,9 +511,10 @@ public:
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(indexBufferCapacity))
             {
+                epiSize_t cursor = 0;
                 for (const epiU32& v : m_Indices)
                 {
-                    mapping.PushBack(v);
+                    cursor = mapping.PushBack(v, cursor);
                 }
             }
 
@@ -878,7 +880,8 @@ void epiWXVulkanDemoTriangleCanvas::OnPaint(wxPaintEvent& event)
 
         if (gfxDeviceMemory::Mapping mapping = m_UniformDeviceMemories[frameIndex].Map(sizeof(ubo)))
         {
-            mapping.PushBack(ubo);
+            constexpr epiSize_t kCursor = 0;
+            mapping.PushBack(ubo, kCursor);
         }
     }
 

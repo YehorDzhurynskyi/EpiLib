@@ -20,6 +20,8 @@ public:
 
     epiBool Init(const gfxDeviceMemoryCreateInfo& info, const gfxPhysicalDeviceImplVK& physicalDeviceImpl);
 
+    epiBool IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const override;
+
     epiBool BindBuffer(const gfxBindBufferMemoryInfo& info) override;
     epiBool BindImage(const gfxBindImageMemoryInfo& info) override;
 
@@ -40,6 +42,7 @@ protected:
 
     epiSize_t m_AllocatedSize{0};
     epiS32 m_MemoryTypeIndex{-1};
+    gfxDeviceMemoryPropertyMask m_EnabledPropertyMask{};
 };
 
 EPI_NAMESPACE_END()

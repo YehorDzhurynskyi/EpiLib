@@ -55,8 +55,14 @@ epiBool gfxDeviceMemoryImplVK::Init(const gfxDeviceMemoryCreateInfo& info,
 
     m_AllocatedSize = allocInfo.allocationSize;
     m_MemoryTypeIndex = allocInfo.memoryTypeIndex;
+    m_EnabledPropertyMask = info.GetPropertyMask();
 
     return true;
+}
+
+epiBool gfxDeviceMemoryImplVK::IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const
+{
+    return (mask & m_EnabledPropertyMask) == mask;
 }
 
 epiBool gfxDeviceMemoryImplVK::BindBuffer(const gfxBindBufferMemoryInfo& info)

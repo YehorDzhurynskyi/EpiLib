@@ -240,8 +240,10 @@ public:
     class Mapping final
     {
     public:
-        Mapping(const std::shared_ptr<Impl>& impl, epiSize_t size, epiSize_t offset);
+        Mapping() = default;
         ~Mapping();
+
+        epiBool Init(const std::shared_ptr<Impl>& deviceMemory, epiSize_t size, epiSize_t offset);
 
         epiBool IsMapped() const;
         operator epiBool() const;
@@ -249,12 +251,11 @@ public:
         epiByte* Data();
 
         template<typename T>
-        void PushBack(const T& value, epiSize_t stride = sizeof(T));
+        epiSize_t PushBack(const T& value, epiSize_t cursor, epiSize_t stride = sizeof(T));
 
     protected:
-        std::shared_ptr<Impl> m_Impl{nullptr}; // TODO: weak_ptr ?
+        std::shared_ptr<Impl> m_DeviceMemoryImpl; // TODO: weak_ptr ?
         epiByte* m_Data{nullptr};
-        epiSize_t m_Cursor{0};
     };
 
 public:
@@ -262,6 +263,8 @@ public:
     explicit gfxDeviceMemory(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
+
+    epiBool IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const;
 
     epiBool BindBuffer(const gfxBindBufferMemoryInfo& info);
     epiBool BindImage(const gfxBindImageMemoryInfo& info);
@@ -273,14 +276,14 @@ protected:
 };
 
 template<typename T>
-void gfxDeviceMemory::Mapping::PushBack(const T& value, epiSize_t stride)
+epiSize_t gfxDeviceMemory::Mapping::PushBack(const T& value, epiSize_t cursor, epiSize_t stride)
 {
     static_assert(std::is_trivially_copyable_v<T>);
     epiAssert(stride >= sizeof(T));
 
-    memcpy(m_Data + m_Cursor, &value, stride);
+    memcpy(m_Data + cursor, &value, stride);
 
-    m_Cursor += stride;
+    return cursor + stride;
 }
 
 EPI_NAMESPACE_END()
