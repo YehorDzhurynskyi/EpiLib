@@ -31,6 +31,66 @@ gfxDeviceMemoryAllocationCreateInfo gfxDeviceMemoryAllocationCreateInfo::FromPro
     return info;
 }
 
+epiBool gfxDeviceMemoryAllocation::Mapping::Init(const std::shared_ptr<Impl>& deviceMemoryAllocationImpl)
+{
+    if (deviceMemoryAllocationImpl == nullptr)
+    {
+        epiLogError("Failed to initialize DeviceMemoryAllocation mapping! The provided DeviceMemoryAllocation has no implementation!");
+        return false;
+    }
+
+    m_DeviceMemoryAllocationImpl = deviceMemoryAllocationImpl;
+    m_Data = m_DeviceMemoryAllocationImpl->Map();
+
+    return true;
+}
+
+gfxDeviceMemoryAllocation::Mapping::Mapping(Mapping&& rhs)
+{
+    m_DeviceMemoryAllocationImpl = std::move(rhs.m_DeviceMemoryAllocationImpl);
+    m_Data = rhs.m_Data;
+
+    rhs.m_DeviceMemoryAllocationImpl.reset();
+    rhs.m_Data = nullptr;
+}
+
+gfxDeviceMemoryAllocation::Mapping& gfxDeviceMemoryAllocation::Mapping::operator=(Mapping&& rhs)
+{
+    if (this != &rhs)
+    {
+        m_DeviceMemoryAllocationImpl = std::move(rhs.m_DeviceMemoryAllocationImpl);
+        m_Data = rhs.m_Data;
+
+        rhs.m_DeviceMemoryAllocationImpl.reset();
+        rhs.m_Data = nullptr;
+    }
+
+    return *this;
+}
+
+gfxDeviceMemoryAllocation::Mapping::~Mapping()
+{
+    if (IsMapped())
+    {
+        m_DeviceMemoryAllocationImpl->Unmap();
+    }
+}
+
+epiBool gfxDeviceMemoryAllocation::Mapping::IsMapped() const
+{
+    return m_DeviceMemoryAllocationImpl != nullptr && m_Data != nullptr;
+}
+
+gfxDeviceMemoryAllocation::Mapping::operator epiBool() const
+{
+    return IsMapped();
+}
+
+epiByte* gfxDeviceMemoryAllocation::Mapping::Data()
+{
+    return m_Data;
+}
+
 gfxDeviceMemoryAllocation::gfxDeviceMemoryAllocation(const std::shared_ptr<Impl>& impl)
     : m_Impl{impl}
 {
@@ -39,6 +99,17 @@ gfxDeviceMemoryAllocation::gfxDeviceMemoryAllocation(const std::shared_ptr<Impl>
 epiBool gfxDeviceMemoryAllocation::HasImpl() const
 {
     return static_cast<epiBool>(m_Impl);
+}
+
+epiBool gfxDeviceMemoryAllocation::IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to query DeviceMemoryProperty status! Calling object has no implementation!");
+        return false;
+    }
+
+    return m_Impl->IsPropertyEnabled(mask);
 }
 
 epiBool gfxDeviceMemoryAllocation::BindBuffer(const gfxBuffer& buffer)
@@ -73,6 +144,43 @@ epiBool gfxDeviceMemoryAllocation::BindImage(const gfxImage& image)
     }
 
     return m_Impl->BindImage(image);
+}
+
+gfxDeviceMemoryAllocation::Mapping gfxDeviceMemoryAllocation::Map()
+{
+    // TODO: check whether the following memory is already mapped
+    // Mapping the same VkDeviceMemory block multiple times is illegal, but only
+    // one mapping at a time is allowed.This includes mapping disjoint regions.
+
+    // TODO: add warning message if Map is used with a non-coherent memory to call flush:
+    // - Use a memory heap that is host coherent, indicated with VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+    // - Call vkFlushMappedMemoryRanges after writing to the mapped memory, and call vkInvalidateMappedMemoryRanges before reading from the mapped memory
+    //
+    // Add `epiBool flush = true` parameter:
+    // call vkFlushMappedMemoryRanges if memory isn't coherent
+    // Regions of memory specified for flush/invalidate must be aligned to VkPhysicalDeviceLimits::nonCoherentAtomSize.
+    // This is automatically ensured by the library. In any memory type that is HOST_VISIBLE but not HOST_COHERENT,
+    // all allocations within blocks are aligned to this value, so their offsets are always multiply of nonCoherentAtomSize
+    // and two different allocations never share same "line" of this size.
+
+    Mapping mapping;
+
+    // TODO: implement flush/invalidate logic
+    epiAssert(IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostCoherent));
+
+    if (!IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible))
+    {
+        epiLogError("Failed to map DeviceMemory! The memory couldn't be mapped on non-host-visible DeviceMemory!");
+        return mapping;
+    }
+
+    if (!mapping.Init(m_Impl))
+    {
+        epiLogError("Failed to map DeviceMemory! The mapping initialization has failed!");
+        return mapping;
+    }
+
+    return mapping;
 }
 
 const gfxDeviceMemoryAllocator& gfxDeviceMemoryAllocation::GetAllocator_Callback() const

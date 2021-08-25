@@ -126,17 +126,58 @@ public:
     class Impl;
 
 public:
+    class Mapping final
+    {
+    public:
+        Mapping() = default;
+        Mapping(const Mapping& rhs) = delete;
+        Mapping& operator=(const Mapping& rhs) = delete;
+        Mapping(Mapping&& rhs);
+        Mapping& operator=(Mapping&& rhs);
+        ~Mapping();
+
+        epiBool Init(const std::shared_ptr<Impl>& deviceMemoryAllocationImpl);
+
+        epiBool IsMapped() const;
+        operator epiBool() const;
+
+        epiByte* Data();
+
+        template<typename T>
+        epiSize_t PushBack(const T& value, epiSize_t cursor, epiSize_t stride = sizeof(T));
+
+    protected:
+        std::shared_ptr<Impl> m_DeviceMemoryAllocationImpl; // TODO: weak_ptr ?
+        epiByte* m_Data{nullptr};
+    };
+
+public:
     gfxDeviceMemoryAllocation() = default;
     explicit gfxDeviceMemoryAllocation(const std::shared_ptr<Impl>& impl);
 
     epiBool HasImpl() const;
 
+    epiBool IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const;
+
     epiBool BindBuffer(const gfxBuffer& buffer);
     epiBool BindImage(const gfxImage& image);
+
+    Mapping Map();
 
 protected:
     std::shared_ptr<Impl> m_Impl;
 };
+
+template<typename T>
+epiSize_t gfxDeviceMemoryAllocation::Mapping::PushBack(const T& value, epiSize_t cursor, epiSize_t stride)
+{
+    static_assert(std::is_trivially_copyable_v<T>);
+    epiAssert(stride >= sizeof(T));
+
+    memcpy(m_Data + cursor, &value, stride);
+
+    return cursor + stride;
+}
 
 class gfxDeviceMemoryAllocationBuffer : public gfxDeviceMemoryAllocation
 {

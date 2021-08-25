@@ -16,8 +16,13 @@ public:
     Impl& operator=(Impl&& rhs) = default;
     virtual ~Impl() = default;
 
+    virtual epiBool IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const = 0;
+
     virtual epiBool BindBuffer(const gfxBuffer& buffer) = 0;
     virtual epiBool BindImage(const gfxImage& image) = 0;
+
+    virtual epiByte* Map() = 0;
+    virtual void Unmap() = 0;
 
     const gfxDeviceMemoryAllocator& GetAllocator() const;
 

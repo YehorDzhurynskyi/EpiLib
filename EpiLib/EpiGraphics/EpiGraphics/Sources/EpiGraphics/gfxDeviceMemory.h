@@ -241,9 +241,13 @@ public:
     {
     public:
         Mapping() = default;
+        Mapping(const Mapping& rhs) = delete;
+        Mapping& operator=(const Mapping& rhs) = delete;
+        Mapping(Mapping&& rhs);
+        Mapping& operator=(Mapping&& rhs);
         ~Mapping();
 
-        epiBool Init(const std::shared_ptr<Impl>& deviceMemory, epiSize_t size, epiSize_t offset);
+        epiBool Init(const std::shared_ptr<Impl>& deviceMemoryImpl, epiSize_t size, epiSize_t offset);
 
         epiBool IsMapped() const;
         operator epiBool() const;

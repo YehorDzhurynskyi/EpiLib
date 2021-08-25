@@ -247,6 +247,22 @@ epiBool gfxDeviceMemoryAllocationImplVK::InitImageAllocated(const gfxDeviceMemor
     return BindImage(image);
 }
 
+epiBool gfxDeviceMemoryAllocationImplVK::IsPropertyEnabled(gfxDeviceMemoryPropertyMask mask) const
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+    const std::shared_ptr<gfxPhysicalDeviceImplVK> physicalDeviceImpl = ImplOf<gfxPhysicalDeviceImplVK>(m_Allocator.GetDevice().GetPhysicalDevice());
+
+    VmaAllocationInfo info{};
+    vmaGetAllocationInfo(allocatorImpl->GetVmaAllocator(), m_VmaAllocation, &info);
+
+    VkMemoryPropertyFlags memFlags;
+    vmaGetMemoryTypeProperties(allocatorImpl->GetVmaAllocator(), info.memoryType, &memFlags);
+
+    const VkMemoryPropertyFlags maskVk = gfxDeviceMemoryPropertyMaskTo(mask);
+
+    return (memFlags & maskVk) == maskVk;
+}
+
 epiBool gfxDeviceMemoryAllocationImplVK::BindBuffer(const gfxBuffer& buffer)
 {
     const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
@@ -273,6 +289,27 @@ epiBool gfxDeviceMemoryAllocationImplVK::BindImage(const gfxImage& image)
     }
 
     return true;
+}
+
+epiByte* gfxDeviceMemoryAllocationImplVK::Map()
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+
+    void* mapped = nullptr;
+    if (const VkResult result = vmaMapMemory(allocatorImpl->GetVmaAllocator(), m_VmaAllocation, &mapped); result != VK_SUCCESS)
+    {
+        gfxLogVkResultEx(result, "Failed to call vmaMapMemory!");
+        return nullptr;
+    }
+
+    return reinterpret_cast<epiByte*>(mapped);
+}
+
+void gfxDeviceMemoryAllocationImplVK::Unmap()
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+
+    vmaUnmapMemory(allocatorImpl->GetVmaAllocator(), m_VmaAllocation);
 }
 
 gfxDeviceMemoryAllocatorImplVK::gfxDeviceMemoryAllocatorImplVK(const gfxDevice& device)

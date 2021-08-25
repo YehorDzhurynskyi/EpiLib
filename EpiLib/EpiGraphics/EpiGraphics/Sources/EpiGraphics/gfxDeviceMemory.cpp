@@ -39,6 +39,29 @@ epiBool gfxDeviceMemory::Mapping::Init(const std::shared_ptr<Impl>& deviceMemory
     return true;
 }
 
+gfxDeviceMemory::Mapping::Mapping(Mapping&& rhs)
+{
+    m_DeviceMemoryImpl = std::move(rhs.m_DeviceMemoryImpl);
+    m_Data = rhs.m_Data;
+
+    rhs.m_DeviceMemoryImpl.reset();
+    rhs.m_Data = nullptr;
+}
+
+gfxDeviceMemory::Mapping& gfxDeviceMemory::Mapping::operator=(Mapping&& rhs)
+{
+    if (this != &rhs)
+    {
+        m_DeviceMemoryImpl = std::move(rhs.m_DeviceMemoryImpl);
+        m_Data = rhs.m_Data;
+
+        rhs.m_DeviceMemoryImpl.reset();
+        rhs.m_Data = nullptr;
+    }
+
+    return *this;
+}
+
 gfxDeviceMemory::Mapping::~Mapping()
 {
     if (IsMapped())
@@ -119,7 +142,6 @@ epiBool gfxDeviceMemory::BindImage(const gfxBindImageMemoryInfo& info)
 
 gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
 {
-    
     // TODO: check whether the following memory is already mapped
     // Mapping the same VkDeviceMemory block multiple times is illegal, but only
     // one mapping at a time is allowed.This includes mapping disjoint regions.
@@ -136,6 +158,9 @@ gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
     // and two different allocations never share same "line" of this size.
 
     Mapping mapping;
+
+    // TODO: implement flush/invalidate logic
+    epiAssert(IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostCoherent));
 
     if (!IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible))
     {
