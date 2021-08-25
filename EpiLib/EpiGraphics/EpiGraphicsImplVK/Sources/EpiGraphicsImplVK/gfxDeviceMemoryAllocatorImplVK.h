@@ -34,7 +34,10 @@ public:
     epiBool BindBuffer(const gfxBuffer& buffer) override;
     epiBool BindImage(const gfxImage& image) override;
 
-    epiByte* Map() override;
+    epiBool IsMapped() const override;
+    epiByte* Mapped() override;
+
+    void Map() override;
     void Unmap() override;
 
 protected:

@@ -63,4 +63,8 @@ class gfxDeviceMemoryCreateInfo
 
 class gfxDeviceMemory
 {
+    [Virtual, ReadOnly]
+    {
+        epiBool IsMappable;
+    }
 };

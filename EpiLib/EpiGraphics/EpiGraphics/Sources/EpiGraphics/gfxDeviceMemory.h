@@ -228,8 +228,12 @@ public:
 
     enum gfxDeviceMemory_PIDs
     {
-        PID_COUNT = 0
+        PID_IsMappable = 0x19fbf83b,
+        PID_COUNT = 1
     };
+
+protected:
+    epiBool GetIsMappable_Callback() const;
 
 EPI_GENREGION_END(gfxDeviceMemory)
 
@@ -252,14 +256,14 @@ public:
         epiBool IsMapped() const;
         operator epiBool() const;
 
-        epiByte* Data();
+        epiByte* Mapped();
 
         template<typename T>
         epiSize_t PushBack(const T& value, epiSize_t cursor, epiSize_t stride = sizeof(T));
 
     protected:
         std::shared_ptr<Impl> m_DeviceMemoryImpl; // TODO: weak_ptr ?
-        epiByte* m_Data{nullptr};
+        epiByte* m_Mapped{nullptr};
     };
 
 public:
@@ -283,9 +287,10 @@ template<typename T>
 epiSize_t gfxDeviceMemory::Mapping::PushBack(const T& value, epiSize_t cursor, epiSize_t stride)
 {
     static_assert(std::is_trivially_copyable_v<T>);
+    epiAssert(IsMapped());
     epiAssert(stride >= sizeof(T));
 
-    memcpy(m_Data + cursor, &value, stride);
+    memcpy(Mapped() + cursor, &value, stride);
 
     return cursor + stride;
 }

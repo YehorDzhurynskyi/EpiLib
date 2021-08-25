@@ -291,7 +291,27 @@ epiBool gfxDeviceMemoryAllocationImplVK::BindImage(const gfxImage& image)
     return true;
 }
 
-epiByte* gfxDeviceMemoryAllocationImplVK::Map()
+epiBool gfxDeviceMemoryAllocationImplVK::IsMapped() const
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+
+    VmaAllocationInfo info{};
+    vmaGetAllocationInfo(allocatorImpl->GetVmaAllocator(), m_VmaAllocation, &info);
+
+    return info.pMappedData != nullptr;
+}
+
+epiByte* gfxDeviceMemoryAllocationImplVK::Mapped()
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+
+    VmaAllocationInfo info{};
+    vmaGetAllocationInfo(allocatorImpl->GetVmaAllocator(), m_VmaAllocation, &info);
+
+    return reinterpret_cast<epiByte*>(info.pMappedData);
+}
+
+void gfxDeviceMemoryAllocationImplVK::Map()
 {
     const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
 
@@ -299,10 +319,7 @@ epiByte* gfxDeviceMemoryAllocationImplVK::Map()
     if (const VkResult result = vmaMapMemory(allocatorImpl->GetVmaAllocator(), m_VmaAllocation, &mapped); result != VK_SUCCESS)
     {
         gfxLogVkResultEx(result, "Failed to call vmaMapMemory!");
-        return nullptr;
     }
-
-    return reinterpret_cast<epiByte*>(mapped);
 }
 
 void gfxDeviceMemoryAllocationImplVK::Unmap()

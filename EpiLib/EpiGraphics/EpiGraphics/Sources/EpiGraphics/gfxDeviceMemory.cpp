@@ -34,7 +34,7 @@ epiBool gfxDeviceMemory::Mapping::Init(const std::shared_ptr<Impl>& deviceMemory
     }
 
     m_DeviceMemoryImpl = deviceMemoryImpl;
-    m_Data = m_DeviceMemoryImpl->Map(size, offset);
+    m_Mapped = m_DeviceMemoryImpl->Map(size, offset);
 
     return true;
 }
@@ -42,10 +42,10 @@ epiBool gfxDeviceMemory::Mapping::Init(const std::shared_ptr<Impl>& deviceMemory
 gfxDeviceMemory::Mapping::Mapping(Mapping&& rhs)
 {
     m_DeviceMemoryImpl = std::move(rhs.m_DeviceMemoryImpl);
-    m_Data = rhs.m_Data;
+    m_Mapped = rhs.m_Mapped;
 
     rhs.m_DeviceMemoryImpl.reset();
-    rhs.m_Data = nullptr;
+    rhs.m_Mapped = nullptr;
 }
 
 gfxDeviceMemory::Mapping& gfxDeviceMemory::Mapping::operator=(Mapping&& rhs)
@@ -53,10 +53,10 @@ gfxDeviceMemory::Mapping& gfxDeviceMemory::Mapping::operator=(Mapping&& rhs)
     if (this != &rhs)
     {
         m_DeviceMemoryImpl = std::move(rhs.m_DeviceMemoryImpl);
-        m_Data = rhs.m_Data;
+        m_Mapped = rhs.m_Mapped;
 
         rhs.m_DeviceMemoryImpl.reset();
-        rhs.m_Data = nullptr;
+        rhs.m_Mapped = nullptr;
     }
 
     return *this;
@@ -72,7 +72,7 @@ gfxDeviceMemory::Mapping::~Mapping()
 
 epiBool gfxDeviceMemory::Mapping::IsMapped() const
 {
-    return m_DeviceMemoryImpl != nullptr && m_Data != nullptr;
+    return m_DeviceMemoryImpl != nullptr && m_Mapped != nullptr;
 }
 
 gfxDeviceMemory::Mapping::operator epiBool() const
@@ -80,9 +80,9 @@ gfxDeviceMemory::Mapping::operator epiBool() const
     return IsMapped();
 }
 
-epiByte* gfxDeviceMemory::Mapping::Data()
+epiByte* gfxDeviceMemory::Mapping::Mapped()
 {
-    return m_Data;
+    return m_Mapped;
 }
 
 gfxDeviceMemory::gfxDeviceMemory(const std::shared_ptr<Impl>& impl)
@@ -162,9 +162,9 @@ gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
     // TODO: implement flush/invalidate logic
     epiAssert(IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostCoherent));
 
-    if (!IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible))
+    if (!GetIsMappable())
     {
-        epiLogError("Failed to map DeviceMemory! The memory couldn't be mapped on non-host-visible DeviceMemory!");
+        epiLogError("Failed to map DeviceMemory! The memory isn't mappable!");
         return mapping;
     }
 
@@ -175,6 +175,11 @@ gfxDeviceMemory::Mapping gfxDeviceMemory::Map(epiSize_t size, epiSize_t offset)
     }
 
     return mapping;
+}
+
+epiBool gfxDeviceMemory::GetIsMappable_Callback() const
+{
+    return IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible);
 }
 
 EPI_NAMESPACE_END()

@@ -566,7 +566,7 @@ public:
 
             if (gfxDeviceMemory::Mapping mapping = stagingDeviceMemory->Map(imageRGBA.GetBytes()))
             {
-                memcpy(mapping.Data(), imageRGBA.GetData().data(), imageRGBA.GetBytes());
+                memcpy(mapping.Mapped(), imageRGBA.GetData().data(), imageRGBA.GetBytes());
             }
 
             gfxImageCreateInfo imageCreateInfo{};

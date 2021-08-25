@@ -40,7 +40,7 @@ epiBool gfxDeviceMemoryAllocation::Mapping::Init(const std::shared_ptr<Impl>& de
     }
 
     m_DeviceMemoryAllocationImpl = deviceMemoryAllocationImpl;
-    m_Data = m_DeviceMemoryAllocationImpl->Map();
+    m_DeviceMemoryAllocationImpl->Map();
 
     return true;
 }
@@ -48,10 +48,8 @@ epiBool gfxDeviceMemoryAllocation::Mapping::Init(const std::shared_ptr<Impl>& de
 gfxDeviceMemoryAllocation::Mapping::Mapping(Mapping&& rhs)
 {
     m_DeviceMemoryAllocationImpl = std::move(rhs.m_DeviceMemoryAllocationImpl);
-    m_Data = rhs.m_Data;
 
     rhs.m_DeviceMemoryAllocationImpl.reset();
-    rhs.m_Data = nullptr;
 }
 
 gfxDeviceMemoryAllocation::Mapping& gfxDeviceMemoryAllocation::Mapping::operator=(Mapping&& rhs)
@@ -59,10 +57,8 @@ gfxDeviceMemoryAllocation::Mapping& gfxDeviceMemoryAllocation::Mapping::operator
     if (this != &rhs)
     {
         m_DeviceMemoryAllocationImpl = std::move(rhs.m_DeviceMemoryAllocationImpl);
-        m_Data = rhs.m_Data;
 
         rhs.m_DeviceMemoryAllocationImpl.reset();
-        rhs.m_Data = nullptr;
     }
 
     return *this;
@@ -78,7 +74,7 @@ gfxDeviceMemoryAllocation::Mapping::~Mapping()
 
 epiBool gfxDeviceMemoryAllocation::Mapping::IsMapped() const
 {
-    return m_DeviceMemoryAllocationImpl != nullptr && m_Data != nullptr;
+    return m_DeviceMemoryAllocationImpl != nullptr && m_DeviceMemoryAllocationImpl->IsMapped();
 }
 
 gfxDeviceMemoryAllocation::Mapping::operator epiBool() const
@@ -86,9 +82,15 @@ gfxDeviceMemoryAllocation::Mapping::operator epiBool() const
     return IsMapped();
 }
 
-epiByte* gfxDeviceMemoryAllocation::Mapping::Data()
+epiByte* gfxDeviceMemoryAllocation::Mapping::Mapped()
 {
-    return m_Data;
+    if (m_DeviceMemoryAllocationImpl == nullptr)
+    {
+        epiLogError("Failed to retrieve mapped pointer! Calling object has no implementation!");
+        return nullptr;
+    }
+
+    return m_DeviceMemoryAllocationImpl->Mapped();
 }
 
 gfxDeviceMemoryAllocation::gfxDeviceMemoryAllocation(const std::shared_ptr<Impl>& impl)
@@ -168,9 +170,9 @@ gfxDeviceMemoryAllocation::Mapping gfxDeviceMemoryAllocation::Map()
     // TODO: implement flush/invalidate logic
     epiAssert(IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostCoherent));
 
-    if (!IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible))
+    if (!GetIsMappable())
     {
-        epiLogError("Failed to map DeviceMemory! The memory couldn't be mapped on non-host-visible DeviceMemory!");
+        epiLogError("Failed to map DeviceMemory! The memory isn't mappable!");
         return mapping;
     }
 
@@ -188,6 +190,11 @@ const gfxDeviceMemoryAllocator& gfxDeviceMemoryAllocation::GetAllocator_Callback
     epiAssert(HasImpl());
 
     return m_Impl->GetAllocator();
+}
+
+epiBool gfxDeviceMemoryAllocation::GetIsMappable_Callback() const
+{
+    return IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible);
 }
 
 gfxDeviceMemoryAllocationBuffer::gfxDeviceMemoryAllocationBuffer(const std::shared_ptr<Impl>& impl, gfxBuffer&& buffer)

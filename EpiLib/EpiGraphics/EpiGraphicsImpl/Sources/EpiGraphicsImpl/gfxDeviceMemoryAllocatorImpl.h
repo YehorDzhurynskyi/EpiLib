@@ -21,7 +21,10 @@ public:
     virtual epiBool BindBuffer(const gfxBuffer& buffer) = 0;
     virtual epiBool BindImage(const gfxImage& image) = 0;
 
-    virtual epiByte* Map() = 0;
+    virtual epiBool IsMapped() const = 0;
+    virtual epiByte* Mapped() = 0;
+
+    virtual void Map() = 0;
     virtual void Unmap() = 0;
 
     const gfxDeviceMemoryAllocator& GetAllocator() const;

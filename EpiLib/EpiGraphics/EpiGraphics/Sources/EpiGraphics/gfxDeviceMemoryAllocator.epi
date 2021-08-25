@@ -30,6 +30,8 @@ class gfxDeviceMemoryAllocation
     [Virtual, ReadOnly]
     {
         gfxDeviceMemoryAllocator Allocator;
+
+        epiBool IsMappable;
     }
 };
 
