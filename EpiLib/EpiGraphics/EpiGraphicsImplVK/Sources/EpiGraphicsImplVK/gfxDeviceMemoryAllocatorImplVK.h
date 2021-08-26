@@ -40,6 +40,9 @@ public:
     void Map() override;
     void Unmap() override;
 
+    epiBool Invalidate(epiSize_t offset, epiSize_t size) override;
+    epiBool Flush(epiSize_t offset, epiSize_t size) override;
+
 protected:
     VmaAllocation_T* m_VmaAllocation{nullptr};
 };

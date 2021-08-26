@@ -27,6 +27,9 @@ public:
     virtual void Map() = 0;
     virtual void Unmap() = 0;
 
+    virtual epiBool Invalidate(epiSize_t offset, epiSize_t size) = 0;
+    virtual epiBool Flush(epiSize_t offset, epiSize_t size) = 0;
+
     const gfxDeviceMemoryAllocator& GetAllocator() const;
 
 protected:

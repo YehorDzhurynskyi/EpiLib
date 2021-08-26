@@ -185,6 +185,40 @@ gfxDeviceMemoryAllocation::Mapping gfxDeviceMemoryAllocation::Map()
     return mapping;
 }
 
+epiBool gfxDeviceMemoryAllocation::Invalidate(epiSize_t offset, epiSize_t size)
+{
+    if (!IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible))
+    {
+        epiLogError("Failed to invalidate DeviceMemoryAllocation! Invalidating on non-host-visible DeviceMemoryAllocation is pointless!");
+        return false;
+    }
+
+    if (IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostCoherent))
+    {
+        epiLogDebug("Invalidating early return since DeviceMemoryAllocation is host-coherent");
+        return true;
+    }
+
+    return m_Impl->Invalidate(offset, size);
+}
+
+epiBool gfxDeviceMemoryAllocation::Flush(epiSize_t offset, epiSize_t size)
+{
+    if (!IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible))
+    {
+        epiLogError("Failed to flush DeviceMemoryAllocation! Flushing on non-host-visible DeviceMemoryAllocation is pointless!");
+        return false;
+    }
+
+    if (IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostCoherent))
+    {
+        epiLogDebug("Flushing early return since DeviceMemoryAllocation is host-coherent");
+        return true;
+    }
+
+    return m_Impl->Flush(offset, size);
+}
+
 const gfxDeviceMemoryAllocator& gfxDeviceMemoryAllocation::GetAllocator_Callback() const
 {
     epiAssert(HasImpl());
@@ -192,9 +226,20 @@ const gfxDeviceMemoryAllocator& gfxDeviceMemoryAllocation::GetAllocator_Callback
     return m_Impl->GetAllocator();
 }
 
+epiBool gfxDeviceMemoryAllocation::GetIsMapped_Callback() const
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to query whether DeviceMemoryAllocation is mappable! Calling object has no implementation!");
+        return false;
+    }
+
+    return m_Impl->IsMapped();
+}
+
 epiBool gfxDeviceMemoryAllocation::GetIsMappable_Callback() const
 {
-    return IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible);
+    return GetIsMapped() || IsPropertyEnabled(gfxDeviceMemoryPropertyMask_HostVisible);
 }
 
 gfxDeviceMemoryAllocationBuffer::gfxDeviceMemoryAllocationBuffer(const std::shared_ptr<Impl>& impl, gfxBuffer&& buffer)

@@ -329,6 +329,38 @@ void gfxDeviceMemoryAllocationImplVK::Unmap()
     vmaUnmapMemory(allocatorImpl->GetVmaAllocator(), m_VmaAllocation);
 }
 
+epiBool gfxDeviceMemoryAllocationImplVK::Invalidate(epiSize_t offset, epiSize_t size)
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+
+    if (const VkResult result = vmaInvalidateAllocation(allocatorImpl->GetVmaAllocator(),
+                                                        m_VmaAllocation,
+                                                        offset,
+                                                        size == 0 ? VK_WHOLE_SIZE : size); result != VK_SUCCESS)
+    {
+        gfxLogVkResultEx(result, "Failed to call vmaInvalidateAllocation!");
+        return false;
+    }
+
+    return true;
+}
+
+epiBool gfxDeviceMemoryAllocationImplVK::Flush(epiSize_t offset, epiSize_t size)
+{
+    const std::shared_ptr<gfxDeviceMemoryAllocatorImplVK> allocatorImpl = ImplOf<gfxDeviceMemoryAllocatorImplVK>(m_Allocator);
+
+    if (const VkResult result = vmaFlushAllocation(allocatorImpl->GetVmaAllocator(),
+                                                   m_VmaAllocation,
+                                                   offset,
+                                                   size == 0 ? VK_WHOLE_SIZE : size); result != VK_SUCCESS)
+    {
+        gfxLogVkResultEx(result, "Failed to call vmaFlushAllocation!");
+        return false;
+    }
+
+    return true;
+}
+
 gfxDeviceMemoryAllocatorImplVK::gfxDeviceMemoryAllocatorImplVK(const gfxDevice& device)
     : gfxDeviceMemoryAllocator::Impl{device}
 {

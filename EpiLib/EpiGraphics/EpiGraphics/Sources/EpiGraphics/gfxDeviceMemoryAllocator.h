@@ -114,12 +114,14 @@ public:
     enum gfxDeviceMemoryAllocation_PIDs
     {
         PID_Allocator = 0x4f8e170f,
+        PID_IsMapped = 0xf47f7939,
         PID_IsMappable = 0x19fbf83b,
-        PID_COUNT = 2
+        PID_COUNT = 3
     };
 
 protected:
     const gfxDeviceMemoryAllocator& GetAllocator_Callback() const;
+    epiBool GetIsMapped_Callback() const;
     epiBool GetIsMappable_Callback() const;
 
 EPI_GENREGION_END(gfxDeviceMemoryAllocation)
@@ -164,6 +166,9 @@ public:
     epiBool BindImage(const gfxImage& image);
 
     Mapping Map();
+
+    epiBool Invalidate(epiSize_t offset, epiSize_t size = 0);
+    epiBool Flush(epiSize_t offset, epiSize_t size = 0);
 
 protected:
     std::shared_ptr<Impl> m_Impl;

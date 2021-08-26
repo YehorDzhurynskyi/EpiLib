@@ -31,6 +31,7 @@ class gfxDeviceMemoryAllocation
     {
         gfxDeviceMemoryAllocator Allocator;
 
+        epiBool IsMapped;
         epiBool IsMappable;
     }
 };
