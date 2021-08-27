@@ -484,6 +484,74 @@ std::optional<gfxDeviceMemoryAllocation> gfxDeviceMemoryAllocatorImplVK::Allocat
     return gfxDeviceMemoryAllocation(impl);
 }
 
+void gfxDeviceMemoryAllocatorImplVK::SetCurrentFrameIndex(epiU32 value)
+{
+    vmaSetCurrentFrameIndex(m_VmaAllocator, value);
+}
+
+std::optional<gfxDeviceMemoryAllocatorBudget> gfxDeviceMemoryAllocatorImplVK::QueryBudget() const
+{
+    VmaBudget budgetVma{};
+
+    vmaGetBudget(m_VmaAllocator, &budgetVma);
+
+    gfxDeviceMemoryAllocatorBudget budget{};
+    budget.SetBlockBytes(budgetVma.blockBytes);
+    budget.SetAllocationBytes(budgetVma.allocationBytes);
+    budget.SetUsageBytes(budgetVma.usage);
+    budget.SetBudgetBytes(budgetVma.budget);
+
+    return budget;
+}
+
+std::optional<gfxDeviceMemoryAllocatorStats> gfxDeviceMemoryAllocatorImplVK::QueryStats() const
+{
+    VmaStats statsVma{};
+
+    vmaCalculateStats(m_VmaAllocator, &statsVma);
+
+    auto convert = [](const VmaStatInfo& infoVma)
+    {
+        gfxDeviceMemoryAllocatorStatInfo info{};
+        info.SetBlockCount(infoVma.blockCount);
+        info.SetAllocationCount(infoVma.allocationCount);
+        info.SetUnusedRangeCount(infoVma.unusedRangeCount);
+        info.SetUsedBytes(infoVma.usedBytes);
+        info.SetUnusedBytes(infoVma.unusedBytes);
+        info.SetAllocationSizeMin(infoVma.allocationSizeMin);
+        info.SetAllocationSizeAvg(infoVma.allocationSizeAvg);
+        info.SetAllocationSizeMax(infoVma.allocationSizeMax);
+        info.SetUnusedRangeSizeMin(infoVma.unusedRangeSizeMin);
+        info.SetUnusedRangeSizeAvg(infoVma.unusedRangeSizeAvg);
+        info.SetUnusedRangeSizeMax(infoVma.unusedRangeSizeMax);
+
+        return info;
+    };
+
+    gfxDeviceMemoryAllocatorStats stats{};
+    stats.SetTotal(convert(statsVma.total));
+
+    stats.GetMemoryTypes().Reserve(VK_MAX_MEMORY_TYPES);
+    std::transform(statsVma.memoryType,
+                   statsVma.memoryType + VK_MAX_MEMORY_TYPES,
+                   std::back_inserter(stats.GetMemoryTypes()),
+                   [&convert](const VmaStatInfo& infoVma)
+    {
+        return convert(infoVma);
+    });
+
+    stats.GetMemoryHeaps().Reserve(VK_MAX_MEMORY_HEAPS);
+    std::transform(statsVma.memoryHeap,
+                   statsVma.memoryHeap + VK_MAX_MEMORY_HEAPS,
+                   std::back_inserter(stats.GetMemoryHeaps()),
+                   [&convert](const VmaStatInfo& infoVma)
+    {
+        return convert(infoVma);
+    });
+
+    return stats;
+}
+
 VmaAllocator gfxDeviceMemoryAllocatorImplVK::GetVmaAllocator() const
 {
     return m_VmaAllocator;

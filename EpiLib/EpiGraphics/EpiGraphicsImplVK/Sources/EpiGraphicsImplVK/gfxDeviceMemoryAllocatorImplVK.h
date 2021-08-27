@@ -71,6 +71,11 @@ public:
     std::optional<gfxDeviceMemoryAllocation> AllocateImage(const gfxDeviceMemoryAllocationCreateInfo& info,
                                                            const gfxImage& image) override;
 
+    void SetCurrentFrameIndex(epiU32 value) override;
+
+    std::optional<gfxDeviceMemoryAllocatorBudget> QueryBudget() const override;
+    std::optional<gfxDeviceMemoryAllocatorStats> QueryStats() const override;
+
     VmaAllocator_T* GetVmaAllocator() const;
 
 protected:

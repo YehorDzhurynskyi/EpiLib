@@ -48,6 +48,36 @@ class gfxDeviceMemoryAllocationImage : gfxDeviceMemoryAllocation
     gfxImage Image;
 };
 
+class gfxDeviceMemoryAllocatorBudget
+{
+    epiSize_t BlockBytes;
+    epiSize_t AllocationBytes;
+    epiSize_t UsageBytes;
+    epiSize_t BudgetBytes;
+};
+
+class gfxDeviceMemoryAllocatorStatInfo
+{
+    epiU32 BlockCount;
+    epiU32 AllocationCount;
+    epiU32 UnusedRangeCount;
+    epiSize_t UsedBytes;
+    epiSize_t UnusedBytes;
+    epiSize_t AllocationSizeMin;
+    epiSize_t AllocationSizeAvg;
+    epiSize_t AllocationSizeMax;
+    epiSize_t UnusedRangeSizeMin;
+    epiSize_t UnusedRangeSizeAvg;
+    epiSize_t UnusedRangeSizeMax;
+};
+
+class gfxDeviceMemoryAllocatorStats
+{
+    epiArray<gfxDeviceMemoryAllocatorStatInfo> MemoryTypes;
+    epiArray<gfxDeviceMemoryAllocatorStatInfo> MemoryHeaps;
+    gfxDeviceMemoryAllocatorStatInfo Total;
+};
+
 class gfxDeviceMemoryAllocatorCreateInfo
 {
     gfxDeviceMemoryAllocatorCreateMask CreateMask;
@@ -57,8 +87,12 @@ class gfxDeviceMemoryAllocatorCreateInfo
 
 class gfxDeviceMemoryAllocator
 {
-    [Virtual, ReadOnly]
+    [Virtual]
     {
+        [ReadOnly]
         gfxDevice Device;
+
+        [WriteOnly]
+        epiU32 CurrentFrameIndex;
     }
 };

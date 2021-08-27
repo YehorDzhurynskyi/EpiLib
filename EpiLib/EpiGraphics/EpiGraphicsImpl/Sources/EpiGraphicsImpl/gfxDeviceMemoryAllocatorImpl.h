@@ -61,6 +61,11 @@ public:
     virtual std::optional<gfxDeviceMemoryAllocation> AllocateImage(const gfxDeviceMemoryAllocationCreateInfo& info,
                                                                    const gfxImage& image) = 0;
 
+    virtual void SetCurrentFrameIndex(epiU32 value) = 0;
+
+    virtual std::optional<gfxDeviceMemoryAllocatorBudget> QueryBudget() const = 0;
+    virtual std::optional<gfxDeviceMemoryAllocatorStats> QueryStats() const = 0;
+
     const gfxDevice& GetDevice() const;
 
 protected:

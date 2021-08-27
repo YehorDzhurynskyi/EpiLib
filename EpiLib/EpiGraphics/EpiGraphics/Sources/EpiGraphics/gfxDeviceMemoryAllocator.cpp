@@ -6,6 +6,8 @@ EPI_GENREGION_END(include)
 #include "EpiGraphicsImpl/gfxDeviceMemoryAllocatorImpl.h"
 
 #include "EpiGraphics/gfxDevice.h"
+#include "EpiGraphics/gfxPhysicalDevice.h"
+#include "EpiGraphics/gfxInstance.h"
 
 EPI_NAMESPACE_BEGIN()
 
@@ -324,9 +326,54 @@ std::optional<gfxDeviceMemoryAllocation> gfxDeviceMemoryAllocator::AllocateImage
     return m_Impl->AllocateImage(info, image);
 }
 
+std::optional<gfxDeviceMemoryAllocatorBudget> gfxDeviceMemoryAllocator::QueryBudget() const
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to query gfxDeviceMemoryAllocatorBudget! Calling object has no implementation!");
+        return std::nullopt;
+    }
+
+    if (!GetDevice().IsExtensionEnabled(gfxPhysicalDeviceExtension::MemoryBudget))
+    {
+        epiLogError("Failed to query gfxDeviceMemoryAllocatorBudget! `MemoryBudget` PhysicalDevice extension isn't enabled!");
+        return std::nullopt;
+    }
+
+    if (!GetDevice().GetPhysicalDevice().GetInstance().IsExtensionEnabled(gfxInstanceExtension::GetPhysicalDeviceProperties2))
+    {
+        epiLogError("Failed to query gfxDeviceMemoryAllocatorBudget! `GetPhysicalDeviceProperties2` Instance extension isn't enabled!");
+        return std::nullopt;
+    }
+
+    return m_Impl->QueryBudget();
+}
+
+std::optional<gfxDeviceMemoryAllocatorStats> gfxDeviceMemoryAllocator::QueryStats() const
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to query gfxDeviceMemoryAllocatorStats! Calling object has no implementation!");
+        return std::nullopt;
+    }
+
+    return m_Impl->QueryStats();
+}
+
 const gfxDevice& gfxDeviceMemoryAllocator::GetDevice_Callback() const
 {
     return m_Impl->GetDevice();
+}
+
+void gfxDeviceMemoryAllocator::SetCurrentFrameIndex_Callback(epiU32 value)
+{
+    if (!HasImpl())
+    {
+        epiLogError("Failed to set current frame index! Calling object has no implementation!");
+        return;
+    }
+
+    m_Impl->SetCurrentFrameIndex(value);
 }
 
 EPI_NAMESPACE_END()

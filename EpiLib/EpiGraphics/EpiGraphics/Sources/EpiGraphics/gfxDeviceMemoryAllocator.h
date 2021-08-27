@@ -236,6 +236,99 @@ public:
     gfxDeviceMemoryAllocationImage(const std::shared_ptr<Impl>& impl, gfxImage&& image);
 };
 
+class gfxDeviceMemoryAllocatorBudget : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocatorBudget)
+
+EPI_GENHIDDEN_gfxDeviceMemoryAllocatorBudget()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xef47dd8c};
+
+    enum gfxDeviceMemoryAllocatorBudget_PIDs
+    {
+        PID_BlockBytes = 0xa44e4d7a,
+        PID_AllocationBytes = 0xa0f65265,
+        PID_UsageBytes = 0xc98a0d1a,
+        PID_BudgetBytes = 0xd1259156,
+        PID_COUNT = 4
+    };
+
+protected:
+    epiSize_t m_BlockBytes{0};
+    epiSize_t m_AllocationBytes{0};
+    epiSize_t m_UsageBytes{0};
+    epiSize_t m_BudgetBytes{0};
+
+EPI_GENREGION_END(gfxDeviceMemoryAllocatorBudget)
+};
+
+class gfxDeviceMemoryAllocatorStatInfo : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocatorStatInfo)
+
+EPI_GENHIDDEN_gfxDeviceMemoryAllocatorStatInfo()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0x5a9944be};
+
+    enum gfxDeviceMemoryAllocatorStatInfo_PIDs
+    {
+        PID_BlockCount = 0x900e4ad6,
+        PID_AllocationCount = 0x94b655c9,
+        PID_UnusedRangeCount = 0x6f723193,
+        PID_UsedBytes = 0x82333d,
+        PID_UnusedBytes = 0xc93a5179,
+        PID_AllocationSizeMin = 0x91b96298,
+        PID_AllocationSizeAvg = 0x2c252dc6,
+        PID_AllocationSizeMax = 0xadb45dc1,
+        PID_UnusedRangeSizeMin = 0x9b3289c3,
+        PID_UnusedRangeSizeAvg = 0x26aec69d,
+        PID_UnusedRangeSizeMax = 0xa73fb69a,
+        PID_COUNT = 11
+    };
+
+protected:
+    epiU32 m_BlockCount{0};
+    epiU32 m_AllocationCount{0};
+    epiU32 m_UnusedRangeCount{0};
+    epiSize_t m_UsedBytes{0};
+    epiSize_t m_UnusedBytes{0};
+    epiSize_t m_AllocationSizeMin{0};
+    epiSize_t m_AllocationSizeAvg{0};
+    epiSize_t m_AllocationSizeMax{0};
+    epiSize_t m_UnusedRangeSizeMin{0};
+    epiSize_t m_UnusedRangeSizeAvg{0};
+    epiSize_t m_UnusedRangeSizeMax{0};
+
+EPI_GENREGION_END(gfxDeviceMemoryAllocatorStatInfo)
+};
+
+class gfxDeviceMemoryAllocatorStats : public Object
+{
+EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocatorStats)
+
+EPI_GENHIDDEN_gfxDeviceMemoryAllocatorStats()
+
+public:
+    constexpr static epiMetaTypeID TypeID{0xeb6b396e};
+
+    enum gfxDeviceMemoryAllocatorStats_PIDs
+    {
+        PID_MemoryTypes = 0xec7b32f6,
+        PID_MemoryHeaps = 0x79f58f01,
+        PID_Total = 0x3eece5a,
+        PID_COUNT = 3
+    };
+
+protected:
+    epiArray<gfxDeviceMemoryAllocatorStatInfo> m_MemoryTypes{};
+    epiArray<gfxDeviceMemoryAllocatorStatInfo> m_MemoryHeaps{};
+    gfxDeviceMemoryAllocatorStatInfo m_Total{};
+
+EPI_GENREGION_END(gfxDeviceMemoryAllocatorStats)
+};
+
 class gfxDeviceMemoryAllocatorCreateInfo : public Object
 {
 EPI_GENREGION_BEGIN(gfxDeviceMemoryAllocatorCreateInfo)
@@ -274,11 +367,13 @@ public:
     enum gfxDeviceMemoryAllocator_PIDs
     {
         PID_Device = 0xe83b3b8,
-        PID_COUNT = 1
+        PID_CurrentFrameIndex = 0x3feb7a78,
+        PID_COUNT = 2
     };
 
 protected:
     const gfxDevice& GetDevice_Callback() const;
+    void SetCurrentFrameIndex_Callback(epiU32 value);
 
 EPI_GENREGION_END(gfxDeviceMemoryAllocator)
 
@@ -302,6 +397,9 @@ public:
 
     std::optional<gfxDeviceMemoryAllocation> AllocateImage(const gfxDeviceMemoryAllocationCreateInfo& info,
                                                            const gfxImage& image);
+
+    std::optional<gfxDeviceMemoryAllocatorBudget> QueryBudget() const;
+    std::optional<gfxDeviceMemoryAllocatorStats> QueryStats() const;
 
 protected:
     std::shared_ptr<Impl> m_Impl;
